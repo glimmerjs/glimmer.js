@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "amd",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "declaration": false,
+    "newLine": "LF",
+    "outFile": "tests/tests.js",
+    "types": ["qunit"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "node_modules/@types/**/*.ts"
+  ]
+}

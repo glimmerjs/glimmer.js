@@ -1,0 +1,37 @@
+{
+  "name": "@glimmer/component",
+  "version": "0.0.1",
+  "description": "Glimmer component library",
+  "contributors": [
+    "Dan Gebhardt <dan@cerebris.com>",
+    "Tom Dale <tom@tomdale.net>"
+  ],
+  "repository": "https://github.com/glimmerjs/glimmer-component",
+  "license": "MIT",
+  "main": "dist/commonjs/es5/index.js",
+  "module": "dist/modules/es2017/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
+    "build:tests": "rm -rf tests && BROCCOLI_ENV=tests broccoli build tests",
+    "preversion": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
+    "test": "testem ci"
+  },
+  "dependencies": {
+    "@glimmer/di": "^0.1.7",
+    "@glimmer/compiler": "^0.21.1",
+    "@glimmer/interfaces": "^0.21.0",
+    "@glimmer/object-reference": "^0.21.0",
+    "@glimmer/reference": "^0.21.0",
+    "@glimmer/runtime": "^0.21.1",
+    "@glimmer/util": "^0.21.0",
+    "handlebars": "~3",
+    "simple-html-tokenizer": "^0.3.0"
+  },
+  "devDependencies": {
+    "@glimmer/build": "^0.2.1",
+    "broccoli": "^1.1.0",
+    "broccoli-cli": "^1.0.0",
+    "testem": "^1.13.0"
+  }
+}
