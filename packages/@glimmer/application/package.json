@@ -1,0 +1,30 @@
+{
+  "name": "@glimmer/application",
+  "version": "0.0.1",
+  "description": "Glimmer standalone applications",
+  "contributors": [
+    "Dan Gebhardt <dan@cerebris.com>",
+    "Tom Dale <tom@tomdale.net>"
+  ],
+  "repository": "https://github.com/glimmerjs/glimmer-application",
+  "license": "MIT",
+  "main": "dist/commonjs/es5/index.js",
+  "module": "dist/modules/es2017/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
+    "build:tests": "rm -rf tests && BROCCOLI_ENV=tests broccoli build tests",
+    "preversion": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
+    "test": "testem ci"
+  },
+  "dependencies": {
+    "@glimmer/di": "^0.1.6",
+    "@glimmer/util": "^0.21.0"
+  },
+  "devDependencies": {
+    "@glimmer/build": "^0.2.1",
+    "broccoli": "^1.1.0",
+    "broccoli-cli": "^1.0.0",
+    "testem": "^1.13.0"
+  }
+}
