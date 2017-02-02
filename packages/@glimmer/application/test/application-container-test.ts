@@ -5,6 +5,27 @@ const { module, test } = QUnit;
 
 module('Application - Container interface');
 
+test('#identify - returns an absolute specifier unchanged', function(assert) {
+  let app = new Application();
+  let absSpecifier = 'component:/app/components/date-picker';
+  assert.equal(app.identify(absSpecifier), absSpecifier, 'specifier was returned unchanged');
+});
+
+test('#identify - uses a resolver to convert a relative specifier to an absolute specifier', function(assert) {
+  assert.expect(2);
+
+  class FakeResolver implements Resolver {
+    identify(specifier: string, referrer?: string) {
+      assert.equal(specifier, 'component:date-picker', 'FakeResolver#identify was invoked');
+      return 'component:/app/components/date-picker';
+    }
+  }
+  let resolver = new FakeResolver();
+  let app = new Application(resolver);
+  let specifier = 'component:date-picker';
+  assert.equal(app.identify(specifier, 'component:/app/components/form-controls'), 'component:/app/components/date-picker', 'absolute specifier was returned');
+});
+
 test('#factoryFor - returns a registered factory', function(assert) {
   class DatePicker {
     static create() { return { foo: 'bar' }; }

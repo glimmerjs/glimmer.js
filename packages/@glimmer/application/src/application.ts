@@ -73,6 +73,10 @@ export default class Application implements Owner {
     this._registry.registerInjection(normalizedSpecifier, property, normalizedInjection);
   }
 
+  identify(specifier: string, referrer?: string): string {
+    return this._toAbsoluteSpecifier(specifier, referrer);
+  }
+
   factoryFor(specifier: string, referrer?: string): Factory<any> {
     let absoluteSpecifier = this._toAbsoluteSpecifier(specifier, referrer);
     return this._container.factoryFor(absoluteSpecifier);
