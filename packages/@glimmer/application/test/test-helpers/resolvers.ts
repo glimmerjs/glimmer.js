@@ -1,8 +1,10 @@
-import { Resolver } from '@glimmer/di';
+import { Resolver, isSpecifierStringAbsolute } from '@glimmer/di';
 
 export class BlankResolver implements Resolver {
   identify(specifier: string, referrer?: string) { 
-    return '';
+    if (isSpecifierStringAbsolute(specifier)) {
+      return specifier;
+    }
   }
   retrieve(specifier: string): any {
   }

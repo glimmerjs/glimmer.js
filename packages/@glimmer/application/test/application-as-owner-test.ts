@@ -1,27 +1,25 @@
 import Application from '../src/application';
-import { Resolver, getOwner } from '@glimmer/di';
+import { Resolver, getOwner, isSpecifierStringAbsolute } from '@glimmer/di';
 import { BlankResolver } from './test-helpers/resolvers';
 
 const { module, test } = QUnit;
 
 module('Application - Owner interface');
 
-test('#identify - returns an absolute specifier unchanged', function(assert) {
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  let absSpecifier = 'component:/app/components/date-picker';
-  assert.equal(app.identify(absSpecifier), absSpecifier, 'specifier was returned unchanged');
-});
-
 test('#identify - uses a resolver to convert a relative specifier to an absolute specifier', function(assert) {
   assert.expect(2);
 
   class FakeResolver implements Resolver {
     identify(specifier: string, referrer?: string) {
+      if (isSpecifierStringAbsolute(specifier)) {
+        return specifier;
+      }
       assert.equal(specifier, 'component:date-picker', 'FakeResolver#identify was invoked');
       return 'component:/app/components/date-picker';
     }
     retrieve(specifier: string): any {}
   }
+
   let resolver = new FakeResolver();
   let app = new Application({ rootName: 'app', resolver });
   let specifier = 'component:date-picker';
@@ -33,9 +31,14 @@ test('#factoryFor - returns a registered factory', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-
-  app.register('component:/app/components/date-picker', DatePicker);
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('component:/app/components/date-picker', DatePicker);
+    }
+  }
+  let app = new App({ rootName: 'app', resolver: new BlankResolver });
+  app.initContainer();
   assert.strictEqual(app.factoryFor('component:/app/components/date-picker'), DatePicker, 'expected factory was returned');
 });
 
@@ -48,6 +51,9 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
 
   class FakeResolver implements Resolver {
     identify(specifier: string, referrer?: string) {
+      if (isSpecifierStringAbsolute(specifier)) {
+        return specifier;
+      }
       assert.equal(specifier, 'component:date-picker', 'FakeResolver#identify was invoked');
       return 'component:/app/components/date-picker';
     }
@@ -59,6 +65,7 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
 
   let resolver = new FakeResolver();
   let app = new Application({ rootName: 'app', resolver });
+  app.initContainer();
   assert.strictEqual(app.factoryFor('component:date-picker'), DatePicker, 'expected factory was returned');
 });
 
@@ -74,8 +81,11 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
   }
 
   class FakeResolver implements Resolver {
-    identify(fullName: string, referrer: string) {
-      assert.equal(fullName, 'foo:bar', 'FakeResolver#identify was invoked');
+    identify(specifier: string, referrer: string) {
+      if (isSpecifierStringAbsolute(specifier)) {
+        return specifier;
+      }
+      assert.equal(specifier, 'foo:bar', 'FakeResolver#identify was invoked');
       return 'foo:/app/foos/bar';
     }
     retrieve(id: string): any {
@@ -85,8 +95,16 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
   }
 
   let resolver = new FakeResolver();
-  let app = new Application({ rootName: 'app', resolver });
-  app.register('foo:/app/foos/bar', Foo);
+
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', Foo);
+    }
+  }
+
+  let app = new App({ rootName: 'app', resolver });
+  app.initContainer();
   assert.strictEqual(app.factoryFor('foo:bar'), FooBar, 'factory from resolver was returned');
 });
 
@@ -103,9 +121,15 @@ test('#lookup - returns an instance created by the factory', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', FooBar);
+    }
+  }
 
-  app.register('foo:/app/foos/bar', FooBar);
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
   let foobar = app.lookup('foo:/app/foos/bar');
   assert.strictEqual(foobar, instance, 'instance created');
 });
@@ -122,9 +146,16 @@ test('#lookup - caches looked up instances by default', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', FooBar);
+    }
+  }
 
-  app.register('foo:/app/foos/bar', FooBar);
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
+
   let foo1 = app.lookup('foo:/app/foos/bar');
   assert.equal(createCounter, 1);
   let foo2 = app.lookup('foo:/app/foos/bar');
@@ -144,9 +175,16 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', FooBar, { singleton: false });
+    }
+  }
 
-  app.register('foo:/app/foos/bar', FooBar, { singleton: false });
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
+
   let foo1 = app.lookup('foo:/app/foos/bar');
   assert.equal(createCounter, 1);
   let foo2 = app.lookup('foo:/app/foos/bar');
@@ -161,9 +199,16 @@ test('#lookup - returns the factory when registrations specify instantiate: fals
 
   let factory = {};
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', factory, { instantiate: false });
+    }
+  }
 
-  app.register('foo:/app/foos/bar', factory, { instantiate: false });
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
+
   let foo1 = app.lookup('foo:/app/foos/bar');
   assert.strictEqual(foo1, factory);
 });
@@ -177,6 +222,9 @@ test('#lookup - uses the resolver to locate a registration', function(assert) {
 
   class FakeResolver implements Resolver {
     identify(specifier: string, referrer?: string): string {
+      if (isSpecifierStringAbsolute(specifier)) {
+        return specifier;
+      }
       assert.equal(specifier, 'foo:bar', 'FakeResolver#identify was invoked');
       return 'foo:/app/foos/bar';
     }
@@ -188,6 +236,7 @@ test('#lookup - uses the resolver to locate a registration', function(assert) {
 
   let resolver = new FakeResolver();
   let app = new Application({ rootName: 'app', resolver });
+  app.initContainer();
   let foo1 = app.lookup('foo:bar');
 
   assert.deepEqual(foo1, { foo: 'bar' }, 'expected factory was invoked');
@@ -215,10 +264,18 @@ test('#lookup - injects references registered by name', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.register('foo:/app/foos/bar', FooBar);
-  app.register('router:/app/root/main', Router);
-  app.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', FooBar);
+      registry.register('router:/app/root/main', Router);
+      registry.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
+    }
+  }
+
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
+
   assert.strictEqual(app.lookup('foo:/app/foos/bar'), instance, 'instance returned');
   assert.strictEqual(instance['router'], router, 'injection has been applied to instance');
 });
@@ -245,10 +302,18 @@ test('#lookup - injects references registered by type', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.register('foo:/app/foos/bar', FooBar);
-  app.register('router:/app/root/main', Router);
-  app.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
+  class App extends Application {
+    initialize(registry) {
+      super.initialize(registry);
+      registry.register('foo:/app/foos/bar', FooBar);
+      registry.register('router:/app/root/main', Router);
+      registry.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
+    }
+  }
+
+  let app = new App({ rootName: 'app', resolver: new BlankResolver() });
+  app.initContainer();
+
   assert.strictEqual(app.lookup('foo:/app/foos/bar'), instance, 'instance returned');
   assert.strictEqual(instance['router'], router, 'injection has been applied to instance');
 });
