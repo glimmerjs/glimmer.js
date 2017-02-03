@@ -1,5 +1,6 @@
 import Application from '../src/application';
 import { Resolver, getOwner } from '@glimmer/di';
+import { BlankResolver } from './test-helpers/resolvers';
 
 const { module, test } = QUnit;
 
@@ -10,7 +11,7 @@ test('#register - registers a factory', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo);
@@ -22,7 +23,7 @@ test('#register - can register options together with a factory', function(assert
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo, { instantiate: false });
@@ -35,7 +36,7 @@ test('#registration - returns a factory has been registered', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo);
@@ -47,7 +48,7 @@ test('#unregister - unregisters a factory', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   app.register('foo:/app/foos/bar', Foo);
   assert.strictEqual(app.registration('foo:/app/foos/bar'), Foo, 'factory has been registered');
@@ -60,7 +61,7 @@ test('#registerOption, #registeredOptions, #registeredOption, #unregisterOption'
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   app.register('foo:/app/foos/bar', Foo);
   assert.strictEqual(app.registeredOptions('foo:/app/foos/bar'), undefined);
@@ -80,7 +81,7 @@ test('Options registered by full name supercede those registered by type', funct
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app' });
+  let app = new Application({ rootName: 'app', resolver: new BlankResolver });
 
   app.register('foo:/app/foos/bar', Foo);
 

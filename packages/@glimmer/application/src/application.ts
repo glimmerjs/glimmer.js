@@ -24,7 +24,7 @@ function isTypeSpecifier(specifier: string) {
 export interface ApplicationOptions {
   rootName: string;
   rootElement?: Simple.Element;
-  resolver?: Resolver;
+  resolver: Resolver;
 }
 
 export default class Application implements Owner {
