@@ -1,11 +1,10 @@
 import {
   Container,
   Factory,
-  isSpecifierStringAbsolute,
   Owner,
   Registry,
+  RegistryAccessor,
   Resolver,
-  RegistrationOptions,
   setOwner
 } from '@glimmer/di';
 import {
@@ -16,15 +15,12 @@ import {
   Simple,
   templateFactory
 } from '@glimmer/runtime';
-
-function isTypeSpecifier(specifier: string) {
-  return specifier.indexOf(':') === -1;
-}
+import ApplicationRegistry from './application-registry';
 
 export interface ApplicationOptions {
   rootName: string;
   rootElement?: Simple.Element;
-  resolver?: Resolver;
+  resolver: Resolver;
 }
 
 export default class Application implements Owner {
@@ -40,8 +36,27 @@ export default class Application implements Owner {
     this.rootName = options.rootName;
     this.rootElement = options.rootElement;
     this.resolver = options.resolver;
+    
+    this.initRegistry();
+  }
 
+  initRegistry(): void {
     this._registry = new Registry();
+
+    // Create ApplicationRegistry as a proxy to the underlying registry
+    // that will only be available during `initialize`.
+    let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
+    this.initialize(appRegistry);
+  }
+
+  initialize(registry: RegistryAccessor): void {
+    registry.register(`environment:/${this.rootName}/main/main`, Environment);
+    registry.registerOption('template', 'instantiate', false);
+
+    // Override and extend to perform custom registrations
+  }
+
+  initContainer(): void {
     this._container = new Container(this._registry, this.resolver);
 
     // Inject `this` (the app) as the "owner" of every object instantiated
@@ -51,16 +66,11 @@ export default class Application implements Owner {
       setOwner(hash, this);
       return hash;
     }
-
-    this.initRegistrations();
-  }
-
-  initRegistrations(): void {
-    this.register(`environment:/${this.rootName}/main/main`, Environment);
-    this.registerOption('template', 'instantiate', false);
   }
 
   boot(): void {
+    this.initContainer();
+
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
     if (!this.rootElement) {
@@ -90,89 +100,18 @@ export default class Application implements Owner {
   }
 
   /**
-   * Registry accessor methods that normalize specifiers.
-   * 
-   * TODO: consider converting Registry to be an interface instead of a class
-   * and then extract these methods to a separate accessor class that implements
-   * Registry.
-   */
-
-  register(specifier: string, factory: any, options?: RegistrationOptions): void {
-    let normalizedSpecifier = this._toAbsoluteSpecifier(specifier);
-    this._registry.register(normalizedSpecifier, factory, options);
-  }
-
-  registration(specifier: string): any {
-    let normalizedSpecifier = this._toAbsoluteSpecifier(specifier);
-    return this._registry.registration(normalizedSpecifier);
-  }
-
-  unregister(specifier: string) {
-    let normalizedSpecifier = this._toAbsoluteSpecifier(specifier);
-    this._registry.unregister(normalizedSpecifier);
-  }
-
-  registerOption(specifier: string, option: string, value: any): void {
-    let normalizedSpecifier = this._toAbsoluteOrTypeSpecifier(specifier);
-    this._registry.registerOption(normalizedSpecifier, option, value);
-  }
-
-  registeredOption(specifier: string, option: string): any {
-    let normalizedSpecifier = this._toAbsoluteOrTypeSpecifier(specifier);
-    return this._registry.registeredOption(normalizedSpecifier, option);
-  }
-
-  registeredOptions(specifier: string): any {
-    let normalizedSpecifier = this._toAbsoluteOrTypeSpecifier(specifier);
-    return this._registry.registeredOptions(normalizedSpecifier);
-  }
-
-  unregisterOption(specifier: string, option: string): void {
-    let normalizedSpecifier = this._toAbsoluteOrTypeSpecifier(specifier);
-    this._registry.unregisterOption(normalizedSpecifier, option);
-  }
-
-  registerInjection(specifier: string, property: string, injection: string): void {
-    let normalizedSpecifier = this._toAbsoluteOrTypeSpecifier(specifier);
-    let normalizedInjection = this._toAbsoluteSpecifier(injection);
-    this._registry.registerInjection(normalizedSpecifier, property, normalizedInjection);
-  }
-
-  /**
    * Owner interface implementation
    */
 
   identify(specifier: string, referrer?: string): string {
-    return this._toAbsoluteSpecifier(specifier, referrer);
+    return this.resolver.identify(specifier, referrer);
   }
 
   factoryFor(specifier: string, referrer?: string): Factory<any> {
-    let absoluteSpecifier = this._toAbsoluteSpecifier(specifier, referrer);
-    return this._container.factoryFor(absoluteSpecifier);
+    return this._container.factoryFor(this.identify(specifier, referrer));
   }
 
   lookup(specifier: string, referrer?: string): any {
-    let absoluteSpecifier = this._toAbsoluteSpecifier(specifier, referrer);
-    return this._container.lookup(absoluteSpecifier);
-  }
-
-  /**
-   * Private methods
-   */
-
-  private _toAbsoluteSpecifier(specifier: string, referrer?: string): string {
-    if (isSpecifierStringAbsolute(specifier)) {
-      return specifier;
-    } else {
-      return this.resolver.identify(specifier, referrer);
-    }
-  }
-
-  private _toAbsoluteOrTypeSpecifier(specifier: string): string {
-    if (isTypeSpecifier(specifier)) {
-      return specifier;
-    } else {
-      return this._toAbsoluteSpecifier(specifier);
-    }
+    return this._container.lookup(this.identify(specifier, referrer));
   }
 }
