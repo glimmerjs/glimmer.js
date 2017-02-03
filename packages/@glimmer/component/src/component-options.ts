@@ -1,8 +1,8 @@
 import Component from './component';
 
-export default class ComponentOptions {
-  parent: Component;
-  hasBlock: boolean;
+export interface ComponentOptions {
+  parent?: Component;
+  hasBlock?: boolean;
   // TODO dispatcher: EventDispatcher;
-  args: Object = null;
+  args?: Object;
 }
