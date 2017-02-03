@@ -5,17 +5,12 @@ const { module, test } = QUnit;
 
 module('Application - Registry interface');
 
-test('can be instantiated', function(assert) {
-  let app = new Application();
-  assert.ok(app, 'app exists');
-});
-
 test('#register - registers a factory', function(assert) {
   class Foo {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo);
@@ -27,7 +22,7 @@ test('#register - can register options together with a factory', function(assert
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo, { instantiate: false });
@@ -40,7 +35,7 @@ test('#registration - returns a factory has been registered', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   assert.strictEqual(app.registration('foo:/app/foos/bar'), undefined, 'factory has not yet been registered');
   app.register('foo:/app/foos/bar', Foo);
@@ -52,7 +47,7 @@ test('#unregister - unregisters a factory', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   app.register('foo:/app/foos/bar', Foo);
   assert.strictEqual(app.registration('foo:/app/foos/bar'), Foo, 'factory has been registered');
@@ -65,7 +60,7 @@ test('#registerOption, #registeredOptions, #registeredOption, #unregisterOption'
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   app.register('foo:/app/foos/bar', Foo);
   assert.strictEqual(app.registeredOptions('foo:/app/foos/bar'), undefined);
@@ -85,7 +80,7 @@ test('Options registered by full name supercede those registered by type', funct
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application();
+  let app = new Application({ rootName: 'app' });
 
   app.register('foo:/app/foos/bar', Foo);
 

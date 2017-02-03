@@ -8,20 +8,41 @@ import {
   RegistrationOptions,
   setOwner
 } from '@glimmer/di';
+import {
+  DynamicScope,
+  Environment
+} from '@glimmer/component';
+import {
+  Simple,
+  templateFactory
+} from '@glimmer/runtime';
 
 function isTypeSpecifier(specifier: string) {
   return specifier.indexOf(':') === -1;
 }
 
+export interface ApplicationOptions {
+  rootName: string;
+  rootElement?: Simple.Element;
+  resolver?: Resolver;
+}
+
 export default class Application implements Owner {
+  public rootName: string;
+  public rootElement: any;
   public resolver: Resolver;
+  public env: Environment;
   private _registry: Registry;
   private _container: Container;
+  private _renderResult: any; // TODO - type
 
-  constructor(resolver?: Resolver) {
-    this.resolver = resolver;
+  constructor(options: ApplicationOptions) {
+    this.rootName = options.rootName;
+    this.rootElement = options.rootElement;
+    this.resolver = options.resolver;
+
     this._registry = new Registry();
-    this._container = new Container(this._registry, resolver);
+    this._container = new Container(this._registry, this.resolver);
 
     // Inject `this` (the app) as the "owner" of every object instantiated
     // by its container.
@@ -30,7 +51,51 @@ export default class Application implements Owner {
       setOwner(hash, this);
       return hash;
     }
+
+    this.initRegistrations();
   }
+
+  initRegistrations(): void {
+    this.register(`environment:/${this.rootName}/main/main`, Environment);
+    this.registerOption('template', 'instantiate', false);
+  }
+
+  boot(): void {
+    this.env = this.lookup(`environment:/${this.rootName}/main/main`);
+
+    if (!this.rootElement) {
+      this.rootElement = this.env.getDOM().createElement('div');
+      self.document.body.append(this.rootElement);
+    }
+
+    this.render();
+  }
+
+  render() {
+    this.env.begin();
+
+    let mainTemplate = this.lookup(`template:/${this.rootName}/components/main`);
+    let mainLayout = templateFactory(mainTemplate).create(this.env);
+    let result = mainLayout.render(null, this.rootElement, new DynamicScope());
+
+    this.env.commit();
+
+    this._renderResult = result;
+  }
+
+  rerender() {
+    this.env.begin();
+    this._renderResult.rerender();
+    this.env.commit();
+  }
+
+  /**
+   * Registry accessor methods that normalize specifiers.
+   * 
+   * TODO: consider converting Registry to be an interface instead of a class
+   * and then extract these methods to a separate accessor class that implements
+   * Registry.
+   */
 
   register(specifier: string, factory: any, options?: RegistrationOptions): void {
     let normalizedSpecifier = this._toAbsoluteSpecifier(specifier);
@@ -73,6 +138,10 @@ export default class Application implements Owner {
     this._registry.registerInjection(normalizedSpecifier, property, normalizedInjection);
   }
 
+  /**
+   * Owner interface implementation
+   */
+
   identify(specifier: string, referrer?: string): string {
     return this._toAbsoluteSpecifier(specifier, referrer);
   }
@@ -86,6 +155,10 @@ export default class Application implements Owner {
     let absoluteSpecifier = this._toAbsoluteSpecifier(specifier, referrer);
     return this._container.lookup(absoluteSpecifier);
   }
+
+  /**
+   * Private methods
+   */
 
   private _toAbsoluteSpecifier(specifier: string, referrer?: string): string {
     if (isSpecifierStringAbsolute(specifier)) {
