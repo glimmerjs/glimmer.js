@@ -1,4 +1,8 @@
 import {
+  getOwner,
+  setOwner
+} from '@glimmer/di';
+import {
   Bounds,
   CompiledBlock,
   ComponentManager as GlimmerComponentManager,
@@ -16,7 +20,7 @@ import {
   VersionedPathReference
 } from '@glimmer/reference';
 import { Opaque } from '@glimmer/util';
-import Component from './component';
+import Component, { ComponentOptions } from './component';
 import ComponentDefinition from './component-definition';
 import Environment from './environment';
 
@@ -41,9 +45,12 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   create(environment: Environment, definition: ComponentDefinition, args: EvaluatedArgs): Component {
-    let ComponentClass = definition.ComponentClass;
-    let attrs = args.named.value();
-    let component = new ComponentClass(attrs); // TODO use ComponentFactory instead
+    let options: ComponentOptions = {
+      args: args.named.value()
+    };
+    setOwner(options, getOwner(this.env));
+
+    let component = definition.componentFactory.create(options);
 
     // TODO
     // component.didInitAttrs({ attrs });

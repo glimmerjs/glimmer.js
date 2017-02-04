@@ -1,7 +1,14 @@
-import { getOwner, setOwner, Owner, OWNER } from '@glimmer/di';
+import { getOwner, setOwner } from '@glimmer/di';
 import { DirtyableTag } from '@glimmer/reference';
 import { Simple } from '@glimmer/runtime';
 import Environment from './environment';
+
+export interface ComponentOptions {
+  parent?: Component;
+  hasBlock?: boolean;
+  // TODO dispatcher: EventDispatcher;
+  args?: Object;
+}
 
 export default class Component {
   dirtinessTag = new DirtyableTag();
@@ -10,16 +17,9 @@ export default class Component {
   parent: Component = null;
   args: Object = null;
 
-  static create(args?: Object): Component {
-    return new Component(args);
-  }
-
-  constructor(args: Object = {}) {
-    let owner: Owner = getOwner(args);
-    if (owner) {
-      setOwner(this, owner);
-      delete args[OWNER];
-    }
-    this.args = args;
+  constructor(options: ComponentOptions) {
+    setOwner(this, getOwner(options));
+    this.parent = options.parent;
+    this.args = options.args;
   }
 }

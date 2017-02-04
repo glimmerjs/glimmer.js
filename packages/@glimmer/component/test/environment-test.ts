@@ -1,6 +1,6 @@
 import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
-import Environment from '../src/environment';
+import Environment, { EnvironmentOptions } from '../src/environment';
 
 const { module, test } = QUnit;
 
@@ -27,7 +27,7 @@ test('can be assigned an owner', function(assert) {
   }
   let app = new FakeApp;
 
-  let options = {};
+  let options: EnvironmentOptions = {};
   setOwner(options, app);
 
   let env = Environment.create(options);

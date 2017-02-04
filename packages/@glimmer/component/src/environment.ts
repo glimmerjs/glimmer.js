@@ -1,5 +1,6 @@
 import {
   CompiledBlock,
+  ComponentClass,
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
@@ -40,7 +41,7 @@ import {
   Owner
 } from '@glimmer/di';
 import Component from './component';
-import { ComponentFactory } from './component-factory';
+import ComponentFactory from './component-factory';
 import ComponentDefinition from './component-definition';
 import ComponentLayoutCompiler from './component-layout-compiler';
 import ComponentManager from './component-manager';
@@ -91,7 +92,7 @@ export default class Environment extends GlimmerEnvironment {
 
   registerComponent(specifier: string): ComponentDefinition {
     let owner: Owner = getOwner(this);
-    let ComponentClass: Component = owner.factoryFor(specifier);
+    let ComponentClass = owner.factoryFor(specifier);
     let componentDef: ComponentDefinition = new ComponentDefinition(specifier, this.componentManager, ComponentClass);
     this.components[specifier] = componentDef;
 
