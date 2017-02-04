@@ -83,6 +83,14 @@ export default class Environment extends GlimmerEnvironment {
     this.uselessAnchor = options.document.createElement('a') as Simple.HTMLAnchorElement;
   }
 
+  begin() {
+    super.begin();
+  }
+
+  commit() {
+    super.commit();
+  }
+
   protocolForURL(url: string): string {
     // TODO - investigate alternative approaches
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
@@ -90,16 +98,13 @@ export default class Environment extends GlimmerEnvironment {
     return this.uselessAnchor.protocol;
   }
 
-  registerComponent(specifier: string): ComponentDefinition {
-    let owner: Owner = getOwner(this);
-    let ComponentClass = owner.factoryFor(specifier);
-    let componentDef: ComponentDefinition = new ComponentDefinition(specifier, this.componentManager, ComponentClass);
-    this.components[specifier] = componentDef;
+  registerComponent(name: string, ComponentClass: ComponentClass, template: string): ComponentDefinition {
+    let componentDef: ComponentDefinition = new ComponentDefinition(name, this.componentManager, ComponentClass);
+    this.components[name] = componentDef;
 
     // TODO - allow templates to be defined on the component class itself?
-    let componentTemplate = owner.lookup('template', specifier);
-    let componentLayout = this.getCompiledBlock(ComponentLayoutCompiler, componentTemplate);
-    this.compiledLayouts[specifier] = componentLayout;
+    let componentLayout = this.getCompiledBlock(ComponentLayoutCompiler, template);
+    this.compiledLayouts[name] = componentLayout;
 
     return componentDef;
   }
@@ -118,17 +123,10 @@ export default class Environment extends GlimmerEnvironment {
     return !!this.getComponentDefinition(name, symbolTable);
   }
 
-  getComponentDefinition(name: string[], symbolTable: SymbolTable): ComponentDefinition {
-    let owner: Owner = getOwner(this);
-    let relSpecifier: string = `component:${name.join('/')}`;
-    let referrer: string = symbolTable.meta.specifier;
-    let specifier = owner.identify(relSpecifier, referrer);
+  getComponentDefinition(componentName: string[], symbolTable: SymbolTable): ComponentDefinition {
+    let name = componentName[0];
 
-    if (!this.components[specifier]) {
-      this.registerComponent(specifier);
-    }
-
-    return this.components[specifier];
+    return this.components[name];
   }
 
   hasHelper(helperName: string[], blockMeta: TemplateMeta) {
@@ -183,7 +181,6 @@ export default class Environment extends GlimmerEnvironment {
 
   // a Compiler can wrap the template so it needs its own cache
   getCompiledBlock(Compiler: any, template: string): CompiledBlock {
-    // TODO - add caching (see environment.js in Ember)
     let compilable = new Compiler(template);
     return compileLayout(compilable, this);
   }
