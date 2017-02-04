@@ -6,7 +6,7 @@ import {
   Bounds,
   CompiledBlock,
   ComponentManager as GlimmerComponentManager,
-  Environment as GlimmerEnvironment,
+  Environment,
   EvaluatedArgs,
   PrimitiveReference,
   Simple,
@@ -22,7 +22,6 @@ import {
 import { Opaque } from '@glimmer/util';
 import Component, { ComponentOptions } from './component';
 import ComponentDefinition from './component-definition';
-import Environment from './environment';
 
 export function GlimmerID(vm: VM): PathReference<string> {
   let self = vm.getSelf().value() as { _guid: string };
