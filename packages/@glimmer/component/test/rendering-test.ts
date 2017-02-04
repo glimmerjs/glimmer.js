@@ -1,10 +1,10 @@
 import { UpdatableReference } from '@glimmer/object-reference';
-import { Owner, OWNER, Factory } from '@glimmer/di';
+import { OWNER } from '@glimmer/di';
 import { templateFactory } from '@glimmer/runtime';
 import Component from '../src/component';
 import ComponentManager from '../src/component-manager';
-import DynamicScope from '../src/dynamic-scope';
-import Environment from '../src/environment';
+import DynamicScope from './test-helpers/dynamic-scope';
+import Environment from './test-helpers/environment';
 import { precompile } from './test-helpers/compiler';
 
 const { module, test } = QUnit;
@@ -23,35 +23,10 @@ test('A component can be rendered in a template', function(assert) {
     '<hello-world @name={{salutation}} />', 
     { meta: { specifier: 'template:/app/main/main' }});
 
-  class FakeApp implements Owner {
-    identify(specifier: string, referrer?: string): string {
-      if (specifier === 'component:hello-world' &&
-          referrer === 'template:/app/main/main') {
-        return 'component:/app/components/hello-world';
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-
-    factoryFor(specifier: string, referrer?: string): Factory<any> {
-      if (specifier === 'component:/app/components/hello-world') {
-        return HelloWorld;
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-  
-    lookup(specifier: string, referrer?: string): any {
-      if (specifier === 'template' && referrer === 'component:/app/components/hello-world') {
-        return helloWorldTemplate;
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-  }
-
-  let app = new FakeApp();
+  let app = {};
   let env = Environment.create({[OWNER]: app});
+
+  env.registerComponent('hello-world', HelloWorld, helloWorldTemplate);
 
   let output = document.createElement('output');
   env.begin();
