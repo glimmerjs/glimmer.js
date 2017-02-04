@@ -1,5 +1,4 @@
-import Component from './component';
-import { ComponentOptions } from './component-options';
+import Component, { ComponentOptions } from './component';
 
 export default class ComponentFactory {
   public ComponentClass: any;

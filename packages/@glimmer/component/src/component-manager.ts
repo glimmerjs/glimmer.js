@@ -20,8 +20,7 @@ import {
   VersionedPathReference
 } from '@glimmer/reference';
 import { Opaque } from '@glimmer/util';
-import Component from './component';
-import { ComponentOptions } from './component-options';
+import Component, { ComponentOptions } from './component';
 import ComponentDefinition from './component-definition';
 import Environment from './environment';
 
