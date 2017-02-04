@@ -1,7 +1,6 @@
 import { getOwner, setOwner } from '@glimmer/di';
 import { DirtyableTag } from '@glimmer/reference';
-import { Simple } from '@glimmer/runtime';
-import Environment from './environment';
+import { Simple, Environment } from '@glimmer/runtime';
 
 export interface ComponentOptions {
   parent?: Component;
@@ -21,5 +20,6 @@ export default class Component {
     setOwner(this, getOwner(options));
     this.parent = options.parent;
     this.args = options.args;
+    // TODO options.hasBlock
   }
 }

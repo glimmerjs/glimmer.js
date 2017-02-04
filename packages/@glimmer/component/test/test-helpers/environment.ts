@@ -40,11 +40,11 @@ import {
   setOwner,
   Owner
 } from '@glimmer/di';
-import Component from './component';
-import ComponentFactory from './component-factory';
-import ComponentDefinition from './component-definition';
-import ComponentLayoutCompiler from './component-layout-compiler';
-import ComponentManager from './component-manager';
+import Component from '../../src/component';
+import ComponentFactory from '../../src/component-factory';
+import ComponentDefinition from '../../src/component-definition';
+import ComponentLayoutCompiler from '../../src/component-layout-compiler';
+import ComponentManager from '../../src/component-manager';
 import Iterable from './iterable';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
