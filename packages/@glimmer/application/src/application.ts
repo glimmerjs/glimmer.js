@@ -8,14 +8,12 @@ import {
   setOwner
 } from '@glimmer/di';
 import {
-  DynamicScope,
-  Environment
-} from '@glimmer/component';
-import {
   Simple,
   templateFactory
 } from '@glimmer/runtime';
 import ApplicationRegistry from './application-registry';
+import DynamicScope from './dynamic-scope';
+import Environment from './environment';
 
 export interface ApplicationOptions {
   rootName: string;
