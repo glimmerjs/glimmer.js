@@ -1,45 +1,34 @@
 import { getOwner, setOwner, Owner } from '@glimmer/di';
-import Component from '../src/component';
+import Component, { ComponentOptions } from '../src/component';
 
 const { module, test } = QUnit;
 
 module('Component');
 
-test('can be instantiated with new', function(assert) {
-  let component = new Component();
+class FakeApp implements Owner {
+  identify(specifier: string, referrer?: string) { return ''; }
+  factoryFor(specifier: string, referrer?: string) { return null; }
+  lookup(specifier: string, referrer?: string) { return null; }
+}
+
+test('can be instantiated with an owner', function(assert) {
+  let owner: Owner = new FakeApp;
+  let options: ComponentOptions = {};
+  setOwner(options, owner);
+  let component = new Component(options);
   assert.ok(component, 'component exists');
+  assert.strictEqual(getOwner(component), owner, 'owner has been set');
 });
 
-test('can be instantiated with create', function(assert) {
-  let component = Component.create();
-  assert.ok(component, 'component exists');
-});
-
-test('can be assigned args', function(assert) {
+test('can be instantiated with an owner and args', function(assert) {
+  let owner: Owner = new FakeApp;
   let args = {
     a: 'a',
     b: 'b'
   };
-  let component = Component.create(args);
+  let options: ComponentOptions = { args };
+  setOwner(options, owner);
+  let component = new Component(options);
   assert.deepEqual(component.args, args, 'args have been assigned');
-});
-
-test('can be assigned args and an owner', function(assert) {
-  class FakeApp implements Owner {
-    identify(specifier: string, referrer?: string) { return ''; }
-    factoryFor(specifier: string, referrer?: string) { return null; }
-    lookup(specifier: string, referrer?: string) { return null; }
-  }
-  let app = new FakeApp;
-
-  let args = {
-    a: 'a',
-    b: 'b'
-  };
-
-  setOwner(args, app);
-
-  let component = Component.create(args);
-  assert.deepEqual(component.args, {a: 'a', b: 'b'}, 'args have been assigned');
-  assert.strictEqual(getOwner(component), app, 'owner has been set');
+  assert.strictEqual(getOwner(component), owner, 'owner has been set');
 });

@@ -1,21 +1,19 @@
 import {
-  ComponentDefinition as GlimmerComponentDefinition,
-  Template
+  ComponentClass,
+  ComponentDefinition as GlimmerComponentDefinition
 } from '@glimmer/runtime';
-import { Dict } from '@glimmer/util';
 import ComponentManager from './component-manager';
-import { ComponentFactory } from './component-factory';
 import Component from './component';
+import ComponentFactory from './component-factory';
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<Component> {
-  public manager: ComponentManager;
   public name: string;
-  public args: Dict<any>;
-  public ComponentClass: any;
+  public manager: ComponentManager;
+  public ComponentClass: ComponentClass;
+  public componentFactory: ComponentFactory;
 
-  constructor(name: string, manager: ComponentManager, ComponentClass: Component, args?: Dict<any>) {
+  constructor(name: string, manager: ComponentManager, ComponentClass: ComponentClass) {
     super(name, manager, ComponentClass);
-    this.name = name;
-    this.args = args;
+    this.componentFactory = new ComponentFactory(ComponentClass);
   }
 }
