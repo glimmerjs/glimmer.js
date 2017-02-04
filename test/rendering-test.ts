@@ -3,8 +3,8 @@ import { Owner, OWNER, Factory } from '@glimmer/di';
 import { templateFactory } from '@glimmer/runtime';
 import Component from '../src/component';
 import ComponentManager from '../src/component-manager';
-import DynamicScope from '../src/dynamic-scope';
-import Environment from '../src/environment';
+import DynamicScope from './test-helpers/dynamic-scope';
+import Environment from './test-helpers/environment';
 import { precompile } from './test-helpers/compiler';
 
 const { module, test } = QUnit;
