@@ -18,7 +18,7 @@
     "test": "testem ci"
   },
   "dependencies": {
-    "@glimmer/component": "^0.1.0",
+    "@glimmer/component": "^0.2.0",
     "@glimmer/di": "^0.1.8",
     "@glimmer/util": "^0.21.0"
   },
