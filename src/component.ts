@@ -2,7 +2,13 @@ import { getOwner, setOwner } from '@glimmer/di';
 import { DirtyableTag } from '@glimmer/reference';
 import { Simple } from '@glimmer/runtime';
 import Environment from './environment';
-import { ComponentOptions } from './component-options';
+
+export interface ComponentOptions {
+  parent?: Component;
+  hasBlock?: boolean;
+  // TODO dispatcher: EventDispatcher;
+  args?: Object;
+}
 
 export default class Component {
   dirtinessTag = new DirtyableTag();

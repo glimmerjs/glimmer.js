@@ -1,6 +1,5 @@
 import { getOwner, setOwner, Owner } from '@glimmer/di';
-import { ComponentOptions } from '../src/component-options';
-import Component from '../src/component';
+import Component, { ComponentOptions } from '../src/component';
 
 const { module, test } = QUnit;
 
