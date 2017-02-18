@@ -130,7 +130,7 @@ export default class Environment extends GlimmerEnvironment {
   getComponentDefinition(name: string[], symbolTable: SymbolTable): ComponentDefinition {
     let owner: Owner = getOwner(this);
     let relSpecifier: string = `component:${name.join('/')}`;
-    let referrer: string = symbolTable.meta.specifier;
+    let referrer: string = symbolTable.getMeta().specifier;
     let specifier = owner.identify(relSpecifier, referrer);
 
     if (!this.components[specifier]) {
