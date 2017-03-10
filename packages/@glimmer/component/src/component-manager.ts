@@ -4,8 +4,9 @@ import {
 } from '@glimmer/di';
 import {
   Bounds,
-  CompiledBlock,
+  CompiledProgram,
   ComponentManager as GlimmerComponentManager,
+  DynamicScope,
   Environment,
   EvaluatedArgs,
   PrimitiveReference,
@@ -39,7 +40,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     this.env = env;
   }
 
-  prepareArgs(definition: ComponentDefinition, args: EvaluatedArgs): EvaluatedArgs {
+  prepareArgs(definition: ComponentDefinition, args: EvaluatedArgs, dynamicScope: DynamicScope): EvaluatedArgs {
     return args;
   }
 
@@ -60,7 +61,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return component;
   }
 
-  layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledBlock {
+  layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledProgram {
     return env.compiledLayouts[definition.name];
   }
 
