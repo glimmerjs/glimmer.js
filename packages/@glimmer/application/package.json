@@ -19,11 +19,11 @@
   },
   "dependencies": {
     "@glimmer/component": "^0.2.0",
-    "@glimmer/di": "^0.1.8",
+    "@glimmer/di": "^0.1.9",
     "@glimmer/util": "^0.21.0"
   },
   "devDependencies": {
-    "@glimmer/build": "^0.2.1",
+    "@glimmer/build": "^0.3.0",
     "broccoli": "^1.1.0",
     "broccoli-cli": "^1.0.0",
     "testem": "^1.13.0"

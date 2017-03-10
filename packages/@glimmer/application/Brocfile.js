@@ -12,7 +12,7 @@ if (process.env.BROCCOLI_ENV === 'tests') {
     buildVendorPackage('@glimmer/component', { 
       external: ['babel-helpers', '@glimmer/di', '@glimmmer/reference', '@glimmer/runtime', '@glimmer/object-reference', '@glimmer/util'] }),
     buildVendorPackage('@glimmer/di', { 
-      external: ['babel-helpers', '@glimmer/util'] }),
+      external: ['babel-helpers'] }),
     buildVendorPackage('@glimmer/object-reference', { 
       external: ['babel-helpers', '@glimmer/util', '@glimmer/reference'] }),
     buildVendorPackage('@glimmer/reference', { 
