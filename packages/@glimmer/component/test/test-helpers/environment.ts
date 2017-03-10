@@ -1,5 +1,5 @@
 import {
-  CompiledBlock,
+  CompiledProgram,
   ComponentClass,
   DOMChanges,
   DOMTreeConstruction,
@@ -8,7 +8,6 @@ import {
   Helper as GlimmerHelper,
   ModifierManager,
   PartialDefinition,
-  Simple,
   compileLayout
 } from '@glimmer/runtime';
 import {
@@ -30,6 +29,7 @@ import {
   FIXME
 } from '@glimmer/util';
 import {
+  SerializedTemplateWithLazyBlock,
   TemplateMeta
 } from "@glimmer/wire-format";
 import {
@@ -50,7 +50,7 @@ import Iterable from './iterable';
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
 export interface EnvironmentOptions {
-  document?: Simple.Document;
+  document?: HTMLDocument;
   appendOperations?: DOMTreeConstruction;
 }
 
@@ -59,7 +59,7 @@ export default class Environment extends GlimmerEnvironment {
   private modifiers = dict<ModifierManager<Opaque>>();
   private partials = dict<PartialDefinition<{}>>();
   private components = dict<ComponentDefinition>();
-  private uselessAnchor: Simple.HTMLAnchorElement;
+  private uselessAnchor: HTMLAnchorElement;
   private componentManager: ComponentManager;
   public compiledLayouts = dict<any>();
 
@@ -71,7 +71,7 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as Simple.Document) });
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument) });
 
     setOwner(this, getOwner(options));
 
@@ -80,7 +80,7 @@ export default class Environment extends GlimmerEnvironment {
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = options.document.createElement('a') as Simple.HTMLAnchorElement;
+    this.uselessAnchor = options.document.createElement('a') as HTMLAnchorElement;
   }
 
   begin() {
@@ -98,7 +98,7 @@ export default class Environment extends GlimmerEnvironment {
     return this.uselessAnchor.protocol;
   }
 
-  registerComponent(name: string, ComponentClass: ComponentClass, template: string): ComponentDefinition {
+  registerComponent(name: string, ComponentClass: ComponentClass, template: SerializedTemplateWithLazyBlock<{}>): ComponentDefinition {
     let componentDef: ComponentDefinition = new ComponentDefinition(name, this.componentManager, ComponentClass);
     this.components[name] = componentDef;
 
@@ -119,40 +119,34 @@ export default class Environment extends GlimmerEnvironment {
     return partial;
   }
 
-  hasComponentDefinition(name: string[], symbolTable: SymbolTable): boolean {
+  hasComponentDefinition(name: string, symbolTable: SymbolTable): boolean {
     return !!this.getComponentDefinition(name, symbolTable);
   }
 
-  getComponentDefinition(componentName: string[], symbolTable: SymbolTable): ComponentDefinition {
-    let name = componentName[0];
-
-    return this.components[name];
+  getComponentDefinition(componentName: string, symbolTable: SymbolTable): ComponentDefinition {
+    return this.components[componentName];
   }
 
-  hasHelper(helperName: string[], blockMeta: TemplateMeta) {
-    return helperName.length === 1 && (<string>helperName[0] in this.helpers);
+  hasHelper(helperName: string, blockMeta: TemplateMeta) {
+    return helperName.length === 1 && (helperName in this.helpers);
   }
 
-  lookupHelper(helperName: string[], blockMeta: TemplateMeta) {
-    let name = helperName[0];
+  lookupHelper(helperName: string, blockMeta: TemplateMeta) {
+    let helper = this.helpers[helperName];
 
-    let helper = this.helpers[name];
-
-    if (!helper) throw new Error(`Helper for ${helperName.join('.')} not found.`);
+    if (!helper) throw new Error(`Helper for ${helperName} not found.`);
 
     return helper;
   }
 
-  hasModifier(modifierName: string[], blockMeta: TemplateMeta): boolean {
-    return modifierName.length === 1 && (<string>modifierName[0] in this.modifiers);
+  hasModifier(modifierName: string, blockMeta: TemplateMeta): boolean {
+    return modifierName.length === 1 && (modifierName in this.modifiers);
   }
 
-  lookupModifier(modifierName: string[], blockMeta: TemplateMeta): ModifierManager<Opaque> {
-    let [name] = modifierName;
+  lookupModifier(modifierName: string, blockMeta: TemplateMeta): ModifierManager<Opaque> {
+    let modifier = this.modifiers[modifierName];
 
-    let modifier = this.modifiers[name];
-
-    if(!modifier) throw new Error(`Modifier for ${modifierName.join('.')} not found.`);
+    if(!modifier) throw new Error(`Modifier for ${modifierName} not found.`);
     return modifier;
   }
 
@@ -180,7 +174,7 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   // a Compiler can wrap the template so it needs its own cache
-  getCompiledBlock(Compiler: any, template: string): CompiledBlock {
+  getCompiledBlock(Compiler: any, template: SerializedTemplateWithLazyBlock<{}>): CompiledProgram {
     let compilable = new Compiler(template);
     return compileLayout(compilable, this);
   }
