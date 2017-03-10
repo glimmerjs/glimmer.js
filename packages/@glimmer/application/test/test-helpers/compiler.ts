@@ -3,9 +3,9 @@ import {
   PrecompileOptions
 } from "@glimmer/compiler";
 import { 
-  TemplateJavascript 
+  SerializedTemplateWithLazyBlock
 } from "@glimmer/wire-format";
 
-export function precompile(template: string, options: PrecompileOptions): TemplateJavascript {
+export function precompile(template: string, options: PrecompileOptions<{}>): SerializedTemplateWithLazyBlock<{}> {
   return JSON.parse(glimmerPrecompile(template, options));
 }

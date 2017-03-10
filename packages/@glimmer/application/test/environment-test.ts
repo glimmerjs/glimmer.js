@@ -90,7 +90,11 @@ test('can render a component', function(assert) {
   });
 
   let mainLayout = templateFactory(mainTemplate).create(env);
-  mainLayout.render(ref, output, new DynamicScope());
+  let templateIterator = mainLayout.render(ref, output, new DynamicScope());
+  let result;
+  do {
+    result = templateIterator.next();
+  } while (!result.done);
 
   env.commit();
 

@@ -51,7 +51,7 @@ import Iterable from './iterable';
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
 export interface EnvironmentOptions {
-  document?: Simple.Document;
+  document?: HTMLDocument;
   appendOperations?: DOMTreeConstruction;
 }
 
@@ -60,7 +60,7 @@ export default class Environment extends GlimmerEnvironment {
   private modifiers = dict<ModifierManager<Opaque>>();
   private partials = dict<PartialDefinition<{}>>();
   private components = dict<ComponentDefinition>();
-  private uselessAnchor: Simple.HTMLAnchorElement;
+  private uselessAnchor: HTMLAnchorElement;
   private componentManager: ComponentManager;
   public compiledLayouts = dict<any>();
 
@@ -72,7 +72,7 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as Simple.Document) });
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument) });
 
     setOwner(this, getOwner(options));
 
@@ -81,7 +81,7 @@ export default class Environment extends GlimmerEnvironment {
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = options.document.createElement('a') as Simple.HTMLAnchorElement;
+    this.uselessAnchor = options.document.createElement('a') as HTMLAnchorElement;
   }
 
   begin() {
@@ -123,13 +123,13 @@ export default class Environment extends GlimmerEnvironment {
     return partial;
   }
 
-  hasComponentDefinition(name: string[], symbolTable: SymbolTable): boolean {
+  hasComponentDefinition(name: string, symbolTable: SymbolTable): boolean {
     return !!this.getComponentDefinition(name, symbolTable);
   }
 
-  getComponentDefinition(name: string[], symbolTable: SymbolTable): ComponentDefinition {
+  getComponentDefinition(name: string, symbolTable: SymbolTable): ComponentDefinition {
     let owner: Owner = getOwner(this);
-    let relSpecifier: string = `component:${name.join('/')}`;
+    let relSpecifier: string = `component:${name}`;
     let referrer: string = symbolTable.getMeta().specifier;
     let specifier = owner.identify(relSpecifier, referrer);
 
@@ -140,30 +140,28 @@ export default class Environment extends GlimmerEnvironment {
     return this.components[specifier];
   }
 
-  hasHelper(helperName: string[], blockMeta: TemplateMeta) {
-    return helperName.length === 1 && (<string>helperName[0] in this.helpers);
+  hasHelper(helperName: string, blockMeta: TemplateMeta) {
+    return helperName.length === 1 && (helperName in this.helpers);
   }
 
-  lookupHelper(helperName: string[], blockMeta: TemplateMeta) {
+  lookupHelper(helperName: string, blockMeta: TemplateMeta) {
     let name = helperName[0];
 
     let helper = this.helpers[name];
 
-    if (!helper) throw new Error(`Helper for ${helperName.join('.')} not found.`);
+    if (!helper) throw new Error(`Helper for ${helperName} not found.`);
 
     return helper;
   }
 
-  hasModifier(modifierName: string[], blockMeta: TemplateMeta): boolean {
-    return modifierName.length === 1 && (<string>modifierName[0] in this.modifiers);
+  hasModifier(modifierName: string, blockMeta: TemplateMeta): boolean {
+    return modifierName.length === 1 && (modifierName in this.modifiers);
   }
 
-  lookupModifier(modifierName: string[], blockMeta: TemplateMeta): ModifierManager<Opaque> {
-    let [name] = modifierName;
+  lookupModifier(modifierName: string, blockMeta: TemplateMeta): ModifierManager<Opaque> {
+    let modifier = this.modifiers[modifierName];
 
-    let modifier = this.modifiers[name];
-
-    if(!modifier) throw new Error(`Modifier for ${modifierName.join('.')} not found.`);
+    if(!modifier) throw new Error(`Modifier for ${modifierName} not found.`);
     return modifier;
   }
 
