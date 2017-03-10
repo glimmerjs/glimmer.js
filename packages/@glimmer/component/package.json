@@ -18,7 +18,7 @@
     "test": "testem ci"
   },
   "dependencies": {
-    "@glimmer/di": "^0.1.7",
+    "@glimmer/di": "^0.1.9",
     "@glimmer/compiler": "^0.21.1",
     "@glimmer/interfaces": "^0.21.0",
     "@glimmer/object-reference": "^0.21.0",
@@ -29,7 +29,7 @@
     "simple-html-tokenizer": "^0.3.0"
   },
   "devDependencies": {
-    "@glimmer/build": "^0.2.1",
+    "@glimmer/build": "^0.3.0",
     "broccoli": "^1.1.0",
     "broccoli-cli": "^1.0.0",
     "testem": "^1.13.0"
