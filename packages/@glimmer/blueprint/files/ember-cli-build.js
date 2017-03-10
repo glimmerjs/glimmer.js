@@ -1,4 +1,4 @@
-var GlimmerApp = require('@glimmer/application-pipeline/lib/broccoli/glimmer-app');
+const { GlimmerApp } = require('@glimmer/application-pipeline');
 
 module.exports = function(defaults) {
   var app = new GlimmerApp(defaults, {

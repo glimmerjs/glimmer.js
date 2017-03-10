@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es2015",
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "moduleResolution": "node"
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.d.ts"
+  ]
+}
