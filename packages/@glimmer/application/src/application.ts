@@ -73,7 +73,7 @@ export default class Application implements Owner {
 
     if (!this.rootElement) {
       this.rootElement = this.env.getDOM().createElement('div');
-      self.document.body.append(this.rootElement);
+      self.document.body.appendChild(this.rootElement);
     }
 
     this.render();
@@ -84,7 +84,11 @@ export default class Application implements Owner {
 
     let mainTemplate = this.lookup(`template:/${this.rootName}/components/main`);
     let mainLayout = templateFactory(mainTemplate).create(this.env);
-    let result = mainLayout.render(null, this.rootElement, new DynamicScope());
+    let templateIterator = mainLayout.render(null, this.rootElement, new DynamicScope());
+    let result;
+    do {
+      result = templateIterator.next();
+    } while (!result.done);
 
     this.env.commit();
 
