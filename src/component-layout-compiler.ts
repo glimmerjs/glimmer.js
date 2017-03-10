@@ -2,13 +2,16 @@ import {
   ComponentLayoutBuilder,
   templateFactory
 } from '@glimmer/runtime';
+import { 
+  SerializedTemplateWithLazyBlock 
+} from "@glimmer/wire-format";
 
 export default class ComponentLayoutCompiler {
   static id: string = 'glimmer';
   
-  template: string;
+  template: SerializedTemplateWithLazyBlock<{}>;
 
-  constructor(template: string) {
+  constructor(template: SerializedTemplateWithLazyBlock<{}>) {
     this.template = template;
   }
 
