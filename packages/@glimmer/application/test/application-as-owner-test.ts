@@ -39,7 +39,9 @@ test('#factoryFor - returns a registered factory', function(assert) {
   }
   let app = new App({ rootName: 'app', resolver: new BlankResolver });
   app.initContainer();
-  assert.strictEqual(app.factoryFor('component:/app/components/date-picker'), DatePicker, 'expected factory was returned');
+
+  let factory = app.factoryFor('component:/app/components/date-picker');
+  assert.strictEqual(factory.class, DatePicker, 'expected factory.class was returned');
 });
 
 test('#factoryFor - will use a resolver to locate a factory', function(assert) {
@@ -66,7 +68,9 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
   let resolver = new FakeResolver();
   let app = new Application({ rootName: 'app', resolver });
   app.initContainer();
-  assert.strictEqual(app.factoryFor('component:date-picker'), DatePicker, 'expected factory was returned');
+
+  let factory = app.factoryFor('component:date-picker');
+  assert.strictEqual(factory.class, DatePicker, 'expected factory was returned');
 });
 
 test('#factoryFor - will use a resolver to locate a factory, even if one is registered locally', function(assert) {
@@ -105,7 +109,9 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
 
   let app = new App({ rootName: 'app', resolver });
   app.initContainer();
-  assert.strictEqual(app.factoryFor('foo:bar'), FooBar, 'factory from resolver was returned');
+
+  let factory = app.factoryFor('foo:bar');
+  assert.strictEqual(factory.class, FooBar, 'factory from resolver was returned');
 });
 
 test('#lookup - returns an instance created by the factory', function(assert) {
