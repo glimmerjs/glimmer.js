@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "amd",
+    "target": "es2017",
+    "module": "es2015",
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "inlineSources": true,
     "inlineSourceMap": true,
     "declaration": false,
     "newLine": "LF",
-    "outFile": "tests/tests.js",
     "types": ["qunit"]
   },
   "include": [
