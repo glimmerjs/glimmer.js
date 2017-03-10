@@ -20,7 +20,7 @@
   "dependencies": {
     "@glimmer/component": "^0.2.0",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/util": "^0.21.0"
+    "@glimmer/util": "^0.22.0"
   },
   "devDependencies": {
     "@glimmer/build": "^0.3.0",
