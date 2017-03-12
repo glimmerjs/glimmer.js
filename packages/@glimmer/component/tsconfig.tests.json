@@ -8,7 +8,11 @@
     "inlineSourceMap": true,
     "declaration": false,
     "newLine": "LF",
-    "types": ["qunit"]
+    "types": ["qunit"],
+    "lib": [
+      "dom",
+      "es2015"
+    ]
   },
   "include": [
     "src/**/*.ts",
