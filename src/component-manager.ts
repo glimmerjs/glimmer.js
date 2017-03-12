@@ -50,7 +50,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     };
     setOwner(options, getOwner(this.env));
 
-    let component = definition.componentFactory.create(options);
+    let component = definition.ComponentClass.create(options);
 
     // TODO
     // component.didInitAttrs({ attrs });

@@ -16,6 +16,10 @@ export default class Component {
   parent: Component = null;
   args: Object = null;
 
+  static create(options: ComponentOptions) {
+    return new this(options);
+  }
+
   constructor(options: ComponentOptions) {
     setOwner(this, getOwner(options));
     this.parent = options.parent;
