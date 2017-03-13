@@ -1,15 +1,15 @@
 import {
-  CompiledBlock,
   ComponentClass,
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
-  EvaluatedArgs,
   Helper as GlimmerHelper,
   ModifierManager,
   PartialDefinition,
   Simple,
-  compileLayout
+  compileLayout,
+  CompiledDynamicProgram,
+  templateFactory
 } from '@glimmer/runtime';
 import {
   Reference,
@@ -29,9 +29,7 @@ import {
   Opaque,
   FIXME
 } from '@glimmer/util';
-import {
-  TemplateMeta
-} from "@glimmer/wire-format";
+import { SerializedTemplate, SerializedTemplateWithLazyBlock } from '@glimmer/wire-format';
 import {
   SymbolTable
 } from '@glimmer/interfaces';
@@ -47,6 +45,7 @@ import Component, {
   ComponentManager
 } from '@glimmer/component';
 import Iterable from './iterable';
+import TemplateMeta from './template-meta';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -58,11 +57,9 @@ export interface EnvironmentOptions {
 export default class Environment extends GlimmerEnvironment {
   private helpers = dict<GlimmerHelper>();
   private modifiers = dict<ModifierManager<Opaque>>();
-  private partials = dict<PartialDefinition<{}>>();
   private components = dict<ComponentDefinition>();
-  private uselessAnchor: HTMLAnchorElement;
   private componentManager: ComponentManager;
-  public compiledLayouts = dict<any>();
+  private uselessAnchor: HTMLAnchorElement;
 
   static create(options: EnvironmentOptions = {}) {
     options.document = options.document || self.document;
@@ -99,45 +96,48 @@ export default class Environment extends GlimmerEnvironment {
     return this.uselessAnchor.protocol;
   }
 
-  registerComponent(specifier: string): ComponentDefinition {
-    let owner: Owner = getOwner(this);
-    let ComponentClass = owner.factoryFor(specifier);
-    let componentDef: ComponentDefinition = new ComponentDefinition(specifier, this.componentManager, ComponentClass);
-    this.components[specifier] = componentDef;
-
-    // TODO - allow templates to be defined on the component class itself?
-    let componentTemplate = owner.lookup('template', specifier);
-    let componentLayout = this.getCompiledBlock(ComponentLayoutCompiler, componentTemplate);
-    this.compiledLayouts[specifier] = componentLayout;
-
-    return componentDef;
+  hasPartial() {
+    return false;
   }
 
-  hasPartial(partialName: string) {
-    return partialName in this.partials;
+  lookupPartial(): any {
   }
 
-  lookupPartial(partialName: string) {
-    let partial = this.partials[partialName];
-
-    return partial;
+  hasComponentDefinition(name: string, meta: TemplateMeta): boolean {
+    return !!this.getComponentDefinition(name, meta);
   }
 
-  hasComponentDefinition(name: string, symbolTable: SymbolTable): boolean {
-    return !!this.getComponentDefinition(name, symbolTable);
-  }
-
-  getComponentDefinition(name: string, symbolTable: SymbolTable): ComponentDefinition {
+  getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition {
     let owner: Owner = getOwner(this);
     let relSpecifier: string = `component:${name}`;
-    let referrer: string = symbolTable.getMeta().specifier;
+    let referrer: string = meta.specifier;
+
     let specifier = owner.identify(relSpecifier, referrer);
 
     if (!this.components[specifier]) {
-      this.registerComponent(specifier);
+      return this.registerComponent(name, specifier, owner);
     }
 
     return this.components[specifier];
+  }
+
+  registerComponent(name: string, componentSpecifier: string, owner: Owner): ComponentDefinition {
+    let ComponentClass = owner.factoryFor(componentSpecifier);
+    let serializedTemplate = owner.lookup('template', componentSpecifier);
+
+    let layout = this.compileLayout(serializedTemplate);
+    let definition = new ComponentDefinition(name, this.componentManager, layout, ComponentClass);
+
+    this.components[name] = definition;
+
+    return definition;
+  }
+
+  compileLayout(serializedTemplate: SerializedTemplateWithLazyBlock<TemplateMeta>): CompiledDynamicProgram {
+    let template = templateFactory(serializedTemplate).create(this);
+    let compiledLayout = template.asLayout().compileDynamic(this);
+
+    return compiledLayout;
   }
 
   hasHelper(helperName: string, blockMeta: TemplateMeta) {
@@ -165,8 +165,7 @@ export default class Environment extends GlimmerEnvironment {
     return modifier;
   }
 
-  iterableFor(ref: Reference<Opaque>, args: EvaluatedArgs): OpaqueIterable {
-    let keyPath = args.named.get("key").value() as FIXME<any, "User value to lookup key">;
+  iterableFor(ref: Reference<Opaque>, keyPath: string): OpaqueIterable {
     let keyFor: KeyFor<Opaque>;
 
     if (!keyPath) {
@@ -186,12 +185,5 @@ export default class Environment extends GlimmerEnvironment {
     }
 
     return new Iterable(ref, keyFor);
-  }
-
-  // a Compiler can wrap the template so it needs its own cache
-  getCompiledBlock(Compiler: any, template: string): CompiledBlock {
-    // TODO - add caching (see environment.js in Ember)
-    let compilable = new Compiler(template);
-    return compileLayout(compilable, this);
   }
 }

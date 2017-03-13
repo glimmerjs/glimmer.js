@@ -6,6 +6,7 @@ import Component, {
   ComponentManager
 } from '@glimmer/component';
 import DynamicScope from '../src/dynamic-scope';
+import TemplateMeta from '../src/template-meta';
 import { precompile } from './test-helpers/compiler';
 
 const { module, test } = QUnit;
@@ -42,15 +43,18 @@ test('can be assigned an owner', function(assert) {
 
 test('can render a component', function(assert) {
   class HelloWorld extends Component {
+    static create(options?: any) {
+      return new HelloWorld(options);
+    }
   }
 
   let helloWorldTemplate = precompile(
     '<h1>Hello {{@name}}!</h1>', 
-    { meta: { specifier: 'template:/app/components/hello-world' }});
+    { meta: { '<template-meta>': true, specifier: 'template:/app/components/hello-world' }});
 
   let mainTemplate = precompile(
     '<hello-world @name={{salutation}} />', 
-    { meta: { specifier: 'template:/app/main/main' }});
+    { meta: { '<template-meta>': true, specifier: 'template:/app/main/main' }});
 
   class FakeApp implements Owner {
     identify(specifier: string, referrer?: string): string {
@@ -64,7 +68,12 @@ test('can render a component', function(assert) {
 
     factoryFor(specifier: string, referrer?: string): Factory<any> {
       if (specifier === 'component:/app/components/hello-world') {
-        return HelloWorld;
+        return {
+          class: HelloWorld,
+          create(options?: any) {
+            return HelloWorld.create(options);
+          }
+        }
       } else {
         throw new Error('Unexpected');
       }
