@@ -41,7 +41,6 @@ import {
   Owner
 } from '@glimmer/di';
 import Component from '../../src/component';
-import ComponentFactory from '../../src/component-factory';
 import ComponentDefinition from '../../src/component-definition';
 import ComponentLayoutCompiler from '../../src/component-layout-compiler';
 import ComponentManager from '../../src/component-manager';
