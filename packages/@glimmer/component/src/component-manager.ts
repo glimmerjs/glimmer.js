@@ -4,14 +4,13 @@ import {
 } from '@glimmer/di';
 import {
   Bounds,
-  CompiledProgram,
   ComponentManager as GlimmerComponentManager,
   DynamicScope,
   Environment,
-  EvaluatedArgs,
   PrimitiveReference,
   Simple,
-  VM
+  VM,
+  CompiledDynamicProgram
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -40,13 +39,13 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     this.env = env;
   }
 
-  prepareArgs(definition: ComponentDefinition, args: EvaluatedArgs, dynamicScope: DynamicScope): EvaluatedArgs {
-    return args;
+  prepareArgs(definition: ComponentDefinition, args: EvaluatedArgs): EvaluatedArgs {
+    return null;
   }
 
-  create(environment: Environment, definition: ComponentDefinition, args: EvaluatedArgs): Component {
+  create(environment: Environment, definition: ComponentDefinition, args: Arguments): Component {
     let options: ComponentOptions = {
-      args: args.named.value()
+      args: args.named.capture().value()
     };
     setOwner(options, getOwner(this.env));
 
@@ -61,12 +60,11 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return component;
   }
 
-  layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledProgram {
-    return env.compiledLayouts[definition.name];
-  }
+  layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledDynamicProgram {
+    let template = definition.template;
+    let compiledLayout = template.asLayout().compileDynamic(this.env);
 
-  templateFor(component: Component, env: Environment) {
-
+    return compiledLayout;
   }
 
   getSelf(component: Component): VersionedPathReference<Opaque> {
@@ -91,8 +89,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return null;
   }
 
-  update(component: Component, args: EvaluatedArgs) {
-    component.args = args.named.value();
+  update(component: Component, scope: DynamicScope) {
   }
 
   didUpdateLayout() {}
