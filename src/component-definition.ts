@@ -1,22 +1,27 @@
 import {
   ComponentClass,
   ComponentDefinition as GlimmerComponentDefinition,
-  CompiledDynamicProgram
+  CompiledDynamicProgram,
+  Template
 } from '@glimmer/runtime';
+import { Factory } from '@glimmer/di';
 import ComponentManager from './component-manager';
 import Component from './component';
-import ComponentFactory from './component-factory';
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<Component> {
   public name: string;
   public manager: ComponentManager;
-  public layout: CompiledDynamicProgram;
-  public ComponentClass: ComponentClass;
-  public componentFactory: ComponentFactory;
+  public template: Template<any>;
+  public componentFactory: Factory<Component>;
 
-  constructor(name: string, manager: ComponentManager, layout: CompiledDynamicProgram, ComponentClass: ComponentClass) {
-    super(name, manager, ComponentClass);
-    this.layout = layout;
-    this.componentFactory = new ComponentFactory(ComponentClass);
+  constructor(name: string, manager: ComponentManager, componentFactory: Factory<Component>, template: Template<any>) {
+    super(name, manager, null);
+
+    this.template = template;
+    this.componentFactory = componentFactory;
+  }
+
+  toJSON() {
+    return { GlimmerDebug: '<component-definition>' };
   }
 }
