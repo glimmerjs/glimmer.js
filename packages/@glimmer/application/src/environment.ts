@@ -122,11 +122,11 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   registerComponent(name: string, componentSpecifier: string, owner: Owner): ComponentDefinition {
-    let ComponentClass = owner.factoryFor(componentSpecifier);
+    let componentFactory: ComponentFactory = owner.factoryFor(componentSpecifier);
     let serializedTemplate = owner.lookup('template', componentSpecifier);
+    let template = templateFactory(serializedTemplate).create(this);
 
-    let layout = this.compileLayout(serializedTemplate);
-    let definition = new ComponentDefinition(name, this.componentManager, layout, ComponentClass);
+    let definition = new ComponentDefinition(name, this.componentManager, componentFactory, template);
 
     this.components[name] = definition;
 
