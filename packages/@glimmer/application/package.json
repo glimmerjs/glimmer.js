@@ -12,10 +12,9 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
-    "build:tests": "rm -rf tests && BROCCOLI_ENV=tests broccoli build tests",
-    "preversion": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
-    "test": "testem ci"
+    "build": "ember build",
+    "preversion": "npm run test",
+    "test": "ember test"
   },
   "dependencies": {
     "@glimmer/component": "^0.2.0",
