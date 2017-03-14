@@ -6,7 +6,7 @@ const path = require('path');
 module.exports = function() {
   let buildOptions = {};
 
-  if (process.env.BROCCOLI_ENV === 'tests') {
+  if (process.env.EMBER_ENV === 'test') {
     buildOptions.vendorTrees = [
       buildVendorPackage('@glimmer/compiler', { 
         external: ['babel-helpers', '@glimmer/syntax', '@glimmer/wire-format', '@glimmer/util'] }),
@@ -37,4 +37,18 @@ module.exports = function() {
   }
 
   return build(buildOptions);
-};
+}
+
+function includeVendorPackage(name) {
+  // Resolve package's `package.json`, in case `main` is set and it points deep
+  // into a `dist` directory.
+  let packagePath = require.resolve(`${name}/package`);
+  packagePath = path.dirname(packagePath);
+
+  return funnel(packagePath, {
+    include: [
+      'dist/amd/es5/**/*.js',
+      'amd/es5/**/*.js'
+    ]
+  });
+}
