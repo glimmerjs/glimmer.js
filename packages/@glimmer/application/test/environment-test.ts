@@ -2,12 +2,10 @@ import { getOwner, setOwner, Owner, OWNER, Factory } from '@glimmer/di';
 import { UpdatableReference } from '@glimmer/object-reference';
 import { DOMTreeConstruction, templateFactory } from '@glimmer/runtime';
 import Environment, { EnvironmentOptions } from '../src/environment';
-import Component, {
-  ComponentManager
-} from '@glimmer/component';
 import DynamicScope from '../src/dynamic-scope';
 import TemplateMeta from '../src/template-meta';
 import { precompile } from './test-helpers/compiler';
+import { TestComponentManager, TestComponent } from './test-helpers/components';
 
 const { module, test } = QUnit;
 
@@ -42,9 +40,9 @@ test('can be assigned an owner', function(assert) {
 });
 
 test('can render a component', function(assert) {
-  class HelloWorld extends Component {
-    static create(options?: any) {
-      return new HelloWorld(options);
+  class HelloWorld extends TestComponent {
+    static create() {
+      return new HelloWorld();
     }
   }
 
@@ -71,7 +69,7 @@ test('can render a component', function(assert) {
         return {
           class: HelloWorld,
           create(options?: any) {
-            return HelloWorld.create(options);
+            return HelloWorld.create();
           }
         }
       } else {
@@ -90,6 +88,7 @@ test('can render a component', function(assert) {
 
   let app = new FakeApp();
   let env = Environment.create({[OWNER]: app});
+  env.registerComponentManager(new TestComponentManager(env), 'test', true);
 
   let output = document.createElement('output');
   env.begin();

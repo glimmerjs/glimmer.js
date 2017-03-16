@@ -9,7 +9,11 @@ import {
   Simple,
   compileLayout,
   CompiledDynamicProgram,
-  templateFactory
+  templateFactory,
+  ComponentDefinition,
+  Component,
+  ComponentManager,
+  Template
 } from '@glimmer/runtime';
 import {
   Reference,
@@ -31,21 +35,14 @@ import {
 } from '@glimmer/util';
 import { SerializedTemplate, SerializedTemplateWithLazyBlock } from '@glimmer/wire-format';
 import {
-  SymbolTable
-} from '@glimmer/interfaces';
-import {
   getOwner,
   setOwner,
-  Owner
+  Owner,
+  Factory
 } from '@glimmer/di';
-import Component, {
-  ComponentFactory,
-  ComponentDefinition,
-  ComponentLayoutCompiler,
-  ComponentManager
-} from '@glimmer/component';
 import Iterable from './iterable';
 import TemplateMeta from './template-meta';
+import ComponentDefinitionCreator from './component-definition-creator'
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -54,11 +51,18 @@ export interface EnvironmentOptions {
   appendOperations?: DOMTreeConstruction;
 }
 
+class DefaultComponentDefinition extends ComponentDefinition<any> {
+
+}
+
+
+
 export default class Environment extends GlimmerEnvironment {
   private helpers = dict<GlimmerHelper>();
   private modifiers = dict<ModifierManager<Opaque>>();
-  private components = dict<ComponentDefinition>();
-  private componentManager: ComponentManager;
+  private components = dict<ComponentDefinition<Component>>();
+  private componentManagers = dict<ComponentManager<Component>>();
+  private defaultComponentManager: ComponentManager<Component>;
   private uselessAnchor: HTMLAnchorElement;
 
   static create(options: EnvironmentOptions = {}) {
@@ -73,20 +77,9 @@ export default class Environment extends GlimmerEnvironment {
 
     setOwner(this, getOwner(options));
 
-    // TODO - allow more than one component manager per environment
-    this.componentManager = new ComponentManager(this);
-
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
     this.uselessAnchor = options.document.createElement('a') as HTMLAnchorElement;
-  }
-
-  begin() {
-    super.begin();
-  }
-
-  commit() {
-    super.commit();
   }
 
   protocolForURL(url: string): string {
@@ -103,11 +96,18 @@ export default class Environment extends GlimmerEnvironment {
   lookupPartial(): any {
   }
 
+  registerComponentManager(manager: ComponentManager<Component>, identifier: string, isDefaultComponentManager = false) {
+    this.componentManagers[identifier] = manager;
+    if (isDefaultComponentManager) {
+      this.defaultComponentManager = manager;
+    }
+  }
+
   hasComponentDefinition(name: string, meta: TemplateMeta): boolean {
     return !!this.getComponentDefinition(name, meta);
   }
 
-  getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition {
+  getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition<Component> {
     let owner: Owner = getOwner(this);
     let relSpecifier: string = `component:${name}`;
     let referrer: string = meta.specifier;
@@ -115,29 +115,29 @@ export default class Environment extends GlimmerEnvironment {
     let specifier = owner.identify(relSpecifier, referrer);
 
     if (!this.components[specifier]) {
-      return this.registerComponent(name, specifier, owner);
+      return this.registerComponent(name, specifier, meta, owner);
     }
 
     return this.components[specifier];
   }
 
-  registerComponent(name: string, componentSpecifier: string, owner: Owner): ComponentDefinition {
-    let componentFactory: ComponentFactory = owner.factoryFor(componentSpecifier);
+  registerComponent(name: string, componentSpecifier: string, meta: TemplateMeta, owner: Owner): ComponentDefinition<Component> {
+    let componentFactory: Factory<Component> = owner.factoryFor(componentSpecifier);
     let serializedTemplate = owner.lookup('template', componentSpecifier);
-    let template = templateFactory(serializedTemplate).create(this);
+    let template = templateFactory<TemplateMeta>(serializedTemplate).create(this);
 
-    let definition = new ComponentDefinition(name, this.componentManager, componentFactory, template);
+    let manager: ComponentManager<Component> | ComponentDefinitionCreator = meta.managerId ? this.componentManagers[meta.managerId] : this.defaultComponentManager;
+    let definition: ComponentDefinition<Component>;
+
+    if (canCreateComponentDefinition(manager)) {
+      definition = manager.createComponentDefinition(name, template, componentFactory);
+    } else {
+      definition = new DefaultComponentDefinition(name, manager, componentFactory);
+    }
 
     this.components[name] = definition;
 
     return definition;
-  }
-
-  compileLayout(serializedTemplate: SerializedTemplateWithLazyBlock<TemplateMeta>): CompiledDynamicProgram {
-    let template = templateFactory(serializedTemplate).create(this);
-    let compiledLayout = template.asLayout().compileDynamic(this);
-
-    return compiledLayout;
   }
 
   hasHelper(helperName: string, blockMeta: TemplateMeta) {
@@ -186,4 +186,8 @@ export default class Environment extends GlimmerEnvironment {
 
     return new Iterable(ref, keyFor);
   }
+}
+
+function canCreateComponentDefinition(manager: ComponentDefinitionCreator | ComponentManager<Component>): manager is ComponentDefinitionCreator {
+  return (manager as ComponentDefinitionCreator).createComponentDefinition !== undefined;
 }

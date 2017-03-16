@@ -10,8 +10,6 @@ module.exports = function() {
     buildOptions.vendorTrees = [
       buildVendorPackage('@glimmer/compiler', { 
         external: ['babel-helpers', '@glimmer/syntax', '@glimmer/wire-format', '@glimmer/util'] }),
-      buildVendorPackage('@glimmer/component', { 
-        external: ['babel-helpers', '@glimmer/di', '@glimmmer/reference', '@glimmer/runtime', '@glimmer/object-reference', '@glimmer/util'] }),
       buildVendorPackage('@glimmer/di', { 
         external: ['babel-helpers'] }),
       buildVendorPackage('@glimmer/object-reference', { 
@@ -25,7 +23,7 @@ module.exports = function() {
                   '@glimmer/wire-format',
                   '@glimmer/syntax']}),
       buildVendorPackage('@glimmer/syntax', { 
-        external: ['babel-helpers', 'handlebars', 'simple-html-tokenizer'] }),
+        external: ['babel-helpers', '@glimmer/util', 'handlebars', 'simple-html-tokenizer'] }),
       buildVendorPackage('@glimmer/util', { 
         external: ['babel-helpers'] }),
       buildVendorPackage('@glimmer/wire-format', { 
