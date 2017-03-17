@@ -3,11 +3,11 @@ import {
 } from '@glimmer/util';
 
 import {
-  RevisionTag,
   Reference,
   OpaqueIterator,
   AbstractIterable,
-  IterationItem
+  IterationItem,
+  Tag
 } from "@glimmer/reference";
 
 import {
@@ -89,7 +89,7 @@ class EmptyIterator implements OpaqueIterator {
 const EMPTY_ITERATOR = new EmptyIterator();
 
 export default class Iterable implements AbstractIterable<Opaque, Opaque, IterationItem<Opaque, Opaque>, UpdatableReference<Opaque>, UpdatableReference<Opaque>> {
-  public tag: RevisionTag;
+  public tag: Tag;
   private ref: Reference<Opaque>;
   private keyFor: KeyFor<Opaque>;
 

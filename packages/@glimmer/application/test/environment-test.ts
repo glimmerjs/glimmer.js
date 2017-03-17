@@ -2,11 +2,10 @@ import { getOwner, setOwner, Owner, OWNER, Factory } from '@glimmer/di';
 import { UpdatableReference } from '@glimmer/object-reference';
 import { DOMTreeConstruction, templateFactory } from '@glimmer/runtime';
 import Environment, { EnvironmentOptions } from '../src/environment';
-import Component, {
-  ComponentManager
-} from '@glimmer/component';
 import DynamicScope from '../src/dynamic-scope';
+import TemplateMeta from '../src/template-meta';
 import { precompile } from './test-helpers/compiler';
+import { TestComponentManager, TestComponent } from './test-helpers/components';
 
 const { module, test } = QUnit;
 
@@ -41,16 +40,19 @@ test('can be assigned an owner', function(assert) {
 });
 
 test('can render a component', function(assert) {
-  class HelloWorld extends Component {
+  class HelloWorld extends TestComponent {
+    static create() {
+      return new HelloWorld();
+    }
   }
 
   let helloWorldTemplate = precompile(
     '<h1>Hello {{@name}}!</h1>', 
-    { meta: { specifier: 'template:/app/components/hello-world' }});
+    { meta: { '<template-meta>': true, specifier: 'template:/app/components/hello-world' }});
 
   let mainTemplate = precompile(
     '<hello-world @name={{salutation}} />', 
-    { meta: { specifier: 'template:/app/main/main' }});
+    { meta: { '<template-meta>': true, specifier: 'template:/app/main/main' }});
 
   class FakeApp implements Owner {
     identify(specifier: string, referrer?: string): string {
@@ -64,7 +66,12 @@ test('can render a component', function(assert) {
 
     factoryFor(specifier: string, referrer?: string): Factory<any> {
       if (specifier === 'component:/app/components/hello-world') {
-        return HelloWorld;
+        return {
+          class: HelloWorld,
+          create(options?: any) {
+            return HelloWorld.create();
+          }
+        }
       } else {
         throw new Error('Unexpected');
       }
@@ -81,6 +88,7 @@ test('can render a component', function(assert) {
 
   let app = new FakeApp();
   let env = Environment.create({[OWNER]: app});
+  env.registerComponentManager(new TestComponentManager(env), 'test', true);
 
   let output = document.createElement('output');
   env.begin();

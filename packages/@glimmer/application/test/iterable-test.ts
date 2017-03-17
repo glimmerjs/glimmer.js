@@ -11,6 +11,7 @@ module('Iterable');
 
 test('basic iteration of an array of primitives', function(assert) {
   let ref = {
+    tag: {} as any,
     value() {
       return ['foo', 'bar'];
     }
