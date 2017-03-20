@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/application",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Glimmer standalone applications",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -11,7 +11,9 @@
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "ember build",
     "preversion": "npm run test",
