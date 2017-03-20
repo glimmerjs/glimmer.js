@@ -1,63 +1,62 @@
 import {
   getOwner,
-  setOwner
+  setOwner,
+  Factory
 } from '@glimmer/di';
 import {
   Bounds,
   ComponentManager as GlimmerComponentManager,
   DynamicScope,
   Environment,
-  PrimitiveReference,
   Simple,
-  VM,
-  CompiledDynamicProgram
+  CompiledDynamicProgram,
+  Arguments,
+  Template
 } from '@glimmer/runtime';
 import {
   UpdatableReference
 } from '@glimmer/object-reference';
 import {
-  PathReference,
   VersionedPathReference
 } from '@glimmer/reference';
 import { Opaque } from '@glimmer/util';
-import Component, { ComponentOptions } from './component';
+import Component from './component';
 import ComponentDefinition from './component-definition';
 
-export function GlimmerID(vm: VM): PathReference<string> {
-  let self = vm.getSelf().value() as { _guid: string };
-  return PrimitiveReference.create(`glimmer${self._guid}`);
+export interface ConstructorOptions {
+  env: Environment;
 }
 
 export default class ComponentManager implements GlimmerComponentManager<Component> {
   private env: Environment;
 
-  static create(env: Environment): ComponentManager {
-    return new ComponentManager(env);
+  static create(options: ConstructorOptions): ComponentManager {
+    return new ComponentManager(options);
   }
 
-  constructor(env: Environment) {
-    this.env = env;
+  constructor(options: ConstructorOptions) {
+    this.env = options.env;
   }
 
-  prepareArgs(definition: ComponentDefinition, args: EvaluatedArgs): EvaluatedArgs {
+  prepareArgs(definition: ComponentDefinition, args: Arguments): null {
     return null;
   }
 
   create(environment: Environment, definition: ComponentDefinition, args: Arguments): Component {
-    let options: ComponentOptions = {
-      args: args.named.capture().value()
-    };
-    setOwner(options, getOwner(this.env));
+    let componentFactory = definition.componentFactory;
 
-    let component = definition.componentFactory.create(options);
+    if (!componentFactory) { return null; }
 
-    // TODO
-    // component.didInitAttrs({ attrs });
-    // component.didReceiveAttrs({ oldAttrs: null, newAttrs: attrs });
-    // component.willInsertElement();
-    // component.willRender();
+    let injections = {};
+    setOwner(injections, getOwner(this.env));
+
+    let component = componentFactory.create(injections);
 
     return component;
+  }
+
+  createComponentDefinition(name: string, template: Template<any>, componentFactory?: Factory<Component>): ComponentDefinition {
+    return new ComponentDefinition(name, this, template, componentFactory);
   }
 
   layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledDynamicProgram {
@@ -72,6 +71,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   didCreateElement(component: Component, element: Simple.Element) {
+    if (!component) { return; }
     component.element = element;
   }
 

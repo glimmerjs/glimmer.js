@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2015",
     "module": "es2015",
     "moduleResolution": "node",
+    "noUnusedLocals": true,
     "experimentalDecorators": true,
     "inlineSources": true,
     "inlineSourceMap": true,
@@ -11,6 +12,7 @@
     "outDir": "dist"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ]
 }
