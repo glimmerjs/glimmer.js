@@ -11,6 +11,7 @@
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
+  "files": ["dist"],
   "scripts": {
     "build": "ember build",
     "preversion": "npm run test",
