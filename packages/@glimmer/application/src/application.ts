@@ -3,9 +3,9 @@ import {
   Factory,
   Owner,
   Registry,
-  RegistryAccessor,
+  RegistryWriter,
   Resolver,
-  setOwner
+  setOwner,
 } from '@glimmer/di';
 import {
   Simple,
@@ -21,6 +21,11 @@ export interface ApplicationOptions {
   resolver: Resolver;
 }
 
+export interface Initializer {
+  name?: string;
+  initialize(registry: RegistryWriter): void;
+}
+
 export default class Application implements Owner {
   public rootName: string;
   public rootElement: any;
@@ -29,29 +34,40 @@ export default class Application implements Owner {
   private _registry: Registry;
   private _container: Container;
   private _renderResult: any; // TODO - type
+  private _initializers: Initializer[] = [];
+  private _initialized = false;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.rootElement = options.rootElement;
     this.resolver = options.resolver;
-    
-    this.initRegistry();
   }
 
-  initRegistry(): void {
-    this._registry = new Registry();
+  registerInitializer(initializer: Initializer) {
+    this._initializers.push(initializer);
+  }
+
+  initialize(): void {
+    let registry = this._registry = new Registry();
 
     // Create ApplicationRegistry as a proxy to the underlying registry
     // that will only be available during `initialize`.
     let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
-    this.initialize(appRegistry);
-  }
 
-  initialize(registry: RegistryAccessor): void {
     registry.register(`environment:/${this.rootName}/main/main`, Environment);
     registry.registerOption('template', 'instantiate', false);
+    registry.register(`document:/${this.rootName}/main/main`, window.document);
+    registry.registerOption('document', 'instantiate', false);
+    registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
+    registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
 
-    // Override and extend to perform custom registrations
+    let initializers = this._initializers;
+    for (let i = 0; i < initializers.length; i++) {
+      initializers[i].initialize(appRegistry);
+    }
+
+    this._initialized = true;
+    this.initContainer();
   }
 
   initContainer(): void {
@@ -67,7 +83,7 @@ export default class Application implements Owner {
   }
 
   boot(): void {
-    this.initContainer();
+    this.initialize();
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
@@ -83,6 +99,8 @@ export default class Application implements Owner {
     this.env.begin();
 
     let mainTemplate = this.lookup(`template:/${this.rootName}/components/main`);
+    if (!mainTemplate) { throw new Error("Could not find main template."); }
+
     let mainLayout = templateFactory(mainTemplate).create(this.env);
     let templateIterator = mainLayout.render(null, this.rootElement, new DynamicScope());
     let result;
@@ -104,7 +122,6 @@ export default class Application implements Owner {
   /**
    * Owner interface implementation
    */
-
   identify(specifier: string, referrer?: string): string {
     return this.resolver.identify(specifier, referrer);
   }
