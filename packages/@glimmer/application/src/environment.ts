@@ -55,14 +55,13 @@ class DefaultComponentDefinition extends ComponentDefinition<any> {
 
 }
 
-
+const DEFAULT_MANAGER = 'main';
 
 export default class Environment extends GlimmerEnvironment {
   private helpers = dict<GlimmerHelper>();
   private modifiers = dict<ModifierManager<Opaque>>();
   private components = dict<ComponentDefinition<Component>>();
-  private componentManagers = dict<ComponentManager<Component>>();
-  private defaultComponentManager: ComponentManager<Component>;
+  private managers = dict<ComponentManager<Component>>();
   private uselessAnchor: HTMLAnchorElement;
 
   static create(options: EnvironmentOptions = {}) {
@@ -73,7 +72,7 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument) });
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument || document) });
 
     setOwner(this, getOwner(options));
 
@@ -96,11 +95,17 @@ export default class Environment extends GlimmerEnvironment {
   lookupPartial(): any {
   }
 
-  registerComponentManager(manager: ComponentManager<Component>, identifier: string, isDefaultComponentManager = false) {
-    this.componentManagers[identifier] = manager;
-    if (isDefaultComponentManager) {
-      this.defaultComponentManager = manager;
+  managerFor(managerId: string = DEFAULT_MANAGER): ComponentManager<Component> {
+    let manager: ComponentManager<Component>;
+
+    manager = this.managers[managerId];
+    if (!manager) {
+      manager = this.managers[managerId] = getOwner(this).lookup(`component-manager:${managerId}`);
+      if (!manager) {
+        throw new Error(`No component manager found for ID ${managerId}.`);
+      }
     }
+    return manager;
   }
 
   hasComponentDefinition(name: string, meta: TemplateMeta): boolean {
@@ -109,7 +114,7 @@ export default class Environment extends GlimmerEnvironment {
 
   getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition<Component> {
     let owner: Owner = getOwner(this);
-    let relSpecifier: string = `component:${name}`;
+    let relSpecifier: string = `template:${name}`;
     let referrer: string = meta.specifier;
 
     let specifier = owner.identify(relSpecifier, referrer);
@@ -121,12 +126,21 @@ export default class Environment extends GlimmerEnvironment {
     return this.components[specifier];
   }
 
-  registerComponent(name: string, componentSpecifier: string, meta: TemplateMeta, owner: Owner): ComponentDefinition<Component> {
-    let componentFactory: Factory<Component> = owner.factoryFor(componentSpecifier);
-    let serializedTemplate = owner.lookup('template', componentSpecifier);
-    let template = templateFactory<TemplateMeta>(serializedTemplate).create(this);
+  registerComponent(name: string, templateSpecifier: string, meta: TemplateMeta, owner: Owner): ComponentDefinition<Component> {
+    let serializedTemplate = owner.lookup('template', templateSpecifier);
+    if (!serializedTemplate) {
+      throw new Error("Could not find template for " + templateSpecifier);
+    }
 
-    let manager: ComponentManager<Component> | ComponentDefinitionCreator = meta.managerId ? this.componentManagers[meta.managerId] : this.defaultComponentManager;
+    let componentSpecifier = owner.identify('component', templateSpecifier);
+    let componentFactory: Factory<Component> = null;
+
+    if (componentSpecifier) {
+      componentFactory = owner.factoryFor(componentSpecifier);
+    }
+
+    let template = templateFactory<TemplateMeta>(serializedTemplate).create(this);
+    let manager: ComponentManager<Component> = this.managerFor(meta.managerId);
     let definition: ComponentDefinition<Component>;
 
     if (canCreateComponentDefinition(manager)) {

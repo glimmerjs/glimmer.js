@@ -1,6 +1,8 @@
 import { getOwner, setOwner, Owner, OWNER, Factory } from '@glimmer/di';
 import { UpdatableReference } from '@glimmer/object-reference';
 import { DOMTreeConstruction, templateFactory } from '@glimmer/runtime';
+import Resolver, { ModuleRegistry } from '@glimmer/resolver';
+
 import Environment, { EnvironmentOptions } from '../src/environment';
 import DynamicScope from '../src/dynamic-scope';
 import TemplateMeta from '../src/template-meta';
@@ -56,16 +58,18 @@ test('can render a component', function(assert) {
 
   class FakeApp implements Owner {
     identify(specifier: string, referrer?: string): string {
-      if (specifier === 'component:hello-world' &&
+      if (specifier === 'template:hello-world' &&
           referrer === 'template:/app/main/main') {
         return 'component:/app/components/hello-world';
+      } else if (specifier === 'component') {
+        return undefined;
       } else {
         throw new Error('Unexpected');
       }
     }
 
     factoryFor(specifier: string, referrer?: string): Factory<any> {
-      if (specifier === 'component:/app/components/hello-world') {
+      if (specifier === 'template:/app/components/hello-world') {
         return {
           class: HelloWorld,
           create(options?: any) {
@@ -80,6 +84,8 @@ test('can render a component', function(assert) {
     lookup(specifier: string, referrer?: string): any {
       if (specifier === 'template' && referrer === 'component:/app/components/hello-world') {
         return helloWorldTemplate;
+      } else if (specifier.match(/component-manager/)) {
+        return new TestComponentManager(env);
       } else {
         throw new Error('Unexpected');
       }
@@ -88,7 +94,6 @@ test('can render a component', function(assert) {
 
   let app = new FakeApp();
   let env = Environment.create({[OWNER]: app});
-  env.registerComponentManager(new TestComponentManager(env), 'test', true);
 
   let output = document.createElement('output');
   env.begin();

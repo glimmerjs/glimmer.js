@@ -37,6 +37,7 @@ export class TestComponentManager implements ComponentManager<TestComponent>, Co
   }
 
   create(environment: Environment, definition: TestComponentDefinition, args: Arguments): TestComponent {
+    if (!definition.componentFactory) { return; }
     return definition.componentFactory.create();
   }
 
@@ -60,6 +61,7 @@ export class TestComponentManager implements ComponentManager<TestComponent>, Co
   }
 
   didCreateElement(component: TestComponent, element: Element) {
+    if (!component) { return; }
     component.element = element;
   }
 

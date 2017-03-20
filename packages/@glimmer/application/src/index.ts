@@ -1,2 +1,2 @@
-export { default, ApplicationOptions } from './application';
+export { default, ApplicationOptions, InstanceInitializer } from './application';
 export { default as Environment } from './environment';
