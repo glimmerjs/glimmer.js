@@ -1,8 +1,7 @@
 {
   "framework": "qunit",
-  "test_page": "tests/index.html",
-  "before_tests": "npm run build:tests",
+  "test_page": "index.html",
   "src_files": ["src/**/*", "test/**/*"],
-  "launch_in_ci": ["phantomjs"],
-  "port": 0
+  "disable_watching": true,
+  "launch_in_ci": ["PhantomJS"]
 }
