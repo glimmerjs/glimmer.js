@@ -9,7 +9,11 @@
     "inlineSourceMap": true,
     "declaration": true,
     "newLine": "LF",
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [
+      "dom",
+      "es2015"
+    ]
   },
   "include": [
     "src/**/*.ts",
