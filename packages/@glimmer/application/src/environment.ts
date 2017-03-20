@@ -52,7 +52,9 @@ export interface EnvironmentOptions {
 }
 
 class DefaultComponentDefinition extends ComponentDefinition<any> {
-
+  toJSON() {
+    return `<default-component-definition name=${this.name}>`;
+  }
 }
 
 const DEFAULT_MANAGER = 'main';
