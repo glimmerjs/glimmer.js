@@ -4,10 +4,8 @@ import {
   Owner,
   Registry,
   RegistryWriter,
-  RegistryAccessor,
   Resolver,
   setOwner,
-  FactoryDefinition
 } from '@glimmer/di';
 import {
   Simple,
@@ -23,9 +21,9 @@ export interface ApplicationOptions {
   resolver: Resolver;
 }
 
-export interface InstanceInitializer {
+export interface Initializer {
   name?: string;
-  initialize(app: RegistryWriter): void;
+  initialize(registry: RegistryWriter): void;
 }
 
 export default class Application implements Owner {
@@ -36,42 +34,36 @@ export default class Application implements Owner {
   private _registry: Registry;
   private _container: Container;
   private _renderResult: any; // TODO - type
-  private _initializers: InstanceInitializer[] = [];
+  private _initializers: Initializer[] = [];
   private _initialized = false;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.rootElement = options.rootElement;
     this.resolver = options.resolver;
-    
-    this.initRegistry();
   }
 
-  initRegistry(): void {
-    this._registry = new Registry();
-
-    // Create ApplicationRegistry as a proxy to the underlying registry
-    // that will only be available during `initialize`.
-    let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
-  }
-
-  registerInstanceInitializer(initializer: InstanceInitializer) {
+  registerInitializer(initializer: Initializer) {
     this._initializers.push(initializer);
   }
 
   initialize(): void {
-    let registry = this._registry;
+    let registry = this._registry = new Registry();
+
+    // Create ApplicationRegistry as a proxy to the underlying registry
+    // that will only be available during `initialize`.
+    let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
 
     registry.register(`environment:/${this.rootName}/main/main`, Environment);
     registry.registerOption('template', 'instantiate', false);
-    registry.register(`document:/${this.rootName}/main/main`, document);
+    registry.register(`document:/${this.rootName}/main/main`, window.document);
     registry.registerOption('document', 'instantiate', false);
     registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
     registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
 
     let initializers = this._initializers;
     for (let i = 0; i < initializers.length; i++) {
-      initializers[i].initialize(this);
+      initializers[i].initialize(appRegistry);
     }
 
     this._initialized = true;
@@ -130,31 +122,6 @@ export default class Application implements Owner {
   /**
    * Owner interface implementation
    */
-
-  register(specifier: string, factory: FactoryDefinition<any>, options?: RegistrationOptions) {
-    if (this._initialized) {
-      throw new Error("You can't add new registrations after an application has booted. Use an initializer instead.");
-    }
-
-    this._registry.register(specifier, factory, options);
-  }
-
-  unregister(specifier: string) {
-    this._registry.unregister(specifier);
-  }
-
-  registerOption(specifier: string, option: string, value: any): void {
-    this._registry.registerOption(specifier, option, value);
-  }
-
-  unregisterOption(specifier: string, option: string): void {
-    this._registry.unregisterOption(specifier, option);
-  }
-
-  registerInjection(specifier: string, property: string, source: string): void {
-    this._registry.registerInjection(specifier, property, source);
-  }
-
   identify(specifier: string, referrer?: string): string {
     return this.resolver.identify(specifier, referrer);
   }

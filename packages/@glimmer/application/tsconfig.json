@@ -6,6 +6,7 @@
     "experimentalDecorators": true,
     "inlineSources": true,
     "inlineSourceMap": true,
+    "noUnusedLocals": true,
     "declaration": true,
     "newLine": "LF",
     "outDir": "dist",

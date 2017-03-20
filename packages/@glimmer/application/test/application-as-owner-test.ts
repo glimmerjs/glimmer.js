@@ -33,7 +33,7 @@ test('#factoryFor - returns a registered factory', function(assert) {
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
 
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('component:/app/components/date-picker', DatePicker);
     }
@@ -103,7 +103,7 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
   let resolver = new FakeResolver();
 
   let app = new Application({ rootName: 'app', resolver });
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', Foo);
     }
@@ -129,7 +129,7 @@ test('#lookup - returns an instance created by the factory', function(assert) {
   }
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
     }
@@ -154,7 +154,7 @@ test('#lookup - caches looked up instances by default', function(assert) {
   }
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
     }
@@ -186,7 +186,7 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
   }
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar, { singleton: false });
     }
@@ -209,7 +209,7 @@ test('#lookup - returns the factory when registrations specify instantiate: fals
   let factory = {};
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', factory, { instantiate: false });
     }
@@ -275,7 +275,7 @@ test('#lookup - injects references registered by name', function(assert) {
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
 
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
       app.register('router:/app/root/main', Router);
@@ -313,7 +313,7 @@ test('#lookup - injects references registered by type', function(assert) {
 
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
 
-  app.registerInstanceInitializer({
+  app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
       app.register('router:/app/root/main', Router);
