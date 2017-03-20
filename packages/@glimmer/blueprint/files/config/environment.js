@@ -28,7 +28,7 @@ module.exports = function(environment) {
         component: { definitiveCollection: 'components' },
         renderer: { definitiveCollection: 'main' },
         service: { definitiveCollection: 'services' },
-        template: { definitiveCollection: 'routes' },
+        template: { definitiveCollection: 'components' },
         util: { definitiveCollection: 'utils' }
       },
       collections: {
