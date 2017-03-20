@@ -12,10 +12,9 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
-    "build:tests": "rm -rf tests && BROCCOLI_ENV=tests broccoli build tests",
-    "preversion": "rm -rf dist && BROCCOLI_ENV=dist broccoli build dist",
-    "test": "testem ci"
+    "build": "ember build",
+    "preversion": "npm run test",
+    "test": "ember test"
   },
   "dependencies": {
     "@glimmer/di": "^0.1.9",
@@ -29,7 +28,7 @@
     "simple-html-tokenizer": "^0.3.0"
   },
   "devDependencies": {
-    "@glimmer/build": "^0.3.0",
+    "@glimmer/build": "0.6.0",
     "broccoli": "^1.1.0",
     "broccoli-cli": "^1.0.0",
     "testem": "^1.13.0"
