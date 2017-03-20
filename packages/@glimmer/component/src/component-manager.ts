@@ -44,15 +44,12 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
 
   create(environment: Environment, definition: ComponentDefinition, args: Arguments): Component {
     let componentFactory = definition.componentFactory;
-
     if (!componentFactory) { return null; }
 
     let injections = {};
     setOwner(injections, getOwner(this.env));
 
-    let component = componentFactory.create(injections);
-
-    return component;
+    return definition.componentFactory.create(injections);
   }
 
   createComponentDefinition(name: string, template: Template<any>, componentFactory?: Factory<Component>): ComponentDefinition {

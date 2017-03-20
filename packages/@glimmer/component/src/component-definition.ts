@@ -2,16 +2,15 @@ import {
   ComponentDefinition as GlimmerComponentDefinition,
   Template
 } from '@glimmer/runtime';
-import { Factory } from '@glimmer/di';
 import ComponentManager from './component-manager';
-import Component from './component';
+import Component, { ComponentFactory } from './component';
 import { TemplateMeta } from '@glimmer/application';
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<Component> {
-  componentFactory: Factory<Component>;
+  componentFactory: ComponentFactory;
   template: Template<TemplateMeta>;
 
-  constructor(name: string, manager: ComponentManager, template: Template<TemplateMeta>, componentFactory: Factory<Component>) {
+  constructor(name: string, manager: ComponentManager, template: Template<TemplateMeta>, componentFactory: ComponentFactory) {
     super(name, manager, null);
 
     this.template = template;
