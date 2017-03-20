@@ -43,6 +43,7 @@ import {
 import Iterable from './iterable';
 import TemplateMeta from './template-meta';
 import ComponentDefinitionCreator from './component-definition-creator'
+import Application from "./application";
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -102,7 +103,8 @@ export default class Environment extends GlimmerEnvironment {
 
     manager = this.managers[managerId];
     if (!manager) {
-      manager = this.managers[managerId] = getOwner(this).lookup(`component-manager:${managerId}`);
+      let app: Application = getOwner(this) as any as Application;
+      manager = this.managers[managerId] = getOwner(this).lookup(`component-manager:/${app.rootName}/component-managers/${managerId}`);
       if (!manager) {
         throw new Error(`No component manager found for ID ${managerId}.`);
       }
