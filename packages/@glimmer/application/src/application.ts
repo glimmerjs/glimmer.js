@@ -110,7 +110,7 @@ export default class Application implements Owner {
 
     this.env.commit();
 
-    this._renderResult = result;
+    this._renderResult = result.value;
   }
 
   rerender() {
