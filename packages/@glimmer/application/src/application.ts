@@ -12,6 +12,9 @@ import {
   templateFactory,
   RenderResult
 } from '@glimmer/runtime';
+import {
+  UpdatableReference
+} from '@glimmer/object-reference';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
@@ -32,6 +35,7 @@ export default class Application implements Owner {
   public rootElement: any;
   public resolver: Resolver;
   public env: Environment;
+  protected roots: object[] = [];
   private _registry: Registry;
   private _container: Container;
   private _renderResult: RenderResult;
@@ -107,7 +111,8 @@ export default class Application implements Owner {
     if (!mainTemplate) { throw new Error("Could not find main template."); }
 
     let mainLayout = templateFactory(mainTemplate).create(this.env);
-    let templateIterator = mainLayout.render(null, this.rootElement, new DynamicScope());
+    let rootRef = new UpdatableReference({ roots: this.roots });
+    let templateIterator = mainLayout.render(rootRef, this.rootElement, new DynamicScope());
     let result;
     do {
       result = templateIterator.next();
