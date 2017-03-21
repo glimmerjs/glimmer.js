@@ -9,7 +9,8 @@ import {
 } from '@glimmer/di';
 import {
   Simple,
-  templateFactory
+  templateFactory,
+  RenderResult
 } from '@glimmer/runtime';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
@@ -33,7 +34,11 @@ export default class Application implements Owner {
   public env: Environment;
   private _registry: Registry;
   private _container: Container;
-  private _renderResult: any; // TODO - type
+  private _renderResult: RenderResult;
+  /** Whether the initial render has completed. */
+  private _rendered: boolean;
+  /** Whether a re-render has been scheduled. */
+  private _scheduled: boolean;
   private _initializers: Initializer[] = [];
   private _initialized = false;
 
@@ -110,6 +115,7 @@ export default class Application implements Owner {
 
     this.env.commit();
 
+    this._rendered = true;
     this._renderResult = result.value;
   }
 
@@ -117,6 +123,16 @@ export default class Application implements Owner {
     this.env.begin();
     this._renderResult.rerender();
     this.env.commit();
+  }
+
+  scheduleRerender() {
+    if (this._scheduled || !this._rendered) { return; }
+
+    this._scheduled = true;
+    requestAnimationFrame(() => {
+      this._scheduled = false;
+      this.rerender();
+    });
   }
 
   /**
