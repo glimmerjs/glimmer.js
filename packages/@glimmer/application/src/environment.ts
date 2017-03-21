@@ -1,39 +1,24 @@
 import {
-  ComponentClass,
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
   Helper as GlimmerHelper,
+  InlineMacros,
   ModifierManager,
-  PartialDefinition,
-  Simple,
-  compileLayout,
-  CompiledDynamicProgram,
   templateFactory,
   ComponentDefinition,
   Component,
   ComponentManager,
-  Template
+  BlockMacros
 } from '@glimmer/runtime';
 import {
   Reference,
-  RevisionTag,
-  PathReference,
-  OpaqueIterator,
-  OpaqueIterable,
-  AbstractIterable,
-  IterationItem,
-  VOLATILE_TAG
+  OpaqueIterable
 } from "@glimmer/reference";
 import {
-  Dict,
   dict,
-  assign,
-  initializeGuid,
-  Opaque,
-  FIXME
+  Opaque
 } from '@glimmer/util';
-import { SerializedTemplate, SerializedTemplateWithLazyBlock } from '@glimmer/wire-format';
 import {
   getOwner,
   setOwner,
@@ -44,6 +29,10 @@ import Iterable from './iterable';
 import TemplateMeta from './template-meta';
 import ComponentDefinitionCreator from './component-definition-creator'
 import Application from "./application";
+import {
+  blockComponentMacro,
+  inlineComponentMacro
+ } from './dynamic-component';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -204,6 +193,19 @@ export default class Environment extends GlimmerEnvironment {
 
     return new Iterable(ref, keyFor);
   }
+
+  macros(): { blocks: BlockMacros, inlines: InlineMacros } {
+    let macros = super.macros();
+
+    populateMacros(macros.blocks, macros.inlines);
+
+    return macros;
+  }
+}
+
+function populateMacros(blocks: BlockMacros, inlines: InlineMacros): void {
+  blocks.add('component', blockComponentMacro);
+  inlines.add('component', inlineComponentMacro);
 }
 
 function canCreateComponentDefinition(manager: ComponentDefinitionCreator | ComponentManager<Component>): manager is ComponentDefinitionCreator {
