@@ -10,11 +10,16 @@ import {
 import {
   Simple,
   templateFactory,
-  RenderResult
+  RenderResult,
+  ComponentDefinition,
+  Component
 } from '@glimmer/runtime';
 import {
   UpdatableReference
 } from '@glimmer/object-reference';
+import {
+  Option
+} from '@glimmer/util';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
@@ -30,12 +35,19 @@ export interface Initializer {
   initialize(registry: RegistryWriter): void;
 }
 
+export interface AppRoot {
+  id: number,
+  component: string | ComponentDefinition<Component>,
+  parent: Simple.Node,
+  nextSibling: Option<Simple.Node>
+}
+
 export default class Application implements Owner {
   public rootName: string;
   public rootElement: any;
   public resolver: Resolver;
   public env: Environment;
-  protected roots: object[] = [];
+  protected roots: AppRoot[] = [];
   private _registry: Registry;
   private _container: Container;
   private _renderResult: RenderResult;
