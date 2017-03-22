@@ -1,7 +1,11 @@
 import App from './main';
-import { ComponentManager } from '@glimmer/component';
+import { ComponentManager, setPropertyDidChange } from '@glimmer/component';
 
 const app = new App();
+
+setPropertyDidChange(() => {
+  app.scheduleRerender();
+});
 
 app.registerInitializer({
   initialize(registry) {
