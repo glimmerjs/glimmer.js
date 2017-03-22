@@ -23,10 +23,10 @@ import {
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
+import mainTemplate from './templates/main';
 
 export interface ApplicationOptions {
   rootName: string;
-  rootElement?: Simple.Element;
   resolver: Resolver;
 }
 
@@ -44,10 +44,10 @@ export interface AppRoot {
 
 export default class Application implements Owner {
   public rootName: string;
-  public rootElement: any;
   public resolver: Resolver;
   public env: Environment;
-  protected roots: AppRoot[] = [];
+  private _roots: AppRoot[] = [];
+  private _rootsIndex: number;
   private _registry: Registry;
   private _container: Container;
   private _renderResult: RenderResult;
@@ -60,7 +60,6 @@ export default class Application implements Owner {
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
-    this.rootElement = options.rootElement;
     this.resolver = options.resolver;
   }
 
@@ -108,23 +107,17 @@ export default class Application implements Owner {
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
-    if (!this.rootElement) {
-      this.rootElement = this.env.getDOM().createElement('div');
-      self.document.body.appendChild(this.rootElement);
-    }
-
     this.render();
   }
 
   render(): void {
     this.env.begin();
 
-    let mainTemplate = this.lookup(`template:/${this.rootName}/components/main`);
-    if (!mainTemplate) { throw new Error("Could not find main template."); }
-
     let mainLayout = templateFactory(mainTemplate).create(this.env);
-    let rootRef = new UpdatableReference({ roots: this.roots });
-    let templateIterator = mainLayout.render(rootRef, this.rootElement, new DynamicScope());
+    let self = new UpdatableReference({ roots: this._roots });
+    let appendTo = document.body;
+    let dynamicScope = new DynamicScope();
+    let templateIterator = mainLayout.render(self, appendTo, dynamicScope);
     let result;
     do {
       result = templateIterator.next();
@@ -134,6 +127,11 @@ export default class Application implements Owner {
 
     this._rendered = true;
     this._renderResult = result.value;
+  }
+
+  renderComponent(component: string | ComponentDefinition<any>, parent: Simple.Node, nextSibling: Option<Simple.Node>): void {
+    this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
+    this.scheduleRerender();
   }
 
   rerender(): void {
