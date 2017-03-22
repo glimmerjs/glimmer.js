@@ -13,15 +13,11 @@ import {
   Arguments,
   Template
 } from '@glimmer/runtime';
-import {
-  UpdatableReference
-} from '@glimmer/object-reference';
-import {
-  VersionedPathReference
-} from '@glimmer/reference';
-import { Opaque } from '@glimmer/util';
+import { Tag } from '@glimmer/reference';
 import Component from './component';
 import ComponentDefinition from './component-definition';
+import { RootReference } from './references';
+import { tagForObject } from './tracked';
 
 export interface ConstructorOptions {
   env: Environment;
@@ -63,8 +59,8 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return compiledLayout;
   }
 
-  getSelf(component: Component): VersionedPathReference<Opaque> {
-    return new UpdatableReference(component);
+  getSelf(component: Component) {
+    return new RootReference(component);
   }
 
   didCreateElement(component: Component, element: Simple.Element) {
@@ -82,7 +78,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     // component.didRender();
   }
 
-  getTag() {
+  getTag(component: Component): null {
     return null;
   }
 
@@ -93,7 +89,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
 
   didUpdate() {}
 
-  getDestructor() {
+  getDestructor(): null {
     return null;
   }
 }
