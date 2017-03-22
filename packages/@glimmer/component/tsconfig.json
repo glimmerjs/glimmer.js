@@ -4,6 +4,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "noUnusedLocals": true,
+    "noImplicitAny": true,
     "experimentalDecorators": true,
     "inlineSources": true,
     "inlineSourceMap": true,
