@@ -64,11 +64,11 @@ export default class Application implements Owner {
     this.resolver = options.resolver;
   }
 
-  registerInitializer(initializer: Initializer) {
+  registerInitializer(initializer: Initializer): void {
     this._initializers.push(initializer);
   }
 
-  initialize(): void {
+  initRegistry(): void {
     let registry = this._registry = new Registry();
 
     // Create ApplicationRegistry as a proxy to the underlying registry
@@ -88,7 +88,6 @@ export default class Application implements Owner {
     }
 
     this._initialized = true;
-    this.initContainer();
   }
 
   initContainer(): void {
@@ -104,7 +103,8 @@ export default class Application implements Owner {
   }
 
   boot(): void {
-    this.initialize();
+    this.initRegistry();
+    this.initContainer();
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
@@ -116,7 +116,7 @@ export default class Application implements Owner {
     this.render();
   }
 
-  render() {
+  render(): void {
     this.env.begin();
 
     let mainTemplate = this.lookup(`template:/${this.rootName}/components/main`);
@@ -136,13 +136,13 @@ export default class Application implements Owner {
     this._renderResult = result.value;
   }
 
-  rerender() {
+  rerender(): void {
     this.env.begin();
     this._renderResult.rerender();
     this.env.commit();
   }
 
-  scheduleRerender() {
+  scheduleRerender(): void {
     if (this._scheduled || !this._rendered) { return; }
 
     this._scheduled = true;
