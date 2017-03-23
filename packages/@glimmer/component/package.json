@@ -25,7 +25,7 @@
     "@glimmer/util": "^0.23.0-alpha.4",
     "@glimmer/wire-format": "^0.23.0-alpha.4",
     "handlebars": "~3",
-    "simple-html-tokenizer": "^0.3.0"
+    "simple-html-tokenizer": "^0.4.0"
   },
   "devDependencies": {
     "@glimmer/application": "^0.3.0",

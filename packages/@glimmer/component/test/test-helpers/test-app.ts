@@ -5,7 +5,7 @@ import ComponentManager from '../../src/component-manager';
 import { precompile } from './compiler';
 import { ComponentFactory } from "../../src/component";
 
-export default function buildApp(appName: string) {
+export default function buildApp(appName: string = 'test-app') {
   return new AppBuilder(appName);
 }
 
