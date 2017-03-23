@@ -12,8 +12,7 @@
     "outDir": "dist",
     "lib": [
       "dom",
-      "es2015",
-      "es5"
+      "es2015"
     ]
   },
   "include": [
