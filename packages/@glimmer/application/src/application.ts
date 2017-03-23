@@ -133,7 +133,7 @@ export default class Application implements Owner {
     this._renderResult = result.value;
   }
 
-  renderComponent(component: string | ComponentDefinition<any>, parent: Simple.Node, nextSibling: Option<Simple.Node>): void {
+  renderComponent(component: string | ComponentDefinition<Component>, parent: Simple.Node, nextSibling: Option<Simple.Node>): void {
     this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
     this.scheduleRerender();
   }
