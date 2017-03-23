@@ -101,9 +101,13 @@ export default class Application implements Owner {
     }
   }
 
-  boot(): void {
+  initialize(): void {
     this.initRegistry();
     this.initContainer();
+  }
+
+  boot(): void {
+    this.initialize();
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
