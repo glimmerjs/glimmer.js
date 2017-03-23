@@ -11,7 +11,7 @@ class GlimmerTemplatePrecompiler extends Filter {
 
   processString(content, relativePath) {
     let specifier = getTemplateSpecifier(this.options.rootName, relativePath);
-    return 'export default ' + compiler.precompile(content, { meta: { specifier, '<template-meta>': true } }) + ';';
+    return 'export default ' + compiler.precompile(content, { meta: { specifier } }) + ';';
   }
 }
 
