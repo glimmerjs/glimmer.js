@@ -1,7 +1,12 @@
 import { Element } from 'simple-html-tokenizer';
 
 class Component {
-  static create(injections) {
+  /**  */
+  element: Element = null;
+  /** Development-mode only name of the component, useful for debugging. */
+  debugName: string = null;
+
+  static create(injections: any) {
     return new this(injections);
   }
 
@@ -9,7 +14,12 @@ class Component {
     Object.assign(this, injections);
   }
 
-  element: Element;
+  didInsertElement() { }
+  didUpdate() { }
+
+  toString() {
+    return `${this.debugName} component`;
+  }
 }
 
 export default Component;
