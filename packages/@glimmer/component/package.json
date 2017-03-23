@@ -8,6 +8,7 @@
   ],
   "repository": "https://github.com/glimmerjs/glimmer-component",
   "license": "MIT",
+  "files": ["dist"],
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
@@ -23,7 +24,7 @@
     "@glimmer/runtime": "^0.23.0-alpha.5",
     "@glimmer/reference": "^0.23.0-alpha.5",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/application": "^0.3.2",
+    "@glimmer/application": "^0.3.2"
   },
   "devDependencies": {
     "@glimmer/application": "^0.3.0",
