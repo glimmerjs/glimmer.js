@@ -192,20 +192,68 @@ export function hasTag(obj: any, key: string): boolean {
 
   if (!obj[META]) { return false; }
   if (!meta.trackedProperties[key]) { return false; }
+
   return true;
 }
 
 export class UntrackedPropertyError extends Error {
-  constructor(public target: any, public key: string) {
-    super();
+  constructor(public target: any, public key: string, message: string) {
+    super(message);
   }
 }
 
-export function tagForProperty(obj: any, key: string): Tag {
+/**
+ * Function that can be used in development mode to generate more meaningful
+ * error messages.
+ */
+export interface UntrackedPropertyErrorThrower {
+  (obj: any, key: string): void;
+}
+
+function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
+  throw new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+}
+
+export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
   if (!hasTag(obj, key)) {
-    throw new UntrackedPropertyError(obj, key);
+    installDevModeErrorInterceptor(obj, key, throwError);
   }
 
   let meta = metaFor(obj);
   return meta.tagFor(key);
+}
+
+/**
+ * In development mode only, we install an ad hoc setter on properties where a
+ * tag is requested (i.e., it was used in a template) without being tracked. In
+ * cases where the property is set, we raise an error.
+ */
+function installDevModeErrorInterceptor(obj: object, key: string, throwError: UntrackedPropertyErrorThrower) {
+  let target = obj;
+  let descriptor: PropertyDescriptor;
+
+  // Find the descriptor for the current property. We may need to walk the
+  // prototype chain to do so. If the property is undefined, we may never get a
+  // descriptor here.
+  while (target) {
+    descriptor = Object.getOwnPropertyDescriptor(target, key);
+    if (descriptor) { break; }
+    target = Object.getPrototypeOf(target);
+  }
+
+  // Define a property descriptor that passes through the current value on reads
+  // but throws an exception on writes.
+  Object.defineProperty(obj, key, {
+    get() {
+      if (descriptor && descriptor.get) {
+        return descriptor.get.apply(this);
+      }
+
+      return descriptor && descriptor.value;
+    },
+
+    set() {
+      throwError(this, key);
+    }
+  });
 }

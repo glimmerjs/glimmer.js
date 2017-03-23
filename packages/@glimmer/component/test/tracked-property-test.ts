@@ -1,19 +1,34 @@
 const { module, test } = QUnit;
 
-import { tracked, tagForProperty, UntrackedPropertyError } from '../src/tracked';
+import { tracked, tagForProperty } from '../src/tracked';
 
 module('Tracked Properties');
 
-test('requesting a tag for an untracked property should throw an exception', (assert) => {
+test('requesting a tag for an untracked property should throw an exception if mutated', (assert) => {
   class UntrackedPerson {
     firstName = 'Tom';
-  }  
+    get lastName() {
+      return 'Dale';
+    }
+    set lastName(value) {
+    }
+
+    toString() {
+      return 'UntrackedPerson';
+    }
+  }
 
   let obj = new UntrackedPerson();
+  tagForProperty(obj, 'firstName');
+  tagForProperty(obj, 'lastName');
 
   assert.throws(() => {
-    tagForProperty(obj, 'firstName')
-  }, new UntrackedPropertyError(obj, 'firstName'));
+    obj.firstName = 'Ricardo';
+  }, /The property 'firstName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
+
+  assert.throws(() => {
+    obj.lastName = 'Mendes';
+  }, /The property 'lastName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
 });
 
 test('tracked properties can be read and written to', (assert) => {

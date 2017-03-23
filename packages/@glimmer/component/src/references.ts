@@ -16,7 +16,7 @@ import {
   ConditionalReference as GlimmerConditionalReference,
   PrimitiveReference
 } from '@glimmer/runtime';
-import { tagForProperty } from "./tracked";
+import { tagForProperty, UntrackedPropertyError } from "./tracked";
 
 /**
  * The base PathReference.
@@ -76,6 +76,11 @@ export abstract class PropertyReference extends CachedReference<any> {
   }
 }
 
+function buildError(obj: any, key: string) {
+  let message = `The '${key}' property on the ${obj} was changed after it had been rendered. Properties that change after being rendered must be tracked. Use the @tracked decorator to mark this as a tracked property.`;
+  throw new UntrackedPropertyError(obj, key, message);
+}
+
 export class RootPropertyReference extends PropertyReference {
   tag: Tag;
   private _parentValue: object;
@@ -86,7 +91,7 @@ export class RootPropertyReference extends PropertyReference {
 
     this._parentValue = parentValue;
     this._propertyKey = propertyKey;
-    this.tag = tagForProperty(parentValue, propertyKey);
+    this.tag = tagForProperty(parentValue, propertyKey, buildError);
   }
 
   compute(): any {
