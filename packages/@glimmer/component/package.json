@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Glimmer component library",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -8,7 +8,9 @@
   ],
   "repository": "https://github.com/glimmerjs/glimmer-component",
   "license": "MIT",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
