@@ -17,24 +17,26 @@
   "scripts": {
     "build": "ember build",
     "preversion": "npm run test",
+    "prepublish": "npm run build",
+    "postpublish": "git push origin master --tags",
     "test": "ember test"
   },
   "dependencies": {
-    "@glimmer/util": "^0.23.0-alpha.5"
+    "@glimmer/util": "^0.23.0-alpha.6"
   },
   "peerDependencies": {
-    "@glimmer/runtime": "^0.23.0-alpha.5",
-    "@glimmer/reference": "^0.23.0-alpha.5",
+    "@glimmer/runtime": "^0.23.0-alpha.6",
+    "@glimmer/reference": "^0.23.0-alpha.6",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/application": "^0.3.2"
+    "@glimmer/application": "^0.3.3"
   },
   "devDependencies": {
     "@glimmer/application": "^0.3.0",
-    "@glimmer/interfaces": "^0.23.0-alpha.5",
+    "@glimmer/interfaces": "^0.23.0-alpha.6",
     "@glimmer/build": "0.6.0",
-    "@glimmer/compiler": "^0.23.0-alpha.5",
+    "@glimmer/compiler": "^0.23.0-alpha.6",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.23.0-alpha.5",
+    "@glimmer/wire-format": "^0.23.0-alpha.6",
     "simple-html-tokenizer": "^0.4.0",
     "broccoli": "^1.1.0",
     "broccoli-cli": "^1.0.0",
