@@ -13,11 +13,9 @@ import {
   Arguments,
   Template
 } from '@glimmer/runtime';
-import { Tag } from '@glimmer/reference';
 import Component from './component';
 import ComponentDefinition from './component-definition';
 import { RootReference } from './references';
-import { tagForObject } from './tracked';
 
 export interface ConstructorOptions {
   env: Environment;
@@ -42,7 +40,10 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     let componentFactory = definition.componentFactory;
     if (!componentFactory) { return null; }
 
-    let injections = {};
+    let injections = {
+      debugName: definition.name
+    };
+
     setOwner(injections, getOwner(this.env));
 
     return definition.componentFactory.create(injections);
@@ -73,9 +74,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   didCreate(component: Component) {
-    // TODO
-    // component.didInsertElement();
-    // component.didRender();
+    component && component.didInsertElement();
   }
 
   getTag(component: Component): null {
@@ -87,7 +86,9 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
 
   didUpdateLayout() {}
 
-  didUpdate() {}
+  didUpdate(component: Component) {
+    component.didUpdate();
+  }
 
   getDestructor(): null {
     return null;
