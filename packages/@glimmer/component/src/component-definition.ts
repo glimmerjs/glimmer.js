@@ -3,11 +3,11 @@ import {
   Template,
   CapturedArguments
 } from '@glimmer/runtime';
-import ComponentManager from './component-manager';
+import ComponentManager, { ComponentStateBucket } from './component-manager';
 import Component, { ComponentFactory } from './component';
 import { TemplateMeta } from '@glimmer/application';
 
-export default class ComponentDefinition extends GlimmerComponentDefinition<Component> {
+export default class ComponentDefinition extends GlimmerComponentDefinition<ComponentStateBucket> {
   componentFactory: ComponentFactory;
   template: Template<TemplateMeta>;
   args: CapturedArguments;
