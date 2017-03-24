@@ -1,7 +1,8 @@
 import {
   getOwner,
   setOwner,
-  Factory
+  Factory,
+  Owner
 } from '@glimmer/di';
 import {
   Bounds,
@@ -22,9 +23,33 @@ export interface ConstructorOptions {
   env: Environment;
 }
 
-export default class ComponentManager implements GlimmerComponentManager<Component> {
+export class ComponentStateBucket {
+  public name: string;
+  public component: Component;
+  private args: CapturedArguments;
+
+  constructor(definition: ComponentDefinition, args: CapturedArguments, owner: Owner) {
+    let componentFactory = definition.componentFactory;
+    let name = definition.name;
+
+    this.args = args;
+
+    let injections = {
+      debugName: name,
+      args: this.namedArgsSnapshot()
+    };
+
+    setOwner(injections, owner);
+    this.component = componentFactory.create(injections);
+  }
+
+  namedArgsSnapshot() {
+    return Object.freeze(this.args.named.value());
+  }
+}
+
+export default class ComponentManager implements GlimmerComponentManager<ComponentStateBucket> {
   private env: Environment;
-  private args = new WeakMap<Component, CapturedArguments>();
 
   static create(options: ConstructorOptions): ComponentManager {
     return new ComponentManager(options);
@@ -38,69 +63,58 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return null;
   }
 
-  create(environment: Environment, definition: ComponentDefinition, args: Arguments): Component {
+  create(environment: Environment, definition: ComponentDefinition, volatileArgs: Arguments): ComponentStateBucket | null {
     let componentFactory = definition.componentFactory;
     if (!componentFactory) { return null; }
 
-    let capturedArgs = args.capture();
-
-    let injections = {
-      debugName: definition.name,
-      args: Object.freeze(capturedArgs.named.value())
-    };
-
-    setOwner(injections, getOwner(this.env));
-
-    let component = definition.componentFactory.create(injections);
-    this.args.set(component, capturedArgs);
-
-    return component;
+    let owner = getOwner(this.env);
+    return new ComponentStateBucket(definition, volatileArgs.capture(), owner);
   }
 
   createComponentDefinition(name: string, template: Template<any>, componentFactory?: Factory<Component>): ComponentDefinition {
     return new ComponentDefinition(name, this, template, componentFactory);
   }
 
-  layoutFor(definition: ComponentDefinition, component: Component, env: Environment): CompiledDynamicProgram {
+  layoutFor(definition: ComponentDefinition, bucket: ComponentStateBucket, env: Environment): CompiledDynamicProgram {
     let template = definition.template;
     let compiledLayout = template.asLayout().compileDynamic(this.env);
 
     return compiledLayout;
   }
 
-  getSelf(component: Component) {
-    return new RootReference(component);
+  getSelf(bucket: ComponentStateBucket) {
+    if (!bucket) { return null; }
+    return new RootReference(bucket.component);
   }
 
-  didCreateElement(component: Component, element: Simple.Element) {
-    if (!component) { return; }
-    component.element = element;
+  didCreateElement(bucket: ComponentStateBucket, element: Simple.Element) {
+    if (!bucket) { return; }
+    bucket.component.element = element;
   }
 
-  didRenderLayout(component: Component, bounds: Bounds) {
-    // component.bounds = bounds;
+  didRenderLayout(bucket: ComponentStateBucket, bounds: Bounds) {
   }
 
-  didCreate(component: Component) {
-    component && component.didInsertElement();
+  didCreate(bucket: ComponentStateBucket) {
+    bucket && bucket.component.didInsertElement();
   }
 
-  getTag(component: Component): null {
+  getTag(): null {
     return null;
   }
 
-  update(component: Component, scope: DynamicScope) {
+  update(bucket: ComponentStateBucket, scope: DynamicScope) {
     // TODO: This should be moved to `didUpdate`, but there's currently a
     // Glimmer bug that causes it not to be called if the layout doesn't update.
-    let args = this.args.get(component);
-    component.args = Object.freeze(args.named.value());
+    let { component } = bucket;
+
+    component.args = bucket.namedArgsSnapshot();
     component.didUpdate();
   }
 
   didUpdateLayout() {}
 
-  didUpdate(component: Component) {
-  }
+  didUpdate(bucket: ComponentStateBucket) { }
 
   getDestructor(): null {
     return null;
