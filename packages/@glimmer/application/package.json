@@ -16,7 +16,9 @@
   ],
   "scripts": {
     "build": "ember build",
-    "preversion": "npm run test",
+    "preversion": "npm test",
+    "prepublish": "npm run build",
+    "postpublish": "git push origin master --tags",
     "test": "ember test"
   },
   "dependencies": {
