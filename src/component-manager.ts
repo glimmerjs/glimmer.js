@@ -11,7 +11,8 @@ import {
   Simple,
   CompiledDynamicProgram,
   Arguments,
-  Template
+  Template,
+  CapturedArguments
 } from '@glimmer/runtime';
 import Component from './component';
 import ComponentDefinition from './component-definition';
@@ -23,6 +24,7 @@ export interface ConstructorOptions {
 
 export default class ComponentManager implements GlimmerComponentManager<Component> {
   private env: Environment;
+  private args = new WeakMap<Component, CapturedArguments>();
 
   static create(options: ConstructorOptions): ComponentManager {
     return new ComponentManager(options);
@@ -40,13 +42,19 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     let componentFactory = definition.componentFactory;
     if (!componentFactory) { return null; }
 
+    let capturedArgs = args.capture();
+
     let injections = {
-      debugName: definition.name
+      debugName: definition.name,
+      args: Object.freeze(capturedArgs.named.value())
     };
 
     setOwner(injections, getOwner(this.env));
 
-    return definition.componentFactory.create(injections);
+    let component = definition.componentFactory.create(injections);
+    this.args.set(component, capturedArgs);
+
+    return component;
   }
 
   createComponentDefinition(name: string, template: Template<any>, componentFactory?: Factory<Component>): ComponentDefinition {
@@ -82,12 +90,16 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   update(component: Component, scope: DynamicScope) {
+    // TODO: This should be moved to `didUpdate`, but there's currently a
+    // Glimmer bug that causes it not to be called if the layout doesn't update.
+    let args = this.args.get(component);
+    component.args = Object.freeze(args.named.value());
+    component.didUpdate();
   }
 
   didUpdateLayout() {}
 
   didUpdate(component: Component) {
-    component.didUpdate();
   }
 
   getDestructor(): null {

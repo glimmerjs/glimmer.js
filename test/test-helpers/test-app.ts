@@ -3,7 +3,8 @@ import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 
 import ComponentManager from '../../src/component-manager';
 import { precompile } from './compiler';
-import { ComponentFactory } from "../../src/component";
+import { ComponentFactory } from '../../src/component';
+import { setPropertyDidChange } from '../../src/tracked';
 
 export default function buildApp(appName: string = 'test-app') {
   return new AppBuilder(appName);
@@ -72,6 +73,10 @@ export class AppBuilder {
       rootName: this.rootName,
       rootElement,
       resolver
+    });
+
+    setPropertyDidChange(function() {
+      app.scheduleRerender();
     });
 
     app.boot();
