@@ -6,6 +6,9 @@ class Component {
   /** Development-mode only name of the component, useful for debugging. */
   debugName: string = null;
 
+  /** Named arguments passed to the component from its parent component. */
+  args: object;
+
   static create(injections: any) {
     return new this(injections);
   }
