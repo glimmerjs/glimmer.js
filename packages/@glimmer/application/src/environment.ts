@@ -142,7 +142,7 @@ export default class Environment extends GlimmerEnvironment {
       definition = new DefaultComponentDefinition(name, manager, componentFactory);
     }
 
-    this.components[name] = definition;
+    this.components[templateSpecifier] = definition;
 
     return definition;
   }

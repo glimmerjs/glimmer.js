@@ -185,4 +185,10 @@ test('can render a component with the component helper', function(assert) {
   env.commit();
 
   assert.equal(output.innerText, 'Hello Glimmer!');
+
+  env.begin();
+  result.value.rerender();
+  env.commit();
+
+  assert.equal(output.innerText, 'Hello Glimmer!');
 });
