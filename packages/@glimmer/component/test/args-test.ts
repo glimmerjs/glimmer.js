@@ -55,7 +55,7 @@ test('Args smoke test', (assert) => {
   buildApp()
     .component('parent-component', ParentComponent)
     .component('child-component', ChildComponent)
-    .template('main', '<parent-component />')
+    .template('main', '<div><parent-component /></div>')
     .template('parent-component', `
       <div>
         <child-component

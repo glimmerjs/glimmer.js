@@ -28,7 +28,7 @@
     "@glimmer/runtime": "^0.23.0-alpha.6",
     "@glimmer/reference": "^0.23.0-alpha.6",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/application": "^0.3.3"
+    "@glimmer/application": "^0.3.6"
   },
   "devDependencies": {
     "@glimmer/application": "^0.3.0",
