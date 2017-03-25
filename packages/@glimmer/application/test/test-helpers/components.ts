@@ -7,6 +7,12 @@ import { UpdatableReference } from '@glimmer/object-reference';
 
 export class TestComponent {
   element: Element;
+
+  static create(injections: object) {
+    let component = new this();
+    Object.assign(component, injections);
+    return component;
+  }
 }
 
 class TestComponentDefinition extends ComponentDefinition<TestComponent> {
@@ -28,12 +34,12 @@ class TestComponentDefinition extends ComponentDefinition<TestComponent> {
 export class TestComponentManager implements ComponentManager<TestComponent>, ComponentDefinitionCreator {
   private env: Environment;
 
-  constructor(env: Environment) {
-    this.env = env;
+  constructor(injections: object) {
+    Object.assign(this, injections);
   }
 
-  static create(env: Environment): TestComponentManager {
-    return new TestComponentManager(env);
+  static create(injections: object): TestComponentManager {
+    return new TestComponentManager(injections);
   }
 
   create(environment: Environment, definition: TestComponentDefinition, args: Arguments): TestComponent {
