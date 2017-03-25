@@ -18,6 +18,7 @@ import {
 import Component from './component';
 import ComponentDefinition from './component-definition';
 import { RootReference } from './references';
+import { Dict } from "@glimmer/util";
 
 export interface ConstructorOptions {
   env: Environment;
@@ -43,7 +44,7 @@ export class ComponentStateBucket {
     this.component = componentFactory.create(injections);
   }
 
-  namedArgsSnapshot() {
+  namedArgsSnapshot(): Readonly<Dict<object | void>> {
     return Object.freeze(this.args.named.value());
   }
 }
@@ -104,6 +105,8 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   update(bucket: ComponentStateBucket, scope: DynamicScope) {
+    if (!bucket) { return; }
+
     // TODO: This should be moved to `didUpdate`, but there's currently a
     // Glimmer bug that causes it not to be called if the layout doesn't update.
     let { component } = bucket;
