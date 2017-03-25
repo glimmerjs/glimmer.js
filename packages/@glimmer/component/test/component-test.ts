@@ -19,7 +19,7 @@ test('can be instantiated with an owner', function(assert) {
   }
 
   let app = buildApp('test-app')
-    .template('main', '<hello-world></hello-world>')
+    .template('main', '<div><hello-world></hello-world></div>')
     .template('hello-world', '<div>Hello world</div>')
     .component('hello-world', MyComponent)
     .boot()

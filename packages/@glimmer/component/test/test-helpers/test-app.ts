@@ -3,10 +3,15 @@ import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 
 import ComponentManager from '../../src/component-manager';
 import { precompile } from './compiler';
-import { ComponentFactory } from "../../src/component";
+import { ComponentFactory } from '../../src/component';
+import { setPropertyDidChange } from '../../src/tracked';
 
 export default function buildApp(appName: string = 'test-app') {
   return new AppBuilder(appName);
+}
+
+export class TestApplication extends Application {
+  rootElement: Element;
 }
 
 let moduleConfiguration = {
@@ -68,10 +73,16 @@ export class AppBuilder {
     let resolver = new Resolver(resolverConfiguration, registry);
     let rootElement = document.createElement('div');
 
-    let app = new Application({
+    let app = new TestApplication({
       rootName: this.rootName,
-      rootElement,
       resolver
+    });
+
+    app.rootElement = rootElement;
+    app.renderComponent('main', rootElement, null);
+
+    setPropertyDidChange(function() {
+      app.scheduleRerender();
     });
 
     app.boot();
