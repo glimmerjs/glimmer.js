@@ -8,6 +8,7 @@ import DynamicScope from '../src/dynamic-scope';
 import TemplateMeta from '../src/template-meta';
 import { precompile } from './test-helpers/compiler';
 import { TestComponentManager, TestComponent } from './test-helpers/components';
+import buildApp from './test-helpers/test-app';
 
 const { module, test } = QUnit;
 
@@ -42,153 +43,33 @@ test('can be assigned an owner', function(assert) {
 });
 
 test('can render a component', function(assert) {
-  class HelloWorld extends TestComponent {
-    static create() {
-      return new HelloWorld();
-    }
+  class MainComponent extends TestComponent {
+    salutation = 'Glimmer';
   }
 
-  let helloWorldTemplate = precompile(
-    '<h1>Hello {{@name}}!</h1>', 
-    { meta: { '<template-meta>': true, specifier: 'template:/app/components/hello-world' }});
+  let app = buildApp()
+    .template('hello-world', `<h1>Hello {{@name}}!</h1>`)
+    .component('main', MainComponent)
+    .template('main', '<div><hello-world @name={{salutation}} /></div>')
+    .boot();
 
-  let mainTemplate = precompile(
-    '<hello-world @name={{salutation}} />', 
-    { meta: { '<template-meta>': true, specifier: 'template:/app/main/main' }});
-
-  class FakeApp implements Owner {
-    identify(specifier: string, referrer?: string): string {
-      if (specifier === 'template:hello-world' &&
-          referrer === 'template:/app/main/main') {
-        return 'component:/app/components/hello-world';
-      } else if (specifier === 'component') {
-        return undefined;
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-
-    factoryFor(specifier: string, referrer?: string): Factory<any> {
-      if (specifier === 'template:/app/components/hello-world') {
-        return {
-          class: HelloWorld,
-          create(options?: any) {
-            return HelloWorld.create();
-          }
-        }
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-
-    lookup(specifier: string, referrer?: string): any {
-      if (specifier === 'template' && referrer === 'component:/app/components/hello-world') {
-        return helloWorldTemplate;
-      } else if (specifier.match(/component-manager/)) {
-        return new TestComponentManager(env);
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-  }
-
-  let app = new FakeApp();
-  let env = Environment.create({[OWNER]: app});
-
-  let output = document.createElement('output');
-  env.begin();
-
-  let ref = new UpdatableReference({
-    salutation: 'Glimmer'
-  });
-
-  let mainLayout = templateFactory(mainTemplate).create(env);
-  let templateIterator = mainLayout.render(ref, output, new DynamicScope());
-  let result;
-  do {
-    result = templateIterator.next();
-  } while (!result.done);
-
-  env.commit();
-
-  assert.equal(output.innerText, 'Hello Glimmer!');
+  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 });
 
 test('can render a component with the component helper', function(assert) {
-  class HelloWorld extends TestComponent {
-    static create() {
-      return new HelloWorld();
-    }
+  class MainComponent extends TestComponent {
+    salutation = 'Glimmer';
   }
 
-  let helloWorldTemplate = precompile(
-    '<h1>Hello {{@name}}!</h1>',
-    { meta: { '<template-meta>': true, specifier: 'template:/app/components/hello-world' }});
+  let app = buildApp()
+    .template('hello-world', '<h1>Hello {{@name}}!</h1>')
+    .template('main', '<div>{{component "hello-world" name=salutation}}</div>')
+    .component('main', MainComponent)
+    .boot();
 
-  let mainTemplate = precompile(
-    '{{component "hello-world" name=salutation}}',
-    { meta: { '<template-meta>': true, specifier: 'template:/app/main/main' }});
+  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 
-  class FakeApp implements Owner {
-    identify(specifier: string, referrer?: string): string {
-      if (specifier === 'template:hello-world' &&
-          referrer === 'template:/app/main/main') {
-        return 'component:/app/components/hello-world';
-      } else if (specifier === 'component') {
-        return undefined;
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
+  app.rerender();
 
-    factoryFor(specifier: string, referrer?: string): Factory<any> {
-      if (specifier === 'template:/app/components/hello-world') {
-        return {
-          class: HelloWorld,
-          create(options?: any) {
-            return HelloWorld.create();
-          }
-        }
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-
-    lookup(specifier: string, referrer?: string): any {
-      if (specifier === 'template' && referrer === 'component:/app/components/hello-world') {
-        return helloWorldTemplate;
-      } else if (specifier.match(/component-manager/)) {
-        return new TestComponentManager(env);
-      } else {
-        throw new Error('Unexpected');
-      }
-    }
-  }
-
-  let app = new FakeApp();
-  let env = Environment.create({[OWNER]: app});
-
-  let output = document.createElement('output');
-  env.begin();
-
-  let ref = new UpdatableReference({
-    salutation: 'Glimmer'
-  });
-
-  let mainLayout = templateFactory(mainTemplate).create(env);
-  let templateIterator = mainLayout.render(ref, output, new DynamicScope());
-  let result;
-  do {
-    result = templateIterator.next();
-  } while (!result.done);
-
-  env.commit();
-
-  assert.equal(output.innerText, 'Hello Glimmer!');
-
-  env.begin();
-  result.value.rerender();
-  env.commit();
-
-  assert.equal(output.innerText, 'Hello Glimmer!');
+  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 });

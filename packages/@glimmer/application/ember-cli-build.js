@@ -17,7 +17,8 @@ module.exports = function() {
     '@glimmer/runtime',
     '@glimmer/syntax',
     '@glimmer/util',
-    '@glimmer/wire-format'
+    '@glimmer/wire-format',
+    '@glimmer/resolver'
   ].map(packageDist);
 
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
