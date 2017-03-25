@@ -1,4 +1,4 @@
-import { Tag, DirtyableTag, TagWrapper, combine } from '@glimmer/reference';
+import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from '@glimmer/reference';
 import { dict, Dict } from '@glimmer/util';
 
 export function tracked(...dependencies: string[]): MethodDecorator;
@@ -215,12 +215,16 @@ function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
 }
 
 export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
-  if (!hasTag(obj, key)) {
-    installDevModeErrorInterceptor(obj, key, throwError);
-  }
+  if (typeof obj === 'object' && obj) {
+    if (!hasTag(obj, key)) {
+      installDevModeErrorInterceptor(obj, key, throwError);
+    }
 
-  let meta = metaFor(obj);
-  return meta.tagFor(key);
+    let meta = metaFor(obj);
+    return meta.tagFor(key);
+  } else {
+    return CONSTANT_TAG;
+  }
 }
 
 /**

@@ -1,6 +1,7 @@
 const { module, test } = QUnit;
 
 import { tracked, tagForProperty } from '../src/tracked';
+import { CONSTANT_TAG } from "@glimmer/reference";
 
 module('Tracked Properties');
 
@@ -58,6 +59,19 @@ test('can request a tag for a property', (assert) => {
   assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true, 'tag is valid on the second check');
+});
+
+test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
+  let snapshot = CONSTANT_TAG.value();
+
+  assert.ok(tagForProperty(null, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(undefined, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(12345, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(0, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(true, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(false, 'foo').validate(snapshot));
+  assert.ok(tagForProperty(Symbol(), 'foo').validate(snapshot));
+  assert.ok(tagForProperty('hello world', 'foo').validate(snapshot));
 });
 
 test('can track a computed property', (assert) => {
