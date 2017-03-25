@@ -47,7 +47,7 @@ export default class Application implements Owner {
   public resolver: Resolver;
   public env: Environment;
   private _roots: AppRoot[] = [];
-  private _rootsIndex: number;
+  private _rootsIndex: number = 0;
   private _registry: Registry;
   private _container: Container;
   private _renderResult: RenderResult;
