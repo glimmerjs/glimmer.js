@@ -1,5 +1,5 @@
-{{#each roots key="id" as |root|}}
-  {{#-in-element root.parent nextSibling=root.nextSibling}}
-    {{component root.component}}
-  {{/-in-element}}
-{{/each}}
+{{#each roots key="id" as |root|~}}
+  {{~#-in-element root.parent nextSibling=root.nextSibling~}}
+    {{~component root.component~}}
+  {{~/-in-element~}}
+{{~/each~}}
