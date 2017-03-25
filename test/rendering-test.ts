@@ -12,7 +12,7 @@ test('A component can be rendered in a template', (assert) => {
     .template('person-card', '<span>Hello, {{@name}}!</span>')
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello, Tom!');
+  assert.equal(app.rootElement.textContent, 'Hello, Tom!');
 });
 
 test('Mutating a tracked property throws an exception', (assert) => {
