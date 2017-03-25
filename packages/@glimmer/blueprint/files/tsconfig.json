@@ -4,7 +4,8 @@
     "module": "es2015",
     "inlineSourceMap": true,
     "inlineSources": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",
