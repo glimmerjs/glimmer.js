@@ -27,7 +27,7 @@ test('Lifecycle hook ordering', (assert) => {
   class Component5 extends HookLoggerComponent { name = 'component5' }
 
   buildApp()
-    .template('main', '<component-one />')
+    .template('main', '<div><component-one /></div>')
     .template('component-one', '<div><component-two /><component-three /></div>')
     .template('component-two', '<div><component-four /><component-five /></div>')
     .template('component-three', '<div></div>')

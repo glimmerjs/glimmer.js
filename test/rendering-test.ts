@@ -3,16 +3,16 @@ import buildApp from './test-helpers/test-app';
 
 const { module, test } = QUnit;
 
-module('Integration - Rendering');
+module('Rendering');
 
 test('A component can be rendered in a template', (assert) => {
   let app = buildApp()
-    .template('main', '<hello-world></hello-world>')
+    .template('main', '<div><hello-world></hello-world></div>')
     .template('hello-world', '<h1><person-card @name="Tom"/></h1>')
     .template('person-card', '<span>Hello, {{@name}}!</span>')
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello, Tom!');
+  assert.equal(app.rootElement.textContent, 'Hello, Tom!');
 });
 
 test('Mutating a tracked property throws an exception', (assert) => {
@@ -35,7 +35,7 @@ test('Mutating a tracked property throws an exception', (assert) => {
   }
 
   buildApp()
-    .template('main', '<hello-world></hello-world>')
+    .template('main', '<div><hello-world></hello-world></div>')
     .template('hello-world', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
     .component('hello-world', HelloWorldComponent)
     .boot();
