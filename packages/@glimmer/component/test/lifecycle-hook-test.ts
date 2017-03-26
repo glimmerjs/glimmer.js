@@ -6,7 +6,7 @@ const { module, test } = QUnit;
 module('Lifecycle Hooks');
 
 test('Lifecycle hook ordering', (assert) => {
-  assert.expect(1);
+  assert.expect(6);
 
   let invocations: [string, string][] = [];
 
@@ -15,8 +15,7 @@ test('Lifecycle hook ordering', (assert) => {
 
     didInsertElement() {
       invocations.push([this.name, 'didInsertElement']);
-      // TODO: This is currently broken on master of glimmer-runtime
-      // assert.ok(this.element instanceof Element);
+      assert.ok(this.element instanceof Element);
     }
   }
 
