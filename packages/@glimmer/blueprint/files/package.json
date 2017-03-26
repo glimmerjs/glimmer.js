@@ -16,6 +16,7 @@
     "@glimmer/application": "^0.3.4",
     "@glimmer/component": "^0.3.3",
     "@glimmer/resolver": "^0.2.0",
+    "@glimmer/web-component": "^0.1.0",
     "ember-cli": "2.10.0",
     "typescript": "^2.1.5"
   },
