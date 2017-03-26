@@ -2,7 +2,6 @@ import {
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
-  Helper as GlimmerHelper,
   InlineMacros,
   ModifierManager,
   templateFactory,
@@ -33,6 +32,7 @@ import {
   blockComponentMacro,
   inlineComponentMacro
  } from './dynamic-component';
+ import action from './helpers/action';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -48,9 +48,12 @@ class DefaultComponentDefinition extends ComponentDefinition<any> {
 }
 
 const DEFAULT_MANAGER = 'main';
+const DEFAULT_HELPERS = {
+  action
+};
 
 export default class Environment extends GlimmerEnvironment {
-  private helpers = dict<GlimmerHelper>();
+  private helpers = DEFAULT_HELPERS;
   private modifiers = dict<ModifierManager<Opaque>>();
   private components = dict<ComponentDefinition<Component>>();
   private managers = dict<ComponentManager<Component>>();
@@ -148,15 +151,13 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   hasHelper(helperName: string, blockMeta: TemplateMeta) {
-    return helperName.length === 1 && (helperName in this.helpers);
+    return helperName in this.helpers;
   }
 
-  lookupHelper(helperName: string, blockMeta: TemplateMeta) {
-    let name = helperName[0];
-
+  lookupHelper(name: string, blockMeta: TemplateMeta) {
     let helper = this.helpers[name];
 
-    if (!helper) throw new Error(`Helper for ${helperName} not found.`);
+    if (!helper) throw new Error(`Helper for ${name} not found.`);
 
     return helper;
   }
