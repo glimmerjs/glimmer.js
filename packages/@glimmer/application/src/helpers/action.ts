@@ -8,7 +8,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
   let actionFunc = args.positional.at(0).value() as Function;
   if (typeof actionFunc !== 'function') {
     let refSourceInfo = debugInfoForReference(args.positional.at(0));
-    throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${refSourceInfo}was ${typeof func} instead of a function.`);
+    throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${refSourceInfo}was ${typeof actionFunc} instead of a function.`);
   }
 
   return new ConstReference(function action(...invokedArgs) {

@@ -19,6 +19,7 @@ import {
   Option
 } from '@glimmer/util';
 import * as WireFormat from '@glimmer/wire-format';
+import { TemplateMeta } from "./index";
 
 export function blockComponentMacro(params, hash, template, inverse, builder) {
   let definitionArgs: ComponentArgs = [params.slice(0, 1), null, null, null];
@@ -38,17 +39,17 @@ export function inlineComponentMacro(_name, params, hash, builder) {
   return true;
 }
 
-function dynamicComponentFor(vm: VM, args: Arguments, symbolTable: SymbolTable): DynamicComponentReference {
+function dynamicComponentFor(vm: VM, args: Arguments, meta: TemplateMeta): DynamicComponentReference {
   let nameRef = args.positional.at(0);
   let env = vm.env;
 
-  return new DynamicComponentReference(nameRef, env, symbolTable);
+  return new DynamicComponentReference(nameRef, env, meta);
 }
 
 class DynamicComponentReference implements PathReference<ComponentDefinition<Opaque>> {
   public tag: TagWrapper<RevisionTag>;
 
-  constructor(private nameRef: PathReference<Opaque>, private env: GlimmerEnvironment, private symbolTable: SymbolTable) {
+  constructor(private nameRef: PathReference<Opaque>, private env: GlimmerEnvironment, private meta: TemplateMeta) {
     this.tag = nameRef.tag;
   }
 
@@ -58,7 +59,8 @@ class DynamicComponentReference implements PathReference<ComponentDefinition<Opa
     let nameOrDef = nameRef.value();
 
     if (typeof nameOrDef === 'string') {
-      return env.getComponentDefinition(nameOrDef, this.symbolTable);
+      debugger;
+      return env.getComponentDefinition(nameOrDef, this.meta);
     }
 
     return null;
