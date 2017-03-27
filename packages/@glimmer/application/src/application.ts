@@ -76,7 +76,7 @@ export default class Application implements Owner {
 
     registry.register(`environment:/${this.rootName}/main/main`, Environment);
     registry.registerOption('template', 'instantiate', false);
-    registry.register(`document:/${this.rootName}/main/main`, window.document);
+    registry.register(`document:/${this.rootName}/main/main`, window.document as any);
     registry.registerOption('document', 'instantiate', false);
     registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
     registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
