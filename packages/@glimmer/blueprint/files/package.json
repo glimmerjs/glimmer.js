@@ -12,12 +12,13 @@
     "test": "ember test"
   },
   "devDependencies": {
-    "@glimmer/application": "^0.3.4",
-    "@glimmer/application-pipeline": "^0.3.1",
-    "@glimmer/component": "^0.3.3",
-    "@glimmer/resolver": "^0.2.0",
-    "ember-cli": "2.10.0",
-    "typescript": "^2.1.5"
+    "@glimmer/application": "^0.3.10",
+    "@glimmer/application-pipeline": "^0.4.1",
+    "@glimmer/component": "^0.3.6",
+    "@glimmer/resolver": "^0.3.0",
+    "ember-cli": "2.12.1",
+    "ember-cli-inject-live-reload": "^1.6.1",
+    "typescript": "^2.2.2"
   },
   "engines": {
     "node": ">= 4.0"
