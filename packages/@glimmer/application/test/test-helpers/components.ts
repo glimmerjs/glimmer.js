@@ -15,7 +15,7 @@ export class TestComponent {
   }
 }
 
-class TestComponentDefinition extends ComponentDefinition<TestComponent> {
+export class TestComponentDefinition extends ComponentDefinition<TestComponent> {
   componentFactory: Factory<TestComponent>;
   template: Template<TemplateMeta>;
 
@@ -63,7 +63,7 @@ export class TestComponentManager implements ComponentManager<TestComponent>, Co
   }
 
   getSelf(component: TestComponent) {
-    return new UpdatableReference(component);
+    return component ? new UpdatableReference(component) : null;
   }
 
   didCreateElement(component: TestComponent, element: Element) {
