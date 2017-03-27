@@ -1,6 +1,16 @@
 import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from '@glimmer/reference';
 import { dict, Dict } from '@glimmer/util';
 
+/**
+ * Marks a property has tracked.
+ *
+ * By default, a component's properties are expected to be static,
+ * meaning you are not able to update them and have the template update accordingly.
+ * Marking a property as tracked means that when that property changes,
+ * a rerender of the component is scheduled so the template is kept up to date.
+ *
+ * @param dependencies Optional dependents to be tracked.
+ */
 export function tracked(...dependencies: string[]): MethodDecorator;
 export function tracked(target: any, key: any): any;
 export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
