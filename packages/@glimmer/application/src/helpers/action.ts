@@ -1,4 +1,4 @@
-import { ConstReference, VersionedPathReference } from "@glimmer/reference";
+import { ConstReference, VersionedPathReference, Reference } from "@glimmer/reference";
 import { VM, Arguments } from "@glimmer/runtime";
 
 export default function buildAction(vm: VM, _args: Arguments) {
@@ -7,8 +7,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
 
   let actionFunc = args.positional.at(0).value() as Function;
   if (typeof actionFunc !== 'function') {
-    let refSourceInfo = debugInfoForReference(args.positional.at(0));
-    throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${refSourceInfo}was ${typeof actionFunc} instead of a function.`);
+    throwNoActionError(actionFunc, args.positional.at(0));
   }
 
   return new ConstReference(function action(...invokedArgs) {
@@ -25,14 +24,28 @@ export default function buildAction(vm: VM, _args: Arguments) {
   });
 }
 
-function debugInfoForReference(reference: any): string {
-  let message = '';
+function throwNoActionError(actionFunc: any, actionFuncReference: Reference<any>) {
+  let referenceInfo = debugInfoForReference(actionFuncReference);
+  throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`);
+}
 
-  if (reference['parent'] && reference['property']) {
-    message += `(${reference['property']} on `;
-    let parentRef = reference['parent'] as VersionedPathReference<any>;
-    let parent = parentRef.value();
-    message += debugName(parent) + ') ';
+export function debugInfoForReference(reference: any): string {
+  let message = '';
+  let parent;
+  let property;
+
+  if (reference == null) { return message; }
+
+  if ('parent' in reference && 'property' in reference) {
+    parent = reference['parent'].value();
+    property = reference['property'];
+  } else if ('_parentValue' in reference && '_propertyKey' in reference) {
+    parent = reference['_parentValue'];
+    property = reference['_propertyKey'];
+  }
+
+  if (property !== undefined) {
+    message += `('${property}' on ${debugName(parent)}) `;
   }
 
   return message;
