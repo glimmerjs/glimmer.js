@@ -1,5 +1,6 @@
 import { TestComponent } from './test-helpers/components';
 import buildApp from './test-helpers/test-app';
+import { debugInfoForReference } from '../src/helpers/action';
 
 const { module, test } = QUnit;
 
@@ -104,5 +105,25 @@ test('action helper invoked without a function raises an error', function(assert
 
   assert.raises(() => {
     app.boot();
-  }, /You tried to create an action with the \{\{action\}\} helper, but the first argument \(doesntExist on ParentComponent\) was undefined instead of a function./);
+  }, /You tried to create an action with the \{\{action\}\} helper, but the first argument \('doesntExist' on ParentComponent\) was undefined instead of a function./);
+});
+
+test('debug name from references can be extracted', function(assert) {
+  let refOne = {
+    parent: {
+      value() { return { debugName: 'parent' } }
+    },
+    property: 'name'
+  };
+
+  let refTwo = {
+    _parentValue: {
+      debugName: 'contact'
+    },
+    _propertyKey: 'address'
+  };
+
+  assert.strictEqual(debugInfoForReference(null), '');
+  assert.strictEqual(debugInfoForReference(refOne), `('name' on parent) `);
+  assert.strictEqual(debugInfoForReference(refTwo), `('address' on contact) `);
 });
