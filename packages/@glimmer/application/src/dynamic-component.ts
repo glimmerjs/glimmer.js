@@ -1,7 +1,4 @@
 import {
-  SymbolTable
-} from '@glimmer/interfaces';
-import {
   RevisionTag,
   PathReference,
   TagWrapper
