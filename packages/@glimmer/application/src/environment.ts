@@ -114,6 +114,13 @@ export default class Environment extends GlimmerEnvironment {
     let referrer: string = meta.specifier;
 
     let specifier = owner.identify(relSpecifier, referrer);
+    if (specifier === undefined) {
+      if (owner.identify(`component:${name}`, referrer)) {
+        throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
+      } else {
+        throw new Error("Could not find template for " + templateSpecifier);
+      }
+    }
 
     if (!this.components[specifier]) {
       return this.registerComponent(name, specifier, meta, owner);
@@ -124,10 +131,6 @@ export default class Environment extends GlimmerEnvironment {
 
   registerComponent(name: string, templateSpecifier: string, meta: TemplateMeta, owner: Owner): ComponentDefinition<Component> {
     let serializedTemplate = owner.lookup('template', templateSpecifier);
-    if (!serializedTemplate) {
-      throw new Error("Could not find template for " + templateSpecifier);
-    }
-
     let componentSpecifier = owner.identify('component', templateSpecifier);
     let componentFactory: Factory<Component> = null;
 

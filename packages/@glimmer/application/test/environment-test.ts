@@ -1,13 +1,8 @@
-import { getOwner, setOwner, Owner, OWNER, Factory } from '@glimmer/di';
-import { UpdatableReference } from '@glimmer/object-reference';
-import { DOMTreeConstruction, templateFactory } from '@glimmer/runtime';
-import Resolver, { ModuleRegistry } from '@glimmer/resolver';
+import { getOwner, setOwner, Owner } from '@glimmer/di';
+import { DOMTreeConstruction } from '@glimmer/runtime';
 
 import Environment, { EnvironmentOptions } from '../src/environment';
-import DynamicScope from '../src/dynamic-scope';
-import TemplateMeta from '../src/template-meta';
-import { precompile } from './test-helpers/compiler';
-import { TestComponentManager, TestComponent } from './test-helpers/components';
+import { TestComponent } from './test-helpers/components';
 import buildApp from './test-helpers/test-app';
 
 const { module, test } = QUnit;
@@ -72,4 +67,18 @@ test('can render a component with the component helper', function(assert) {
   app.rerender();
 
   assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+});
+
+test('components without a template raise an error', function(assert) {
+  class HelloWorldComponent extends TestComponent {
+    debugName: 'hello-world'
+  }
+
+  let app = buildApp()
+    .template('main', '<div><hello-world /></div>')
+    .component('hello-world', HelloWorldComponent);
+
+  assert.raises(() => {
+    app.boot();
+  }, /The component 'hello-world' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
 });
