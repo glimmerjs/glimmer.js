@@ -56,6 +56,8 @@ test('can curry arguments to actions', function(assert) {
 });
 
 test('actions can be passed and invoked with additional arguments', function(assert) {
+  assert.expect(2);
+
   let fakeEvent: any = {
     type: 'click'
   };
