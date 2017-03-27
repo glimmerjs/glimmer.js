@@ -19,6 +19,29 @@ module.exports = {
     return {
       __component__() { return options.locals.component }
     }
+  },
+
+  afterInstall(options) {
+    if (options.webComponent) {
+      this._installWebComponentSupport(options);
+    }
+  },
+
+  _installWebComponentSupport(options) {
+    let name = options.entity.name;
+    let component = componentize(name);
+
+    this.addPackageToProject('@glimmer/web-component');
+    this.insertIntoFile(
+      'src/index.ts',
+      "import initializeCustomElements from '@glimmer/web-component';",
+      { after: "import { ComponentManager, setPropertyDidChange } from '@glimmer/component';\n" }
+    ).then(() => {
+      return this.insertIntoFile(
+        'src/index.ts',
+        `initializeCustomElements(app, ['${component}']);\n`
+      );
+    });
   }
 };
 
