@@ -56,7 +56,6 @@ class DynamicComponentReference implements PathReference<ComponentDefinition<Opa
     let nameOrDef = nameRef.value();
 
     if (typeof nameOrDef === 'string') {
-      debugger;
       return env.getComponentDefinition(nameOrDef, this.meta);
     }
 
