@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/application",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Glimmer standalone applications",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
