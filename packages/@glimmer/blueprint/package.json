@@ -21,5 +21,9 @@
   "homepage": "https://github.com/glimmerjs/blueprint#readme",
   "dependencies": {
     "ember-cli-string-utils": "^1.1.0"
+  },
+  "devDependencies": {
+    "ember-cli-string-utils": "^1.1.0",
+    "ember-cli-valid-component-name": "^1.0.0"
   }
 }

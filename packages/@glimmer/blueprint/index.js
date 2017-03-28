@@ -1,4 +1,5 @@
 const dasherize = require('ember-cli-string-utils').dasherize;
+const stringUtils = require('ember-cli-string-utils');
 
 module.exports = {
   description: 'Ember CLI blueprint for initializing a new Glimmer application',
@@ -11,8 +12,9 @@ module.exports = {
   locals(options) {
     let name = options.entity.name;
     let component = componentize(name);
+    let className = stringUtils.classify(options.entity.name);
 
-    return { name, component };
+    return { name, className, component };
   },
 
   fileMapTokens(options) {
