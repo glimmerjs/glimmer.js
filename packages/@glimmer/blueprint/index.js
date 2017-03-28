@@ -23,7 +23,7 @@ module.exports = {
 
   afterInstall(options) {
     if (options.webComponent) {
-      this._installWebComponentSupport(options);
+      return this._installWebComponentSupport(options);
     }
   },
 
@@ -31,8 +31,8 @@ module.exports = {
     let name = options.entity.name;
     let component = componentize(name);
 
-    this.addPackageToProject('@glimmer/web-component');
-    this.insertIntoFile(
+    let addPackagePromise = this.addPackageToProject('@glimmer/web-component');
+    let indexTSPromise = this.insertIntoFile(
       'src/index.ts',
       "import initializeCustomElements from '@glimmer/web-component';",
       { after: "import { ComponentManager, setPropertyDidChange } from '@glimmer/component';\n" }
@@ -42,6 +42,11 @@ module.exports = {
         `initializeCustomElements(app, ['${component}']);\n`
       );
     });
+
+    return Promise.all([
+      addPackagePromise,
+      indexTSPromise
+    ]);
   }
 };
 
