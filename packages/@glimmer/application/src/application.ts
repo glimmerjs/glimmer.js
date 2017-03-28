@@ -75,6 +75,7 @@ export default class Application implements Owner {
     let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
 
     registry.register(`environment:/${this.rootName}/main/main`, Environment);
+    registry.registerOption('helper', 'instantiate', false);
     registry.registerOption('template', 'instantiate', false);
     registry.register(`document:/${this.rootName}/main/main`, window.document as any);
     registry.registerOption('document', 'instantiate', false);
