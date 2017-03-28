@@ -1,3 +1,5 @@
+'use strict';
+
 const dasherize = require('ember-cli-string-utils').dasherize;
 const stringUtils = require('ember-cli-string-utils');
 
@@ -50,7 +52,7 @@ module.exports = {
 // Component names must have at least one dash, so we prefix the component name
 // if it doesn't have one. E.g.: `avatar` -> `-avatar`
 function componentize(name) {
-  dasherized = dasherize(name);
+  let dasherized = dasherize(name);
   return hasDash(dasherized) ? dasherized : `-${dasherized}`;
 }
 

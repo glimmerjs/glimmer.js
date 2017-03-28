@@ -1,7 +1,9 @@
+'use strict';
+
 const { GlimmerApp } = require('@glimmer/application-pipeline');
 
 module.exports = function(defaults) {
-  var app = new GlimmerApp(defaults, {
+  let app = new GlimmerApp(defaults, {
     // Add options here
   });
 
