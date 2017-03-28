@@ -1,4 +1,4 @@
-import { ConstReference, VersionedPathReference, Reference } from "@glimmer/reference";
+import { ConstReference, Reference } from "@glimmer/reference";
 import { VM, Arguments } from "@glimmer/runtime";
 
 export default function buildAction(vm: VM, _args: Arguments) {

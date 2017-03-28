@@ -118,7 +118,7 @@ export default class Environment extends GlimmerEnvironment {
       if (owner.identify(`component:${name}`, referrer)) {
         throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
       } else {
-        throw new Error("Could not find template for " + templateSpecifier);
+        throw new Error("Could not find template for " + name);
       }
     }
 
