@@ -8,7 +8,8 @@ import {
   ComponentDefinition,
   Component,
   ComponentManager,
-  BlockMacros
+  BlockMacros,
+  Helper as GlimmerHelper
 } from '@glimmer/runtime';
 import {
   Reference,
@@ -33,6 +34,7 @@ import {
   inlineComponentMacro
  } from './dynamic-component';
  import action from './helpers/action';
+ import buildUserHelper from './helpers/user-helper';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -53,7 +55,7 @@ const DEFAULT_HELPERS = {
 };
 
 export default class Environment extends GlimmerEnvironment {
-  private helpers = DEFAULT_HELPERS;
+  private helpers = dict<GlimmerHelper>();
   private modifiers = dict<ModifierManager<Opaque>>();
   private components = dict<ComponentDefinition<Component>>();
   private managers = dict<ComponentManager<Component>>();
@@ -153,16 +155,38 @@ export default class Environment extends GlimmerEnvironment {
     return definition;
   }
 
-  hasHelper(helperName: string, blockMeta: TemplateMeta) {
-    return helperName in this.helpers;
+  hasHelper(name: string, meta: TemplateMeta) {
+    return !!this.lookupHelper(name, meta);
   }
 
-  lookupHelper(name: string, blockMeta: TemplateMeta) {
-    let helper = this.helpers[name];
+  lookupHelper(name: string, meta: TemplateMeta): GlimmerHelper {
+    if (DEFAULT_HELPERS[name]) {
+      return DEFAULT_HELPERS[name];
+    }
 
-    if (!helper) throw new Error(`Helper for ${name} not found.`);
+    let owner: Owner = getOwner(this);
+    let relSpecifier: string = `helper:${name}`;
+    let referrer: string = meta.specifier;
 
-    return helper;
+    let specifier = owner.identify(relSpecifier, referrer);
+    if (specifier === undefined) {
+      return;
+    }
+
+    if (!this.helpers[specifier]) {
+      return this.registerHelper(specifier, owner);
+    }
+
+    return this.helpers[specifier];
+  }
+
+  registerHelper(specifier: string, owner: Owner): GlimmerHelper {
+    let helperFunc = owner.lookup(specifier);
+
+    let userHelper = buildUserHelper(helperFunc);
+    this.helpers[specifier] = userHelper;
+
+    return userHelper;
   }
 
   hasModifier(modifierName: string, blockMeta: TemplateMeta): boolean {
