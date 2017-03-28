@@ -63,10 +63,12 @@ export default class Application implements Owner {
     this.resolver = options.resolver;
   }
 
+  /** @hidden */
   registerInitializer(initializer: Initializer): void {
     this._initializers.push(initializer);
   }
 
+  /** @hidden */
   initRegistry(): void {
     let registry = this._registry = new Registry();
 
@@ -90,6 +92,7 @@ export default class Application implements Owner {
     this._initialized = true;
   }
 
+  /** @hidden */
   initContainer(): void {
     this._container = new Container(this._registry, this.resolver);
 
@@ -102,11 +105,13 @@ export default class Application implements Owner {
     }
   }
 
+  /** @hidden */
   initialize(): void {
     this.initRegistry();
     this.initContainer();
   }
 
+  /** @hidden */
   boot(): void {
     this.initialize();
 
@@ -115,6 +120,7 @@ export default class Application implements Owner {
     this.render();
   }
 
+  /** @hidden */
   render(): void {
     this.env.begin();
 
@@ -139,12 +145,14 @@ export default class Application implements Owner {
     this.scheduleRerender();
   }
 
+  /** @hidden */
   rerender(): void {
     this.env.begin();
     this._renderResult.rerender();
     this.env.commit();
   }
 
+  /** @hidden */
   scheduleRerender(): void {
     if (this._scheduled || !this._rendered) { return; }
 
@@ -157,15 +165,19 @@ export default class Application implements Owner {
 
   /**
    * Owner interface implementation
+   *
+   * @hidden
    */
   identify(specifier: string, referrer?: string): string {
     return this.resolver.identify(specifier, referrer);
   }
 
+  /** @hidden */
   factoryFor(specifier: string, referrer?: string): Factory<any> {
     return this._container.factoryFor(this.identify(specifier, referrer));
   }
 
+  /** @hidden */
   lookup(specifier: string, referrer?: string): any {
     return this._container.lookup(this.identify(specifier, referrer));
   }
