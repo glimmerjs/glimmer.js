@@ -1,3 +1,5 @@
+'use strict';
+
 const { GlimmerApp } = require('@glimmer/application-pipeline');
 
 module.exports = function(defaults) {

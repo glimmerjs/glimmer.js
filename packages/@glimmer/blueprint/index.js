@@ -1,3 +1,5 @@
+'use strict';
+
 const dasherize = require('ember-cli-string-utils').dasherize;
 const stringUtils = require('ember-cli-string-utils');
 
