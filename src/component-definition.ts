@@ -4,7 +4,7 @@ import {
   CapturedArguments
 } from '@glimmer/runtime';
 import ComponentManager, { ComponentStateBucket } from './component-manager';
-import Component, { ComponentFactory } from './component';
+import { ComponentFactory } from './component';
 import { TemplateMeta } from '@glimmer/application';
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<ComponentStateBucket> {
