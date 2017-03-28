@@ -19,7 +19,7 @@ npm install --save-dev @glimmer/component
 
 ## Usage
 
-To use this is a Glimmer application, import the package and export an extended class:
+To use this in a Glimmer application, import the package and export an extended class:
 
 ```
 import Component from '@glimmer/component';
