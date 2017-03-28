@@ -2,6 +2,8 @@ import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from '@glimmer/r
 import { dict, Dict } from '@glimmer/util';
 
 /**
+ * @decorator
+ *
  * Marks a property has tracked.
  *
  * By default, a component's properties are expected to be static,

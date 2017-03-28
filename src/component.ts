@@ -5,10 +5,13 @@ import { Simple } from '@glimmer/runtime';
  * the DOM. A component is made up of a template and, optionally, this component
  * object.
  *
+ * ## Defining a Component
+ * 
  * To define a component, subclass `Component` and add your own properties,
  * methods and lifecycle hooks:
  *
- * ```ts import Component from '@glimmer/component';
+ * ```ts
+ * import Component from '@glimmer/component';
  *
  * export default class extends Component {
  * }
@@ -92,7 +95,7 @@ import { Simple } from '@glimmer/runtime';
  * <user-greeting @greeting="Hello" @name={{user.name}} /> 
  * ```
  * 
- * ### Arguments vs. Properties
+ * ## Arguments vs. Properties
  * 
  * Remember, arguments are data that was given to your component by its parent
  * component, and properties are data your component has defined for itself.
@@ -109,7 +112,7 @@ import { Simple } from '@glimmer/runtime';
  * 
  * On the other hand, if we see:
  * 
- * ``hbs
+ * ```hbs
  * {{name}}
  * ```
  * 
