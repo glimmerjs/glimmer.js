@@ -21,8 +21,8 @@ let moduleConfiguration = {
   types: {
     application: { definitiveCollection: 'main' },
     component: { definitiveCollection: 'components' },
+    helper: { definitiveCollection: 'components' },
     renderer: { definitiveCollection: 'main' },
-    service: { definitiveCollection: 'services' },
     template: { definitiveCollection: 'components' },
     util: { definitiveCollection: 'utils' },
     'component-manager': { definitiveCollection: 'component-managers' }
@@ -33,13 +33,14 @@ let moduleConfiguration = {
     },
     components: {
       group: 'ui',
-      types: ['component', 'template']
-    },
-    services: {
-      types: ['service']
+      types: ['component', 'template', 'helper'],
+      defaultType: 'component'
     },
     'component-managers': {
       types: ['component-manager']
+    },
+    utils: {
+      unresolvable: true
     }
   }
 };
@@ -62,6 +63,12 @@ export class AppBuilder {
   component(name: string, componentFactory: ComponentFactory) {
     let specifier = `component:/${this.rootName}/components/${name}`;
     this.modules[specifier] = componentFactory;
+    return this;
+  }
+
+  helper(name: string, helperFunc) {
+    let specifier = `helper:/${this.rootName}/components/${name}`;
+    this.modules[specifier] = helperFunc;
     return this;
   }
 

@@ -82,3 +82,40 @@ test('components without a template raise an error', function(assert) {
     app.boot();
   }, /The component 'hello-world' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
 });
+
+test('can render a custom helper', function(assert) {
+  class MainComponent extends TestComponent {
+  }
+
+  let app = buildApp()
+    .helper('greeting', () => "Hello Glimmer!")
+    .template('main', '<div>{{greeting}}</div>')
+    .component('main', MainComponent)
+    .boot();
+
+  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+
+  app.rerender();
+
+  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+});
+
+test('can render a custom helper that takes args', function(assert) {
+  class MainComponent extends TestComponent {
+    firstName = 'Tom'
+    lastName = 'Dale'
+  }
+
+  let app = buildApp()
+    .helper('greeting', (params) => `Hello ${params[0]} ${params[1]}!`)
+    .template('main', '<div>{{greeting firstName lastName}}</div>')
+    .component('main', MainComponent)
+    .boot();
+
+  assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
+
+  app.rerender();
+
+  assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
+});
+
