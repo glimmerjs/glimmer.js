@@ -1,4 +1,46 @@
-# glimmer-component [![Build Status](https://secure.travis-ci.org/glimmerjs/glimmer-component.svg?branch=master)](http://travis-ci.org/glimmerjs/glimmer-component)
+# @glimmer/component
+
+[![npm version](https://badge.fury.io/js/%40glimmer%2Fcomponent.svg)](https://badge.fury.io/js/%40glimmer%2Fcomponent)
+[![Build Status](https://secure.travis-ci.org/glimmerjs/glimmer-component.svg?branch=master)](http://travis-ci.org/glimmerjs/glimmer-component)
+
+## Instalation
+
+Add this package to your project with Yarn:
+
+```bash
+yarn add @glimmer/component
+```
+
+Or alternatively with npm:
+
+```bash
+npm install --save-dev @glimmer/component
+```
+
+## Usage
+
+To use this is a Glimmer application, import the package and export an extended class:
+
+```
+import Component from '@glimmer/component';
+
+export default class MyComponent extends Component {
+}
+```
+
+## Development
+
+For the development of this project, Yarn is preferred over npm. However, any Yarn command can be replaced by the npm equivalent.
+See [Migration from npm](https://yarnpkg.com/lang/en/docs/migrating-from-npm/) in the Yarn documentation for a list of the equivalent commands.
+
+* Clone repository locally: `git clone https://github.com/glimmerjs/glimmer-application-pipeline.git`
+* Install dependencies: `yarn`, or `yarn install`
+* Open project in your editor of choice and make your changes
+* Run tests: `yarn run test`
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/glimmerjs/glimmer-component.
 
 ## Acknowledgements
 
