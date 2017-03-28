@@ -4,7 +4,7 @@ import { dict, Dict } from '@glimmer/util';
 /**
  * @decorator
  *
- * Marks a property has tracked.
+ * Marks a property as tracked.
  *
  * By default, a component's properties are expected to be static,
  * meaning you are not able to update them and have the template update accordingly.
