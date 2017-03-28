@@ -151,7 +151,7 @@ class Component {
    *
    * ```ts
    * didInsertElement() {
-   *   console.log("Hi,My full name is ${this.args.firstName} ${this.args.lastName");
+   *   console.log(`Hi, my full name is ${this.args.firstName} ${this.args.lastName}`);
    * }
    * ```
    *
