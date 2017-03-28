@@ -8,7 +8,7 @@ It is to be used, currently, with Ember CLI Canary, which you have to install fr
 The project generated follows the [Module Unification RFC](https://github.com/emberjs/rfcs/blob/master/text/0143-module-unification.md) that is soon to be adopted by Ember,
 and thus shared by both projects.
 
-To learn more about making blueprints, consult [the blprint repository](https://github.com/ember-cli/blprnt).
+To learn more about making blueprints, consult [the blprnt repository](https://github.com/ember-cli/blprnt).
 
 To generate a project using this blueprint, install Ember CLI Canary (`npm install -g ember-cli/ember-cli`), and do:
 
