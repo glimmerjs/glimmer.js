@@ -1,11 +1,10 @@
 import Application from '../../src/application';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
-import { Factory } from '@glimmer/di';
 
 import { TestComponent, TestComponentManager } from './components';
 import { precompile } from './compiler';
 
-interface ComponentFactory {
+export interface ComponentFactory {
   create(injections: object): TestComponent;
 }
 
@@ -52,6 +51,7 @@ export class AppBuilder {
   constructor(name: string) {
     this.rootName = name;
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = TestComponentManager;
+    this.template('main', '<div />');
   }
 
   template(name: string, template: string) {

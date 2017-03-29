@@ -51,16 +51,18 @@ export default class Application implements Owner {
   private _registry: Registry;
   private _container: Container;
   private _renderResult: RenderResult;
-  /** Whether the initial render has completed. */
-  private _rendered: boolean;
+  private _afterRender: Option<() => void>;
   /** Whether a re-render has been scheduled. */
-  private _scheduled: boolean;
+  private _scheduled: Option<Promise<void>> = null;
   private _initializers: Initializer[] = [];
   private _initialized = false;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
+    this._scheduled = new Promise<void>(resolve => {
+      this._afterRender = resolve;
+    });
   }
 
   /** @hidden */
@@ -136,13 +138,22 @@ export default class Application implements Owner {
 
     this.env.commit();
 
-    this._rendered = true;
+    let { _afterRender: afterRender } = this;
+
+    this._afterRender = null;
+    this._scheduled = null;
     this._renderResult = result.value;
+
+    afterRender();
   }
 
-  renderComponent(component: string | ComponentDefinition<Component>, parent: Simple.Node, nextSibling: Option<Simple.Node>): void {
+  renderComponent(
+    component: string | ComponentDefinition<Component>,
+    parent: Simple.Node,
+    nextSibling: Option<Simple.Node> = null
+  ): Promise<void> {
     this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
-    this.scheduleRerender();
+    return this.scheduleRerender();
   }
 
   /** @hidden */
@@ -153,13 +164,15 @@ export default class Application implements Owner {
   }
 
   /** @hidden */
-  scheduleRerender(): void {
-    if (this._scheduled || !this._rendered) { return; }
+  scheduleRerender(): Promise<void> {
+    if (this._scheduled) return this._scheduled;
 
-    this._scheduled = true;
-    requestAnimationFrame(() => {
-      this._scheduled = false;
-      this.rerender();
+    return this._scheduled = new Promise<void>(resolve => {
+      requestAnimationFrame(() => {
+        this._scheduled = null;
+        this.rerender();
+        resolve();
+      });
     });
   }
 
