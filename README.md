@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40glimmer%2Fcomponent.svg)](https://badge.fury.io/js/%40glimmer%2Fcomponent)
 [![Build Status](https://secure.travis-ci.org/glimmerjs/glimmer-component.svg?branch=master)](http://travis-ci.org/glimmerjs/glimmer-component)
 
-## Instalation
+## Installation
 
 Add this package to your project with Yarn:
 
