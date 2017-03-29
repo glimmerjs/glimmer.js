@@ -21,7 +21,7 @@ npm install --save-dev @glimmer/component
 
 To use this in a Glimmer application, import the package and export an extended class:
 
-```
+```ts
 import Component from '@glimmer/component';
 
 export default class MyComponent extends Component {
