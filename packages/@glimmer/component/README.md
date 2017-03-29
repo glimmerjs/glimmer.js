@@ -33,7 +33,7 @@ export default class MyComponent extends Component {
 For the development of this project, Yarn is preferred over npm. However, any Yarn command can be replaced by the npm equivalent.
 See [Migration from npm](https://yarnpkg.com/lang/en/docs/migrating-from-npm/) in the Yarn documentation for a list of the equivalent commands.
 
-* Clone repository locally: `git clone https://github.com/glimmerjs/glimmer-application-pipeline.git`
+* Clone repository locally: `git clone https://github.com/glimmerjs/glimmer-component.git`
 * Install dependencies: `yarn`, or `yarn install`
 * Open project in your editor of choice and make your changes
 * Run tests: `yarn run test`
