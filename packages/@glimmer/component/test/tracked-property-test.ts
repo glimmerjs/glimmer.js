@@ -96,7 +96,8 @@ test('can track a computed property', (assert) => {
   let snapshot = tag.value();
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
 
-  assert.strictEqual(obj.firstName, 'Tom2', 'reading from property does not invalidate the tag');
+  assert.strictEqual(obj.firstName, 'Tom2');
+  assert.ok(tag.validate(snapshot), 'reading from property does not invalidate the tag');
 
   obj.firstName = 'Edsger';
   assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
