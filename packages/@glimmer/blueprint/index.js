@@ -54,11 +54,11 @@ module.exports = {
   }
 };
 
-// Component names must have at least one dash, so we prefix the component name
-// if it doesn't have one. E.g.: `avatar` -> `-avatar`
+// Component names must have at least one dash, so we suffix the component name
+// with `-app` if it doesn't have one. E.g.: `avatar` -> `avatar-app`
 function componentize(name) {
   let dasherized = dasherize(name);
-  return hasDash(dasherized) ? dasherized : `-${dasherized}`;
+  return hasDash(dasherized) ? dasherized : `${dasherized}-app`;
 }
 
 function hasDash(string) {
