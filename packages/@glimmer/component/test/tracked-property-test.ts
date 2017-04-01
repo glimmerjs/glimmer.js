@@ -1,6 +1,6 @@
 const { module, test } = QUnit;
 
-import { tracked, tagForProperty } from '../src/tracked';
+import { tracked, tagForProperty, UntrackedPropertyError } from '../src/tracked';
 import { CONSTANT_TAG } from "@glimmer/reference";
 
 module('Tracked Properties');
@@ -153,4 +153,108 @@ test('tracked computed properties are invalidated when their dependencies are in
 
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true);
+});
+
+module('Tracked Properties - Mandatory @tracked');
+
+test('interceptor works correctly for own value descriptor', (assert) => {
+  let obj = { name: 'Martin' };
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  assert.throws(() => {
+    obj.name = 'Tom';
+  }, UntrackedPropertyError.for(obj, 'name'));
+});
+
+test('interceptor works correctly for inherited value descriptor', (assert) => {
+  class Person { }
+  Person.prototype.name = 'Martin';
+
+  let obj = new Person();
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  assert.throws(() => {
+    obj.name = 'Tom';
+  }, UntrackedPropertyError.for(obj, 'name'));
+});
+
+test('interceptor works correctly for own getter descriptor', (assert) => {
+  let obj = {
+    get name() {
+      return 'Martin';
+    }
+  }
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  assert.throws(() => {
+    obj.name = 'Tom';
+  }, UntrackedPropertyError.for(obj, 'name'));
+});
+
+test('interceptor works correctly for inherited getter descriptor', (assert) => {
+  class Person {
+    get name() {
+      return 'Martin';
+    }
+  }
+
+  let obj = new Person();
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  assert.throws(() => {
+    obj.name = 'Tom';
+  }, UntrackedPropertyError.for(obj, 'name'));
+});
+
+test('interceptor is not installed for own non-configurable descriptor', (assert) => {
+  let obj = { name: 'Martin' };
+  Object.defineProperty(obj, 'name', { configurable: false });
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  obj.name = 'Tom';
+
+  assert.strictEqual(obj.name, 'Tom');
+});
+
+test('interceptor works correctly for inherited non-configurable descriptor', (assert) => {
+  class Person { }
+  Person.prototype.name = 'Martin';
+  Object.defineProperty(Person.prototype, 'name', { configurable: false });
+
+  let obj = new Person();
+
+  tagForProperty(obj, 'name');
+
+  assert.strictEqual(obj.name, 'Martin');
+
+  assert.throws(() => {
+    obj.name = 'Tom';
+  }, UntrackedPropertyError.for(obj, 'name'));
+});
+
+test('interceptor is not installed for array length [issue #34]', (assert) => {
+  let array = [1, 2, 3];
+
+  tagForProperty(array, 'length');
+
+  assert.strictEqual(array.length, 3);
+
+  array.push(4);
+
+  assert.strictEqual(array.length, 4);
 });
