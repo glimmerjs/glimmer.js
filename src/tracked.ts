@@ -209,6 +209,10 @@ export function hasTag(obj: any, key: string): boolean {
 }
 
 export class UntrackedPropertyError extends Error {
+  static for(obj: any, key: string): UntrackedPropertyError {
+    return new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+  }
+
   constructor(public target: any, public key: string, message: string) {
     super(message);
   }
@@ -223,7 +227,7 @@ export interface UntrackedPropertyErrorThrower {
 }
 
 function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
-  throw new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+  throw UntrackedPropertyError.for(obj, key);
 }
 
 export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
