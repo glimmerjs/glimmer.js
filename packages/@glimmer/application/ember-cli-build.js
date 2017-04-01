@@ -26,12 +26,15 @@ module.exports = function() {
     include: ['dist/handlebars.amd.js']
   }));
 
-  let tsAndJs = funnel(__dirname, {
-    include: ['src/**/*.ts', 'src/**/*.js']
+  let srcPath = path.join(__dirname, 'src');
+  let tsAndJs = funnel(srcPath, {
+    include: ['**/*.ts', '**/*.js'],
+    destDir: 'src'
   });
 
-  let templates = funnel(__dirname, {
-    include: ['src/**/*.hbs']
+  let templates = funnel(srcPath, {
+    include: ['**/*.hbs'],
+    destDir: 'src'
   });
 
   let compiledTemplates = new GlimmerTemplatePrecompiler(templates, {
@@ -47,8 +50,9 @@ module.exports = function() {
     let testsIndex = buildTestsIndex('test', 'index.ts');
 
     srcTrees.push(funnel(testsIndex, { destDir: 'test' }));
-    srcTrees.push(funnel(__dirname, {
-      include: ['test/**/*.ts']
+    srcTrees.push(funnel(path.join(__dirname, 'test'), {
+      include: ['**/*.ts'],
+      destDir: 'test'
     }));
   }
 
