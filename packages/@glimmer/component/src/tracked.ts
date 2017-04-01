@@ -209,6 +209,10 @@ export function hasTag(obj: any, key: string): boolean {
 }
 
 export class UntrackedPropertyError extends Error {
+  static for(obj: any, key: string): UntrackedPropertyError {
+    return new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+  }
+
   constructor(public target: any, public key: string, message: string) {
     super(message);
   }
@@ -223,7 +227,7 @@ export interface UntrackedPropertyErrorThrower {
 }
 
 function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
-  throw new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+  throw UntrackedPropertyError.for(obj, key);
 }
 
 export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
@@ -251,25 +255,40 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
   // Find the descriptor for the current property. We may need to walk the
   // prototype chain to do so. If the property is undefined, we may never get a
   // descriptor here.
+  let hasOwnDescriptor = true;
   while (target) {
     descriptor = Object.getOwnPropertyDescriptor(target, key);
     if (descriptor) { break; }
+    hasOwnDescriptor = false;
     target = Object.getPrototypeOf(target);
   }
 
-  // Define a property descriptor that passes through the current value on reads
-  // but throws an exception on writes.
-  Object.defineProperty(obj, key, {
-    get() {
-      if (descriptor && descriptor.get) {
-        return descriptor.get.apply(this);
-      }
+  // If possible, define a property descriptor that passes through the current
+  // value on reads but throws an exception on writes.
+  if (descriptor) {
+    if (descriptor.configurable || !hasOwnDescriptor) {
+      Object.defineProperty(obj, key, {
+        configurable: descriptor.configurable,
+        enumerable: descriptor.enumerable,
 
-      return descriptor && descriptor.value;
-    },
+        get() {
+          if (descriptor.get) {
+            return descriptor.get.call(this);
+          } else {
+            return descriptor.value;
+          }
+        },
 
-    set() {
-      throwError(this, key);
+        set() {
+          throwError(this, key);
+        }
+      });
     }
-  });
+  } else {
+    Object.defineProperty(obj, key, {
+      set() {
+        throwError(this, key);
+      }
+    });
+  }
 }
