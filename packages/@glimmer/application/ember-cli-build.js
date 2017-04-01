@@ -56,5 +56,17 @@ module.exports = function() {
     }));
   }
 
-  return build({ srcTrees, vendorTrees });
-}
+  return build({
+    srcTrees,
+    vendorTrees,
+    external: [
+      '@glimmer/di',
+      '@glimmer/runtime',
+      '@glimmer/object-reference',
+      '@glimmer/util',
+      '@glimmer/reference',
+      '@glimmer/resolver',
+      '@glimmer/compiler'
+    ]
+  });
+};
