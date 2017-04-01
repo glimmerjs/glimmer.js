@@ -24,5 +24,16 @@ module.exports = function() {
   vendorTrees.push(funnel(path.dirname(require.resolve('handlebars/package')), {
       include: ['dist/handlebars.amd.js'] }));
 
-  return build({ vendorTrees });
+  return build({
+    vendorTrees,
+    external: [
+      '@glimmer/application',
+      '@glimmer/resolver',
+      '@glimmer/compiler',
+      '@glimmer/reference',
+      '@glimmer/util',
+      '@glimmer/runtime',
+      '@glimmer/di'
+    ]
+  });
 }
