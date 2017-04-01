@@ -255,25 +255,40 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
   // Find the descriptor for the current property. We may need to walk the
   // prototype chain to do so. If the property is undefined, we may never get a
   // descriptor here.
+  let hasOwnDescriptor = true;
   while (target) {
     descriptor = Object.getOwnPropertyDescriptor(target, key);
     if (descriptor) { break; }
+    hasOwnDescriptor = false;
     target = Object.getPrototypeOf(target);
   }
 
-  // Define a property descriptor that passes through the current value on reads
-  // but throws an exception on writes.
-  Object.defineProperty(obj, key, {
-    get() {
-      if (descriptor && descriptor.get) {
-        return descriptor.get.apply(this);
-      }
+  // If possible, define a property descriptor that passes through the current
+  // value on reads but throws an exception on writes.
+  if (descriptor) {
+    if (descriptor.configurable || !hasOwnDescriptor) {
+      Object.defineProperty(obj, key, {
+        configurable: descriptor.configurable,
+        enumerable: descriptor.enumerable,
 
-      return descriptor && descriptor.value;
-    },
+        get() {
+          if (descriptor.get) {
+            return descriptor.get.call(this);
+          } else {
+            return descriptor.value;
+          }
+        },
 
-    set() {
-      throwError(this, key);
+        set() {
+          throwError(this, key);
+        }
+      });
     }
-  });
+  } else {
+    Object.defineProperty(obj, key, {
+      set() {
+        throwError(this, key);
+      }
+    });
+  }
 }
