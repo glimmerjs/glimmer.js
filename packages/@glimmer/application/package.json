@@ -30,7 +30,7 @@
     "@glimmer/util": "^0.23.0-alpha.6"
   },
   "devDependencies": {
-    "@glimmer/build": "^0.6.0",
+    "@glimmer/build": "^0.6.2",
     "@glimmer/compiler": "^0.23.0-alpha.6",
     "@glimmer/wire-format": "^0.23.0-alpha.6",
     "ember-cli": "^2.12.0",
