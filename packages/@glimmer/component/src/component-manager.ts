@@ -18,7 +18,7 @@ import {
 import Component from './component';
 import ComponentDefinition from './component-definition';
 import { RootReference } from './references';
-import { Dict } from "@glimmer/util";
+import { Dict, Destroyable } from "@glimmer/util";
 
 export interface ConstructorOptions {
   env: Environment;
@@ -119,7 +119,9 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
 
   didUpdate(bucket: ComponentStateBucket) { }
 
-  getDestructor(): null {
-    return null;
+  getDestructor(bucket: ComponentStateBucket): Destroyable {
+    if (!bucket) { return; }
+
+    return bucket.component;
   }
 }

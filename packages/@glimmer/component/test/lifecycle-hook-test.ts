@@ -6,9 +6,10 @@ const { module, test } = QUnit;
 module('Lifecycle Hooks');
 
 test('Lifecycle hook ordering', (assert) => {
-  assert.expect(6);
+  assert.expect(7);
 
   let invocations: [string, string][] = [];
+  let didCallWillDestroy: boolean = false;
 
   abstract class HookLoggerComponent extends Component {
     abstract name: string;
@@ -16,6 +17,10 @@ test('Lifecycle hook ordering', (assert) => {
     didInsertElement() {
       invocations.push([this.name, 'didInsertElement']);
       assert.ok(this.element instanceof Element);
+    }
+
+    willDestroy() {
+      didCallWillDestroy = true;
     }
   }
 
@@ -25,7 +30,7 @@ test('Lifecycle hook ordering', (assert) => {
   class Component4 extends HookLoggerComponent { name = 'component4' }
   class Component5 extends HookLoggerComponent { name = 'component5' }
 
-  buildApp()
+  let app = buildApp()
     .template('main', '<div><component-one /></div>')
     .template('component-one', '<div><component-two /><component-three /></div>')
     .template('component-two', '<div><component-four /><component-five /></div>')
@@ -38,7 +43,7 @@ test('Lifecycle hook ordering', (assert) => {
     .component('component-four', Component4)
     .component('component-five', Component5)
     .boot();
-  
+
   assert.deepEqual(invocations, [
     ['component4', 'didInsertElement'],
     ['component5', 'didInsertElement'],
@@ -46,4 +51,9 @@ test('Lifecycle hook ordering', (assert) => {
     ['component3', 'didInsertElement'],
     ['component1', 'didInsertElement'],
   ]);
+
+  let component1 = app["_container"].lookup("component:/test-app/components/component-two");
+  component1.destroy();
+
+  assert.ok(didCallWillDestroy);
 });
