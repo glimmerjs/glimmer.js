@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/glimmerjs/blueprint.git"
+    "url": "git+https://github.com/glimmerjs/glimmer-blueprint.git"
   },
   "keywords": [
     "ember-blueprint"
@@ -16,9 +16,9 @@
   "author": "Tom Dale <tom@tomdale.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/glimmerjs/blueprint/issues"
+    "url": "https://github.com/glimmerjs/glimmer-blueprint/issues"
   },
-  "homepage": "https://github.com/glimmerjs/blueprint#readme",
+  "homepage": "https://github.com/glimmerjs/glimmer-blueprint#readme",
   "dependencies": {
     "ember-cli-string-utils": "^1.1.0"
   },
