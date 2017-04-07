@@ -1,7 +1,7 @@
 import Application from '@glimmer/application';
 import Resolver, { ResolverConfiguration, BasicModuleRegistry } from '@glimmer/resolver';
-import moduleMap from './config/module-map';
-import resolverConfiguration from './config/resolver-configuration';
+import moduleMap from '../config/module-map';
+import resolverConfiguration from '../config/resolver-configuration';
 
 export default class App extends Application {
   constructor() {
