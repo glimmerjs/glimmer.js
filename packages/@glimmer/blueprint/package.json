@@ -11,7 +11,8 @@
     "url": "git+https://github.com/glimmerjs/glimmer-blueprint.git"
   },
   "keywords": [
-    "ember-blueprint"
+    "ember-blueprint",
+    "ember-addon"
   ],
   "author": "Tom Dale <tom@tomdale.net>",
   "license": "MIT",
@@ -24,5 +25,8 @@
   },
   "devDependencies": {
     "ember-cli-valid-component-name": "^1.0.0"
+  },
+  "ember-addon": {
+    "main": "ember-addon-main.js"
   }
 }
