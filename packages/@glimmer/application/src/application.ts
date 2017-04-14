@@ -10,7 +10,6 @@ import {
 import {
   Simple,
   templateFactory,
-  RenderResult,
   ComponentDefinition,
   Component
 } from '@glimmer/runtime';
@@ -54,6 +53,8 @@ export default class Application implements Owner {
   private _container: Container;
   private _initializers: Initializer[] = [];
   private _initialized = false;
+  private _rendered = false;
+  private _scheduled = false;
   private _rerender: () => void = NOOP;
   private _afterRender: () => void = NOOP;
   private _renderPromise: Option<Promise<void>>;
@@ -145,17 +146,18 @@ export default class Application implements Owner {
       this.env.begin();
       renderResult.rerender();
       this.env.commit();
-      this.didRender();
+      this._didRender();
     };
 
-    this.didRender();
+    this._didRender();
   }
 
-  didRender(): void {
+  _didRender(): void {
     let { _afterRender } = this;
 
     this._afterRender = NOOP;
     this._renderPromise = null;
+    this._rendered = true;
 
     _afterRender();
   }
@@ -173,7 +175,7 @@ export default class Application implements Owner {
     let { _renderPromise } = this;
 
     if (_renderPromise === null) {
-      _renderPromise = this._renderPromise = new Promise<void>(resolve =>{
+      _renderPromise = this._renderPromise = new Promise<void>(resolve => {
         this._afterRender = resolve;
       });
 
@@ -184,9 +186,13 @@ export default class Application implements Owner {
   }
 
   _scheduleRerender(): void {
-    if (this._renderPromise !== null) {
-      requestAnimationFrame(this._rerender);
-    }
+    if (this._scheduled || !this._rendered) return;
+
+    this._scheduled = true;
+    requestAnimationFrame(() => {
+      this._scheduled = false;
+      this._rerender();
+    });
   }
 
   /**
