@@ -25,6 +25,8 @@ import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import mainTemplate from './templates/main';
 
+function NOOP() {}
+
 export interface ApplicationOptions {
   rootName: string;
   resolver: Resolver;
@@ -50,17 +52,16 @@ export default class Application implements Owner {
   private _rootsIndex: number = 0;
   private _registry: Registry;
   private _container: Container;
-  private _renderResult: RenderResult;
-  private _afterRender: Option<() => void>;
-  /** Whether a re-render has been scheduled. */
-  private _scheduled: Option<Promise<void>> = null;
   private _initializers: Initializer[] = [];
   private _initialized = false;
+  private _rerender: () => void = NOOP;
+  private _afterRender: () => void = NOOP;
+  private _renderPromise: Option<Promise<void>>;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
-    this._scheduled = new Promise<void>(resolve => {
+    this._renderPromise = new Promise<void>(resolve => {
       this._afterRender = resolve;
     });
   }
@@ -138,13 +139,25 @@ export default class Application implements Owner {
 
     this.env.commit();
 
-    let { _afterRender: afterRender } = this;
+    let renderResult = result.value;
 
-    this._afterRender = null;
-    this._scheduled = null;
-    this._renderResult = result.value;
+    this._rerender = () => {
+      this.env.begin();
+      renderResult.rerender();
+      this.env.commit();
+      this.didRender();
+    };
 
-    afterRender();
+    this.didRender();
+  }
+
+  didRender(): void {
+    let { _afterRender } = this;
+
+    this._afterRender = NOOP;
+    this._renderPromise = null;
+
+    _afterRender();
   }
 
   renderComponent(
@@ -156,24 +169,24 @@ export default class Application implements Owner {
     return this.scheduleRerender();
   }
 
-  /** @hidden */
-  rerender(): void {
-    this.env.begin();
-    this._renderResult.rerender();
-    this.env.commit();
+  scheduleRerender(): Promise<void> {
+    let { _renderPromise } = this;
+
+    if (_renderPromise === null) {
+      _renderPromise = this._renderPromise = new Promise<void>(resolve =>{
+        this._afterRender = resolve;
+      });
+
+      this._scheduleRerender();
+    }
+
+    return _renderPromise;
   }
 
-  /** @hidden */
-  scheduleRerender(): Promise<void> {
-    if (this._scheduled) return this._scheduled;
-
-    return this._scheduled = new Promise<void>(resolve => {
-      requestAnimationFrame(() => {
-        this._scheduled = null;
-        this.rerender();
-        resolve();
-      });
-    });
+  _scheduleRerender(): void {
+    if (this._renderPromise !== null) {
+      requestAnimationFrame(this._rerender);
+    }
   }
 
   /**
