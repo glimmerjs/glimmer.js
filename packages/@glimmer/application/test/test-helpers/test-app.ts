@@ -1,5 +1,6 @@
 import Application from '../../src/application';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
+import { Simple } from '@glimmer/runtime';
 
 import { TestComponent, TestComponentManager } from './components';
 import { precompile } from './compiler';
@@ -8,12 +9,16 @@ export interface ComponentFactory {
   create(injections: object): TestComponent;
 }
 
-export default function buildApp(appName: string = 'test-app') {
-  return new AppBuilder(appName);
+export interface AppBuilderOptions {
+  document?: Simple.Document;
+}
+
+export default function buildApp(appName: string = 'test-app', options: AppBuilderOptions = {}) {
+  return new AppBuilder(appName, options);
 }
 
 export class TestApplication extends Application {
-  rootElement: HTMLElement;
+  rootElement: Simple.Element;
 }
 
 let moduleConfiguration = {
@@ -46,10 +51,12 @@ let moduleConfiguration = {
 
 export class AppBuilder {
   rootName: string;
-  modules: any = {}
+  modules: any = {};
+  options: AppBuilderOptions = {};
 
-  constructor(name: string) {
+  constructor(name: string, options: AppBuilderOptions) {
     this.rootName = name;
+    this.options = options;
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = TestComponentManager;
     this.template('main', '<div />');
   }
@@ -81,12 +88,14 @@ export class AppBuilder {
 
     let registry = new BasicModuleRegistry(this.modules);
     let resolver = new Resolver(resolverConfiguration, registry);
-    let rootElement = document.createElement('div');
 
     let app = new TestApplication({
       rootName: this.rootName,
-      resolver
+      resolver,
+      document: this.options.document
     });
+
+    let rootElement = app.document.createElement('div');
 
     app.rootElement = rootElement;
     app.renderComponent('main', rootElement, null);

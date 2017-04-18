@@ -29,6 +29,7 @@ function NOOP() {}
 export interface ApplicationOptions {
   rootName: string;
   resolver: Resolver;
+  document?: Simple.Document;
 }
 
 export interface Initializer {
@@ -46,6 +47,7 @@ export interface AppRoot {
 export default class Application implements Owner {
   public rootName: string;
   public resolver: Resolver;
+  public document: Simple.Document;
   public env: Environment;
   private _roots: AppRoot[] = [];
   private _rootsIndex: number = 0;
@@ -62,6 +64,7 @@ export default class Application implements Owner {
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
+    this.document = options.document || window.document;
     this._renderPromise = new Promise<void>(resolve => {
       this._afterRender = resolve;
     });
@@ -83,7 +86,7 @@ export default class Application implements Owner {
     registry.register(`environment:/${this.rootName}/main/main`, Environment);
     registry.registerOption('helper', 'instantiate', false);
     registry.registerOption('template', 'instantiate', false);
-    registry.register(`document:/${this.rootName}/main/main`, window.document as any);
+    registry.register(`document:/${this.rootName}/main/main`, this.document as any);
     registry.registerOption('document', 'instantiate', false);
     registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
     registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
@@ -130,7 +133,7 @@ export default class Application implements Owner {
 
     let mainLayout = templateFactory(mainTemplate).create(this.env);
     let self = new UpdatableReference({ roots: this._roots });
-    let appendTo = document.body;
+    let appendTo = this.document.body;
     let dynamicScope = new DynamicScope();
     let templateIterator = mainLayout.render(self, appendTo, dynamicScope);
     let result;

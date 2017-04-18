@@ -47,6 +47,7 @@ module.exports = function() {
   ];
 
   if (isTest) {
+    vendorTrees.push(buildVendorPackage('simple-dom'));
     let testsIndex = buildTestsIndex('test', 'index.ts');
 
     srcTrees.push(funnel(testsIndex, { destDir: 'test' }));
