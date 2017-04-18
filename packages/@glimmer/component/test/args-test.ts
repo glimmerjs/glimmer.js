@@ -1,6 +1,7 @@
 import Component from '../src/component';
 import { tracked } from '../src/tracked';
 import buildApp from './test-helpers/test-app';
+import Application from "@glimmer/application";
 
 const { module, test } = QUnit;
 
@@ -68,4 +69,36 @@ test('Args smoke test', (assert) => {
     .boot();
 
   parent.firstName = "Thomas";
+});
+
+test("Setting args should not schedule a rerender", function(assert) {
+  let done = assert.async();
+  let app: Application;
+
+  class ParentComponent extends Component {
+    @tracked foo = false;
+
+    constructor(options: any) {
+      super(options);
+      setTimeout(() => {
+        this.foo = true;
+      }, 1);
+    }
+
+    didUpdate() {
+      assert.strictEqual(app['_scheduled'], false, 're-render has not been scheduled in update');
+      done();
+    }
+  }
+
+  class ChildComponent extends Component {
+  }
+
+  app = buildApp()
+    .template('main', '<div><parent-component /></div>')
+    .template('parent-component', '<div><child-component @foo={{foo}}></child-component></div>')
+    .component('parent-component', ParentComponent)
+    .template('child-component', '<div></div>')
+    .component('child-component', ChildComponent)
+    .boot();
 });
