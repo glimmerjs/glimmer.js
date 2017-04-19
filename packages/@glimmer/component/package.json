@@ -22,11 +22,12 @@
     "test": "ember test"
   },
   "dependencies": {
-    "@glimmer/util": "^0.23.0-alpha.11",
     "@glimmer/application": "^0.3.6",
     "@glimmer/di": "^0.1.9",
+    "@glimmer/env": "^0.1.1",
     "@glimmer/reference": "^0.23.0-alpha.11",
-    "@glimmer/runtime": "^0.23.0-alpha.11"
+    "@glimmer/runtime": "^0.23.0-alpha.11",
+    "@glimmer/util": "^0.23.0-alpha.11"
   },
   "devDependencies": {
     "@glimmer/build": "^0.6.1",

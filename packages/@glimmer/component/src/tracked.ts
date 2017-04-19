@@ -1,3 +1,4 @@
+import { DEBUG } from '@glimmer/env';
 import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from '@glimmer/reference';
 import { dict, Dict } from '@glimmer/util';
 
@@ -232,7 +233,7 @@ function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
 
 export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
   if (typeof obj === 'object' && obj) {
-    if (!hasTag(obj, key)) {
+    if (DEBUG && !hasTag(obj, key)) {
       installDevModeErrorInterceptor(obj, key, throwError);
     }
 
