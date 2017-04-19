@@ -64,7 +64,7 @@ test('can render a component with the component helper', function(assert) {
 
   assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 
-  app.rerender();
+  app.scheduleRerender();
 
   assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 });
@@ -95,7 +95,7 @@ test('can render a custom helper', function(assert) {
 
   assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 
-  app.rerender();
+  app.scheduleRerender();
 
   assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
 });
@@ -114,7 +114,7 @@ test('can render a custom helper that takes args', function(assert) {
 
   assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
 
-  app.rerender();
+  app.scheduleRerender();
 
   assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
 });

@@ -10,7 +10,6 @@ import {
 import {
   Simple,
   templateFactory,
-  RenderResult,
   ComponentDefinition,
   Component
 } from '@glimmer/runtime';
@@ -24,6 +23,8 @@ import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import mainTemplate from './templates/main';
+
+function NOOP() {}
 
 export interface ApplicationOptions {
   rootName: string;
@@ -50,17 +51,20 @@ export default class Application implements Owner {
   private _rootsIndex: number = 0;
   private _registry: Registry;
   private _container: Container;
-  private _renderResult: RenderResult;
-  /** Whether the initial render has completed. */
-  private _rendered: boolean;
-  /** Whether a re-render has been scheduled. */
-  private _scheduled: boolean;
   private _initializers: Initializer[] = [];
   private _initialized = false;
+  private _rendered = false;
+  private _scheduled = false;
+  private _rerender: () => void = NOOP;
+  private _afterRender: () => void = NOOP;
+  private _renderPromise: Option<Promise<void>>;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
+    this._renderPromise = new Promise<void>(resolve => {
+      this._afterRender = resolve;
+    });
   }
 
   /** @hidden */
@@ -136,30 +140,58 @@ export default class Application implements Owner {
 
     this.env.commit();
 
+    let renderResult = result.value;
+
+    this._rerender = () => {
+      this.env.begin();
+      renderResult.rerender();
+      this.env.commit();
+      this._didRender();
+    };
+
+    this._didRender();
+  }
+
+  _didRender(): void {
+    let { _afterRender } = this;
+
+    this._afterRender = NOOP;
+    this._renderPromise = null;
     this._rendered = true;
-    this._renderResult = result.value;
+
+    _afterRender();
   }
 
-  renderComponent(component: string | ComponentDefinition<Component>, parent: Simple.Node, nextSibling: Option<Simple.Node>): void {
+  renderComponent(
+    component: string | ComponentDefinition<Component>,
+    parent: Simple.Node,
+    nextSibling: Option<Simple.Node> = null
+  ): Promise<void> {
     this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
-    this.scheduleRerender();
+    return this.scheduleRerender();
   }
 
-  /** @hidden */
-  rerender(): void {
-    this.env.begin();
-    this._renderResult.rerender();
-    this.env.commit();
+  scheduleRerender(): Promise<void> {
+    let { _renderPromise } = this;
+
+    if (_renderPromise === null) {
+      _renderPromise = this._renderPromise = new Promise<void>(resolve => {
+        this._afterRender = resolve;
+      });
+
+      this._scheduleRerender();
+    }
+
+    return _renderPromise;
   }
 
-  /** @hidden */
-  scheduleRerender(): void {
-    if (this._scheduled || !this._rendered) { return; }
+  _scheduleRerender(): void {
+    if (this._scheduled || !this._rendered) return;
 
     this._scheduled = true;
     requestAnimationFrame(() => {
       this._scheduled = false;
-      this.rerender();
+      this._rerender();
     });
   }
 

@@ -46,7 +46,7 @@ test('can curry arguments to actions', function(assert) {
   passedEvent = null;
 
   helloWorldComponent.name = "cruel world";
-  app.rerender();
+  app.scheduleRerender();
 
   h1 = app.rootElement.querySelector('h1');
   h1.onclick(fakeEvent);
