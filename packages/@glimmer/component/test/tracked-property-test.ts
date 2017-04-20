@@ -1,36 +1,39 @@
 const { module, test } = QUnit;
 
+import { DEBUG } from '@glimmer/env';
 import { tracked, tagForProperty, UntrackedPropertyError } from '../src/tracked';
 import { CONSTANT_TAG } from "@glimmer/reference";
 
 module('Tracked Properties');
 
-test('requesting a tag for an untracked property should throw an exception if mutated', (assert) => {
-  class UntrackedPerson {
-    firstName = 'Tom';
-    get lastName() {
-      return 'Dale';
+if (DEBUG) {
+  test('requesting a tag for an untracked property should throw an exception if mutated', (assert) => {
+    class UntrackedPerson {
+      firstName = 'Tom';
+      get lastName() {
+        return 'Dale';
+      }
+      set lastName(value) {
+      }
+
+      toString() {
+        return 'UntrackedPerson';
+      }
     }
-    set lastName(value) {
-    }
 
-    toString() {
-      return 'UntrackedPerson';
-    }
-  }
+    let obj = new UntrackedPerson();
+    tagForProperty(obj, 'firstName');
+    tagForProperty(obj, 'lastName');
 
-  let obj = new UntrackedPerson();
-  tagForProperty(obj, 'firstName');
-  tagForProperty(obj, 'lastName');
+    assert.throws(() => {
+      obj.firstName = 'Ricardo';
+    }, /The property 'firstName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
 
-  assert.throws(() => {
-    obj.firstName = 'Ricardo';
-  }, /The property 'firstName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
-
-  assert.throws(() => {
-    obj.lastName = 'Mendes';
-  }, /The property 'lastName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
-});
+    assert.throws(() => {
+      obj.lastName = 'Mendes';
+    }, /The property 'lastName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
+  });
+}
 
 test('tracked properties can be read and written to', (assert) => {
   class TrackedPerson {
@@ -157,66 +160,84 @@ test('tracked computed properties are invalidated when their dependencies are in
 
 module('Tracked Properties - Mandatory @tracked');
 
-test('interceptor works correctly for own value descriptor', (assert) => {
-  let obj = { name: 'Martin' };
+if (DEBUG) {
+  test('interceptor works correctly for own value descriptor', (assert) => {
+    let obj = { name: 'Martin' };
 
-  tagForProperty(obj, 'name');
+    tagForProperty(obj, 'name');
 
-  assert.strictEqual(obj.name, 'Martin');
+    assert.strictEqual(obj.name, 'Martin');
 
-  assert.throws(() => {
-    obj.name = 'Tom';
-  }, UntrackedPropertyError.for(obj, 'name'));
-});
+    assert.throws(() => {
+      obj.name = 'Tom';
+    }, UntrackedPropertyError.for(obj, 'name'));
+  });
 
-test('interceptor works correctly for inherited value descriptor', (assert) => {
-  class Person { name: string }
-  Person.prototype.name = 'Martin';
+  test('interceptor works correctly for inherited value descriptor', (assert) => {
+    class Person { name: string }
+    Person.prototype.name = 'Martin';
 
-  let obj = new Person();
+    let obj = new Person();
 
-  tagForProperty(obj, 'name');
+    tagForProperty(obj, 'name');
 
-  assert.strictEqual(obj.name, 'Martin');
+    assert.strictEqual(obj.name, 'Martin');
 
-  assert.throws(() => {
-    obj.name = 'Tom';
-  }, UntrackedPropertyError.for(obj, 'name'));
-});
+    assert.throws(() => {
+      obj.name = 'Tom';
+    }, UntrackedPropertyError.for(obj, 'name'));
+  });
 
-test('interceptor works correctly for own getter descriptor', (assert) => {
-  let obj = {
-    get name() {
-      return 'Martin';
+  test('interceptor works correctly for own getter descriptor', (assert) => {
+    let obj = {
+      get name() {
+        return 'Martin';
+      }
     }
-  }
 
-  tagForProperty(obj, 'name');
+    tagForProperty(obj, 'name');
 
-  assert.strictEqual(obj.name, 'Martin');
+    assert.strictEqual(obj.name, 'Martin');
 
-  assert.throws(() => {
-    (obj as any).name = 'Tom';
-  }, UntrackedPropertyError.for(obj, 'name'));
-});
+    assert.throws(() => {
+      (obj as any).name = 'Tom';
+    }, UntrackedPropertyError.for(obj, 'name'));
+  });
 
-test('interceptor works correctly for inherited getter descriptor', (assert) => {
-  class Person {
-    get name() {
-      return 'Martin';
+  test('interceptor works correctly for inherited getter descriptor', (assert) => {
+    class Person {
+      get name() {
+        return 'Martin';
+      }
     }
-  }
 
-  let obj = new Person();
+    let obj = new Person();
 
-  tagForProperty(obj, 'name');
+    tagForProperty(obj, 'name');
 
-  assert.strictEqual(obj.name, 'Martin');
+    assert.strictEqual(obj.name, 'Martin');
 
-  assert.throws(() => {
-    (obj as any).name = 'Tom';
-  }, UntrackedPropertyError.for(obj, 'name'));
-});
+    assert.throws(() => {
+      (obj as any).name = 'Tom';
+    }, UntrackedPropertyError.for(obj, 'name'));
+  });
+
+  test('interceptor works correctly for inherited non-configurable descriptor', (assert) => {
+    class Person { name: string }
+    Person.prototype.name = 'Martin';
+    Object.defineProperty(Person.prototype, 'name', { configurable: false });
+
+    let obj = new Person();
+
+    tagForProperty(obj, 'name');
+
+    assert.strictEqual(obj.name, 'Martin');
+
+    assert.throws(() => {
+      obj.name = 'Tom';
+    }, UntrackedPropertyError.for(obj, 'name'));
+  });
+}
 
 test('interceptor is not installed for own non-configurable descriptor', (assert) => {
   let obj = { name: 'Martin' };
@@ -229,22 +250,6 @@ test('interceptor is not installed for own non-configurable descriptor', (assert
   obj.name = 'Tom';
 
   assert.strictEqual(obj.name, 'Tom');
-});
-
-test('interceptor works correctly for inherited non-configurable descriptor', (assert) => {
-  class Person { name: string }
-  Person.prototype.name = 'Martin';
-  Object.defineProperty(Person.prototype, 'name', { configurable: false });
-
-  let obj = new Person();
-
-  tagForProperty(obj, 'name');
-
-  assert.strictEqual(obj.name, 'Martin');
-
-  assert.throws(() => {
-    obj.name = 'Tom';
-  }, UntrackedPropertyError.for(obj, 'name'));
 });
 
 test('interceptor is not installed for array length [issue #34]', (assert) => {
