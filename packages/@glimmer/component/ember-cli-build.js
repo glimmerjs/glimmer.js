@@ -1,6 +1,7 @@
 "use strict";
 
 const build = require('@glimmer/build');
+const CreateFile = require('broccoli-file-creator');
 const packageDist = require('@glimmer/build/lib/package-dist');
 const buildVendorPackage = require('@glimmer/build/lib/build-vendor-package');
 const funnel = require('broccoli-funnel');
@@ -18,8 +19,16 @@ module.exports = function() {
     '@glimmer/syntax',
     '@glimmer/util',
     '@glimmer/wire-format',
-    '@glimmer/env'
   ].map(packageDist);
+
+  vendorTrees.push(new CreateFile('glimmer-env.js', `
+    define('@glimmer/env', ['exports'], function(exports) {
+      'use strict';
+
+      exports.__esModule = true;
+      exports.DEBUG = ${process.env.TEST_MODE === 'debug'};
+    });
+  `));
 
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
   vendorTrees.push(funnel(path.dirname(require.resolve('handlebars/package')), {
