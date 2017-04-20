@@ -73,9 +73,9 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@glimmer/di/-/di-0.2.0.tgz#73bfd4a6ee4148a80bf092e8a5d29bcac9d4ce7e"
 
-"@glimmer/env@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.1.tgz#f4c188dbfb07023e3161882af293df986eb307f8"
+"@glimmer/env@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.5.tgz#5ef458fd22843852344048003bc0638d7eeabd81"
 
 "@glimmer/interfaces@^0.23.0-alpha.11":
   version "0.23.0-alpha.11"
