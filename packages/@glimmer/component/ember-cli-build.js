@@ -17,7 +17,8 @@ module.exports = function() {
     '@glimmer/runtime',
     '@glimmer/syntax',
     '@glimmer/util',
-    '@glimmer/wire-format'
+    '@glimmer/wire-format',
+    '@glimmer/env'
   ].map(packageDist);
 
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
@@ -33,7 +34,8 @@ module.exports = function() {
       '@glimmer/reference',
       '@glimmer/util',
       '@glimmer/runtime',
-      '@glimmer/di'
+      '@glimmer/di',
+      '@glimmer/env'
     ]
   });
 }
