@@ -4,7 +4,6 @@ dist: trusty
 
 node_js:
   - "6"
-  - "node"
 
 addons:
   firefox: latest
