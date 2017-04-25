@@ -33,6 +33,7 @@
     "@glimmer/build": "^0.6.2",
     "@glimmer/compiler": "^0.23.0-alpha.6",
     "@glimmer/wire-format": "^0.23.0-alpha.6",
+    "ember-build-utilities": "^0.1.1",
     "ember-cli": "^2.12.0",
     "simple-dom": "^0.3.2",
     "testem": "^1.13.0",
