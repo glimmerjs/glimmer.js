@@ -160,7 +160,7 @@ test('#lookup - caches looked up instances by default', function(assert) {
     }
   });
 
-  app.initialize();  
+  app.initialize();
 
   let foo1 = app.lookup('foo:/app/foos/bar');
   assert.equal(createCounter, 1);
@@ -182,9 +182,6 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
     }
   }
 
-  class App extends Application {
-  }
-
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
     initialize(app) {
@@ -203,8 +200,6 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
 
 test('#lookup - returns the factory when registrations specify instantiate: false', function(assert) {
   assert.expect(1);
-
-  let createCounter = 0;
 
   let factory = {};
 

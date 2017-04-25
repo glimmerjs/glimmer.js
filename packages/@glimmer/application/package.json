@@ -19,7 +19,8 @@
     "preversion": "npm test",
     "prepublish": "npm run build",
     "postpublish": "git push origin master --tags",
-    "test": "ember test"
+    "test": "ember test",
+    "problems": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@glimmer/di": "^0.1.9",
