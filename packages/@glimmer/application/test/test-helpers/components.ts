@@ -2,7 +2,7 @@ import { ComponentManager, ComponentDefinition, Arguments, CompiledDynamicProgra
 import { Factory } from '@glimmer/di';
 import ComponentDefinitionCreator from '../../src/component-definition-creator';
 import Environment from "../../src/environment";
-import TemplateMeta from '../../src/template-meta';
+import { TemplateMeta } from '@glimmer/component';
 import { UpdatableReference } from '@glimmer/object-reference';
 
 export class TestComponent {

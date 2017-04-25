@@ -26,7 +26,7 @@ import {
   Factory
 } from '@glimmer/di';
 import Iterable from './iterable';
-import TemplateMeta from './template-meta';
+import { TemplateMeta } from '@glimmer/component';
 import ComponentDefinitionCreator from './component-definition-creator'
 import Application from "./application";
 import {
