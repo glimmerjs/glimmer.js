@@ -1,4 +1,4 @@
-import { TestComponent } from './test-helpers/components';
+import Component, { tracked } from '@glimmer/component';
 import buildApp from './test-helpers/test-app';
 import { debugInfoForReference } from '../src/helpers/action';
 
@@ -13,11 +13,12 @@ test('can curry arguments to actions', function(assert) {
   let helloWorldComponent: HelloWorld;
   let passedMsg1, passedMsg2, passedEvent;
 
-  class HelloWorld extends TestComponent {
+  class HelloWorld extends Component {
+    @tracked
     name = "world";
 
-    constructor() {
-      super();
+    constructor(injections: object) {
+      super(injections);
       helloWorldComponent = this;
     }
 
@@ -66,11 +67,11 @@ test('actions can be passed and invoked with additional arguments', function(ass
   let parentComponent: ParentComponent;
   let passed = [];
 
-  class ParentComponent extends TestComponent {
+  class ParentComponent extends Component {
     name = "world";
 
-    constructor() {
-      super();
+    constructor(injections: object) {
+      super(injections);
       parentComponent = this;
     }
 
@@ -97,7 +98,7 @@ test('actions can be passed and invoked with additional arguments', function(ass
 });
 
 test('action helper invoked without a function raises an error', function(assert) {
-  class ParentComponent extends TestComponent {
+  class ParentComponent extends Component {
     debugName = 'ParentComponent';
   }
 

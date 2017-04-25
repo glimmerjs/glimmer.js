@@ -5,12 +5,14 @@ const buildTestsIndex = require('@glimmer/build/lib/build-tests-index');
 const funnel = require('broccoli-funnel');
 const path = require('path');
 const GlimmerTemplatePrecompiler = require('ember-build-utilities').GlimmerTemplatePrecompiler;
+const CreateFile = require('broccoli-file-creator');
 
 module.exports = function() {
   let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
 
   let vendorTrees = [
     '@glimmer/compiler',
+    '@glimmer/component',
     '@glimmer/di',
     '@glimmer/object-reference',
     '@glimmer/reference',
@@ -47,7 +49,6 @@ module.exports = function() {
   ];
 
   if (isTest) {
-    vendorTrees.push(buildVendorPackage('simple-dom'));
     let testsIndex = buildTestsIndex('test', 'index.ts');
 
     srcTrees.push(funnel(testsIndex, { destDir: 'test' }));
@@ -55,12 +56,26 @@ module.exports = function() {
       include: ['**/*.ts'],
       destDir: 'test'
     }));
+
+    vendorTrees.push(buildVendorPackage('simple-dom'));
+    vendorTrees.push(packageDist('@glimmer/application-test-helpers'));
   }
+
+  vendorTrees.push(new CreateFile('glimmer-env.js', `
+    define('@glimmer/env', ['exports'], function(exports) {
+      'use strict';
+
+      exports.__esModule = true;
+      exports.DEBUG = ${process.env.TEST_MODE === 'debug'};
+    });
+  `));
 
   return build({
     srcTrees,
     vendorTrees,
     external: [
+      '@glimmer/component',
+      '@glimmer/env',
       '@glimmer/di',
       '@glimmer/runtime',
       '@glimmer/object-reference',

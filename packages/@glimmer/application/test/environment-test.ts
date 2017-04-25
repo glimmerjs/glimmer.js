@@ -2,7 +2,7 @@ import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
 
 import Environment, { EnvironmentOptions } from '../src/environment';
-import { TestComponent } from './test-helpers/components';
+import Component from '@glimmer/component';
 import buildApp from './test-helpers/test-app';
 
 const { module, test } = QUnit;
@@ -38,7 +38,7 @@ test('can be assigned an owner', function(assert) {
 });
 
 test('can render a component', function(assert) {
-  class MainComponent extends TestComponent {
+  class MainComponent extends Component {
     salutation = 'Glimmer';
   }
 
@@ -54,7 +54,7 @@ test('can render a component', function(assert) {
 });
 
 test('can render a component with the component helper', function(assert) {
-  class MainComponent extends TestComponent {
+  class MainComponent extends Component {
     salutation = 'Glimmer';
   }
 
@@ -74,7 +74,7 @@ test('can render a component with the component helper', function(assert) {
 });
 
 test('components without a template raise an error', function(assert) {
-  class HelloWorldComponent extends TestComponent {
+  class HelloWorldComponent extends Component {
     debugName: 'hello-world'
   }
 
@@ -88,7 +88,7 @@ test('components without a template raise an error', function(assert) {
 });
 
 test('can render a custom helper', function(assert) {
-  class MainComponent extends TestComponent {
+  class MainComponent extends Component {
   }
 
   let app = buildApp()
@@ -107,7 +107,7 @@ test('can render a custom helper', function(assert) {
 });
 
 test('can render a custom helper that takes args', function(assert) {
-  class MainComponent extends TestComponent {
+  class MainComponent extends Component {
     firstName = 'Tom'
     lastName = 'Dale'
   }
