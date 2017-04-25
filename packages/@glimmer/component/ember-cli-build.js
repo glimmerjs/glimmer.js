@@ -10,6 +10,7 @@ const path = require('path');
 module.exports = function() {
   let vendorTrees = [
     '@glimmer/application',
+    '@glimmer/application-test-helpers',
     '@glimmer/resolver',
     '@glimmer/compiler',
     '@glimmer/di',
