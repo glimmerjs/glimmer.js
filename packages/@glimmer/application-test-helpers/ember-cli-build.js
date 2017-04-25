@@ -4,7 +4,6 @@ const packageDist = require('@glimmer/build/lib/package-dist');
 const buildTestsIndex = require('@glimmer/build/lib/build-tests-index');
 const funnel = require('broccoli-funnel');
 const path = require('path');
-// const GlimmerTemplatePrecompiler = require('./build/glimmer-template-precompiler');
 const CreateFile = require('broccoli-file-creator');
 
 module.exports = function() {
@@ -12,7 +11,6 @@ module.exports = function() {
 
   let vendorTrees = [
     '@glimmer/compiler',
-    '@glimmer/component',
     '@glimmer/di',
     '@glimmer/object-reference',
     '@glimmer/reference',
@@ -39,14 +37,7 @@ module.exports = function() {
     destDir: 'src'
   });
 
-  // let compiledTemplates = new GlimmerTemplatePrecompiler(templates, {
-  //   rootName: '-application'
-  // });
-
-  let srcTrees = [
-    tsAndJs //,
-    // compiledTemplates
-  ];
+  let srcTrees = [tsAndJs];
 
   if (isTest) {
     vendorTrees.push(buildVendorPackage('simple-dom'));
@@ -72,7 +63,6 @@ module.exports = function() {
     srcTrees,
     vendorTrees,
     external: [
-      '@glimmer/component',
       '@glimmer/env',
       '@glimmer/di',
       '@glimmer/runtime',
