@@ -1,5 +1,5 @@
 import ApplicationRegistry from '../src/application-registry';
-import { Registry, Resolver, getOwner } from '@glimmer/di';
+import { Registry } from '@glimmer/di';
 import { BlankResolver } from './test-helpers/resolvers';
 
 const { module, test } = QUnit;

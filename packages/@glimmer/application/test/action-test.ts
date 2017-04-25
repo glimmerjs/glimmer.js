@@ -35,9 +35,10 @@ test('can curry arguments to actions', function(assert) {
     .component('hello-world', HelloWorld)
     .boot();
 
-  assert.strictEqual(app.rootElement.innerText, 'Hello World');
+  let root = app.rootElement as HTMLElement;
+  assert.strictEqual(root.innerText, 'Hello World');
 
-  let h1 = app.rootElement.querySelector('h1');
+  let h1 = root.querySelector('h1');
   h1.onclick(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
@@ -48,7 +49,7 @@ test('can curry arguments to actions', function(assert) {
   helloWorldComponent.name = "cruel world";
   app.scheduleRerender();
 
-  h1 = app.rootElement.querySelector('h1');
+  h1 = root.querySelector('h1');
   h1.onclick(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
@@ -73,8 +74,8 @@ test('actions can be passed and invoked with additional arguments', function(ass
       parentComponent = this;
     }
 
-    userDidClick() {
-      passed = [...arguments];
+    userDidClick(a1, a2, a3, a4, a5, a6, evt) {
+      passed = [a1, a2, a3, a4, a5, a6, evt];
       assert.strictEqual(this, parentComponent, 'function context is preserved');
     }
   }
@@ -87,7 +88,9 @@ test('actions can be passed and invoked with additional arguments', function(ass
     .component('parent-component', ParentComponent)
     .boot();
 
-  let h1 = app.rootElement.querySelector('.grandchild') as HTMLElement;
+  let root = app.rootElement as Element;
+
+  let h1 = root.querySelector('.grandchild') as HTMLElement;
   h1.onclick(fakeEvent);
 
   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);

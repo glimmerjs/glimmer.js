@@ -48,7 +48,9 @@ test('can render a component', function(assert) {
     .template('main', '<div><hello-world @name={{salutation}} /></div>')
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Hello Glimmer!');
 });
 
 test('can render a component with the component helper', function(assert) {
@@ -62,11 +64,13 @@ test('can render a component with the component helper', function(assert) {
     .component('main', MainComponent)
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Hello Glimmer!');
 
   app.scheduleRerender();
 
-  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+  assert.equal(root.innerText, 'Hello Glimmer!');
 });
 
 test('components without a template raise an error', function(assert) {
@@ -93,11 +97,13 @@ test('can render a custom helper', function(assert) {
     .component('main', MainComponent)
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Hello Glimmer!');
 
   app.scheduleRerender();
 
-  assert.equal(app.rootElement.innerText, 'Hello Glimmer!');
+  assert.equal(root.innerText, 'Hello Glimmer!');
 });
 
 test('can render a custom helper that takes args', function(assert) {
@@ -112,10 +118,12 @@ test('can render a custom helper that takes args', function(assert) {
     .component('main', MainComponent)
     .boot();
 
-  assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Hello Tom Dale!');
 
   app.scheduleRerender();
 
-  assert.equal(app.rootElement.innerText, 'Hello Tom Dale!');
+  assert.equal(root.innerText, 'Hello Tom Dale!');
 });
 
