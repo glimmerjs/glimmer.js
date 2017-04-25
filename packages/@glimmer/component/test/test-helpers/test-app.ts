@@ -18,6 +18,7 @@ let moduleConfiguration = {
   types: {
     application: { definitiveCollection: 'main' },
     component: { definitiveCollection: 'components' },
+    helper: { definitiveCollection: 'components' },
     renderer: { definitiveCollection: 'main' },
     service: { definitiveCollection: 'services' },
     template: { definitiveCollection: 'components' },
@@ -30,7 +31,7 @@ let moduleConfiguration = {
     },
     components: {
       group: 'ui',
-      types: ['component', 'template']
+      types: ['component', 'template', 'helper']
     },
     services: {
       types: ['service']
