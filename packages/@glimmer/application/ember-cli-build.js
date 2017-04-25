@@ -4,7 +4,7 @@ const packageDist = require('@glimmer/build/lib/package-dist');
 const buildTestsIndex = require('@glimmer/build/lib/build-tests-index');
 const funnel = require('broccoli-funnel');
 const path = require('path');
-const GlimmerTemplatePrecompiler = require('./build/glimmer-template-precompiler');
+const GlimmerTemplatePrecompiler = require('ember-build-utilities').GlimmerTemplatePrecompiler;
 
 module.exports = function() {
   let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
