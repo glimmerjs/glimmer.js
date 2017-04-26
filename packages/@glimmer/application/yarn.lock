@@ -2,13 +2,14 @@
 # yarn lockfile v1
 
 
-"@glimmer/application-test-helpers@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.1.2.tgz#aa9236d97e37a12a47d5a4d5344e5e4fdc7d7bfa"
+"@glimmer/application-test-helpers@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.npmjs.org/@glimmer/application-test-helpers/-/application-test-helpers-0.1.4.tgz#c3dcf2e8d385f7dff9d33852a5621f8982aa0551"
   dependencies:
     "@glimmer/compiler" "^0.23.0-alpha.6"
     "@glimmer/di" "^0.1.9"
     "@glimmer/env" "^0.1.7"
+    "@glimmer/interfaces" "^0.23.0-alpha.6"
     "@glimmer/object-reference" "^0.23.0-alpha.6"
     "@glimmer/reference" "^0.23.0-alpha.6"
     "@glimmer/resolver" "^0.3.0"
@@ -99,15 +100,11 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@glimmer/di/-/di-0.2.0.tgz#73bfd4a6ee4148a80bf092e8a5d29bcac9d4ce7e"
 
-"@glimmer/env@0.1.7", "@glimmer/env@^0.1.7":
+"@glimmer/env@^0.1.5", "@glimmer/env@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.7.tgz#fd2d2b55a9029c6b37a6c935e8c8871ae70dfa07"
 
-"@glimmer/env@^0.1.5":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.6.tgz#c57bd9fc99f39006293fb5c156dca192a635515e"
-
-"@glimmer/interfaces@^0.23.0-alpha.11":
+"@glimmer/interfaces@^0.23.0-alpha.11", "@glimmer/interfaces@^0.23.0-alpha.6":
   version "0.23.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.23.0-alpha.11.tgz#18454766efb4e545e74eb8efdf2d17eea81f1394"
   dependencies:
