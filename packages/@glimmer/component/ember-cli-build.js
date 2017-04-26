@@ -8,9 +8,9 @@ const funnel = require('broccoli-funnel');
 const path = require('path');
 
 module.exports = function() {
+  let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
+
   let vendorTrees = [
-    '@glimmer/application',
-    '@glimmer/application-test-helpers',
     '@glimmer/resolver',
     '@glimmer/compiler',
     '@glimmer/di',
@@ -34,6 +34,11 @@ module.exports = function() {
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
   vendorTrees.push(funnel(path.dirname(require.resolve('handlebars/package')), {
       include: ['dist/handlebars.amd.js'] }));
+
+  if (isTest) {
+    vendorTrees.push(packageDist('@glimmer/application'));
+    vendorTrees.push(packageDist('@glimmer/application-test-helpers'));
+  }
 
   return build({
     vendorTrees,
