@@ -22,7 +22,7 @@
   "dependencies": {
     "@glimmer/compiler": "^0.23.0-alpha.6",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/env": "^0.1.6",
+    "@glimmer/env": "^0.1.7",
     "@glimmer/object-reference": "^0.23.0-alpha.6",
     "@glimmer/reference": "^0.23.0-alpha.6",
     "@glimmer/resolver": "^0.3.0",
