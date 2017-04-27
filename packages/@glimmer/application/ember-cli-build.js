@@ -10,10 +10,11 @@ const CreateFile = require('broccoli-file-creator');
 module.exports = function() {
   let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
 
-  let vendorTrees = [
+  let external = [
     '@glimmer/compiler',
     '@glimmer/component',
     '@glimmer/di',
+    '@glimmer/env',
     '@glimmer/object-reference',
     '@glimmer/reference',
     '@glimmer/runtime',
@@ -21,7 +22,13 @@ module.exports = function() {
     '@glimmer/util',
     '@glimmer/wire-format',
     '@glimmer/resolver'
-  ].map(packageDist);
+  ];
+
+  if (isTest) {
+    external.push('@glimmer/application-test-helpers');
+  }
+
+  let vendorTrees = external.map(packageDist);
 
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
   vendorTrees.push(funnel(path.dirname(require.resolve('handlebars/package')), {
@@ -58,7 +65,6 @@ module.exports = function() {
     }));
 
     vendorTrees.push(buildVendorPackage('simple-dom'));
-    vendorTrees.push(packageDist('@glimmer/application-test-helpers'));
   }
 
   vendorTrees.push(new CreateFile('glimmer-env.js', `
@@ -73,16 +79,6 @@ module.exports = function() {
   return build({
     srcTrees,
     vendorTrees,
-    external: [
-      '@glimmer/component',
-      '@glimmer/env',
-      '@glimmer/di',
-      '@glimmer/runtime',
-      '@glimmer/object-reference',
-      '@glimmer/util',
-      '@glimmer/reference',
-      '@glimmer/resolver',
-      '@glimmer/compiler'
-    ]
+    external
   });
 };
