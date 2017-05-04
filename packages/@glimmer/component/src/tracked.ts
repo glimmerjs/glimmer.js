@@ -1,6 +1,6 @@
-import { DEBUG } from '@glimmer/env';
-import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from '@glimmer/reference';
-import { dict, Dict } from '@glimmer/util';
+import { DEBUG } from "@glimmer/env";
+import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from "@glimmer/reference";
+import { dict, Dict } from "@glimmer/util";
 
 /**
  * @decorator
@@ -23,7 +23,7 @@ export function tracked(...dependencies: any[]): any {
   if (typeof target === "string") {
     return function(target: any, key: string | Symbol, descriptor: PropertyDescriptor) {
       return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
-    }
+    };
   } else {
     if (descriptor) {
       return descriptorForTrackedComputedProperty(target, key, descriptor, []);
@@ -47,7 +47,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
       descriptor.set.apply(this, arguments);
       propertyDidChange();
     }
-  }
+  };
 }
 
 export type Key = string;
@@ -232,7 +232,7 @@ function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
 }
 
 export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
-  if (typeof obj === 'object' && obj) {
+  if (typeof obj === "object" && obj) {
     if (DEBUG && !hasTag(obj, key)) {
       installDevModeErrorInterceptor(obj, key, throwError);
     }

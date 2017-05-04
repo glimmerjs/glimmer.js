@@ -3,7 +3,7 @@ import {
   setOwner,
   Factory,
   Owner
-} from '@glimmer/di';
+} from "@glimmer/di";
 import {
   Bounds,
   ComponentManager as GlimmerComponentManager,
@@ -14,10 +14,10 @@ import {
   Arguments,
   Template,
   CapturedArguments
-} from '@glimmer/runtime';
-import Component from './component';
-import ComponentDefinition from './component-definition';
-import { RootReference } from './references';
+} from "@glimmer/runtime";
+import Component from "./component";
+import ComponentDefinition from "./component-definition";
+import { RootReference } from "./references";
 import { Dict, Destroyable } from "@glimmer/util";
 
 export interface ConstructorOptions {

@@ -2,10 +2,10 @@ import {
   ComponentDefinition as GlimmerComponentDefinition,
   Template,
   CapturedArguments
-} from '@glimmer/runtime';
-import ComponentManager, { ComponentStateBucket } from './component-manager';
-import { ComponentFactory } from './component';
-import { TemplateMeta } from '@glimmer/application';
+} from "@glimmer/runtime";
+import ComponentManager, { ComponentStateBucket } from "./component-manager";
+import { ComponentFactory } from "./component";
+import { TemplateMeta } from "@glimmer/application";
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<ComponentStateBucket> {
   componentFactory: ComponentFactory;
@@ -20,6 +20,6 @@ export default class ComponentDefinition extends GlimmerComponentDefinition<Comp
   }
 
   toJSON() {
-    return { GlimmerDebug: '<component-definition>' };
+    return { GlimmerDebug: "<component-definition>" };
   }
 }
