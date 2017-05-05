@@ -1,22 +1,33 @@
-import { Simple } from '@glimmer/runtime';
+import {
+  Simple,
+  ComponentManager as GlimmerComponentManager
+} from '@glimmer/runtime';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
+import { Opaque, Dict } from '@glimmer/interfaces';
+import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 
+export interface Application {
+  rootElement: Simple.Element;
+  document: Simple.Document;
+  renderComponent: Function;
+  boot(): void;
+  scheduleRerender(): Promise<void>;
+}
+
 export interface AppBuilderOptions {
-  ApplicationClass?: any;
-  ComponentManager?: any;
+  ApplicationClass?: (new(options: Opaque) => Application);
+  ComponentManager?: GlimmerComponentManager<Opaque>;
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
 }
 
-export interface ComponentFactory {
-  create(injections: object): any;
-}
+export interface ComponentFactory extends FactoryDefinition<Opaque> {};
 
 export class AppBuilder {
   rootName: string;
-  modules: any = {};
+  modules: Dict<Opaque> = {};
   options: AppBuilderOptions;
 
   constructor(name: string, options: AppBuilderOptions) {
@@ -46,9 +57,9 @@ export class AppBuilder {
 
   boot() {
     let resolverConfiguration = this.options.resolverConfiguration || defaultResolverConfiguration;
-    resolverConfiguration.app = resolverConfiguration.app || { 
-      name: this.rootName, 
-      rootName: this.rootName 
+    resolverConfiguration.app = resolverConfiguration.app || {
+      name: this.rootName,
+      rootName: this.rootName
     };
 
     let registry = new BasicModuleRegistry(this.modules);
@@ -61,7 +72,7 @@ export class AppBuilder {
     });
 
     // TODO - after @glimmer/application > 0.4.0 is published, we can change
-    // the following to simply: 
+    // the following to simply:
     // ```
     // let rootElement = app.document.createElement('div');
     // ```
@@ -78,4 +89,3 @@ export class AppBuilder {
     return app;
   }
 }
- 
