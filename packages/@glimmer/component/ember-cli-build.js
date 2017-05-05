@@ -13,7 +13,6 @@ module.exports = function() {
   let external = [
     '@glimmer/compiler',
     '@glimmer/di',
-    '@glimmer/env',
     '@glimmer/object-reference',
     '@glimmer/reference',
     '@glimmer/resolver',
