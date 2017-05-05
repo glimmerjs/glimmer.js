@@ -9,9 +9,11 @@ const GlimmerTemplatePrecompiler = require('ember-build-utilities').GlimmerTempl
 module.exports = function() {
   let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
 
-  let vendorTrees = [
+  let external = [
     '@glimmer/compiler',
+    '@glimmer/component',
     '@glimmer/di',
+    '@glimmer/env',
     '@glimmer/object-reference',
     '@glimmer/reference',
     '@glimmer/runtime',
@@ -19,7 +21,13 @@ module.exports = function() {
     '@glimmer/util',
     '@glimmer/wire-format',
     '@glimmer/resolver'
-  ].map(packageDist);
+  ];
+
+  if (isTest) {
+    external.push('@glimmer/application-test-helpers');
+  }
+
+  let vendorTrees = external.map(packageDist);
 
   vendorTrees.push(buildVendorPackage('simple-html-tokenizer'));
   vendorTrees.push(funnel(path.dirname(require.resolve('handlebars/package')), {
@@ -47,7 +55,6 @@ module.exports = function() {
   ];
 
   if (isTest) {
-    vendorTrees.push(buildVendorPackage('simple-dom'));
     let testsIndex = buildTestsIndex('test', 'index.ts');
 
     srcTrees.push(funnel(testsIndex, { destDir: 'test' }));
@@ -55,19 +62,14 @@ module.exports = function() {
       include: ['**/*.ts'],
       destDir: 'test'
     }));
+
+    external.push('simple-dom');
+    vendorTrees.push(buildVendorPackage('simple-dom'));
   }
 
   return build({
     srcTrees,
     vendorTrees,
-    external: [
-      '@glimmer/di',
-      '@glimmer/runtime',
-      '@glimmer/object-reference',
-      '@glimmer/util',
-      '@glimmer/reference',
-      '@glimmer/resolver',
-      '@glimmer/compiler'
-    ]
+    external
   });
 };
