@@ -1,7 +1,7 @@
 import Component from '../src/component';
 import { tracked } from '../src/tracked';
-import buildApp from './test-helpers/test-app';
-import Application from "@glimmer/application";
+import buildApp, { TestApplication } from './test-helpers/test-app';
+import { setPropertyDidChange } from '../src/tracked';
 
 const { module, test } = QUnit;
 
@@ -12,6 +12,7 @@ test('Args smoke test', (assert) => {
   assert.expect(5);
 
   let parent: ParentComponent;
+  let app: TestApplication;
 
   class ParentComponent extends Component {
     @tracked firstName = "Tom";
@@ -53,7 +54,7 @@ test('Args smoke test', (assert) => {
     }
   }
 
-  buildApp()
+  app = buildApp()
     .component('parent-component', ParentComponent)
     .component('child-component', ChildComponent)
     .template('main', '<div><parent-component /></div>')
@@ -68,12 +69,16 @@ test('Args smoke test', (assert) => {
     .template('child-component', '<div></div>')
     .boot();
 
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
+
   parent.firstName = "Thomas";
 });
 
 test("Setting args should not schedule a rerender", function(assert) {
   let done = assert.async();
-  let app: Application;
+  let app: TestApplication;
 
   class ParentComponent extends Component {
     @tracked foo = false;
@@ -101,4 +106,8 @@ test("Setting args should not schedule a rerender", function(assert) {
     .template('child-component', '<div></div>')
     .component('child-component', ChildComponent)
     .boot();
+
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
 });

@@ -8,18 +8,26 @@ const funnel = require('broccoli-funnel');
 const path = require('path');
 
 module.exports = function() {
-  let vendorTrees = [
-    '@glimmer/application',
-    '@glimmer/resolver',
+  let isTest = process.env.EMBER_ENV === 'test' || process.env.BROCCOLI_ENV === 'tests';
+
+  let external = [
     '@glimmer/compiler',
     '@glimmer/di',
     '@glimmer/object-reference',
     '@glimmer/reference',
+    '@glimmer/resolver',
     '@glimmer/runtime',
     '@glimmer/syntax',
     '@glimmer/util',
     '@glimmer/wire-format',
-  ].map(packageDist);
+  ];
+
+  if (isTest) {
+    external.push('@glimmer/application');
+    external.push('@glimmer/application-test-helpers');
+  }
+
+  let vendorTrees = external.map(packageDist);
 
   vendorTrees.push(new CreateFile('glimmer-env.js', `
     define('@glimmer/env', ['exports'], function(exports) {
@@ -36,15 +44,6 @@ module.exports = function() {
 
   return build({
     vendorTrees,
-    external: [
-      '@glimmer/application',
-      '@glimmer/resolver',
-      '@glimmer/compiler',
-      '@glimmer/reference',
-      '@glimmer/util',
-      '@glimmer/runtime',
-      '@glimmer/di',
-      '@glimmer/env'
-    ]
+    external
   });
 }

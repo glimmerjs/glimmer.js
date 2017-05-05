@@ -2,9 +2,25 @@
 # yarn lockfile v1
 
 
-"@glimmer/application@^0.3.6":
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/@glimmer/application/-/application-0.3.10.tgz#3b5dd2de83710546ee4ba3f6e9bac08a79d60b5d"
+"@glimmer/application-test-helpers@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.1.3.tgz#1ac7a8d9a23746821e921b0621193468cbfa3d02"
+  dependencies:
+    "@glimmer/compiler" "^0.23.0-alpha.6"
+    "@glimmer/di" "^0.1.9"
+    "@glimmer/env" "^0.1.7"
+    "@glimmer/interfaces" "^0.23.0-alpha.6"
+    "@glimmer/object-reference" "^0.23.0-alpha.6"
+    "@glimmer/reference" "^0.23.0-alpha.6"
+    "@glimmer/resolver" "^0.3.0"
+    "@glimmer/runtime" "^0.23.0-alpha.6"
+    "@glimmer/util" "^0.23.0-alpha.6"
+    "@glimmer/wire-format" "^0.23.0-alpha.6"
+    simple-dom "^0.3.2"
+
+"@glimmer/application@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@glimmer/application/-/application-0.4.0.tgz#2abd38ba9c6645abe38b63c44380802761c3f3ee"
   dependencies:
     "@glimmer/di" "^0.1.9"
     "@glimmer/object-reference" "^0.23.0-alpha.6"
@@ -55,7 +71,7 @@
     tslint "^3.15.1"
     typescript "^2.1.5"
 
-"@glimmer/compiler@^0.23.0-alpha.11":
+"@glimmer/compiler@^0.23.0-alpha.11", "@glimmer/compiler@^0.23.0-alpha.6":
   version "0.23.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@glimmer/compiler/-/compiler-0.23.0-alpha.11.tgz#2f2ea9a4e20ed7f080f650a04f1d5c0385a97739"
   dependencies:
@@ -77,7 +93,11 @@
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.5.tgz#5ef458fd22843852344048003bc0638d7eeabd81"
 
-"@glimmer/interfaces@^0.23.0-alpha.11":
+"@glimmer/env@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.7.tgz#fd2d2b55a9029c6b37a6c935e8c8871ae70dfa07"
+
+"@glimmer/interfaces@^0.23.0-alpha.11", "@glimmer/interfaces@^0.23.0-alpha.6":
   version "0.23.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.23.0-alpha.11.tgz#18454766efb4e545e74eb8efdf2d17eea81f1394"
   dependencies:
@@ -133,7 +153,7 @@
   version "0.23.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.23.0-alpha.11.tgz#8a706838684381297678cf97b6277a1a6d7668c1"
 
-"@glimmer/wire-format@^0.23.0-alpha.11":
+"@glimmer/wire-format@^0.23.0-alpha.11", "@glimmer/wire-format@^0.23.0-alpha.6":
   version "0.23.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.23.0-alpha.11.tgz#61d7db874f37959dacb615c247424b0f5faf87b0"
   dependencies:
@@ -3719,6 +3739,10 @@ silent-error@^1.0.0, silent-error@^1.0.1:
   resolved "https://registry.yarnpkg.com/silent-error/-/silent-error-1.0.1.tgz#71b7d503d1c6f94882b51b56be879b113cb4822c"
   dependencies:
     debug "^2.2.0"
+
+simple-dom@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/simple-dom/-/simple-dom-0.3.2.tgz#0663d10f1556f1500551d518f56e3aba0871371d"
 
 simple-fmt@~0.1.0:
   version "0.1.0"

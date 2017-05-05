@@ -5,7 +5,7 @@ import {
 } from "@glimmer/runtime";
 import ComponentManager, { ComponentStateBucket } from "./component-manager";
 import { ComponentFactory } from "./component";
-import { TemplateMeta } from "@glimmer/application";
+import TemplateMeta from "./template-meta";
 
 export default class ComponentDefinition extends GlimmerComponentDefinition<ComponentStateBucket> {
   componentFactory: ComponentFactory;
