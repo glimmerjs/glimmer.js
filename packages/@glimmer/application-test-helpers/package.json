@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/application-test-helpers",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Test helpers for developing @glimmer/component and @glimmer/application",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
