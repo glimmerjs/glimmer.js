@@ -1,12 +1,13 @@
 import Component, { tracked } from '@glimmer/component';
 import buildApp from './test-helpers/test-app';
+import { didRender } from '@glimmer/application-test-helpers';
 import { debugInfoForReference } from '../src/helpers/action';
 
 const { module, test } = QUnit;
 
 module('Actions');
 
-test('can curry arguments to actions', function(assert) {
+test('can curry arguments to actions', async function(assert) {
   assert.expect(9);
 
   let fakeEvent: any = {};
@@ -49,6 +50,8 @@ test('can curry arguments to actions', function(assert) {
 
   helloWorldComponent.name = "cruel world";
   app.scheduleRerender();
+
+  await didRender(app);
 
   h1 = root.querySelector('h1');
   h1.onclick(fakeEvent);
