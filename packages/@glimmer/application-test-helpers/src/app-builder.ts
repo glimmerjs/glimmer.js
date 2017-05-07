@@ -13,7 +13,7 @@ export interface Application {
   document: Simple.Document;
   renderComponent: Function;
   boot(): void;
-  scheduleRerender(): Promise<void>;
+  scheduleRerender(): void;
 }
 
 export interface AppBuilderOptions {
@@ -82,7 +82,7 @@ export class AppBuilder {
     let rootElement = document.createElement('div');
 
     app.rootElement = rootElement;
-    app.renderComponent('main', rootElement, null);
+    app.renderComponent('main', rootElement);
 
     app.boot();
 
