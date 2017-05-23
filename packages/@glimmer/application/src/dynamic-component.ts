@@ -16,7 +16,7 @@ import {
   Option
 } from '@glimmer/util';
 import * as WireFormat from '@glimmer/wire-format';
-import { TemplateMeta } from "./index";
+import { TemplateMeta } from '@glimmer/component';
 
 export function blockComponentMacro(params, hash, template, inverse, builder) {
   let definitionArgs: ComponentArgs = [params.slice(0, 1), null, null, null];
