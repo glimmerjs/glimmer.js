@@ -13,8 +13,13 @@ import {
   CompiledDynamicProgram,
   Arguments,
   Template,
-  CapturedArguments
+  CapturedArguments,
+  compileLayout,
+  ComponentLayoutBuilder
 } from "@glimmer/runtime";
+import {
+  TemplateMeta
+} from "@glimmer/wire-format";
 import Component from "./component";
 import ComponentDefinition from "./component-definition";
 import { RootReference } from "./references";
@@ -49,6 +54,20 @@ export class ComponentStateBucket {
   }
 }
 
+class LayoutCompiler {
+  name: string;
+  template: Template<TemplateMeta>;
+
+  constructor(name: string, template: Template<TemplateMeta>) {
+    this.template = template;
+    this.name = name;
+  }
+
+  compile(builder: ComponentLayoutBuilder): void {
+    builder.fromLayout(this.name, this.template);
+  }
+}
+
 export default class ComponentManager implements GlimmerComponentManager<ComponentStateBucket> {
   private env: Environment;
 
@@ -78,9 +97,8 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
 
   layoutFor(definition: ComponentDefinition, bucket: ComponentStateBucket, env: Environment): CompiledDynamicProgram {
     let template = definition.template;
-    let compiledLayout = template.asLayout().compileDynamic(this.env);
 
-    return compiledLayout;
+    return compileLayout(new LayoutCompiler(definition.name, template), this.env);
   }
 
   getSelf(bucket: ComponentStateBucket) {
