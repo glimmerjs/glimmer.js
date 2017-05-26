@@ -79,7 +79,7 @@ test('can render a component with the component helper', async function(assert) 
 
 test('components without a template raise an error', function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'hello-world'
+    debugName: 'hello-world';
   }
 
   let app = buildApp()
@@ -106,7 +106,6 @@ test('can render a custom helper', async function(assert) {
   assert.equal(root.innerText, 'Hello Glimmer!');
 
   app.scheduleRerender();
-  
   await didRender(app);
 
   assert.equal(root.innerText, 'Hello Glimmer!');
@@ -114,8 +113,8 @@ test('can render a custom helper', async function(assert) {
 
 test('can render a custom helper that takes args', async function(assert) {
   class MainComponent extends Component {
-    firstName = 'Tom'
-    lastName = 'Dale'
+    firstName = 'Tom';
+    lastName = 'Dale';
   }
 
   let app = buildApp()
@@ -129,7 +128,6 @@ test('can render a custom helper that takes args', async function(assert) {
   assert.equal(root.innerText, 'Hello Tom Dale!');
 
   app.scheduleRerender();
-  
   await didRender(app);
 
   assert.equal(root.innerText, 'Hello Tom Dale!');

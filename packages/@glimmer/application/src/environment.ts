@@ -27,7 +27,7 @@ import {
 } from '@glimmer/di';
 import Iterable from './iterable';
 import { TemplateMeta } from '@glimmer/component';
-import ComponentDefinitionCreator from './component-definition-creator'
+import ComponentDefinitionCreator from './component-definition-creator';
 import Application from "./application";
 import {
   blockComponentMacro,
@@ -112,7 +112,7 @@ export default class Environment extends GlimmerEnvironment {
 
   getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition<Component> {
     let owner: Owner = getOwner(this);
-    let relSpecifier: string = `template:${name}`;
+    let relSpecifier = `template:${name}`;
     let referrer: string = meta.specifier;
 
     let specifier = owner.identify(relSpecifier, referrer);
@@ -165,7 +165,7 @@ export default class Environment extends GlimmerEnvironment {
     }
 
     let owner: Owner = getOwner(this);
-    let relSpecifier: string = `helper:${name}`;
+    let relSpecifier = `helper:${name}`;
     let referrer: string = meta.specifier;
 
     let specifier = owner.identify(relSpecifier, referrer);

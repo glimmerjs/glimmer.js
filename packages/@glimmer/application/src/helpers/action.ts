@@ -34,7 +34,7 @@ export function debugInfoForReference(reference: any): string {
   let parent;
   let property;
 
-  if (reference == null) { return message; }
+  if (reference === null) { return message; }
 
   if ('parent' in reference && 'property' in reference) {
     parent = reference['parent'].value();
@@ -53,7 +53,7 @@ export function debugInfoForReference(reference: any): string {
 
 function debugName(obj: any) {
   let objType = typeof obj;
-  if (obj == null) {
+  if (obj === null) {
     return objType;
   } else if (objType === 'number' || objType === 'boolean') {
     return obj.toString();

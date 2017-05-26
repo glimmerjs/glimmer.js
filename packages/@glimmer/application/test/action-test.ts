@@ -118,7 +118,7 @@ test('action helper invoked without a function raises an error', function(assert
 test('debug name from references can be extracted', function(assert) {
   let refOne = {
     parent: {
-      value() { return { debugName: 'parent' } }
+      value() { return { debugName: 'parent' }; }
     },
     property: 'name'
   };

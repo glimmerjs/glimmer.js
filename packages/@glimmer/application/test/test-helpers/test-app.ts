@@ -7,7 +7,7 @@ export class TestApplication extends Application {
   rootElement: Simple.Element;
 }
 
-export default function buildApp(appName: string = 'test-app', options: AppBuilderOptions = {}) {
+export default function buildApp(appName = 'test-app', options: AppBuilderOptions = {}) {
   options.ApplicationClass = options.ApplicationClass || TestApplication;
   options.ComponentManager = options.ComponentManager || ComponentManager;
   return new AppBuilder(appName, options);

@@ -78,8 +78,8 @@ test('renders multiple components in different places', async function(assert) {
     .template('hello-robbie', `<h1>Hello Robbie!</h1>`)
     .boot();
 
-  app.renderComponent('hello-world', firstContainerElement),
-  app.renderComponent('hello-robbie', secondContainerElement)
+  app.renderComponent('hello-world', firstContainerElement);
+  app.renderComponent('hello-robbie', secondContainerElement);
 
   await didRender(app);
 
@@ -97,8 +97,8 @@ test('renders multiple components in the same container', async function(assert)
     .template('hello-robbie', `<h1>Hello Robbie!</h1>`)
     .boot();
 
-  app.renderComponent('hello-world', containerElement),
-  app.renderComponent('hello-robbie', containerElement)
+  app.renderComponent('hello-world', containerElement);
+  app.renderComponent('hello-robbie', containerElement);
 
   await didRender(app);
 
@@ -120,8 +120,8 @@ test('renders multiple components in the same container in particular places', a
 
   assert.equal(containerElement.innerHTML, '<aside></aside>');
 
-  app.renderComponent('hello-world', containerElement),
-  app.renderComponent('hello-robbie', containerElement, nextSibling)
+  app.renderComponent('hello-world', containerElement);
+  app.renderComponent('hello-robbie', containerElement, nextSibling);
 
   await didRender(app);
 

@@ -38,10 +38,10 @@ export interface Initializer {
 }
 
 export interface AppRoot {
-  id: number,
-  component: string | ComponentDefinition<Component>,
-  parent: Simple.Node,
-  nextSibling: Option<Simple.Node>
+  id: number;
+  component: string | ComponentDefinition<Component>;
+  parent: Simple.Node;
+  nextSibling: Option<Simple.Node>;
 }
 
 export default class Application implements Owner {
@@ -50,7 +50,7 @@ export default class Application implements Owner {
   public document: Simple.Document;
   public env: Environment;
   private _roots: AppRoot[] = [];
-  private _rootsIndex: number = 0;
+  private _rootsIndex = 0;
   private _registry: Registry;
   private _container: Container;
   private _initializers: Initializer[] = [];
@@ -105,7 +105,7 @@ export default class Application implements Owner {
       let hash = {};
       setOwner(hash, this);
       return hash;
-    }
+    };
   }
 
   /** @hidden */
