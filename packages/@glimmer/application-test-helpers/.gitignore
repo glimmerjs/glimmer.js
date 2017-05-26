@@ -5,4 +5,3 @@ node_modules
 dist
 tests
 tmp
-yarn.lock
