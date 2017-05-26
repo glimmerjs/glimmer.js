@@ -1,6 +1,5 @@
 import {
-  Simple,
-  ComponentManager as GlimmerComponentManager
+  Simple
 } from '@glimmer/runtime';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
 import { Opaque, Dict } from '@glimmer/interfaces';
@@ -17,8 +16,8 @@ export interface Application {
 }
 
 export interface AppBuilderOptions {
-  ApplicationClass?: (new(options: Opaque) => Application);
-  ComponentManager?: GlimmerComponentManager<Opaque>;
+  ApplicationClass?: any; // TODO - typing
+  ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
 }
