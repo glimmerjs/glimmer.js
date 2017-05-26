@@ -13,8 +13,6 @@ class Component {
 
 test('instance initializers run at initialization', function(assert) {
   let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
-
-
   app.registerInitializer({
     initialize(app) {
       app.register('component:/my-app/components/my-component', Component);
