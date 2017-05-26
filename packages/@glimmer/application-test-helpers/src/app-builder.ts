@@ -1,6 +1,5 @@
 import {
-  Simple,
-  ComponentManager as GlimmerComponentManager
+  Simple
 } from '@glimmer/runtime';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
 import { Opaque, Dict } from '@glimmer/interfaces';
@@ -17,8 +16,8 @@ export interface Application {
 }
 
 export interface AppBuilderOptions {
-  ApplicationClass?: (new(options: Opaque) => Application);
-  ComponentManager?: GlimmerComponentManager<Opaque>;
+  ApplicationClass?: any; // TODO - typing
+  ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
 }
@@ -71,15 +70,7 @@ export class AppBuilder {
       document: this.options.document
     });
 
-    // TODO - after @glimmer/application > 0.4.0 is published, we can change
-    // the following to simply:
-    // ```
-    // let rootElement = app.document.createElement('div');
-    // ```
-    //
-    // Because `app.document` will always be assigned.
-    let document = app.document || this.options.document || window.document;
-    let rootElement = document.createElement('div');
+    let rootElement = app.document.createElement('div');
 
     app.rootElement = rootElement;
     app.renderComponent('main', rootElement, null);
