@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@glimmer/application-test-helpers@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.2.0.tgz#2719de0e256034355e1018a86783961530baa87a"
+"@glimmer/application-test-helpers@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.2.1.tgz#082cbcfd9520e1a77c3efa8ea9632f552231802e"
   dependencies:
     "@glimmer/compiler" "^0.24.0-beta.4"
     "@glimmer/di" "^0.1.9"
