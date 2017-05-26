@@ -31,7 +31,7 @@
     "@glimmer/util": "^0.24.0-beta.4"
   },
   "devDependencies": {
-    "@glimmer/application": "^0.4.0",
+    "@glimmer/application": "^0.5.0",
     "@glimmer/application-test-helpers": "^0.2.1",
     "@glimmer/build": "^0.6.1",
     "@glimmer/compiler": "^0.24.0-beta.4",
