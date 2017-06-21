@@ -25,20 +25,20 @@
     "tslint:format": "tslint --typecheck -c tslint.json --project tsconfig.json --fix"
   },
   "dependencies": {
-    "@glimmer/compiler": "^0.24.0-beta.4",
-    "@glimmer/component": "^0.4.0",
+    "@glimmer/compiler": "^0.25.1",
+    "@glimmer/component": "^0.5.0",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/object-reference": "^0.24.0-beta.4",
-    "@glimmer/reference": "^0.24.0-beta.4",
+    "@glimmer/object-reference": "^0.25.1",
+    "@glimmer/reference": "^0.25.1",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/runtime": "^0.24.0-beta.4",
-    "@glimmer/util": "^0.24.0-beta.4"
+    "@glimmer/runtime": "^0.25.1",
+    "@glimmer/util": "^0.25.1"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.2.1",
+    "@glimmer/application-test-helpers": "^0.3.0",
     "@glimmer/build": "^0.6.2",
-    "@glimmer/wire-format": "^0.24.0-beta.4",
+    "@glimmer/wire-format": "^0.25.1",
     "ember-build-utilities": "^0.3.0",
     "ember-cli": "^2.12.0",
     "simple-dom": "^0.3.2",
