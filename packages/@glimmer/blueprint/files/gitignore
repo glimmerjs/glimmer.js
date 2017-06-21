@@ -1,3 +1,4 @@
 node_modules
-tmp
+tmp/*
+!tmp/.metadata_never_index
 dist
