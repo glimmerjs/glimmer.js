@@ -80,15 +80,15 @@
     "@glimmer/wire-format" "^0.25.1"
     simple-html-tokenizer "^0.3.0"
 
-"@glimmer/component@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/component/-/component-0.4.0.tgz#2cd491045f4d86502cf4f3249f8f6c51de046b0c"
+"@glimmer/component@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@glimmer/component/-/component-0.5.0.tgz#d4a5e594444e69b88f6e48a8b131cf42dc193454"
   dependencies:
     "@glimmer/di" "^0.1.9"
     "@glimmer/env" "^0.1.7"
-    "@glimmer/reference" "^0.24.0-beta.4"
-    "@glimmer/runtime" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
+    "@glimmer/reference" "^0.25.1"
+    "@glimmer/runtime" "^0.25.1"
+    "@glimmer/util" "^0.25.1"
 
 "@glimmer/di@^0.1.9":
   version "0.1.11"
