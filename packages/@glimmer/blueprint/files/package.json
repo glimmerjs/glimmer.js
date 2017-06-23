@@ -19,8 +19,8 @@
     "broccoli-asset-rev": "^2.5.0",
     "ember-cli": "^2.14.0-beta.2",
     "ember-cli-inject-live-reload": "^1.6.1",
-    "ember-cli-uglify": "^1.2.0",
     "ember-cli-sass": "^6.2.0",
+    "ember-cli-uglify": "^1.2.0",
     "typescript": "^2.2.2"
   },
   "engines": {
