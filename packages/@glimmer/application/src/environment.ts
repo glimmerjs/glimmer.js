@@ -141,7 +141,7 @@ export default class Environment extends GlimmerEnvironment {
     }
 
     let template = templateFactory<TemplateMeta>(serializedTemplate).create(this);
-    let manager: ComponentManager<Component> = this.managerFor(meta.managerId);
+    let manager: ComponentManager<Component> = this.managerFor(serializedTemplate.meta.managerId);
     let definition: ComponentDefinition<Component>;
 
     if (canCreateComponentDefinition(manager)) {
