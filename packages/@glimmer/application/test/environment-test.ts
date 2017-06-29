@@ -77,6 +77,16 @@ test('can render a component with the component helper', async function(assert) 
   assert.equal(root.innerText, 'Hello Glimmer!');
 });
 
+test('custom elements are rendered', function(assert) {
+  let app = buildApp()
+    .template('main', '<hello-world>foo</hello-world>')
+    .boot();
+
+  let serializedHTML = serializer.serialize(app.rootElement);
+
+  assert.equal(serializedHTML, '<div><hello-world>foo</hello-world></div>');
+});
+
 test('components without a template raise an error', function(assert) {
   class HelloWorldComponent extends Component {
     debugName: 'hello-world';

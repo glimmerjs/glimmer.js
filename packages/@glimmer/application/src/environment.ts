@@ -17,7 +17,9 @@ import {
 } from "@glimmer/reference";
 import {
   dict,
-  Opaque
+  Opaque,
+  Maybe,
+  unwrap
 } from '@glimmer/util';
 import {
   getOwner,
@@ -107,22 +109,12 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   hasComponentDefinition(name: string, meta: TemplateMeta): boolean {
-    return !!this.getComponentDefinition(name, meta);
+    return !!this.identifyComponent(name, meta);
   }
 
   getComponentDefinition(name: string, meta: TemplateMeta): ComponentDefinition<Component> {
     let owner: Owner = getOwner(this);
-    let relSpecifier = `template:${name}`;
-    let referrer: string = meta.specifier;
-
-    let specifier = owner.identify(relSpecifier, referrer);
-    if (specifier === undefined) {
-      if (owner.identify(`component:${name}`, referrer)) {
-        throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
-      } else {
-        throw new Error("Could not find template for " + name);
-      }
-    }
+    let specifier = unwrap(this.identifyComponent(name, meta));
 
     if (!this.components[specifier]) {
       return this.registerComponent(name, specifier, meta, owner);
@@ -228,6 +220,20 @@ export default class Environment extends GlimmerEnvironment {
     populateMacros(macros.blocks, macros.inlines);
 
     return macros;
+  }
+
+  private identifyComponent(name: string, meta: TemplateMeta): Maybe<string> {
+    let owner: Owner = getOwner(this);
+    let relSpecifier = `template:${name}`;
+    let referrer: string = meta.specifier;
+
+    let specifier = owner.identify(relSpecifier, referrer);
+
+    if (specifier === undefined && owner.identify(`component:${name}`, referrer)) {
+      throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
+    }
+
+    return specifier;
   }
 }
 
