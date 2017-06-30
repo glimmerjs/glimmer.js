@@ -26,18 +26,18 @@
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/reference": "^0.25.1",
-    "@glimmer/runtime": "^0.25.1",
-    "@glimmer/util": "^0.25.1"
+    "@glimmer/reference": "^0.26.2",
+    "@glimmer/runtime": "^0.26.2",
+    "@glimmer/util": "^0.26.2"
   },
   "devDependencies": {
     "@glimmer/application": "^0.5.0",
     "@glimmer/application-test-helpers": "^0.3.0",
     "@glimmer/build": "^0.6.1",
-    "@glimmer/compiler": "^0.25.1",
-    "@glimmer/interfaces": "^0.25.1",
+    "@glimmer/compiler": "^0.26.2",
+    "@glimmer/interfaces": "^0.26.2",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.25.1",
+    "@glimmer/wire-format": "^0.26.2",
     "broccoli": "^1.1.0",
     "broccoli-cli": "^1.0.0",
     "broccoli-file-creator": "^1.1.1",
