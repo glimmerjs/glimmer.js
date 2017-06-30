@@ -9,7 +9,6 @@ import {
   ComponentManager as GlimmerComponentManager,
   DynamicScope,
   Environment,
-  Simple,
   CompiledDynamicProgram,
   Arguments,
   Template,
@@ -23,7 +22,9 @@ import {
 import Component from "./component";
 import ComponentDefinition from "./component-definition";
 import { RootReference } from "./references";
-import { Dict, Destroyable } from "@glimmer/util";
+import { Dict, Destroyable, Opaque } from "@glimmer/util";
+import { Tag } from "@glimmer/reference";
+import { Simple } from "@glimmer/interfaces";
 
 export interface ConstructorOptions {
   env: Environment;
@@ -49,7 +50,11 @@ export class ComponentStateBucket {
     this.component = componentFactory.create(injections);
   }
 
-  namedArgsSnapshot(): Readonly<Dict<object | void>> {
+  get tag(): Tag {
+    return this.args.tag;
+  }
+
+  namedArgsSnapshot(): Readonly<Dict<Opaque>> {
     return Object.freeze(this.args.named.value());
   }
 }
@@ -83,15 +88,21 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return null;
   }
 
-  create(environment: Environment, definition: ComponentDefinition, volatileArgs: Arguments): ComponentStateBucket | null {
-    let componentFactory = definition.componentFactory;
-    if (!componentFactory) { return null; }
-
+  create(environment: Environment, definition: ComponentDefinition, volatileArgs: Arguments): ComponentStateBucket {
     let owner = getOwner(this.env);
     return new ComponentStateBucket(definition, volatileArgs.capture(), owner);
   }
 
   createComponentDefinition(name: string, template: Template<any>, componentFactory?: Factory<Component>): ComponentDefinition {
+    if (!componentFactory) {
+      componentFactory = {
+        class: Component,
+        create(injections: object) {
+          return this.class.create(injections);
+        }
+      }
+    }
+
     return new ComponentDefinition(name, this, template, componentFactory);
   }
 
@@ -101,8 +112,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     return compileLayout(new LayoutCompiler(definition.name, template), this.env);
   }
 
-  getSelf(bucket: ComponentStateBucket) {
-    if (!bucket) { return null; }
+  getSelf(bucket: ComponentStateBucket): RootReference {
     return new RootReference(bucket.component);
   }
 
@@ -118,11 +128,16 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     bucket && bucket.component.didInsertElement();
   }
 
-  getTag(): null {
-    return null;
+  getTag({ tag }: ComponentStateBucket): Tag {
+    return tag;
   }
 
   update(bucket: ComponentStateBucket, scope: DynamicScope) {
+  }
+
+  didUpdateLayout() {}
+
+  didUpdate(bucket: ComponentStateBucket) {
     if (!bucket) { return; }
 
     // TODO: This should be moved to `didUpdate`, but there's currently a
@@ -133,13 +148,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
     component.didUpdate();
   }
 
-  didUpdateLayout() {}
-
-  didUpdate(bucket: ComponentStateBucket) { }
-
   getDestructor(bucket: ComponentStateBucket): Destroyable {
-    if (!bucket) { return; }
-
     return bucket.component;
   }
 }
