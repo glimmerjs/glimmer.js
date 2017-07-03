@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@glimmer/application-test-helpers@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.3.0.tgz#093fe97aaddb2d42e2ba514d8445edbeed243bb3"
+"@glimmer/application-test-helpers@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@glimmer/application-test-helpers/-/application-test-helpers-0.4.1.tgz#98193f6ef5944c0d13668c2696046fe5a3f5da3f"
   dependencies:
-    "@glimmer/compiler" "^0.25.1"
+    "@glimmer/compiler" "^0.26.2"
     "@glimmer/di" "^0.1.9"
     "@glimmer/env" "^0.1.7"
-    "@glimmer/interfaces" "^0.25.1"
-    "@glimmer/object-reference" "^0.25.1"
-    "@glimmer/reference" "^0.25.1"
+    "@glimmer/interfaces" "^0.26.2"
+    "@glimmer/object-reference" "^0.26.2"
+    "@glimmer/reference" "^0.26.2"
     "@glimmer/resolver" "^0.3.0"
-    "@glimmer/runtime" "^0.25.1"
-    "@glimmer/util" "^0.25.1"
-    "@glimmer/wire-format" "^0.25.1"
+    "@glimmer/runtime" "^0.26.2"
+    "@glimmer/util" "^0.26.2"
+    "@glimmer/wire-format" "^0.26.2"
     simple-dom "^0.3.2"
 
 "@glimmer/build@^0.6.2":
@@ -59,16 +59,6 @@
     testem "^1.13.0"
     tslint "^3.15.1"
     typescript "^2.1.5"
-
-"@glimmer/compiler@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@glimmer/compiler/-/compiler-0.25.1.tgz#81fb9f51349f819525da737ae953a5f8461fdef1"
-  dependencies:
-    "@glimmer/interfaces" "^0.25.1"
-    "@glimmer/syntax" "^0.25.1"
-    "@glimmer/util" "^0.25.1"
-    "@glimmer/wire-format" "^0.25.1"
-    simple-html-tokenizer "^0.3.0"
 
 "@glimmer/compiler@^0.26.2":
   version "0.26.2"
@@ -181,15 +171,6 @@
     "@glimmer/reference" "^0.26.2"
     "@glimmer/util" "^0.26.2"
     "@glimmer/wire-format" "^0.26.2"
-
-"@glimmer/syntax@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@glimmer/syntax/-/syntax-0.25.1.tgz#05bbc219af98adc447195d4d74bba6fb9f5fd3d5"
-  dependencies:
-    "@glimmer/interfaces" "^0.25.1"
-    "@glimmer/util" "^0.25.1"
-    handlebars "^4.0.6"
-    simple-html-tokenizer "^0.3.0"
 
 "@glimmer/syntax@^0.26.2":
   version "0.26.2"

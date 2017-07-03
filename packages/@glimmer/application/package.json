@@ -36,7 +36,7 @@
     "@glimmer/util": "^0.26.2"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.3.0",
+    "@glimmer/application-test-helpers": "^0.4.1",
     "@glimmer/build": "^0.6.2",
     "@glimmer/wire-format": "^0.26.2",
     "ember-build-utilities": "^0.3.0",
