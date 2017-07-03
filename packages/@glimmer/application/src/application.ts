@@ -8,7 +8,6 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  Simple,
   templateFactory,
   ComponentDefinition,
   Component
@@ -19,6 +18,9 @@ import {
 import {
   Option
 } from '@glimmer/util';
+import {
+  Simple
+} from '@glimmer/interfaces';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
