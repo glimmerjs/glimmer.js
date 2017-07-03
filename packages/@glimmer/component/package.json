@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@glimmer/application": "^0.5.0",
-    "@glimmer/application-test-helpers": "^0.3.0",
+    "@glimmer/application-test-helpers": "^0.4.1",
     "@glimmer/build": "^0.6.1",
     "@glimmer/compiler": "^0.26.2",
     "@glimmer/interfaces": "^0.26.2",
