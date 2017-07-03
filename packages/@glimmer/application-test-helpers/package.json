@@ -20,16 +20,16 @@
     "postpublish": "git push origin master --tags"
   },
   "dependencies": {
-    "@glimmer/compiler": "^0.25.1",
+    "@glimmer/compiler": "^0.26.2",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/interfaces": "^0.25.1",
-    "@glimmer/object-reference": "^0.25.1",
-    "@glimmer/reference": "^0.25.1",
+    "@glimmer/interfaces": "^0.26.2",
+    "@glimmer/object-reference": "^0.26.2",
+    "@glimmer/reference": "^0.26.2",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/runtime": "^0.25.1",
-    "@glimmer/util": "^0.25.1",
-    "@glimmer/wire-format": "^0.25.1",
+    "@glimmer/runtime": "^0.26.2",
+    "@glimmer/util": "^0.26.2",
+    "@glimmer/wire-format": "^0.26.2",
     "simple-dom": "^0.3.2"
   },
   "devDependencies": {
