@@ -28,7 +28,7 @@ module.exports = {
   files() {
     let files = this._super.files.apply(this, arguments);
 
-    if (this.project.pkg.name) {
+    if (this._shouldIncludeYarnLockInFiles()) {
       files = files.filter((file) => file !== 'yarn.lock');
     }
     
@@ -61,6 +61,10 @@ module.exports = {
       addPackagePromise,
       indexTSPromise
     ]);
+  },
+
+  _shouldIncludeYarnLockInFiles() {
+    return !!this.project.pkg.name;
   }
 };
 
