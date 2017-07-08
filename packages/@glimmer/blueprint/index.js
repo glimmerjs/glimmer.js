@@ -25,6 +25,16 @@ module.exports = {
     }
   },
 
+  files() {
+    let files = this._super.files.apply(this, arguments);
+
+    if (this.project.pkg.name) {
+      files = files.filter((file) => file !== 'yarn.lock');
+    }
+    
+    return files;
+  },
+
   afterInstall(options) {
     if (options.webComponent) {
       return this._installWebComponentSupport(options);
