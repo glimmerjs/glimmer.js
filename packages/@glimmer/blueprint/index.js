@@ -12,7 +12,7 @@ module.exports = {
   // ],
 
   locals(options) {
-    let name = options.entity.name;
+    let name = dasherize(options.entity.name);
     let component = componentize(name);
     let className = stringUtils.classify(options.entity.name);
 
