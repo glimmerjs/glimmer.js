@@ -18,18 +18,19 @@
     "@glimmer/wire-format" "^0.26.2"
     simple-dom "^0.3.2"
 
-"@glimmer/application@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/application/-/application-0.5.0.tgz#4f5b39de2bd099d1c1f07b237515a38698c622ec"
+"@glimmer/application@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.npmjs.org/@glimmer/application/-/application-0.7.2.tgz#82cc78367f54c11c953c8624cba92425473e1d88"
   dependencies:
-    "@glimmer/component" "^0.4.0"
+    "@glimmer/compiler" "^0.26.2"
+    "@glimmer/component" "^0.6.0"
     "@glimmer/di" "^0.1.9"
     "@glimmer/env" "^0.1.7"
-    "@glimmer/object-reference" "^0.24.0-beta.4"
-    "@glimmer/reference" "^0.24.0-beta.4"
+    "@glimmer/object-reference" "^0.26.2"
+    "@glimmer/reference" "^0.26.2"
     "@glimmer/resolver" "^0.3.0"
-    "@glimmer/runtime" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
+    "@glimmer/runtime" "^0.26.2"
+    "@glimmer/util" "^0.26.2"
 
 "@glimmer/build@^0.6.1":
   version "0.6.1"
@@ -83,15 +84,15 @@
     "@glimmer/wire-format" "^0.26.2"
     simple-html-tokenizer "^0.3.0"
 
-"@glimmer/component@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/component/-/component-0.4.0.tgz#2cd491045f4d86502cf4f3249f8f6c51de046b0c"
+"@glimmer/component@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/@glimmer/component/-/component-0.6.0.tgz#60b88afb7ba87a9d30d44fe2dd167609be1e19cc"
   dependencies:
     "@glimmer/di" "^0.1.9"
     "@glimmer/env" "^0.1.7"
-    "@glimmer/reference" "^0.24.0-beta.4"
-    "@glimmer/runtime" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
+    "@glimmer/reference" "^0.26.2"
+    "@glimmer/runtime" "^0.26.2"
+    "@glimmer/util" "^0.26.2"
 
 "@glimmer/di@^0.1.9":
   version "0.1.11"
@@ -105,24 +106,11 @@
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.7.tgz#fd2d2b55a9029c6b37a6c935e8c8871ae70dfa07"
 
-"@glimmer/interfaces@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.24.0-beta.4.tgz#c4ee238d22f9d6805328e986326fcaa042843878"
-  dependencies:
-    "@glimmer/wire-format" "^0.24.0-beta.4"
-
 "@glimmer/interfaces@^0.26.2":
   version "0.26.2"
   resolved "https://registry.npmjs.org/@glimmer/interfaces/-/interfaces-0.26.2.tgz#f03e7309584006de164b82ff924692b210888e19"
   dependencies:
     "@glimmer/wire-format" "^0.26.2"
-
-"@glimmer/object-reference@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/object-reference/-/object-reference-0.24.0-beta.4.tgz#0f10ef9f9540f782a9b3d6014b1da4d159557014"
-  dependencies:
-    "@glimmer/reference" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
 
 "@glimmer/object-reference@^0.26.2":
   version "0.26.2"
@@ -131,25 +119,12 @@
     "@glimmer/reference" "^0.26.2"
     "@glimmer/util" "^0.26.2"
 
-"@glimmer/object@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/object/-/object-0.24.0-beta.4.tgz#df272461fcd2abd1736b8eae9e2f10a918d9e4b9"
-  dependencies:
-    "@glimmer/object-reference" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
-
 "@glimmer/object@^0.26.2":
   version "0.26.2"
   resolved "https://registry.npmjs.org/@glimmer/object/-/object-0.26.2.tgz#a6a99d88bc4acd5ce9f2e46a62b618b15e7d5bfa"
   dependencies:
     "@glimmer/object-reference" "^0.26.2"
     "@glimmer/util" "^0.26.2"
-
-"@glimmer/reference@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/reference/-/reference-0.24.0-beta.4.tgz#17f32cf1a4df3ebf57ca62647fc578b608b9f62d"
-  dependencies:
-    "@glimmer/util" "^0.24.0-beta.4"
 
 "@glimmer/reference@^0.26.2":
   version "0.26.2"
@@ -162,17 +137,6 @@
   resolved "https://registry.yarnpkg.com/@glimmer/resolver/-/resolver-0.3.0.tgz#65451a2195259ce26518715631c38dd7c144e821"
   dependencies:
     "@glimmer/di" "^0.2.0"
-
-"@glimmer/runtime@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/runtime/-/runtime-0.24.0-beta.4.tgz#dd1f525b7545f4ed9ef5d9a2bbe586e3db1d7a55"
-  dependencies:
-    "@glimmer/interfaces" "^0.24.0-beta.4"
-    "@glimmer/object" "^0.24.0-beta.4"
-    "@glimmer/object-reference" "^0.24.0-beta.4"
-    "@glimmer/reference" "^0.24.0-beta.4"
-    "@glimmer/util" "^0.24.0-beta.4"
-    "@glimmer/wire-format" "^0.24.0-beta.4"
 
 "@glimmer/runtime@^0.26.2":
   version "0.26.2"
@@ -194,19 +158,9 @@
     handlebars "^4.0.6"
     simple-html-tokenizer "^0.3.0"
 
-"@glimmer/util@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.24.0-beta.4.tgz#d49063e432e2fd2af7bdc1422d3b0d849e6ce328"
-
 "@glimmer/util@^0.26.2":
   version "0.26.2"
   resolved "https://registry.npmjs.org/@glimmer/util/-/util-0.26.2.tgz#829e0cff7cee767689267f37533ea789da0bcc36"
-
-"@glimmer/wire-format@^0.24.0-beta.4":
-  version "0.24.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.24.0-beta.4.tgz#793acc653e2b718b5052f59943604c0317995b75"
-  dependencies:
-    "@glimmer/util" "^0.24.0-beta.4"
 
 "@glimmer/wire-format@^0.26.2":
   version "0.26.2"
