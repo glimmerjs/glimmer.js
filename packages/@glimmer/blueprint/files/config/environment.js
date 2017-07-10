@@ -2,7 +2,7 @@
 
 module.exports = function(environment) {
   let ENV = {
-    modulePrefix: '<%= component %>',
+    modulePrefix: '<%= name %>',
     environment: environment
   };
 
