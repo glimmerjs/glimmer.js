@@ -133,18 +133,12 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   update(bucket: ComponentStateBucket, scope: DynamicScope) {
+    bucket.component.args = bucket.namedArgsSnapshot();
   }
 
   didUpdateLayout() {}
 
-  didUpdate(bucket: ComponentStateBucket) {
-    if (!bucket) { return; }
-
-    // TODO: This should be moved to `didUpdate`, but there's currently a
-    // Glimmer bug that causes it not to be called if the layout doesn't update.
-    let { component } = bucket;
-
-    component.args = bucket.namedArgsSnapshot();
+  didUpdate({ component }: ComponentStateBucket) {
     component.didUpdate();
   }
 

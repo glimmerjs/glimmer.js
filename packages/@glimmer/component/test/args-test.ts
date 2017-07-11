@@ -2,6 +2,7 @@ import Component from '../src/component';
 import { tracked } from '../src/tracked';
 import buildApp, { TestApplication } from './test-helpers/test-app';
 import { setPropertyDidChange } from '../src/tracked';
+import { didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
@@ -74,6 +75,105 @@ test('Args smoke test', (assert) => {
   });
 
   parent.firstName = "Thomas";
+});
+
+test('Tracked properties that depend on `args` re-render correctly', (assert) => {
+  assert.expect(2);
+
+  let parent: ParentComponent;
+  let app: TestApplication;
+
+  class ParentComponent extends Component {
+    @tracked firstName = 'Tom';
+    @tracked status = 'is dope';
+
+    didInsertElement() {
+      parent = this;
+    }
+  }
+
+  class ChildComponent extends Component {
+    @tracked('args') get name() {
+      return `${this.args.firstName} Dale`;
+    }
+  }
+
+  app = buildApp()
+    .component('parent-component', ParentComponent)
+    .component('child-component', ChildComponent)
+    .template('main', '<div><parent-component /></div>')
+    .template('parent-component', `
+      <div>
+        <child-component @firstName={{firstName}} @status={{status}} />
+      </div>`)
+    .template('child-component', '<div>{{name}} {{@status}}</div>')
+    .boot();
+
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
+
+  assert.equal(app.rootElement.textContent.trim(), 'Tom Dale is dope');
+
+  parent.firstName = 'Thom';
+  parent.status = 'is dank';
+
+  return didRender(app).then(() => {
+    assert.equal(app.rootElement.textContent.trim(), 'Thom Dale is dank');
+  });
+});
+
+test('Properties that depend on `args` are properly updated before the `didUpdate` hook', (assert) => {
+  assert.expect(4);
+
+  let parent: ParentComponent;
+  let app: TestApplication;
+
+  class ParentComponent extends Component {
+    @tracked firstName = 'Tom';
+    @tracked status = 'is dope';
+
+    didInsertElement() {
+      parent = this;
+    }
+  }
+
+  class ChildComponent extends Component {
+    get name() {
+      return `${this.args.firstName} Dale`;
+    }
+
+    constructor(injections: object) {
+      super(injections);
+      assert.equal(this.name, 'Tom Dale');
+      assert.equal(this.args.status, 'is dope');
+    }
+
+    didUpdate() {
+      assert.equal(this.name, 'Thom Dale');
+      assert.equal(this.args.status, 'is dank');
+    }
+  }
+
+  app = buildApp()
+    .component('parent-component', ParentComponent)
+    .component('child-component', ChildComponent)
+    .template('main', '<div><parent-component /></div>')
+    .template('parent-component', `
+      <div>
+        <child-component @firstName={{firstName}} @status={{status}} />
+      </div>`)
+    .template('child-component', '<div></div>')
+    .boot();
+
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
+
+  parent.firstName = 'Thom';
+  parent.status = 'is dank';
+
+  return didRender(app);
 });
 
 test("Setting args should not schedule a rerender", function(assert) {
