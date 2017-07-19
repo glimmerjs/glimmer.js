@@ -20,7 +20,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
     // Invoke the function with the component as the context, the curried
     // arguments passed to `{{action}}`, and the arguments the bound function
     // was invoked with.
-    actionFunc.apply(componentRef && componentRef.value(), curriedArgs);
+    return actionFunc.apply(componentRef && componentRef.value(), curriedArgs);
   });
 }
 
