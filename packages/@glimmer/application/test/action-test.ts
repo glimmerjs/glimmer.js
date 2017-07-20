@@ -100,30 +100,6 @@ test('actions can be passed and invoked with additional arguments', function(ass
   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);
 });
 
-test('actions can have return values', function(assert) {
-  assert.expect(1);
-
-  class OuterComponent extends Component {
-    foo() {
-      return 'hello';
-    }
-  }
-
-  class InnerComponent extends Component {
-    didInsertElement() {
-      assert.equal(this.args.foo(), 'hello', 'action should have a return value');
-    }
-  }
-
-  buildApp()
-    .template('main', '<div><outer-component /></div>')
-    .template('outer-component', '<div><inner-component @foo={{action foo}} /></div>')
-    .template('inner-component', 'inner component')
-    .component('outer-component', OuterComponent)
-    .component('inner-component', InnerComponent)
-    .boot();
-});
-
 test('action helper invoked without a function raises an error', function(assert) {
   class ParentComponent extends Component {
     debugName = 'ParentComponent';
