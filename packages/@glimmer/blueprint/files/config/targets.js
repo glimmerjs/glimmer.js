@@ -1,3 +1,5 @@
+'use strict';
+
 let browsers = [
   '> 5%',
   'last 2 Edge versions',
