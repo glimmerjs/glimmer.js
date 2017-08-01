@@ -11,7 +11,7 @@ packages, so this meta-repo exists to help you find what you're looking for.
 
 ## Packages
 
-Glimmer.js is the developer-facing API on top of the low-level Glimmer VM.
+Glimmer.js is the developer-facing API on top of the low-level [Glimmer VM](https://github.com/glimmerjs/glimmer-vm).
 
 ### User-Facing
 
