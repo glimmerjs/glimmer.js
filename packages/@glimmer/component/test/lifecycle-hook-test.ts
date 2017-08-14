@@ -9,7 +9,7 @@ test('Lifecycle hook ordering', (assert) => {
   assert.expect(7);
 
   let invocations: [string, string][] = [];
-  let didCallWillDestroy: boolean = false;
+  let didCallWillDestroy = false;
 
   abstract class HookLoggerComponent extends Component {
     abstract name: string;
@@ -24,11 +24,11 @@ test('Lifecycle hook ordering', (assert) => {
     }
   }
 
-  class Component1 extends HookLoggerComponent { name = 'component1' }
-  class Component2 extends HookLoggerComponent { name = 'component2' }
-  class Component3 extends HookLoggerComponent { name = 'component3' }
-  class Component4 extends HookLoggerComponent { name = 'component4' }
-  class Component5 extends HookLoggerComponent { name = 'component5' }
+  class Component1 extends HookLoggerComponent { name = 'component1'; };
+  class Component2 extends HookLoggerComponent { name = 'component2'; };
+  class Component3 extends HookLoggerComponent { name = 'component3'; };
+  class Component4 extends HookLoggerComponent { name = 'component4'; };
+  class Component5 extends HookLoggerComponent { name = 'component5'; };
 
   let app = buildApp()
     .template('main', '<div><component-one /></div>')
