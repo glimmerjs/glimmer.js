@@ -1,10 +1,10 @@
-import Application from '../../src/application';
-import { Simple } from '@glimmer/runtime';
+import Application from '../../src/index';
+import { Element } from 'simple-dom';
 import { AppBuilder, AppBuilderOptions } from '@glimmer/application-test-helpers';
 import { ComponentManager } from '@glimmer/component';
 
 export class TestApplication extends Application {
-  rootElement: Simple.Element;
+  rootElement: Element;
 }
 
 export default function buildApp(appName = 'test-app', options: AppBuilderOptions = {}) {

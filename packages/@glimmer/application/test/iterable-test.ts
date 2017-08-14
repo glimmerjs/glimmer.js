@@ -1,4 +1,4 @@
-import Iterable from '../src/iterable';
+import { Iterable } from '../src/index';
 
 const { module, test } = QUnit;
 
