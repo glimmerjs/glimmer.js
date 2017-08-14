@@ -1,7 +1,5 @@
-import Component from '../src/component';
-import { tracked } from '../src/tracked';
+import Component, { tracked, setPropertyDidChange } from '../src/index';
 import buildApp, { TestApplication } from './test-helpers/test-app';
-import { setPropertyDidChange } from '../src/tracked';
 import { didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
