@@ -100,7 +100,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
         create(injections: object) {
           return this.class.create(injections);
         }
-      }
+      };
     }
 
     return new ComponentDefinition(name, this, template, componentFactory);
@@ -125,7 +125,7 @@ export default class ComponentManager implements GlimmerComponentManager<Compone
   }
 
   didCreate(bucket: ComponentStateBucket) {
-    bucket && bucket.component.didInsertElement();
+    if (bucket) { bucket.component.didInsertElement(); }
   }
 
   getTag({ tag }: ComponentStateBucket): Tag {

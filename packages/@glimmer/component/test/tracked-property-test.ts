@@ -1,7 +1,7 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import { tracked, tagForProperty, UntrackedPropertyError } from '../src/tracked';
+import { tracked, tagForProperty, UntrackedPropertyError } from '../src/index';
 import { CONSTANT_TAG } from "@glimmer/reference";
 
 module('Tracked Properties');
@@ -118,7 +118,7 @@ test('tracked computed properties are invalidated when their dependencies are in
 
     @tracked('firstName', 'lastName')
     get fullName() {
-      return `${this.firstName} ${this.lastName}`
+      return `${this.firstName} ${this.lastName}`;
     }
     set fullName(fullName) {
       let [firstName, lastName] = fullName.split(' ');
@@ -174,7 +174,7 @@ if (DEBUG) {
   });
 
   test('interceptor works correctly for inherited value descriptor', (assert) => {
-    class Person { name: string }
+    class Person { name: string; }
     Person.prototype.name = 'Martin';
 
     let obj = new Person();
@@ -193,7 +193,7 @@ if (DEBUG) {
       get name() {
         return 'Martin';
       }
-    }
+    };
 
     tagForProperty(obj, 'name');
 
@@ -223,7 +223,7 @@ if (DEBUG) {
   });
 
   test('interceptor works correctly for inherited non-configurable descriptor', (assert) => {
-    class Person { name: string }
+    class Person { name: string; }
     Person.prototype.name = 'Martin';
     Object.defineProperty(Person.prototype, 'name', { configurable: false });
 

@@ -19,7 +19,7 @@
     "preversion": "npm run test",
     "prepublish": "npm run build",
     "postpublish": "git push origin master --tags",
-    "test": "npm run test:prod",
+    "test": "tslint --project tsconfig.json && npm run test:prod",
     "test:prod": "TEST_MODE=prod ember test",
     "test:debug": "TEST_MODE=debug ember test"
   },
@@ -42,6 +42,7 @@
     "broccoli-cli": "^1.0.0",
     "broccoli-file-creator": "^1.1.1",
     "ember-cli": "^2.12.0",
-    "testem": "^1.13.0"
+    "testem": "^1.13.0",
+    "tslint": "^5.6.0"
   }
 }
