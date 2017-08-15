@@ -1,4 +1,4 @@
-import Component, { tracked, setPropertyDidChange } from '../src/index';
+import Component, { tracked, setPropertyDidChange } from '..';
 import buildApp, { TestApplication } from './test-helpers/test-app';
 import { didRender } from '@glimmer/application-test-helpers';
 

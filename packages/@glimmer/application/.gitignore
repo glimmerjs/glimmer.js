@@ -1,7 +1,0 @@
-node_modules
-.DS_Store
-.vscode
-**/*.log
-dist
-tests
-tmp

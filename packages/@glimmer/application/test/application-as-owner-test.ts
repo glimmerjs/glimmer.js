@@ -1,4 +1,4 @@
-import Application from '../src/index';
+import Application from '..';
 import { Resolver, getOwner, isSpecifierStringAbsolute } from '@glimmer/di';
 import { BlankResolver } from './test-helpers/resolvers';
 

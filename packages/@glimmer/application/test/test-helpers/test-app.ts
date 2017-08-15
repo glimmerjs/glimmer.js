@@ -1,4 +1,4 @@
-import Application from '../../src/index';
+import Application from '../..';
 import { Element } from 'simple-dom';
 import { AppBuilder, AppBuilderOptions } from '@glimmer/application-test-helpers';
 import { ComponentManager } from '@glimmer/component';

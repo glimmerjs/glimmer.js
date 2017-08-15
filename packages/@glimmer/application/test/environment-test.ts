@@ -1,6 +1,6 @@
 import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
-import { Environment, EnvironmentOptions } from '../src/index';
+import { Environment, EnvironmentOptions } from '..';
 import Component from '@glimmer/component';
 import buildApp from './test-helpers/test-app';
 import { didRender } from '@glimmer/application-test-helpers';

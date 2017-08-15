@@ -1,4 +1,4 @@
-import Component from '../src/index';
+import Component from '..';
 import buildApp from './test-helpers/test-app';
 import { DEBUG } from '@glimmer/env';
 
