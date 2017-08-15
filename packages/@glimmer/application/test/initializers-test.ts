@@ -1,4 +1,4 @@
-import Application from '../src/application';
+import Application from '../src/index';
 import { BlankResolver } from './test-helpers/resolvers';
 
 const { module, test } = QUnit;
