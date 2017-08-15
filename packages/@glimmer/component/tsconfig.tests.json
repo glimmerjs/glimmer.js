@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "es2015",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "declaration": false,
+    "newLine": "LF",
+    "types": ["qunit"],
+    "lib": [
+      "dom",
+      "es2015"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "node_modules/@types/**/*.ts"
+  ]
+}

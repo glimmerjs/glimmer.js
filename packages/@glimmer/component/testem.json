@@ -1,0 +1,7 @@
+{
+  "framework": "qunit",
+  "test_page": "index.html",
+  "src_files": ["src/**/*", "test/**/*"],
+  "disable_watching": true,
+  "launch_in_ci": ["Firefox"]
+}
