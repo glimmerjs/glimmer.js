@@ -55,7 +55,8 @@ for lib in $LIBS; do
 done;
 
 # Remove nested gitignore files
-rm packages/**/*.gitignore
+cd "$ROOT_DIR/.."
+rm packages/*/*/.gitignore
 rm packages/*/*/tsconfig.json
 rm packages/*/*/tsconfig.tests.json
 rm packages/*/*/tslint.json
@@ -67,3 +68,5 @@ rm packages/*/*/LICENSE
 rm -rf packages/*/*/tmp
 rm -rf packages/*/*/dist
 
+yarn
+node_modules/.bin/lerna bootstrap
