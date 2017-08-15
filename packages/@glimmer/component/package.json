@@ -14,15 +14,6 @@
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
-  "scripts": {
-    "build": "ember build",
-    "preversion": "npm run test",
-    "prepublish": "npm run build",
-    "postpublish": "git push origin master --tags",
-    "test": "tslint --project tsconfig.json && npm run test:prod",
-    "test:prod": "TEST_MODE=prod ember test",
-    "test:debug": "TEST_MODE=debug ember test"
-  },
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
@@ -37,12 +28,6 @@
     "@glimmer/compiler": "^0.26.2",
     "@glimmer/interfaces": "^0.26.2",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.26.2",
-    "broccoli": "^1.1.0",
-    "broccoli-cli": "^1.0.0",
-    "broccoli-file-creator": "^1.1.1",
-    "ember-cli": "^2.12.0",
-    "testem": "^1.13.0",
-    "tslint": "^5.6.0"
+    "@glimmer/wire-format": "^0.26.2"
   }
 }
