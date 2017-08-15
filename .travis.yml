@@ -3,7 +3,7 @@ sudo: required
 dist: trusty
 
 addons:
-  firefox: "51.0"
+  firefox: "54.0"
 
 before_install:
   - "export CHROME_BIN=chromium-browser"
