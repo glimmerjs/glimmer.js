@@ -3,6 +3,10 @@
    "version": "0.8.0",
    "private": true,
    "license": "MIT",
+   "scripts": {
+     "test": "ember test",
+     "postinstall": "lerna bootstrap"
+   },
    "devDependencies": {
       "@types/qunit": "^2.0.31",
       "babel-plugin-debug-macros": "^0.1.11",
