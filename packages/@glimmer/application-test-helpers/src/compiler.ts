@@ -2,9 +2,7 @@ import {
   precompile as glimmerPrecompile,
   PrecompileOptions
 } from "@glimmer/compiler";
-import { 
-  SerializedTemplateWithLazyBlock
-} from "@glimmer/wire-format";
+import { SerializedTemplateWithLazyBlock } from "@glimmer/wire-format";
 
 // Rather than duplicating the TemplateMeta definition from @glimmer/component,
 // which is not a dependency, let's be more permissive for this test helper.
