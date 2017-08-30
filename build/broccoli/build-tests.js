@@ -51,7 +51,7 @@ function transpileBrowserTestsToAMD(tsTree, jsTree) {
     sourceMaps: 'inline',
     moduleIds: true,
     plugins: [
-      'transform-es2015-modules-amd'
+      ['transform-es2015-modules-amd', { noInterop: true, strict: true }]
     ]
   });
 
@@ -112,7 +112,7 @@ function includeVendorDependencies() {
     sourceMaps: 'inline',
     moduleIds: true,
     plugins: [
-      'transform-es2015-modules-amd'
+      ['transform-es2015-modules-amd', { noInterop: true, strict: true }]
     ]
   });
 

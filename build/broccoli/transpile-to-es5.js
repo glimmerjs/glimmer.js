@@ -15,6 +15,7 @@ module.exports = function transpileToES5(inputNode, modules = false) {
         loose: true,
         modules,
         exclude: [
+          'transform-regenerator',
           // Transforms all `typeof` checks to account for Symbol, which we don't
           // rely on, so can safely skip.
           'transform-es2015-typeof-symbol'

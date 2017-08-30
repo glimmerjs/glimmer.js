@@ -1,5 +1,5 @@
 import Component, { tracked } from '@glimmer/component';
-import buildApp from './test-helpers/test-app';
+import { buildApp } from '@glimmer/test-utils';
 import { didRender } from '@glimmer/application-test-helpers';
 import { debugInfoForReference } from '..';
 

@@ -1,6 +1,6 @@
 import Application from '..';
 import { Resolver, getOwner, isSpecifierStringAbsolute } from '@glimmer/di';
-import { BlankResolver } from './test-helpers/resolvers';
+import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 

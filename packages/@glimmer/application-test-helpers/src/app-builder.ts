@@ -1,6 +1,6 @@
 import {
   Simple
-} from '@glimmer/runtime';
+} from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
 import { Opaque, Dict } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';

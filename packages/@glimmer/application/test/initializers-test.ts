@@ -1,5 +1,5 @@
 import Application from '..';
-import { BlankResolver } from './test-helpers/resolvers';
+import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 

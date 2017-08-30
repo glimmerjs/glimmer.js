@@ -3,8 +3,8 @@
 const funnel = require('broccoli-funnel');
 const babel = require('broccoli-babel-transpiler');
 const merge = require('broccoli-merge-trees');
-const Rollup = require('broccoli-rollup');
-const sourcemaps = require('rollup-plugin-sourcemaps');
+const concat = require('broccoli-concat');
+const resolveModuleSource = require('amd-name-resolver').moduleResolve;
 
 const transpileToES5 = require('./transpile-to-es5');
 const writePackageJSON = require('./write-package-json');
@@ -103,30 +103,17 @@ function transpileAMD(pkgName, esVersion, tree) {
     exclude: ['**/*.d.ts']
   });
 
-  // Provide Rollup a list of package names it should not try to include in the
-  // bundle.
-  let external = ['@glimmer/local-debug-flags', ...project.dependencies];
+  let amd = babel(pkgTree, {
+    moduleId: true,
+    resolveModuleSource,
+    plugins: [['transform-es2015-modules-amd', { noInterop: true, strict: true }]]
+  });
 
-  let plugins = [sourcemaps()];
-
-  let options = {
-    annotation: `Transpile AMD - ${pkgName} - ${esVersion}`,
-    rollup: {
-      entry: `${pkgName}/index.js`,
-      external,
-      plugins,
-      targets: [{
-        dest: `${bundleName}.js`,
-        format: 'amd',
-        exports: 'named',
-        moduleId: pkgName,
-        sourceMap: 'inline'
-      }]
-    }
-  };
-
-  let amdTree = new Rollup(pkgTree, options);
-  return funnel(amdTree, { destDir: `${pkgName}/dist/amd/${esVersion}` });
+  return concat(amd, {
+   inputFiles: ['**/*'],
+   sourceMapConfig: { enabled: false },
+   outputFile: `/${pkgName}/dist/amd/${esVersion}/${bundleName}.js`
+  });
 }
 
 function transpileCommonJS(pkgName, esVersion, tree) {

@@ -16,7 +16,6 @@
   ],
   "dependencies": {
     "@glimmer/compiler": "^0.26.2",
-    "@glimmer/component": "^0.6.0",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
     "@glimmer/object-reference": "^0.26.2",
@@ -26,6 +25,8 @@
     "@glimmer/util": "^0.26.2"
   },
   "devDependencies": {
+    "@glimmer/component": "^0.6.0",
+    "@glimmer/test-helpers": "^0.26.2",
     "@glimmer/application-test-helpers": "^0.4.1",
     "@glimmer/wire-format": "^0.26.2",
     "simple-dom": "^0.3.2"
