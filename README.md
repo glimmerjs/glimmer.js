@@ -22,10 +22,10 @@ These packages are imported and used by Glimmer developers directly.
 * [`@glimmer/web-component`] - addon for mounting Glimmer components as Web Components
 * [`@glimmer/application-test-helpers`] - helpers for testing Glimmer components
 
-[`@glimmer/application`]: https://github.com/glimmerjs/glimmer-application
-[`@glimmer/component`]: https://github.com/glimmerjs/glimmer-component
+[`@glimmer/application`]: https://github.com/glimmerjs/glimmer.js/tree/master/packages/%40glimmer/application
+[`@glimmer/component`]: https://github.com/glimmerjs/glimmer.js/tree/master/packages/%40glimmer/component
 [`@glimmer/web-component`]: https://github.com/glimmerjs/glimmer-web-component
-[`@glimmer/application-test-helpers`]: https://github.com/glimmerjs/glimmer-application-test-helpers
+[`@glimmer/application-test-helpers`]: https://github.com/glimmerjs/glimmer.js/tree/master/packages/%40glimmer/application-test-helpers
 
 ### Internals
 
