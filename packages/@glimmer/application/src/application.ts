@@ -8,9 +8,7 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  templateFactory,
-  ComponentDefinition,
-  Component
+  templateFactory
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -41,7 +39,7 @@ export interface Initializer {
 
 export interface AppRoot {
   id: number;
-  component: string | ComponentDefinition<Component>;
+  component: string;
   parent: Simple.Node;
   nextSibling: Option<Simple.Node>;
 }
@@ -158,7 +156,7 @@ export default class Application implements Owner {
     this._rendered = true;
   }
 
-  renderComponent(component: string | ComponentDefinition<Component>, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
+  renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
     this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
     this.scheduleRerender();
   }

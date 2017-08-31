@@ -1,22 +1,23 @@
-import {
-  ComponentDefinition as GlimmerComponentDefinition,
-  Template,
-  CapturedArguments
-} from "@glimmer/runtime";
-import ComponentManager, { ComponentStateBucket } from "./component-manager";
-import { ComponentFactory } from "./component";
-import TemplateMeta from "./template-meta";
+import ComponentManager from "./component-manager";
+import { ComponentCapabilities } from '@glimmer/opcode-compiler';
+import { Option, Opaque } from '@glimmer/interfaces';
 
-export default class ComponentDefinition extends GlimmerComponentDefinition<ComponentStateBucket> {
-  componentFactory: ComponentFactory;
-  template: Template<TemplateMeta>;
-  args: CapturedArguments;
+export interface Definition {
+  capabilities: ComponentCapabilities;
+}
 
-  constructor(name: string, manager: ComponentManager, template: Template<TemplateMeta>, componentFactory: ComponentFactory) {
-    super(name, manager, componentFactory);
+export default class ComponentDefinition implements Definition {
+  public capabilities: ComponentCapabilities = {
+    staticDefinitions: false,
+    dynamicLayout: false,
+    dynamicTag: true,
+    prepareArgs: false,
+    createArgs: true,
+    attributeHook: true,
+    elementHook: false
+  };
 
-    this.template = template;
-    this.componentFactory = componentFactory;
+  constructor(public name: string, public manager: ComponentManager, public ComponentClass: Opaque, public layout: Option<number>) {
   }
 
   toJSON() {
