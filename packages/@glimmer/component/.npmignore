@@ -1,0 +1,10 @@
+node_modules
+test
+tests
+tmp
+testem.json
+tsconfig.*
+.travis.yml
+.gitignore
+.DS_Store
+*.log

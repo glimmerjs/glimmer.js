@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    // Compilation Configuration
+    "target": "es2017",
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "baseUrl" : "packages",
+    "rootDir": "packages",
+
+    // Environment Configuration
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+
+    // Enhance Strictness
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
+    // Enabling these breaks @glimmer/application, fix and reenable this
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noUnusedParameters": false,
+    "strictNullChecks": false,
+    "allowUnreachableCode": false,
+    "noImplicitReturns": false,
+
+    "newLine": "LF",
+    "noEmit": true,
+
+    "paths": {
+      "*": ["*/src", "*"]
+    }
+  },
+  "include": [
+    // Because of the circular dependency, we have to avoid specifying globs
+    // that include node_modules.
+    "packages/@glimmer/*/src/**/*.ts",
+    "packages/@glimmer/*/index.ts",
+    "packages/@glimmer/*/test/**/*.ts"
+  ]
+}
