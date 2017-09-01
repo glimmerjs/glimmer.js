@@ -6,6 +6,7 @@ import { Opaque, Dict } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
+import { ApplicationConstructor } from '@glimmer/application';
 
 export interface Application {
   rootElement: Simple.Element;
@@ -16,7 +17,7 @@ export interface Application {
 }
 
 export interface AppBuilderOptions {
-  ApplicationClass?: any; // TODO - typing
+  ApplicationClass?: ApplicationConstructor; // TODO - typing
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
@@ -33,12 +34,12 @@ export class AppBuilder {
     this.rootName = name;
     this.options = options;
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
-    this.template('main', '<div />');
+    this.template('Main', '<div />');
   }
 
   template(name: string, template: string) {
     let specifier = `template:/${this.rootName}/components/${name}`;
-    this.modules[specifier] = precompile(template, { meta: { specifier, '<template-meta>': true }});
+    this.modules[specifier] = precompile(template, { meta: { specifier }});
     return this;
   }
 
@@ -72,8 +73,9 @@ export class AppBuilder {
 
     let rootElement = app.document.createElement('div');
 
-    app.rootElement = rootElement;
-    app.renderComponent('main', rootElement);
+    app.renderComponent('Main', rootElement);
+
+    app['rootElement'] = rootElement;
 
     app.boot();
 

@@ -45,9 +45,9 @@ test('can render a component', function(assert) {
   }
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello {{@name}}!</h1>`)
-    .component('main', MainComponent)
-    .template('main', '<div><hello-world @name={{salutation}} /></div>')
+    .template('HelloWorld', `<h1>Hello {{@name}}!</h1>`)
+    .component('Main', MainComponent)
+    .template('Main', '<div><HelloWorld @name={{salutation}} /></div>')
     .boot();
 
   let root = app.rootElement as HTMLElement;

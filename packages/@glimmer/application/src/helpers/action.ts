@@ -1,5 +1,6 @@
-import { ConstReference, Reference } from "@glimmer/reference";
+import { ConstReference } from "@glimmer/reference";
 import { VM, Arguments } from "@glimmer/runtime";
+import { Opaque } from '@glimmer/interfaces';
 
 export default function buildAction(vm: VM, _args: Arguments) {
   let componentRef = vm.getSelf();
@@ -24,7 +25,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
   });
 }
 
-function throwNoActionError(actionFunc: any, actionFuncReference: Reference<any>) {
+function throwNoActionError(actionFunc: any, actionFuncReference: Opaque) {
   let referenceInfo = debugInfoForReference(actionFuncReference);
   throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`);
 }

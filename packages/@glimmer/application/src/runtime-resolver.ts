@@ -4,17 +4,21 @@ import {
   Invocation,
   ComponentSpec,
   Helper,
-  ScannableTemplate
+  ScannableTemplate,
+  VM,
+  Arguments
 } from '@glimmer/runtime';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
 import {
   unwrap
 } from "@glimmer/util";
 import { TypedRegistry } from "./typed-registry";
-import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe } from "@glimmer/interfaces";
-import { Owner, getOwner } from "@glimmer/di";
-import { ComponentDefinition, ComponentManager } from "@glimmer/component";
+import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
+import { Owner, getOwner, Factory } from "@glimmer/di";
+import Component, { ComponentDefinition, ComponentManager } from "@glimmer/component";
 import Application from "./application";
+
+export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
 
 export interface Lookup {
   helper: GlimmerHelper;
@@ -49,7 +53,7 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
 export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   templateOptions: TemplateOptions<Specifier>;
   handleLookup: TypedRegistry<Opaque>[] = [];
-  cache = {
+  private cache = {
     component: new TypedRegistry<ComponentSpec>(),
     template: new TypedRegistry<SerializedTemplateWithLazyBlock<Specifier>>(),
     compiledTemplate: new TypedRegistry<Invocation>(),
@@ -90,12 +94,13 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return handle;
   }
 
-  compileTemplate(name: string, definition: ComponentDefinition): Invocation {
+  compileTemplate(definition: ComponentDefinition): Invocation {
+    let { name } = definition;
     if (!this.cache.compiledTemplate.hasName(name)) {
       let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(definition.layout);
-      let { block } = serializedTemplate;
-      let layout = JSON.parse(block);
-      let template = new ScannableTemplate(this.templateOptions, layout).asLayout();
+      let { block, meta, id } = serializedTemplate;
+      let parsedBlock = JSON.parse(block);
+      let template = new ScannableTemplate(this.templateOptions, { id, block: parsedBlock, referer: meta }).asLayout();
       let invocation = {
         handle: template.compile(),
         symbolTable: template.symbolTable
@@ -109,7 +114,16 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return this.resolve<Invocation>(handle);
   }
 
-  registerComponent(name: string, resolvedSpecifier: string, Component: Opaque, template: string): number {
+  registerHelper(name: string, helper: UserHelper) {
+    let glimmerHelper = (_vm: VM, args: Arguments) => new HelperReference(helper, args);
+    return this.register('helper', name, glimmerHelper);
+  }
+
+  registerInternalHelper(name: string, helper: GlimmerHelper) {
+    this.register('helper', name, helper);
+  }
+
+  registerComponent(name: string, resolvedSpecifier: string, Component: Component, template: SerializedTemplateWithLazyBlock<Specifier>): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
     let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
@@ -118,6 +132,9 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   }
 
   lookupComponentHandle(name: string, referer?: Specifier) {
+    if (!this.cache.component.hasName(name)) {
+      this.lookupComponent(name, referer);
+    }
     return this.lookup('component', name, referer);
   }
 
@@ -138,12 +155,11 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     }
   }
 
-  registerTemplate(resolvedSpecifier: string, template: string): TemplateEntry {
-    let layout:  SerializedTemplateWithLazyBlock<Specifier> = JSON.parse(template);
+  registerTemplate(resolvedSpecifier: string, template: SerializedTemplateWithLazyBlock<Specifier> ): TemplateEntry {
     return {
       name: resolvedSpecifier,
-      handle: this.register('template', resolvedSpecifier, layout),
-      meta: layout.meta
+      handle: this.register('template', resolvedSpecifier, template),
+      meta: template.meta
     };
   }
 
@@ -151,10 +167,22 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
       let specifier = unwrap(this.identifyComponent(name, meta));
-      let component = this.owner.lookup(specifier, meta.specifier);
       let template = this.owner.lookup('template', specifier);
+      let componentSpecifier = this.owner.identify('component', specifier);
+      let componentFactory: Factory<Component> = null;
 
-      handle = this.registerComponent(name, specifier, component, template);
+      if (componentSpecifier !== undefined) {
+        componentFactory = this.owner.factoryFor(componentSpecifier);
+      } else {
+        componentFactory = {
+          class: Component,
+          create(injections) {
+            return Component.create(injections);
+          }
+        };
+      }
+
+      handle = this.registerComponent(name, specifier, componentFactory, template);
     } else {
       handle = this.lookup('component', name, meta);
     }
@@ -164,7 +192,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
 
   lookupHelper(name: string, meta?: Specifier): Option<number> {
     if (!this.cache.helper.hasName(name)) {
-      let owner: Owner = getOwner(this);
+      let owner: Owner = this.owner;
       let relSpecifier = `helper:${name}`;
       let referrer: string = meta.specifier;
 
@@ -174,7 +202,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
       }
 
       let helper = this.owner.lookup(specifier, meta.specifier);
-      return this.register('helper', name, helper);
+      return this.registerHelper(name, helper);
     }
 
     return this.lookup('helper', name, meta);
@@ -192,11 +220,11 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   private identifyComponent(name: string, meta: Specifier): Maybe<string> {
     let owner: Owner = this.owner;
     let relSpecifier = `template:${name}`;
-    let referrer: string = meta.specifier;
+    // let referrer: string = meta.specifier;
 
-    let specifier = owner.identify(relSpecifier, referrer);
+    let specifier = owner.identify(relSpecifier, undefined);
 
-    if (specifier === undefined && owner.identify(`component:${name}`, referrer)) {
+    if (specifier === undefined && owner.identify(`component:${name}`, undefined)) {
       throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
     }
 

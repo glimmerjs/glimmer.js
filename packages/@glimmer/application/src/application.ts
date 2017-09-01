@@ -8,7 +8,8 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  templateFactory
+  ScannableTemplate,
+  RenderLayoutOptions
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -42,6 +43,10 @@ export interface AppRoot {
   component: string;
   parent: Simple.Node;
   nextSibling: Option<Simple.Node>;
+}
+
+export interface ApplicationConstructor {
+  new (options: ApplicationOptions): Application;
 }
 
 export default class Application implements Owner {
@@ -125,20 +130,31 @@ export default class Application implements Owner {
 
   /** @hidden */
   render(): void {
-    this.env.begin();
-
-    let mainLayout = templateFactory(mainTemplate).create(this.env);
+    let { env } = this;
+    env.begin();
+    // env.resolver.registerComponent('main', 'main', Component, mainTemplate);
+    let mainLayout = new ScannableTemplate(this.env.compileOptions, {
+      referer: { specifier: 'main' },
+      block: JSON.parse(mainTemplate.block)
+    });
     let self = new UpdatableReference({ roots: this._roots });
     let doc = this.document as Document; // TODO FixReification
-    let parentNode = doc.body;
+    let element = doc.body;
     let dynamicScope = new DynamicScope();
-    let templateIterator = mainLayout.render({ self, parentNode, dynamicScope });
+    let options: RenderLayoutOptions = {
+      env,
+      self,
+      cursor: { element, nextSibling: null },
+      dynamicScope
+    };
+    let templateIterator = mainLayout.renderLayout(options);
+
     let result;
     do {
       result = templateIterator.next();
     } while (!result.done);
 
-    this.env.commit();
+    env.commit();
 
     let renderResult = result.value;
 

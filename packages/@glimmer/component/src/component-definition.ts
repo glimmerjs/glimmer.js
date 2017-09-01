@@ -1,6 +1,7 @@
 import ComponentManager from "./component-manager";
 import { ComponentCapabilities } from '@glimmer/opcode-compiler';
-import { Option, Opaque } from '@glimmer/interfaces';
+import { Option } from '@glimmer/interfaces';
+import Component from './component';
 
 export interface Definition {
   capabilities: ComponentCapabilities;
@@ -17,7 +18,7 @@ export default class ComponentDefinition implements Definition {
     elementHook: false
   };
 
-  constructor(public name: string, public manager: ComponentManager, public ComponentClass: Opaque, public layout: Option<number>) {
+  constructor(public name: string, public manager: ComponentManager, public ComponentClass: Component, public layout: Option<number>) {
   }
 
   toJSON() {

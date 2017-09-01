@@ -32,9 +32,9 @@ test('can curry arguments to actions', async function(assert) {
   }
 
   let app = buildApp()
-    .template('hello-world', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
-    .template('main', '<div><hello-world /></div>')
-    .component('hello-world', HelloWorld)
+    .template('HelloWorld', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
+    .template('main', '<div><HelloWorld /></div>')
+    .component('HelloWorld', HelloWorld)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -85,11 +85,11 @@ test('actions can be passed and invoked with additional arguments', function(ass
   }
 
   let app = buildApp()
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', '<div><child-component @userDidClick={{action userDidClick 1 2}} /></div>')
-    .template('child-component', '<div><grandchild-component @userDidClick={{action @userDidClick 3 4}} /></div>')
-    .template('grandchild-component', '<div class="grandchild" onclick={{action @userDidClick 5 6}}></div>')
-    .component('parent-component', ParentComponent)
+    .template('Main', '<div><Parent /></div>')
+    .template('Parent', '<div><Child @userDidClick={{action userDidClick 1 2}} /></div>')
+    .component('Parent', ParentComponent)
+    .template('Child', '<div><Grandchild @userDidClick={{action @userDidClick 3 4}} /></div>')
+    .template('Grandchild', '<div class="grandchild" onclick={{action @userDidClick 5 6}}></div>')
     .boot();
 
   let root = app.rootElement as Element;
@@ -106,9 +106,9 @@ test('action helper invoked without a function raises an error', function(assert
   }
 
   let app = buildApp()
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', '<div><span onclick={{action doesntExist}}></span></div>')
-    .component('parent-component', ParentComponent);
+    .template('main', '<div><Parent /></div>')
+    .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
+    .component('Parent', ParentComponent);
 
   assert.raises(() => {
     app.boot();

@@ -22,7 +22,9 @@
     "@glimmer/reference": "^0.26.2",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/runtime": "^0.26.2",
-    "@glimmer/util": "^0.26.2"
+    "@glimmer/util": "^0.26.2",
+    "@glimmer/opcode-compiler": "*",
+    "@glimmer/interfaces": "*"
   },
   "devDependencies": {
     "@glimmer/component": "^0.6.0",

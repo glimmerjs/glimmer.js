@@ -2,7 +2,8 @@ import {
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
-  ComponentSpec
+  ComponentSpec,
+  WithStaticLayout
 } from '@glimmer/runtime';
 import {
   Reference,
@@ -24,10 +25,12 @@ import {
   Macros,
   CompileTimeLookup as ICompileTimeLookup,
   LazyOpcodeBuilder,
+  OpcodeBuilderConstructor,
   ComponentCapabilities,
   ICompilableTemplate
 } from '@glimmer/opcode-compiler';
 import { ProgramSymbolTable } from '@glimmer/interfaces';
+import mainTemplate from './templates/main';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -36,7 +39,7 @@ export interface EnvironmentOptions {
   appendOperations?: DOMTreeConstruction;
 }
 
-class CompileTimeLookup implements ICompileTimeLookup {
+class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
   constructor(private resolver: RuntimeResolver) {}
 
   private getComponentSpec(handle: number): ComponentSpec {
@@ -55,7 +58,7 @@ class CompileTimeLookup implements ICompileTimeLookup {
 
   getLayout(handle: number): ICompilableTemplate<ProgramSymbolTable> {
     let { manager, definition } = this.getComponentSpec(handle);
-    let invocation = manager.getLayout(definition, this.resolver);
+    let invocation = (manager as WithStaticLayout<any, any, Specifier, RuntimeResolver>).getLayout(definition, this.resolver);
 
     return {
       compile() { return invocation.handle; },
@@ -83,7 +86,7 @@ class CompileTimeLookup implements ICompileTimeLookup {
 export default class Environment extends GlimmerEnvironment {
   private uselessAnchor: HTMLAnchorElement;
   public resolver: RuntimeResolver;
-  protected program: Program;
+  protected program: Program<Specifier>;
   public compileOptions: TemplateOptions<Specifier>;
 
   static create(options: EnvironmentOptions = {}) {
@@ -107,12 +110,14 @@ export default class Environment extends GlimmerEnvironment {
       program,
       macros,
       lookup,
-      Builder: LazyOpcodeBuilder
+      Builder: LazyOpcodeBuilder as OpcodeBuilderConstructor
     };
 
     this.resolver.setCompileOptions(this.compileOptions);
-    resolver.register('helper', 'action', action);
-    resolver.register('helper', 'if', ([condition, yes, no]) => condition ? yes : no);
+
+    resolver.registerTemplate('main', mainTemplate);
+    resolver.registerInternalHelper('action', action);
+    resolver.register('helper', 'if', ([condition, yes, no ]) => condition ? yes : no);
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
