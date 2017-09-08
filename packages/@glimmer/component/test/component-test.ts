@@ -4,7 +4,7 @@ import { getOwner } from '@glimmer/di';
 
 const { module, test } = QUnit;
 
-module('Component');
+module('[@glimmer/component] Component');
 
 test('can be instantiated with an owner', function(assert) {
   let component: MyComponent;

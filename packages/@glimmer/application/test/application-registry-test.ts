@@ -4,7 +4,7 @@ import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 
-module('ApplicationRegistry');
+module('[@glimmer/application] ApplicationRegistry');
 
 test('#register - registers a factory', function(assert) {
   class Foo {

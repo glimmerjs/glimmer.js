@@ -5,7 +5,7 @@ import { debugInfoForReference } from '..';
 
 const { module, test } = QUnit;
 
-module('Actions');
+module('[@glimmer/application] Actions');
 
 test('can curry arguments to actions', async function(assert) {
   assert.expect(9);

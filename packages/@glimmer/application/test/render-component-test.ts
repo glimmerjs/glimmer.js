@@ -3,7 +3,7 @@ import { didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
-module('renderComponent');
+module('[@glimmer/application] renderComponent');
 
 test('renders a component', async function(assert) {
   assert.expect(1);

@@ -4,7 +4,7 @@ import { didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
-module('Component Arguments');
+module('[@glimmer/component] Component Arguments');
 
 test('Args smoke test', (assert) => {
   let done = assert.async();

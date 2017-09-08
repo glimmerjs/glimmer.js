@@ -9,7 +9,7 @@ import SimpleDOM from 'simple-dom';
 const { module, test } = QUnit;
 const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
 
-module('Environment');
+module('[@glimmer/application] Environment');
 
 test('can be instantiated with new', function(assert) {
   let env = new Environment({

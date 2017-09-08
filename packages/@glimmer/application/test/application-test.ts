@@ -4,7 +4,7 @@ import { Document } from 'simple-dom';
 
 const { module, test } = QUnit;
 
-module('Application');
+module('[@glimmer/application] Application');
 
 test('can be instantiated', function(assert) {
   let app = new Application({ rootName: 'app', resolver: new BlankResolver });

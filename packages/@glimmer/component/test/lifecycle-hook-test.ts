@@ -3,7 +3,7 @@ import { buildApp } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 
-module('Lifecycle Hooks');
+module('[@glimmer/component] Lifecycle Hooks');
 
 test('Lifecycle hook ordering', (assert) => {
   assert.expect(7);

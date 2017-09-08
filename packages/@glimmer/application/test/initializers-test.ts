@@ -3,7 +3,7 @@ import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 
-module('Application InstanceInitializers');
+module('[@glimmer/application] Application InstanceInitializers');
 
 class Component {
   static create() {

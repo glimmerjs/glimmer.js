@@ -4,7 +4,7 @@ import { DEBUG } from '@glimmer/env';
 
 const { module, test } = QUnit;
 
-module('Rendering');
+module('[@glimmer/component] Rendering');
 
 test('A component can be rendered in a template', (assert) => {
   let app = buildApp()

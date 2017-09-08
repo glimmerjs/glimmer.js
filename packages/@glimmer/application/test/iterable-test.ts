@@ -2,7 +2,7 @@ import { Iterable } from '..';
 
 const { module, test } = QUnit;
 
-module('Iterable');
+module('[@glimmer/application] Iterable');
 
 test('basic iteration of an array of primitives', function(assert) {
   let ref = {

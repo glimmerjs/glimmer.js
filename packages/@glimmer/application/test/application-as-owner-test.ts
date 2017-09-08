@@ -4,7 +4,7 @@ import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 
-module('Application - Owner interface');
+module('[@glimmer/application] Owner interface');
 
 test('#identify - uses a resolver to convert a relative specifier to an absolute specifier', function(assert) {
   assert.expect(2);
