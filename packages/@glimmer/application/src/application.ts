@@ -95,7 +95,7 @@ export default class Application implements Owner {
    * registered via `renderComponent()`.
    */
   boot(): void {
-    this._initialize();
+    this.initialize();
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
@@ -121,8 +121,9 @@ export default class Application implements Owner {
       this._rendering = false;
     });
   }
+
   /** @hidden */
-  _initialize(): void {
+  initialize(): void {
     this.initRegistry();
     this.initContainer();
   }
