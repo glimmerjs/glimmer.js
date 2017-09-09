@@ -30,8 +30,6 @@ import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import mainTemplate from './templates/main';
 
-function NOOP() {}
-
 export interface ApplicationOptions {
   rootName: string;
   resolver: Resolver;
