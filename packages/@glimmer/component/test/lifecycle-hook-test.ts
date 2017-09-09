@@ -1,5 +1,5 @@
 import Component from '..';
-import { buildApp } from '@glimmer/test-utils';
+import { buildApp } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 

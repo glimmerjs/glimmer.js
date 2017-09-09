@@ -50,8 +50,8 @@ export interface AppRoot {
   nextSibling: Option<Simple.Node>;
 }
 
-export interface ApplicationConstructor {
-  new (options: ApplicationOptions): Application;
+export interface ApplicationConstructor<T = Application> {
+  new (options: ApplicationOptions): T;
 }
 
 export default class Application implements Owner {

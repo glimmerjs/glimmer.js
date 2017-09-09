@@ -1,5 +1,4 @@
-import { buildApp } from '@glimmer/test-utils';
-import { didRender } from '@glimmer/application-test-helpers';
+import { buildApp, didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
