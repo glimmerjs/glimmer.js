@@ -5,6 +5,7 @@
    "license": "MIT",
    "scripts": {
       "test": "ember test",
+      "problems": "tsc -p tsconfig.json --noEmit",
       "postinstall": "lerna bootstrap"
    },
    "devDependencies": {

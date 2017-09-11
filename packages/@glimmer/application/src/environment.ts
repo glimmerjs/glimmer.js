@@ -117,7 +117,7 @@ export default class Environment extends GlimmerEnvironment {
 
     resolver.registerTemplate('main', mainTemplate);
     resolver.registerInternalHelper('action', action);
-    resolver.register('helper', 'if', ([condition, yes, no ]) => condition ? yes : no);
+    resolver.register('helper', 'if', (params) => params[0] ? params[1] : params[2]);
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember

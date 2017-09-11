@@ -14,8 +14,8 @@ import {
 } from "@glimmer/util";
 import { TypedRegistry } from "./typed-registry";
 import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
-import { Owner, getOwner, Factory } from "@glimmer/di";
-import Component, { ComponentDefinition, ComponentManager } from "@glimmer/component";
+import { Owner } from "@glimmer/di";
+import Component, { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
 import Application from "./application";
 import { HelperReference } from './helpers/user-helper';
 
@@ -124,7 +124,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     this.register('helper', name, helper);
   }
 
-  registerComponent(name: string, resolvedSpecifier: string, Component: Component, template: SerializedTemplateWithLazyBlock<Specifier>): number {
+  registerComponent(name: string, resolvedSpecifier: string, Component: ComponentFactory, template: SerializedTemplateWithLazyBlock<Specifier>): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
     let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
@@ -170,13 +170,12 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
       let specifier = unwrap(this.identifyComponent(name, meta));
       let template = this.owner.lookup('template', specifier);
       let componentSpecifier = this.owner.identify('component', specifier);
-      let componentFactory: Factory<Component> = null;
+      let componentFactory: ComponentFactory = null;
 
       if (componentSpecifier !== undefined) {
         componentFactory = this.owner.factoryFor(componentSpecifier);
       } else {
         componentFactory = {
-          class: Component,
           create(injections) {
             return Component.create(injections);
           }
