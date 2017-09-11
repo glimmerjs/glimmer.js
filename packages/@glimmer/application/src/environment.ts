@@ -66,20 +66,20 @@ class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
     };
   }
 
-  lookupHelper(name: string, referer: Specifier): Option<number> {
-    return this.resolver.lookupHelper(name, referer);
+  lookupHelper(name: string, referrer: Specifier): Option<number> {
+    return this.resolver.lookupHelper(name, referrer);
   }
 
-  lookupModifier(name: string, referer: Specifier): Option<number> {
-    return this.resolver.lookupModifier(name, referer);
+  lookupModifier(name: string, referrer: Specifier): Option<number> {
+    return this.resolver.lookupModifier(name, referrer);
   }
 
-  lookupComponentSpec(name: string, referer: Specifier): Option<number> {
-    return this.resolver.lookupComponentHandle(name, referer);
+  lookupComponentSpec(name: string, referrer: Specifier): Option<number> {
+    return this.resolver.lookupComponentHandle(name, referrer);
   }
 
-  lookupPartial(name: string, referer: Specifier): Option<number> {
-    return this.resolver.lookupPartial(name, referer);
+  lookupPartial(name: string, referrer: Specifier): Option<number> {
+    return this.resolver.lookupPartial(name, referrer);
   }
 }
 

@@ -31,17 +31,17 @@ test('Lifecycle hook ordering', (assert) => {
   class Component5 extends HookLoggerComponent { name = 'component5'; };
 
   let app = buildApp()
-    .template('main', '<div><component-one /></div>')
-    .template('component-one', '<div><component-two /><component-three /></div>')
-    .template('component-two', '<div><component-four /><component-five /></div>')
-    .template('component-three', '<div></div>')
-    .template('component-four', '<div></div>')
-    .template('component-five', '<div></div>')
-    .component('component-one', Component1)
-    .component('component-two', Component2)
-    .component('component-three', Component3)
-    .component('component-four', Component4)
-    .component('component-five', Component5)
+    .template('Main', '<div><ComponentOne /></div>')
+    .template('ComponentOne', '<div ...attributes><ComponentTwo /><ComponentThree /></div>')
+    .template('ComponentTwo', '<div ...attributes><ComponentFour /><ComponentFive /></div>')
+    .template('ComponentThree', '<div ...attributes></div>')
+    .template('ComponentFour', '<div ...attributes></div>')
+    .template('ComponentFive', '<div ...attributes></div>')
+    .component('ComponentOne', Component1)
+    .component('ComponentTwo', Component2)
+    .component('ComponentThree', Component3)
+    .component('ComponentFour', Component4)
+    .component('ComponentFive', Component5)
     .boot();
 
   assert.deepEqual(invocations, [
@@ -52,7 +52,7 @@ test('Lifecycle hook ordering', (assert) => {
     ['component1', 'didInsertElement'],
   ]);
 
-  let component1 = app["_container"].lookup("component:/test-app/components/component-two");
+  let component1 = app["_container"].lookup("component:/test-app/components/ComponentTwo");
   component1.destroy();
 
   assert.ok(didCallWillDestroy);

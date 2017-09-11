@@ -17,6 +17,7 @@ import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from
 import { Owner, getOwner, Factory } from "@glimmer/di";
 import Component, { ComponentDefinition, ComponentManager } from "@glimmer/component";
 import Application from "./application";
+import { HelperReference } from './helpers/user-helper';
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
 
@@ -68,7 +69,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     this.templateOptions = compileOptions;
   }
 
-  lookup(type: LookupType, name: string, referer?: Specifier): Option<number> {
+  lookup(type: LookupType, name: string, referrer?: Specifier): Option<number> {
     if (this.cache[type].hasName(name)) {
       return this.cache[type].getHandle(name);
     } else {
@@ -100,7 +101,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
       let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(definition.layout);
       let { block, meta, id } = serializedTemplate;
       let parsedBlock = JSON.parse(block);
-      let template = new ScannableTemplate(this.templateOptions, { id, block: parsedBlock, referer: meta }).asLayout();
+      let template = new ScannableTemplate(this.templateOptions, { id, block: parsedBlock, referrer: meta }).asLayout();
       let invocation = {
         handle: template.compile(),
         symbolTable: template.symbolTable
@@ -131,11 +132,11 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return this.register('component', name, { definition, manager: definition.manager });
   }
 
-  lookupComponentHandle(name: string, referer?: Specifier) {
+  lookupComponentHandle(name: string, referrer?: Specifier) {
     if (!this.cache.component.hasName(name)) {
-      this.lookupComponent(name, referer);
+      this.lookupComponent(name, referrer);
     }
-    return this.lookup('component', name, referer);
+    return this.lookup('component', name, referrer);
   }
 
   managerFor(managerId = 'main'): ComponentManager {

@@ -60,9 +60,9 @@ test('can render a component with the component helper', async function(assert) 
   }
 
   let app = buildApp()
-    .template('hello-world', '<h1>Hello {{@name}}!</h1>')
-    .template('main', '<div>{{component "hello-world" name=salutation}}</div>')
-    .component('main', MainComponent)
+    .template('HelloWorld', '<h1>Hello {{@name}}!</h1>')
+    .template('Main', '<div>{{component "HelloWorld" name=salutation}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -78,7 +78,7 @@ test('can render a component with the component helper', async function(assert) 
 
 test('custom elements are rendered', function(assert) {
   let app = buildApp()
-    .template('main', '<hello-world>foo</hello-world>')
+    .template('Main', '<hello-world>foo</hello-world>')
     .boot();
 
   let serializedHTML = serializer.serialize(app.rootElement);
@@ -92,12 +92,12 @@ test('components without a template raise an error', function(assert) {
   }
 
   let app = buildApp()
-    .template('main', '<div><hello-world /></div>')
-    .component('hello-world', HelloWorldComponent);
+    .template('Main', '<div><HelloWorld /></div>')
+    .component('HelloWorld', HelloWorldComponent);
 
   assert.raises(() => {
     app.boot();
-  }, /The component 'hello-world' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
+  }, /The component 'HelloWorld' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
 });
 
 test('can render a custom helper', async function(assert) {
@@ -106,8 +106,8 @@ test('can render a custom helper', async function(assert) {
 
   let app = buildApp()
     .helper('greeting', () => "Hello Glimmer!")
-    .template('main', '<div>{{greeting}}</div>')
-    .component('main', MainComponent)
+    .template('Main', '<div>{{greeting}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -128,8 +128,8 @@ test('can render a custom helper that takes args', async function(assert) {
 
   let app = buildApp()
     .helper('greeting', (params) => `Hello ${params[0]} ${params[1]}!`)
-    .template('main', '<div>{{greeting firstName lastName}}</div>')
-    .component('main', MainComponent)
+    .template('Main', '<div>{{greeting firstName lastName}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -148,7 +148,7 @@ test('renders a component using simple-dom', function(assert) {
   let customDocument = new SimpleDOM.Document();
 
   let app = buildApp('test-app', { document: customDocument })
-    .template('main', `<h1>Hello Glimmer!</h1>`)
+    .template('Main', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
   let serializedHTML = serializer.serialize(app.rootElement);

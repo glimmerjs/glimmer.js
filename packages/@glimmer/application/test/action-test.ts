@@ -32,7 +32,7 @@ test('can curry arguments to actions', async function(assert) {
 
   let app = buildApp()
     .template('HelloWorld', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
-    .template('main', '<div><HelloWorld /></div>')
+    .template('Main', '<div><HelloWorld /></div>')
     .component('HelloWorld', HelloWorld)
     .boot();
 
@@ -105,7 +105,7 @@ test('action helper invoked without a function raises an error', function(assert
   }
 
   let app = buildApp()
-    .template('main', '<div><Parent /></div>')
+    .template('Main', '<div><Parent /></div>')
     .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
     .component('Parent', ParentComponent);
 

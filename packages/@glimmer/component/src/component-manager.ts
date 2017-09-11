@@ -10,6 +10,8 @@ import {
   Environment,
   Arguments,
   CapturedArguments,
+  WithStaticLayout,
+  Invocation,
 } from "@glimmer/runtime";
 import Component from "./component";
 import ComponentDefinition from "./component-definition";
@@ -19,6 +21,7 @@ import { Tag } from "@glimmer/reference";
 import { Simple } from "@glimmer/interfaces";
 import { ComponentCapabilities } from '@glimmer/opcode-compiler';
 import { VersionedPathReference } from '@glimmer/reference';
+import { RuntimeResolver } from '@glimmer/application';
 
 export interface ConstructorOptions {
   env: Environment;
@@ -53,7 +56,7 @@ export class ComponentStateBucket {
   }
 }
 
-export default class ComponentManager implements IComponentManager<ComponentStateBucket, ComponentDefinition> {
+export default class ComponentManager implements IComponentManager<ComponentStateBucket, ComponentDefinition>, WithStaticLayout<ComponentStateBucket, ComponentDefinition, Opaque, RuntimeResolver> {
   private env: Environment;
 
   static create(options: ConstructorOptions): ComponentManager {
@@ -72,7 +75,7 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return definition.capabilities;
   }
 
-  getLayout(definition: ComponentDefinition, resolver: RuntimeResolver) {
+  getLayout(definition: ComponentDefinition, resolver: RuntimeResolver): Invocation {
     return resolver.compileTemplate(definition);
   }
 

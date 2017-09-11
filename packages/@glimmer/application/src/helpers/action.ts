@@ -1,4 +1,4 @@
-import { ConstReference } from "@glimmer/reference";
+import { UpdatableReference } from "@glimmer/object-reference";
 import { VM, Arguments } from "@glimmer/runtime";
 import { Opaque } from '@glimmer/interfaces';
 
@@ -11,7 +11,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
     throwNoActionError(actionFunc, args.positional.at(0));
   }
 
-  return new ConstReference(function action(...invokedArgs) {
+  return new UpdatableReference(function action(...invokedArgs) {
     let curriedArgs = args.positional.value();
     // Consume the action function that was already captured above.
     curriedArgs.shift();

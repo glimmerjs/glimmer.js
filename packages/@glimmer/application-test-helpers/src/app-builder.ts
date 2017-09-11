@@ -8,6 +8,7 @@ import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 import Application, { ApplicationConstructor } from '@glimmer/application';
 import { ComponentManager } from '@glimmer/component';
+import { assert } from '@glimmer/util';
 
 export interface AppBuilderOptions<T> {
   ApplicationClass?: ApplicationConstructor<T>;
@@ -35,6 +36,8 @@ export class AppBuilder<T extends TestApplication> {
   }
 
   template(name: string, template: string) {
+    assert(name.charAt(0) === name.charAt(0).toUpperCase(), 'template names must start with a capital letter');
+
     let specifier = `template:/${this.rootName}/components/${name}`;
     this.modules[specifier] = precompile(template, { meta: { specifier }});
     return this;
