@@ -44,7 +44,7 @@
       "simple-html-tokenizer": "^0.4.1",
       "testem": "^1.16.0",
       "tslint": "^4.0.2",
-      "typescript": "^2.4.2"
+      "typescript": "^2.5.2"
    },
    "dependencies": {
       "@glimmer/compiler": "^0.28.2",
