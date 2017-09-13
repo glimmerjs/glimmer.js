@@ -47,7 +47,7 @@
       "typescript": "^2.4.2"
    },
    "dependencies": {
-      "@glimmer/compiler": "0.26.2",
+      "@glimmer/compiler": "^0.28.2",
       "ember-build-utilities": "^0.4.0"
    }
 }
