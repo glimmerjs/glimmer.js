@@ -105,13 +105,11 @@ test('components with dasherized names raise an error', function(assert) {
     debugName: 'hello-world';
   }
 
-  let app = buildApp()
-    .template('Main', '<div><hello-world /></div>')
+  assert.throws(() => {
+    buildApp()
+    .template('hello-world', '<div><hello-world /></div>')
     .component('hello-world', HelloWorldComponent);
-
-  assert.raises(() => {
-    app.boot();
-  }, /template names must start with a capital letter\./);
+  }, Error("template names must start with a capital letter"));
 });
 
 test('can render a custom helper', async function(assert) {
