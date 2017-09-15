@@ -2,14 +2,13 @@ import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
 import { Environment, EnvironmentOptions } from '..';
 import Component from '@glimmer/component';
-import { buildApp } from '@glimmer/test-utils';
-import { didRender } from '@glimmer/application-test-helpers';
+import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import SimpleDOM from 'simple-dom';
 
 const { module, test } = QUnit;
 const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
 
-module('Environment');
+module('[@glimmer/application] Environment');
 
 test('can be instantiated with new', function(assert) {
   let env = new Environment({
@@ -45,10 +44,10 @@ test('can render a component', function(assert) {
   }
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello {{@name}}!</h1>`)
-    .component('main', MainComponent)
-    .template('main', '<div><hello-world @name={{salutation}} /></div>')
-    .boot();
+  .component('Main', MainComponent)
+  .template('Main', '<div><HelloWorld @name={{salutation}} /></div>')
+  .template('HelloWorld', `<h1>Hello {{@name}}!</h1>`)
+  .boot();
 
   let root = app.rootElement as HTMLElement;
 
@@ -61,9 +60,9 @@ test('can render a component with the component helper', async function(assert) 
   }
 
   let app = buildApp()
-    .template('hello-world', '<h1>Hello {{@name}}!</h1>')
-    .template('main', '<div>{{component "hello-world" name=salutation}}</div>')
-    .component('main', MainComponent)
+    .template('HelloWorld', '<h1>Hello {{@name}}!</h1>')
+    .template('Main', '<div>{{component "HelloWorld" name=salutation}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -79,7 +78,7 @@ test('can render a component with the component helper', async function(assert) 
 
 test('custom elements are rendered', function(assert) {
   let app = buildApp()
-    .template('main', '<hello-world>foo</hello-world>')
+    .template('Main', '<hello-world>foo</hello-world>')
     .boot();
 
   let serializedHTML = serializer.serialize(app.rootElement);
@@ -93,12 +92,24 @@ test('components without a template raise an error', function(assert) {
   }
 
   let app = buildApp()
-    .template('main', '<div><hello-world /></div>')
-    .component('hello-world', HelloWorldComponent);
+    .template('Main', '<div><HelloWorld /></div>')
+    .component('HelloWorld', HelloWorldComponent);
 
   assert.raises(() => {
     app.boot();
-  }, /The component 'hello-world' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
+  }, /The component 'HelloWorld' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory./);
+});
+
+test('components with dasherized names raise an error', function(assert) {
+  class HelloWorldComponent extends Component {
+    debugName: 'hello-world';
+  }
+
+  assert.throws(() => {
+    buildApp()
+    .template('hello-world', '<div><hello-world /></div>')
+    .component('hello-world', HelloWorldComponent);
+  }, Error("template names must start with a capital letter"));
 });
 
 test('can render a custom helper', async function(assert) {
@@ -107,8 +118,8 @@ test('can render a custom helper', async function(assert) {
 
   let app = buildApp()
     .helper('greeting', () => "Hello Glimmer!")
-    .template('main', '<div>{{greeting}}</div>')
-    .component('main', MainComponent)
+    .template('Main', '<div>{{greeting}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -129,8 +140,8 @@ test('can render a custom helper that takes args', async function(assert) {
 
   let app = buildApp()
     .helper('greeting', (params) => `Hello ${params[0]} ${params[1]}!`)
-    .template('main', '<div>{{greeting firstName lastName}}</div>')
-    .component('main', MainComponent)
+    .template('Main', '<div>{{greeting firstName lastName}}</div>')
+    .component('Main', MainComponent)
     .boot();
 
   let root = app.rootElement as HTMLElement;
@@ -149,7 +160,7 @@ test('renders a component using simple-dom', function(assert) {
   let customDocument = new SimpleDOM.Document();
 
   let app = buildApp('test-app', { document: customDocument })
-    .template('main', `<h1>Hello Glimmer!</h1>`)
+    .template('Main', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
   let serializedHTML = serializer.serialize(app.rootElement);

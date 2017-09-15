@@ -6,17 +6,12 @@ import { Opaque, Dict } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
+import Application, { ApplicationConstructor } from '@glimmer/application';
+import { ComponentManager } from '@glimmer/component';
+import { assert } from '@glimmer/util';
 
-export interface Application {
-  rootElement: Simple.Element;
-  document: Simple.Document;
-  renderComponent: Function;
-  boot(): void;
-  scheduleRerender(): void;
-}
-
-export interface AppBuilderOptions {
-  ApplicationClass?: any; // TODO - typing
+export interface AppBuilderOptions<T> {
+  ApplicationClass?: ApplicationConstructor<T>;
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
@@ -24,21 +19,27 @@ export interface AppBuilderOptions {
 
 export interface ComponentFactory extends FactoryDefinition<Opaque> {};
 
-export class AppBuilder {
+export class TestApplication extends Application {
+  rootElement: Element;
+}
+
+export class AppBuilder<T extends TestApplication> {
   rootName: string;
   modules: Dict<Opaque> = {};
-  options: AppBuilderOptions;
+  options: AppBuilderOptions<T>;
 
-  constructor(name: string, options: AppBuilderOptions) {
+  constructor(name: string, options: AppBuilderOptions<T>) {
     this.rootName = name;
     this.options = options;
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
-    this.template('main', '<div />');
+    this.template('Main', '<div />');
   }
 
   template(name: string, template: string) {
+    assert(name.charAt(0) === name.charAt(0).toUpperCase(), 'template names must start with a capital letter');
+
     let specifier = `template:/${this.rootName}/components/${name}`;
-    this.modules[specifier] = precompile(template, { meta: { specifier, '<template-meta>': true }});
+    this.modules[specifier] = precompile(template, { meta: { specifier }});
     return this;
   }
 
@@ -54,7 +55,7 @@ export class AppBuilder {
     return this;
   }
 
-  boot() {
+  boot(): T {
     let resolverConfiguration = this.options.resolverConfiguration || defaultResolverConfiguration;
     resolverConfiguration.app = resolverConfiguration.app || {
       name: this.rootName,
@@ -70,13 +71,21 @@ export class AppBuilder {
       document: this.options.document
     });
 
-    let rootElement = app.document.createElement('div');
-
+    let rootElement = (app.document as Document).createElement('div');
+    app.renderComponent('Main', rootElement);
     app.rootElement = rootElement;
-    app.renderComponent('main', rootElement);
 
     app.boot();
 
     return app;
   }
 }
+
+function buildApp<T extends TestApplication>(appName = 'test-app', options: AppBuilderOptions<T> = {}): AppBuilder<T> {
+  options.ComponentManager = options.ComponentManager || ComponentManager;
+  options.ApplicationClass = options.ApplicationClass || TestApplication as ApplicationConstructor<T>;
+
+  return new AppBuilder(appName, options);
+}
+
+export { buildApp };

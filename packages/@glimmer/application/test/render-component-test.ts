@@ -1,9 +1,8 @@
-import { buildApp } from '@glimmer/test-utils';
-import { didRender } from '@glimmer/application-test-helpers';
+import { buildApp, didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
-module('renderComponent');
+module('[@glimmer/application] renderComponent');
 
 test('renders a component', async function(assert) {
   assert.expect(1);
@@ -11,10 +10,10 @@ test('renders a component', async function(assert) {
   let containerElement = document.createElement('div');
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
-  app.renderComponent('hello-world', containerElement);
+  app.renderComponent('HelloWorld', containerElement);
 
   await didRender(app);
 
@@ -32,12 +31,12 @@ test('renders a component without affecting existing content', async function(as
   containerElement.appendChild(document.createTextNode('bar'));
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
   assert.equal(containerElement.innerHTML, '<p>foo</p>bar');
 
-  app.renderComponent('hello-world', containerElement);
+  app.renderComponent('HelloWorld', containerElement);
 
   await didRender(app);
 
@@ -55,12 +54,12 @@ test('renders a component before a given sibling', async function(assert) {
   containerElement.appendChild(nextSibling);
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
   assert.equal(containerElement.innerHTML, '<p></p><aside></aside>');
 
-  app.renderComponent('hello-world', containerElement, nextSibling);
+  app.renderComponent('HelloWorld', containerElement, nextSibling);
 
   await didRender(app);
 
@@ -74,12 +73,12 @@ test('renders multiple components in different places', async function(assert) {
   let secondContainerElement = document.createElement('div');
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
-    .template('hello-robbie', `<h1>Hello Robbie!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
 
-  app.renderComponent('hello-world', firstContainerElement);
-  app.renderComponent('hello-robbie', secondContainerElement);
+  app.renderComponent('HelloWorld', firstContainerElement);
+  app.renderComponent('HelloRobbie', secondContainerElement);
 
   await didRender(app);
 
@@ -93,12 +92,12 @@ test('renders multiple components in the same container', async function(assert)
   let containerElement = document.createElement('div');
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
-    .template('hello-robbie', `<h1>Hello Robbie!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
 
-  app.renderComponent('hello-world', containerElement);
-  app.renderComponent('hello-robbie', containerElement);
+  app.renderComponent('HelloWorld', containerElement);
+  app.renderComponent('HelloRobbie', containerElement);
 
   await didRender(app);
 
@@ -114,14 +113,14 @@ test('renders multiple components in the same container in particular places', a
   containerElement.appendChild(nextSibling);
 
   let app = buildApp()
-    .template('hello-world', `<h1>Hello Glimmer!</h1>`)
-    .template('hello-robbie', `<h1>Hello Robbie!</h1>`)
+    .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
+    .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
 
   assert.equal(containerElement.innerHTML, '<aside></aside>');
 
-  app.renderComponent('hello-world', containerElement);
-  app.renderComponent('hello-robbie', containerElement, nextSibling);
+  app.renderComponent('HelloWorld', containerElement);
+  app.renderComponent('HelloRobbie', containerElement, nextSibling);
 
   await didRender(app);
 

@@ -51,7 +51,7 @@ export abstract class CachedReference<T> extends ComponentPathReference<T> {
 export class RootReference extends ConstReference<object> {
   private children = dict<RootPropertyReference>();
 
-  get(propertyKey: string) {
+  get(propertyKey: string): RootPropertyReference{
     let ref = this.children[propertyKey];
 
     if (!ref) {

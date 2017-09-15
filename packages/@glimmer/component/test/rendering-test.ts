@@ -1,16 +1,16 @@
 import Component from '..';
-import { buildApp } from '@glimmer/test-utils';
+import { buildApp } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
 
 const { module, test } = QUnit;
 
-module('Rendering');
+module('[@glimmer/component] Rendering');
 
 test('A component can be rendered in a template', (assert) => {
   let app = buildApp()
-    .template('main', '<div><hello-world></hello-world></div>')
-    .template('hello-world', '<h1><person-card @name="Tom"/></h1>')
-    .template('person-card', '<span>Hello, {{@name}}!</span>')
+    .template('Main', '<div><HelloWorld></HelloWorld></div>')
+    .template('HelloWorld', '<h1><PersonCard @name="Tom"/></h1>')
+    .template('PersonCard', '<span>Hello, {{@name}}!</span>')
     .boot();
 
   assert.equal(app.rootElement.textContent, 'Hello, Tom!');
@@ -37,9 +37,9 @@ if (DEBUG) {
     }
 
     buildApp()
-      .template('main', '<div><hello-world></hello-world></div>')
-      .template('hello-world', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
-      .component('hello-world', HelloWorldComponent)
+      .template('Main', '<div><HelloWorld></HelloWorld></div>')
+      .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
+      .component('HelloWorld', HelloWorldComponent)
       .boot();
   });
 }

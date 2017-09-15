@@ -5,6 +5,7 @@
    "license": "MIT",
    "scripts": {
       "test": "ember test",
+      "problems": "tsc -p tsconfig.json --noEmit",
       "postinstall": "lerna bootstrap"
    },
    "devDependencies": {
@@ -43,10 +44,10 @@
       "simple-html-tokenizer": "^0.4.1",
       "testem": "^1.16.0",
       "tslint": "^4.0.2",
-      "typescript": "^2.4.2"
+      "typescript": "^2.5.2"
    },
    "dependencies": {
-      "@glimmer/compiler": "0.26.2",
+      "@glimmer/compiler": "^0.28.2",
       "ember-build-utilities": "^0.4.0"
    }
 }

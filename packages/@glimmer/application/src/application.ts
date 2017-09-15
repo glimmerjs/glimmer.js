@@ -9,8 +9,9 @@ import {
 } from '@glimmer/di';
 import {
   templateFactory,
-  ComponentDefinition,
-  Component
+  Template,
+  TemplateIterator,
+  RenderResult
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -21,12 +22,13 @@ import {
 import {
   Simple
 } from '@glimmer/interfaces';
+import {
+  Specifier
+} from '@glimmer/opcode-compiler';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import mainTemplate from './templates/main';
-
-function NOOP() {}
 
 export interface ApplicationOptions {
   rootName: string;
@@ -41,9 +43,13 @@ export interface Initializer {
 
 export interface AppRoot {
   id: number;
-  component: string | ComponentDefinition<Component>;
+  component: string;
   parent: Simple.Node;
   nextSibling: Option<Simple.Node>;
+}
+
+export interface ApplicationConstructor<T = Application> {
+  new (options: ApplicationOptions): T;
 }
 
 export default class Application implements Owner {
@@ -51,6 +57,7 @@ export default class Application implements Owner {
   public resolver: Resolver;
   public document: Simple.Document;
   public env: Environment;
+
   private _roots: AppRoot[] = [];
   private _rootsIndex = 0;
   private _registry: Registry;
@@ -60,7 +67,7 @@ export default class Application implements Owner {
   private _rendering = false;
   private _rendered = false;
   private _scheduled = false;
-  private _rerender: () => void = NOOP;
+  private _result: RenderResult;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
@@ -68,13 +75,72 @@ export default class Application implements Owner {
     this.document = options.document || window.document;
   }
 
+  /**
+   * Renders a component by name into the provided element, and optionally
+   * adjacent to the provided nextSibling element.
+   *
+   * ## Examples
+   *
+   * ```js
+   * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
+   * ```
+   */
+  renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
+    this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
+    this.scheduleRerender();
+  }
+
+  /**
+   * Initializes the application and renders any components that have been
+   * registered via `renderComponent()`.
+   */
+  boot(): void {
+    this.initialize();
+
+    this.env = this.lookup(`environment:/${this.rootName}/main/main`);
+
+    this._render();
+  }
+
+  /**
+   * Schedules all components to revalidate and potentially update the DOM to
+   * reflect any changes to underlying component state.
+   *
+   * Generally speaking, you  should avoid calling `scheduleRerender()`
+   * manually. Instead, use tracked properties on components and models, which
+   * invoke this method for you automatically when appropriate.
+   */
+  scheduleRerender(): void {
+    if (this._scheduled || !this._rendered) return;
+
+    this._rendering = true;
+    this._scheduled = true;
+    requestAnimationFrame(() => {
+      this._scheduled = false;
+      this._rerender();
+      this._rendering = false;
+    });
+  }
+
+  /** @hidden */
+  initialize(): void {
+    this.initRegistry();
+    this.initContainer();
+  }
+
   /** @hidden */
   registerInitializer(initializer: Initializer): void {
     this._initializers.push(initializer);
   }
 
-  /** @hidden */
-  initRegistry(): void {
+  /**
+   * @hidden
+   *
+   * Initializes the registry, which maps names to objects in the system. Addons
+   * and subclasses can customize the behavior of a Glimmer application by
+   * overriding objects in the registry.
+   */
+  protected initRegistry(): void {
     let registry = this._registry = new Registry();
 
     // Create ApplicationRegistry as a proxy to the underlying registry
@@ -97,8 +163,13 @@ export default class Application implements Owner {
     this._initialized = true;
   }
 
-  /** @hidden */
-  initContainer(): void {
+  /**
+   * @hidden
+   *
+   * Initializes the container, which stores instances of objects that come from
+   * the registry.
+   */
+  protected initContainer(): void {
     this._container = new Container(this._registry, this.resolver);
 
     // Inject `this` (the app) as the "owner" of every object instantiated
@@ -110,69 +181,92 @@ export default class Application implements Owner {
     };
   }
 
-  /** @hidden */
-  initialize(): void {
-    this.initRegistry();
-    this.initContainer();
+  /**
+   * @hidden
+   *
+   * The compiled `main` root layout template.
+   */
+  protected get mainLayout(): Template<Specifier> {
+    return templateFactory(mainTemplate).create(this.env.compileOptions);
   }
 
-  /** @hidden */
-  boot(): void {
-    this.initialize();
+  /**
+   * @hidden
+   *
+   * Configures and returns a template iterator for the root template, appropriate
+   * for performing the initial render of the Glimmer application.
+   */
+  protected get templateIterator(): TemplateIterator {
+    let { env, mainLayout } = this;
 
-    this.env = this.lookup(`environment:/${this.rootName}/main/main`);
-
-    this.render();
-  }
-
-  /** @hidden */
-  render(): void {
-    this.env.begin();
-
-    let mainLayout = templateFactory(mainTemplate).create(this.env);
+    // Create the template context for the root `main` template, which just
+    // contains the array of component roots. Any property references in that
+    // template will be looked up from this object.
     let self = new UpdatableReference({ roots: this._roots });
-    let doc = this.document as Document; // TODO FixReification
-    let parentNode = doc.body;
+
+    // Create an empty root scope.
     let dynamicScope = new DynamicScope();
-    let templateIterator = mainLayout.render({ self, parentNode, dynamicScope });
+
+    // The cursor tells the template which element to render into.
+    let cursor = {
+      element: (this.document as Document).body,
+      nextSibling: null
+    };
+
+    return mainLayout.renderLayout({
+      cursor,
+      env,
+      self,
+      dynamicScope
+    });
+  }
+
+  /** @hidden
+   *
+   * Ensures the DOM is up-to-date by performing a revalidation on the root
+   * template's render result. This method should not be called directly;
+   * instead, any mutations in the program that could cause side-effects should
+   * call `scheduleRerender()`, which ensures that DOM updates only happen once
+   * at the end of the browser's event loop.
+   */
+  protected _rerender() {
+    let { env, _result: result } = this;
+
+    if (!result) {
+      throw new Error('Cannot re-render before initial render has completed');
+    }
+
+    env.begin();
+    result.rerender();
+    env.commit();
+
+    this._didRender();
+  }
+
+  /** @hidden */
+  protected _render(): void {
+    let { env, templateIterator } = this;
+
+    // Begin a new transaction. The transaction stores things like component
+    // lifecycle events so they can be flushed once rendering has completed.
+    env.begin();
+
+    // Iterate the template iterator, executing the compiled template program
+    // until there are no more instructions left to execute.
     let result;
     do {
       result = templateIterator.next();
     } while (!result.done);
 
-    this.env.commit();
+    // Finally, commit the transaction and flush component lifecycle hooks.
+    env.commit();
 
-    let renderResult = result.value;
-
-    this._rerender = () => {
-      this.env.begin();
-      renderResult.rerender();
-      this.env.commit();
-      this._didRender();
-    };
-
+    this._result = result.value;
     this._didRender();
   }
 
   _didRender(): void {
     this._rendered = true;
-  }
-
-  renderComponent(component: string | ComponentDefinition<Component>, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
-    this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
-    this.scheduleRerender();
-  }
-
-  scheduleRerender(): void {
-    if (this._scheduled || !this._rendered) return;
-
-    this._rendering = true;
-    this._scheduled = true;
-    requestAnimationFrame(() => {
-      this._scheduled = false;
-      this._rerender();
-      this._rendering = false;
-    });
   }
 
   /**

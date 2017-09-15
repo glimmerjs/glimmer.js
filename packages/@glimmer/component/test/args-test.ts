@@ -1,10 +1,9 @@
 import Component, { tracked, setPropertyDidChange } from '..';
-import { TestApplication, buildApp } from '@glimmer/test-utils';
-import { didRender } from '@glimmer/application-test-helpers';
+import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
-module('Component Arguments');
+module('[@glimmer/component] Component Arguments');
 
 test('Args smoke test', (assert) => {
   let done = assert.async();
@@ -54,18 +53,18 @@ test('Args smoke test', (assert) => {
   }
 
   app = buildApp()
-    .component('parent-component', ParentComponent)
-    .component('child-component', ChildComponent)
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', `
+    .component('ParentComponent', ParentComponent)
+    .component('ChildComponent', ChildComponent)
+    .template('Main', '<div><ParentComponent /></div>')
+    .template('ParentComponent', `
       <div>
-        <child-component
+        <ChildComponent
           some-attr=foo
           @firstName={{firstName}}
           @isDank={{isDank}}
           @days={{daysOfSleepRequiredAfterEmberConf}} />
       </div>`)
-    .template('child-component', '<div></div>')
+    .template('ChildComponent', '<div></div>')
     .boot();
 
   setPropertyDidChange(function() {
@@ -97,14 +96,14 @@ test('Tracked properties that depend on `args` re-render correctly', (assert) =>
   }
 
   app = buildApp()
-    .component('parent-component', ParentComponent)
-    .component('child-component', ChildComponent)
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', `
+    .component('ParentComponent', ParentComponent)
+    .component('ChildComponent', ChildComponent)
+    .template('Main', '<div><ParentComponent /></div>')
+    .template('ParentComponent', `
       <div>
-        <child-component @firstName={{firstName}} @status={{status}} />
+        <ChildComponent @firstName={{firstName}} @status={{status}} />
       </div>`)
-    .template('child-component', '<div>{{name}} {{@status}}</div>')
+    .template('ChildComponent', '<div>{{name}} {{@status}}</div>')
     .boot();
 
   setPropertyDidChange(function() {
@@ -154,14 +153,14 @@ test('Properties that depend on `args` are properly updated before the `didUpdat
   }
 
   app = buildApp()
-    .component('parent-component', ParentComponent)
-    .component('child-component', ChildComponent)
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', `
+    .component('ParentComponent', ParentComponent)
+    .component('ChildComponent', ChildComponent)
+    .template('Main', '<div><ParentComponent /></div>')
+    .template('ParentComponent', `
       <div>
-        <child-component @firstName={{firstName}} @status={{status}} />
+        <ChildComponent @firstName={{firstName}} @status={{status}} />
       </div>`)
-    .template('child-component', '<div></div>')
+    .template('ChildComponent', '<div></div>')
     .boot();
 
   setPropertyDidChange(function() {
@@ -198,11 +197,11 @@ test("Setting args should not schedule a rerender", function(assert) {
   }
 
   app = buildApp()
-    .template('main', '<div><parent-component /></div>')
-    .template('parent-component', '<div><child-component @foo={{foo}}></child-component></div>')
-    .component('parent-component', ParentComponent)
-    .template('child-component', '<div></div>')
-    .component('child-component', ChildComponent)
+    .template('Main', '<div><ParentComponent /></div>')
+    .template('ParentComponent', '<div><ChildComponent @foo={{foo}}></ChildComponent></div>')
+    .component('ParentComponent', ParentComponent)
+    .template('ChildComponent', '<div></div>')
+    .component('ChildComponent', ChildComponent)
     .boot();
 
   setPropertyDidChange(function() {

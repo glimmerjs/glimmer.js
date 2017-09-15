@@ -4,7 +4,7 @@ import { DEBUG } from '@glimmer/env';
 import { tracked, tagForProperty, UntrackedPropertyError } from '..';
 import { CONSTANT_TAG } from "@glimmer/reference";
 
-module('Tracked Properties');
+module('[@glimmer/component] Tracked Properties');
 
 if (DEBUG) {
   test('requesting a tag for an untracked property should throw an exception if mutated', (assert) => {
