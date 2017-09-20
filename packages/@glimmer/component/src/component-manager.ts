@@ -14,12 +14,11 @@ import {
   Invocation,
 } from "@glimmer/runtime";
 import Component from "./component";
-import ComponentDefinition from "./component-definition";
+import { DefinitionState } from "./component-definition";
 import { RootReference } from "./references";
 import { Dict, Destroyable, Opaque } from "@glimmer/util";
 import { Tag } from "@glimmer/reference";
-import { Simple } from "@glimmer/interfaces";
-import { ComponentCapabilities } from '@glimmer/opcode-compiler';
+import { Simple, ComponentCapabilities } from "@glimmer/interfaces";
 import { VersionedPathReference } from '@glimmer/reference';
 import { RuntimeResolver } from '@glimmer/application';
 
@@ -32,7 +31,7 @@ export class ComponentStateBucket {
   public component: Component;
   private args: CapturedArguments;
 
-  constructor(definition: ComponentDefinition, args: CapturedArguments, owner: Owner) {
+  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner) {
     let componentFactory = definition.ComponentClass;
     let name = definition.name;
 
@@ -56,7 +55,7 @@ export class ComponentStateBucket {
   }
 }
 
-export default class ComponentManager implements IComponentManager<ComponentStateBucket, ComponentDefinition>, WithStaticLayout<ComponentStateBucket, ComponentDefinition, Opaque, RuntimeResolver> {
+export default class ComponentManager implements IComponentManager<ComponentStateBucket, DefinitionState>, WithStaticLayout<ComponentStateBucket, DefinitionState, Opaque, RuntimeResolver> {
   private env: Environment;
 
   static create(options: ConstructorOptions): ComponentManager {
@@ -67,19 +66,19 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     this.env = options.env;
   }
 
-  prepareArgs(definition: ComponentDefinition, args: Arguments): null {
+  prepareArgs(state: DefinitionState, args: Arguments): null {
     return null;
   }
 
-  getCapabilities(definition: ComponentDefinition): ComponentCapabilities {
-    return definition.capabilities;
+  getCapabilities(state: DefinitionState): ComponentCapabilities {
+    return state.capabilities;
   }
 
-  getLayout(definition: ComponentDefinition, resolver: RuntimeResolver): Invocation {
-    return resolver.compileTemplate(definition);
+  getLayout({ name, layout }: DefinitionState, resolver: RuntimeResolver): Invocation {
+    return resolver.compileTemplate(name, layout);
   }
 
-  create(_env: Environment, definition: ComponentDefinition, args: Arguments, _dynamicScope: DynamicScope, _caller: VersionedPathReference<Opaque>, _hasDefaultBlock: boolean): ComponentStateBucket {
+  create(_env: Environment, definition: DefinitionState, args: Arguments, _dynamicScope: DynamicScope, _caller: VersionedPathReference<Opaque>, _hasDefaultBlock: boolean): ComponentStateBucket {
     let owner = getOwner(this.env);
     return new ComponentStateBucket(definition, args.capture(), owner);
   }

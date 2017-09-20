@@ -2,7 +2,6 @@ import {
   ModifierManager,
   Helper as GlimmerHelper,
   Invocation,
-  ComponentSpec,
   Helper,
   ScannableTemplate,
   VM,
@@ -24,7 +23,7 @@ export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => O
 export interface Lookup {
   helper: GlimmerHelper;
   modifier: ModifierManager;
-  component: ComponentSpec;
+  component: ComponentDefinition;
   template: SerializedTemplateWithLazyBlock<Specifier>;
   manager: ComponentManager;
   compiledTemplate: Invocation;
@@ -55,7 +54,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   templateOptions: TemplateOptions<Specifier>;
   handleLookup: TypedRegistry<Opaque>[] = [];
   private cache = {
-    component: new TypedRegistry<ComponentSpec>(),
+    component: new TypedRegistry<ComponentDefinition>(),
     template: new TypedRegistry<SerializedTemplateWithLazyBlock<Specifier>>(),
     compiledTemplate: new TypedRegistry<Invocation>(),
     helper: new TypedRegistry<Helper>(),
@@ -95,10 +94,9 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return handle;
   }
 
-  compileTemplate(definition: ComponentDefinition): Invocation {
-    let { name } = definition;
+  compileTemplate(name: string, layout: Option<number>): Invocation {
     if (!this.cache.compiledTemplate.hasName(name)) {
-      let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(definition.layout);
+      let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(layout);
       let { block, meta, id } = serializedTemplate;
       let parsedBlock = JSON.parse(block);
       let template = new ScannableTemplate(this.templateOptions, { id, block: parsedBlock, referrer: meta }).asLayout();
@@ -129,7 +127,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     let manager = this.managerFor(templateEntry.meta.managerId);
     let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
 
-    return this.register('component', name, { definition, manager: definition.manager });
+    return this.register('component', name, definition);
   }
 
   lookupComponentHandle(name: string, referrer?: Specifier) {
@@ -164,7 +162,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
     };
   }
 
-  lookupComponent(name: string, meta: Specifier): ComponentSpec {
+  lookupComponent(name: string, meta: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
       let specifier = unwrap(this.identifyComponent(name, meta));
@@ -187,7 +185,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
       handle = this.lookup('component', name, meta);
     }
 
-    return this.resolve<ComponentSpec>(handle);
+    return this.resolve<ComponentDefinition>(handle);
   }
 
   lookupHelper(name: string, meta?: Specifier): Option<number> {

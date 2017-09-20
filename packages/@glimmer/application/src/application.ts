@@ -11,7 +11,8 @@ import {
   templateFactory,
   Template,
   TemplateIterator,
-  RenderResult
+  RenderResult,
+  clientBuilder
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -214,10 +215,10 @@ export default class Application implements Owner {
     };
 
     return mainLayout.renderLayout({
-      cursor,
       env,
       self,
-      dynamicScope
+      dynamicScope,
+      builder: clientBuilder(env, cursor)
     });
   }
 
