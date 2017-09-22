@@ -2,8 +2,8 @@ import {
   DOMChanges,
   DOMTreeConstruction,
   Environment as GlimmerEnvironment,
-  ComponentSpec,
-  WithStaticLayout
+  WithStaticLayout,
+  ComponentDefinition
 } from '@glimmer/runtime';
 import {
   Reference,
@@ -26,10 +26,9 @@ import {
   CompileTimeLookup as ICompileTimeLookup,
   LazyOpcodeBuilder,
   OpcodeBuilderConstructor,
-  ComponentCapabilities,
   ICompilableTemplate
 } from '@glimmer/opcode-compiler';
-import { ProgramSymbolTable } from '@glimmer/interfaces';
+import { ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
 import mainTemplate from './templates/main';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
@@ -42,8 +41,8 @@ export interface EnvironmentOptions {
 class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
   constructor(private resolver: RuntimeResolver) {}
 
-  private getComponentSpec(handle: number): ComponentSpec {
-    let spec = this.resolver.resolve<Option<ComponentSpec>>(handle);
+  private getComponentDefinition(handle: number): ComponentDefinition {
+    let spec = this.resolver.resolve<Option<ComponentDefinition>>(handle);
 
     assert(!!spec, `Couldn't find a template named ${name}`);
 
@@ -51,13 +50,14 @@ class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
   }
 
   getCapabilities(handle: number): ComponentCapabilities {
-    let spec = this.getComponentSpec(handle);
-    let { manager, definition } = spec!;
-    return manager.getCapabilities(definition);
+    let definition = this.getComponentDefinition(handle);
+    let { manager, state } = definition!;
+    return manager.getCapabilities(state);
   }
 
   getLayout(handle: number): ICompilableTemplate<ProgramSymbolTable> {
-    let { manager, definition } = this.getComponentSpec(handle);
+    let definition = this.getComponentDefinition(handle);
+    let { manager } = definition;
     let invocation = (manager as WithStaticLayout<any, any, Specifier, RuntimeResolver>).getLayout(definition, this.resolver);
 
     return {
