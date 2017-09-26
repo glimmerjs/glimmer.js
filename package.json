@@ -4,6 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "build": "ember build --env production",
+    "start": "ember serve",
     "test": "ember test",
     "problems": "tsc -p tsconfig.json --noEmit",
     "postinstall": "lerna bootstrap"
