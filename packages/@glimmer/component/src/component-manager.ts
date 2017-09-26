@@ -16,11 +16,10 @@ import {
 import Component from "./component";
 import { DefinitionState } from "./component-definition";
 import { RootReference } from "./references";
-import { Dict, Destroyable, Opaque } from "@glimmer/util";
+import { Dict, Destroyable, Opaque, Option } from "@glimmer/util";
 import { Tag } from "@glimmer/reference";
-import { Simple, ComponentCapabilities } from "@glimmer/interfaces";
+import { RuntimeResolver, Simple, ComponentCapabilities } from "@glimmer/interfaces";
 import { VersionedPathReference } from '@glimmer/reference';
-import { RuntimeResolver } from '@glimmer/application';
 
 export interface ConstructorOptions {
   env: Environment;
@@ -55,7 +54,11 @@ export class ComponentStateBucket {
   }
 }
 
-export default class ComponentManager implements IComponentManager<ComponentStateBucket, DefinitionState>, WithStaticLayout<ComponentStateBucket, DefinitionState, Opaque, RuntimeResolver> {
+export interface CompilableRuntimeResolver extends RuntimeResolver<Opaque> {
+  compileTemplate(name: string, layout: Option<number>): Invocation;
+}
+
+export default class ComponentManager implements IComponentManager<ComponentStateBucket, DefinitionState>, WithStaticLayout<ComponentStateBucket, DefinitionState, Opaque, CompilableRuntimeResolver> {
   private env: Environment;
 
   static create(options: ConstructorOptions): ComponentManager {
@@ -74,7 +77,7 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return state.capabilities;
   }
 
-  getLayout({ name, layout }: DefinitionState, resolver: RuntimeResolver): Invocation {
+  getLayout({ name, layout }: DefinitionState, resolver: CompilableRuntimeResolver): Invocation {
     return resolver.compileTemplate(name, layout);
   }
 
