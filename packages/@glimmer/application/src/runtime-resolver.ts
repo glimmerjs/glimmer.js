@@ -218,11 +218,11 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   private identifyComponent(name: string, meta: Specifier): Maybe<string> {
     let owner: Owner = this.owner;
     let relSpecifier = `template:${name}`;
-    // let referrer: string = meta.specifier;
+    let referrer: string = meta.specifier;
 
-    let specifier = owner.identify(relSpecifier, undefined);
+    let specifier = owner.identify(relSpecifier, referrer);
 
-    if (specifier === undefined && owner.identify(`component:${name}`, undefined)) {
+    if (specifier === undefined && owner.identify(`component:${name}`, referrer)) {
       throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
     }
 
