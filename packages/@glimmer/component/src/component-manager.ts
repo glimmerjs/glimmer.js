@@ -4,7 +4,7 @@ import {
   Owner
 } from "@glimmer/di";
 import {
-  Bounds,
+  Bounds as VMBounds,
   ComponentManager as IComponentManager,
   DynamicScope,
   Environment,
@@ -13,13 +13,15 @@ import {
   WithStaticLayout,
   Invocation,
 } from "@glimmer/runtime";
-import Component from "./component";
-import { DefinitionState } from "./component-definition";
-import { RootReference } from "./references";
 import { Dict, Destroyable, Opaque, Option } from "@glimmer/util";
 import { Tag } from "@glimmer/reference";
-import { RuntimeResolver, Simple, ComponentCapabilities } from "@glimmer/interfaces";
+import { RuntimeResolver, ComponentCapabilities } from "@glimmer/interfaces";
 import { VersionedPathReference } from '@glimmer/reference';
+
+import Component from "./component";
+import Bounds from './bounds';
+import { DefinitionState } from "./component-definition";
+import { RootReference } from "./references";
 
 export interface ConstructorOptions {
   env: Environment;
@@ -90,12 +92,12 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return new RootReference(bucket.component);
   }
 
-  didCreateElement(bucket: ComponentStateBucket, element: Simple.Element) {
-    if (!bucket) { return; }
+  didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) {
     bucket.component.element = element;
   }
 
-  didRenderLayout(bucket: ComponentStateBucket, bounds: Bounds) {
+  didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
+    bucket.component.bounds = new Bounds(bounds);
   }
 
   didCreate(bucket: ComponentStateBucket) {
