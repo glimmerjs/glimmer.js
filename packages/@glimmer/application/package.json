@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/application",
-  "version": "0.8.0-alpha.5",
+  "version": "0.8.0-alpha.6",
   "description": "Glimmer standalone applications",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -27,9 +27,9 @@
     "@glimmer/interfaces": "^0.29.0"
   },
   "devDependencies": {
-    "@glimmer/component": "^0.8.0-alpha.5",
+    "@glimmer/component": "^0.8.0-alpha.6",
     "@glimmer/test-helpers": "^0.29.0",
-    "@glimmer/application-test-helpers": "^0.8.0-alpha.5",
+    "@glimmer/application-test-helpers": "^0.8.0-alpha.6",
     "@glimmer/wire-format": "^0.29.0",
     "simple-dom": "^0.3.2"
   }
