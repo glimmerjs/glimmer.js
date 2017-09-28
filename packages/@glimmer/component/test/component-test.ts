@@ -10,8 +10,6 @@ test('can be instantiated with an owner', function(assert) {
   let component: MyComponent;
 
   class MyComponent extends Component {
-    element: Element;
-
     constructor(injections: any) {
       super(injections);
       component = this;

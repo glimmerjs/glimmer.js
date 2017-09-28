@@ -16,7 +16,7 @@ test('Lifecycle hook ordering', (assert) => {
 
     didInsertElement() {
       invocations.push([this.name, 'didInsertElement']);
-      assert.ok(this.element instanceof Element);
+      assert.ok(this.bounds.firstNode instanceof Element);
     }
 
     willDestroy() {
@@ -57,3 +57,45 @@ test('Lifecycle hook ordering', (assert) => {
 
   assert.ok(didCallWillDestroy);
 });
+
+test('component element bounds are set', assert => {
+  class BoundsComponent extends Component {
+    didInsertElement() {
+      assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
+      assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
+    }
+  }
+
+  buildApp()
+    .component('BoundsComponent', BoundsComponent)
+    .template('Main', '<BoundsComponent />')
+    .template('BoundsComponent', trim(`
+      Hello world!
+      <h1>Chad Hietala</h1>
+      <span>Greatest thinker of our generation</span>
+     `)).boot();
+});
+
+test('component element is set to element with ...attributes', assert => {
+  class SplatElementComponent extends Component {
+    didInsertElement() {
+      assert.equal(this.element.textContent, 'Chad Hietala', 'component element should be splatted h1');
+      assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
+      assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
+    }
+  }
+
+  buildApp()
+    .component('SplatElementComponent', SplatElementComponent)
+    .template('Main', '<SplatElementComponent />')
+    .template('SplatElementComponent', trim(`
+      Hello world!
+      <h1 ...attributes>Chad Hietala</h1>
+      <span>Greatest thinker of our generation</span>
+     `)).boot();
+
+});
+
+function trim(str) {
+  return str.trim();
+}
