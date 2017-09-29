@@ -44,7 +44,7 @@ class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
   private getComponentDefinition(handle: number): ComponentDefinition {
     let spec = this.resolver.resolve<Option<ComponentDefinition>>(handle);
 
-    assert(!!spec, `Couldn't find a template named ${name}`);
+    assert(!!spec, `Couldn't find a template for ${handle}`);
 
     return spec!;
   }
