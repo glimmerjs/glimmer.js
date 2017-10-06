@@ -15,6 +15,7 @@
     "@glimmer/application": "^0.8.0-alpha.7",
     "@glimmer/application-pipeline": "^0.8.0",
     "@glimmer/blueprint": "^0.5.0",
+    "@glimmer/component": "^0.8.0-alpha.7",
     "@glimmer/inline-precompile": "^1.0.0",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/test-helpers": "^0.30.0",
