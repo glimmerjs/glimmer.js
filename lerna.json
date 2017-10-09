@@ -3,5 +3,7 @@
   "packages": [
     "packages/@glimmer/*"
   ],
+  "npmClient": "yarn",
+  "npmClientArgs": ["--no-lockfile"],
   "version": "0.0.0"
 }
