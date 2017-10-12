@@ -82,7 +82,7 @@ test('can use block params', async function(assert) {
   }
 
   let app = buildApp()
-    .template('HelloWorld', '{{yield @name}}')
+    .template('HelloWorld', '{{yield @name}}!')
     .template('Main', '<div><HelloWorld @name={{salutation}} as |name|>{{name}}</HelloWorld></div>')
     .component('Main', MainComponent)
     .boot();
