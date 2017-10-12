@@ -2,37 +2,6 @@
 # yarn lockfile v1
 
 
-"@glimmer/application-test-helpers@^0.8.0-alpha.8":
-  version "0.8.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/@glimmer/application-test-helpers/-/application-test-helpers-0.8.0-alpha.8.tgz#bf3255c0b5f17a7222b42356ccde9790674b26c5"
-  dependencies:
-    "@glimmer/compiler" "^0.29.0"
-    "@glimmer/di" "^0.1.9"
-    "@glimmer/env" "^0.1.7"
-    "@glimmer/interfaces" "^0.29.0"
-    "@glimmer/object-reference" "^0.29.0"
-    "@glimmer/reference" "^0.29.0"
-    "@glimmer/resolver" "^0.3.0"
-    "@glimmer/runtime" "^0.29.0"
-    "@glimmer/util" "^0.29.0"
-    "@glimmer/wire-format" "^0.29.0"
-    simple-dom "^0.3.2"
-
-"@glimmer/application@^0.8.0-alpha.8":
-  version "0.8.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/@glimmer/application/-/application-0.8.0-alpha.8.tgz#507623d93dcaea4917c4880220796b6692f7515e"
-  dependencies:
-    "@glimmer/compiler" "^0.29.0"
-    "@glimmer/di" "^0.1.9"
-    "@glimmer/env" "^0.1.7"
-    "@glimmer/interfaces" "^0.29.0"
-    "@glimmer/object-reference" "^0.29.0"
-    "@glimmer/opcode-compiler" "^0.29.0"
-    "@glimmer/reference" "^0.29.0"
-    "@glimmer/resolver" "^0.3.0"
-    "@glimmer/runtime" "^0.29.0"
-    "@glimmer/util" "^0.29.0"
-
 "@glimmer/build@^0.6.1":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@glimmer/build/-/build-0.6.3.tgz#be259e08cb50da4f249a8e57e1cc7570029bd214"
@@ -75,7 +44,7 @@
     tslint "^3.15.1"
     typescript "^2.1.5"
 
-"@glimmer/compiler@^0.29.0":
+"@glimmer/compiler@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/compiler/-/compiler-0.29.7.tgz#42f14d29cc37de6c79dce4b8aab4a7a44a44847e"
   dependencies:
@@ -101,13 +70,13 @@
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@glimmer/env/-/env-0.1.7.tgz#fd2d2b55a9029c6b37a6c935e8c8871ae70dfa07"
 
-"@glimmer/interfaces@^0.29.0", "@glimmer/interfaces@^0.29.7":
+"@glimmer/interfaces@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.29.7.tgz#e63e37f95a8ff27019105220ec4c844ebb080449"
   dependencies:
     "@glimmer/wire-format" "^0.29.7"
 
-"@glimmer/object-reference@^0.29.0", "@glimmer/object-reference@^0.29.7":
+"@glimmer/object-reference@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/object-reference/-/object-reference-0.29.7.tgz#417e49b1bee4728efef8870e0e863c44990ed3f1"
   dependencies:
@@ -121,7 +90,7 @@
     "@glimmer/object-reference" "^0.29.7"
     "@glimmer/util" "^0.29.7"
 
-"@glimmer/opcode-compiler@^0.29.0", "@glimmer/opcode-compiler@^0.29.7":
+"@glimmer/opcode-compiler@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/opcode-compiler/-/opcode-compiler-0.29.7.tgz#7d9365ca341d12b87f0209ce3f0c7e66e403eeba"
   dependencies:
@@ -142,7 +111,7 @@
     "@glimmer/interfaces" "^0.29.7"
     "@glimmer/util" "^0.29.7"
 
-"@glimmer/reference@^0.29.0", "@glimmer/reference@^0.29.7":
+"@glimmer/reference@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/reference/-/reference-0.29.7.tgz#dbeb7466f5e5340c7b342cc7fa2081d077e46115"
   dependencies:
@@ -154,7 +123,7 @@
   dependencies:
     "@glimmer/di" "^0.2.0"
 
-"@glimmer/runtime@^0.29.0":
+"@glimmer/runtime@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/runtime/-/runtime-0.29.7.tgz#6260d78c3098d913490df497287875eea94fc577"
   dependencies:
@@ -177,7 +146,7 @@
     handlebars "^4.0.6"
     simple-html-tokenizer "^0.4.1"
 
-"@glimmer/util@^0.29.0", "@glimmer/util@^0.29.7":
+"@glimmer/util@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.29.7.tgz#71ddcef06d425b7ad5c468f8003b73966c27f6a8"
 
@@ -189,7 +158,7 @@
     "@glimmer/program" "^0.29.7"
     "@glimmer/util" "^0.29.7"
 
-"@glimmer/wire-format@^0.29.0", "@glimmer/wire-format@^0.29.7":
+"@glimmer/wire-format@^0.29.7":
   version "0.29.7"
   resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.29.7.tgz#085a41c3d4fb09b3463b7131a009358c81de3a0e"
   dependencies:
@@ -3042,10 +3011,6 @@ shellwords@^0.1.0:
 signal-exit@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
-
-simple-dom@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/simple-dom/-/simple-dom-0.3.2.tgz#0663d10f1556f1500551d518f56e3aba0871371d"
 
 simple-html-tokenizer@^0.4.1:
   version "0.4.1"
