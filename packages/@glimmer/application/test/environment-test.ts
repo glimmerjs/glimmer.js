@@ -76,6 +76,52 @@ test('can render a component with the component helper', async function(assert) 
   assert.equal(root.innerText, 'Hello Glimmer!');
 });
 
+test('can use block params', async function(assert) {
+  class MainComponent extends Component {
+    salutation = 'Glimmer';
+  }
+
+  let app = buildApp()
+    .template('HelloWorld', '{{yield @name}}!')
+    .template('Main', '<div><HelloWorld @name={{salutation}} as |name|>{{name}}</HelloWorld></div>')
+    .component('Main', MainComponent)
+    .boot();
+
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Glimmer!');
+
+  app.scheduleRerender();
+
+  await didRender(app);
+
+  assert.equal(root.innerText, 'Glimmer!');
+});
+
+test('can use inline if', async function(assert) {
+  class MainComponent extends Component {
+    salutation = 'Glimmer';
+    pred = true;
+    alternative = false;
+  }
+
+  let app = buildApp()
+    .template('HelloWorld', '<h1>Hello {{@name}}!</h1>')
+    .template('Main', '<div><HelloWorld @name={{if pred salutation alternative}} /></div>')
+    .component('Main', MainComponent)
+    .boot();
+
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'Hello Glimmer!');
+
+  app.scheduleRerender();
+
+  await didRender(app);
+
+  assert.equal(root.innerText, 'Hello Glimmer!');
+});
+
 test('custom elements are rendered', function(assert) {
   let app = buildApp()
     .template('Main', '<hello-world>foo</hello-world>')
