@@ -1,7 +1,7 @@
 'use strict';
 
 const dasherize = require('ember-cli-string-utils').dasherize;
-const stringUtils = require('ember-cli-string-utils');
+const classify = require('ember-cli-string-utils').classify;
 
 module.exports = {
   description: 'Ember CLI blueprint for initializing a new Glimmer application',
@@ -13,8 +13,8 @@ module.exports = {
 
   locals(options) {
     let name = dasherize(options.entity.name);
-    let component = componentize(name);
-    let className = stringUtils.classify(options.entity.name);
+    let component = classify(name);
+    let className = classify(options.entity.name);
 
     return { name, className, component };
   },
