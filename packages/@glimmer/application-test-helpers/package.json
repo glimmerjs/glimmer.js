@@ -19,7 +19,6 @@
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
     "@glimmer/interfaces": "^0.29.8",
-    "@glimmer/object-reference": "^0.29.8",
     "@glimmer/reference": "^0.29.8",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/runtime": "^0.29.8",

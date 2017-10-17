@@ -12,7 +12,7 @@ import {
 
 import {
   UpdatableReference
-} from "@glimmer/object-reference";
+} from "@glimmer/component";
 
 export type KeyFor<T> = (item: Opaque, index: T) => string;
 
