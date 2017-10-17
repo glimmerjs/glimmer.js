@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "0.8.0-alpha.9",
+  "version": "0.8.0-alpha.10",
   "description": "Glimmer component library",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -22,7 +22,7 @@
     "@glimmer/util": "^0.29.8"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.8.0-alpha.9",
+    "@glimmer/application-test-helpers": "^0.8.0-alpha.10",
     "@glimmer/build": "^0.6.1",
     "@glimmer/compiler": "^0.29.8",
     "@glimmer/interfaces": "^0.29.8",
