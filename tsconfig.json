@@ -8,6 +8,7 @@
     "outDir": "dist",
     "baseUrl" : "packages",
     "rootDir": "packages",
+    "importHelpers": true,
 
     // Environment Configuration
     "experimentalDecorators": true,

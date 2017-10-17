@@ -1,9 +1,9 @@
 import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
-import { Environment, EnvironmentOptions } from '..';
+import { Environment, EnvironmentOptions } from '@glimmer/application';
 import Component from '@glimmer/component';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
-import SimpleDOM from 'simple-dom';
+import * as SimpleDOM from 'simple-dom';
 
 const { module, test } = QUnit;
 const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);

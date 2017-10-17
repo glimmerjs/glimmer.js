@@ -1,4 +1,4 @@
-import Application from '..';
+import Application from '@glimmer/application';
 import { BlankResolver } from '@glimmer/test-utils';
 import { Document } from 'simple-dom';
 
@@ -18,6 +18,7 @@ test('accepts options for rootName, resolver and document', function(assert) {
   assert.equal(app.resolver, resolver);
   assert.equal(app.document, window.document, 'defaults to window document if document is not provided in options');
   let customDocument = new Document();
+
   app = new Application({ rootName: 'app', resolver, document: customDocument });
   assert.equal(app.document, customDocument);
 });

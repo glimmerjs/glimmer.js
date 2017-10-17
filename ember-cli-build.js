@@ -31,16 +31,7 @@ module.exports = function(_options) {
   // this once and use the transpiled JavaScript as the input to any further
   // transformations.
 
-  let jsTree;
-  if (!PRODUCTION) {
-    jsTree = typescript(tsTree, {
-      compilerOptions: {
-        target: "es2015"
-      }
-    });
-  } else {
-    jsTree = typescript(tsTree);
-  }
+  let jsTree = typescript(tsTree);
 
   // The TypeScript compiler doesn't emit `.d.ts` files, so we need to manually
   // merge them back into our JavaScript output.
@@ -77,8 +68,8 @@ module.exports = function(_options) {
     ];
   } else {
     matrix = [
-      ['amd', 'es5'],
-      ['commonjs', 'es5']
+      ['modules', 'es2017'],
+      ['commonjs', 'es2017']
     ];
   }
 

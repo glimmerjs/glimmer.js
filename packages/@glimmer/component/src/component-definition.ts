@@ -4,7 +4,6 @@ import { ComponentFactory } from './component';
 import { ComponentDefinition as IComponentDefinition } from '@glimmer/runtime';
 
 const capabilities: ComponentCapabilities = {
-  staticDefinitions: false,
   dynamicLayout: false,
   dynamicTag: true,
   prepareArgs: false,

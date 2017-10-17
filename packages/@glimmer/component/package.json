@@ -17,17 +17,16 @@
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/reference": "^0.29.7",
-    "@glimmer/runtime": "^0.29.7",
-    "@glimmer/util": "^0.29.7"
+    "@glimmer/reference": "^0.29.8",
+    "@glimmer/runtime": "^0.29.8",
+    "@glimmer/util": "^0.29.8"
   },
   "devDependencies": {
-    "@glimmer/application": "^0.8.0-alpha.9",
     "@glimmer/application-test-helpers": "^0.8.0-alpha.9",
     "@glimmer/build": "^0.6.1",
-    "@glimmer/compiler": "^0.29.7",
-    "@glimmer/interfaces": "^0.29.7",
+    "@glimmer/compiler": "^0.29.8",
+    "@glimmer/interfaces": "^0.29.8",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.29.7"
+    "@glimmer/wire-format": "^0.29.8"
   }
 }
