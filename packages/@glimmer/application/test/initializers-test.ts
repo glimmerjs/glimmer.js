@@ -1,4 +1,4 @@
-import Application from '..';
+import Application from '@glimmer/application';
 import { BlankResolver } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;

@@ -1,4 +1,4 @@
-import { Iterable } from '..';
+import { Iterable } from '@glimmer/application';
 
 const { module, test } = QUnit;
 

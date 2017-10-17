@@ -1,7 +1,7 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import { tracked, tagForProperty, UntrackedPropertyError } from '..';
+import { tracked, tagForProperty, UntrackedPropertyError } from '@glimmer/component';
 import { CONSTANT_TAG } from "@glimmer/reference";
 
 module('[@glimmer/component] Tracked Properties');

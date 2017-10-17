@@ -1,6 +1,6 @@
 import Component, { tracked } from '@glimmer/component';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
-import { debugInfoForReference } from '..';
+import { debugInfoForReference } from '@glimmer/application';
 
 const { module, test } = QUnit;
 

@@ -1,4 +1,4 @@
-import Component, { tracked, setPropertyDidChange } from '..';
+import Component, { tracked, setPropertyDidChange } from '@glimmer/component';
 import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
