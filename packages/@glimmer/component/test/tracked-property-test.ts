@@ -77,6 +77,39 @@ test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
   assert.ok(tagForProperty('hello world', 'foo').validate(snapshot));
 });
 
+test('can request a tag from a frozen objects', assert => {
+  class TrackedPerson {
+    @tracked firstName = 'Toran';
+  }
+
+  let obj = Object.freeze(new TrackedPerson());
+  assert.strictEqual(obj.firstName, 'Toran');
+
+  let tag = tagForProperty(obj, 'firstName');
+  let snapshot = tag.value();
+  assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+  snapshot = tag.value();
+  assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+});
+
+test('can request a tag from an instance of a frozen class', assert => {
+  class TrackedPerson {
+    @tracked firstName = 'Toran';
+  }
+
+  let FrozenTrackedPerson = Object.freeze(TrackedPerson);
+
+  let obj = Object.freeze(new FrozenTrackedPerson());
+
+  assert.strictEqual(obj.firstName, 'Toran');
+
+  let tag = tagForProperty(obj, 'firstName');
+  let snapshot = tag.value();
+  assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+  snapshot = tag.value();
+  assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+});
+
 test('can track a computed property', (assert) => {
   let count = 0;
   let firstName = "Tom";
