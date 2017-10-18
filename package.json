@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "ember build --env production",
+    "changelog": "lerna-changelog",
     "start": "ember serve",
     "test": "ember test",
     "problems": "tsc -p tsconfig.json --noEmit"
@@ -36,6 +37,7 @@
     "emberjs-build": "^0.19.0",
     "eslint": "^4.3.0",
     "glob": "^7.0.5",
+    "lerna-changelog": "^0.6.0",
     "loader.js": "^4.0.10",
     "mkdirp": "^0.5.1",
     "qunit-tap": "^1.5.1",
@@ -52,5 +54,15 @@
   },
   "dependencies": {
     "tslib": "^1.8.0"
+  },
+  "changelog": {
+    "repo": "glimmerjs/glimmer.js",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":memo: Documentation",
+      "internal": ":house: Internal"
+    }
   }
 }
