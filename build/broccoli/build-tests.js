@@ -11,7 +11,7 @@ const nodeResolve = require('rollup-plugin-node-resolve');
 const monorepo = require('../rollup/monorepo-resolve');
 const handlebarsCompat = require('../rollup/handlebars-compat');
 
-const buildTestsIndex = require('./build-tests-index');
+const buildTestIndex = require('./build-tests-index');
 const optimize = require('./optimize');
 
 /**
@@ -21,8 +21,17 @@ const optimize = require('./optimize');
  * 3. A test harness, including an HTML page and QUnit.
  */
 module.exports = function(tsTree, jsTree, packagesTree) {
+  return merge([
+    buildBrowserTests(tsTree, jsTree, packagesTree),
+    buildNodeTests(jsTree, packagesTree)
+  ]);
+}
+
+function buildBrowserTests(tsTree, jsTree, packagesTree) {
+  // Make the built packages available to the tests. Due to a conflict with
+  // broccoli-rollup, we can't call this node_modules.
   packagesTree = funnel(packagesTree, {
-    destDir: 'glimmer-packages'
+    destDir: 'glimmer-node_modules'
   });
 
   jsTree = merge([jsTree, packagesTree]);
@@ -39,15 +48,19 @@ module.exports = function(tsTree, jsTree, packagesTree) {
   ]);
 
   browserTests = funnel(browserTests, {
-    destDir: 'tests'
+    destDir: 'tests/browser'
   });
 
   return browserTests;
 }
 
-function includeTests(packagesTree) {
-  let testsIndex = buildTestsIndex();
-  let testsRoot = merge([testsIndex, packagesTree]);
+function includeTests(jsTree) {
+  let testsIndex = buildTestIndex(jsTree, {
+    filter: '@glimmer/*/test/{!(node)/**/,}*-test.{js,ts}',
+    outputFile: 'tests.js'
+  });
+
+  let testsRoot = merge([testsIndex, jsTree]);
 
   return new Rollup(testsRoot, {
     rollup: {
@@ -65,7 +78,7 @@ function includeTests(packagesTree) {
           // 'glimmer-packages' with the same lookup semantics as
           // 'node_modules'.
           customResolveOptions: {
-            moduleDirectory: 'glimmer-packages'
+            moduleDirectory: 'glimmer-node_modules'
           }
         })
       ]
@@ -106,4 +119,40 @@ function includeTestHarness() {
   ];
 
   return merge(harnessTrees);
+}
+
+// Matches npm package names, either @scope/my-pkg my-pkg
+const PACKAGE_NAME_RE = /^(@[\d\w-]+\/[\d\w-]+|[\d\w-]+)$/;
+
+function buildNodeTests(jsTree, packagesTree) {
+  jsTree = optimize(jsTree);
+
+  let testsIndex = buildTestIndex(jsTree, {
+    filter: '@glimmer/*/test/{!(browser)/**/,}*-test.{js,ts}',
+    outputFile: 'tests.js'
+  });
+
+  testsIndex = merge([testsIndex, jsTree]);
+
+  let nodeTests = new Rollup(testsIndex, {
+    rollup: {
+      format: 'cjs',
+      entry: ['tests.js'],
+      dest: 'tests.js',
+      external: id => id.match(PACKAGE_NAME_RE)
+    }
+  });
+
+  // Unlike in the browser tests, where Rollup needs to be able to resolve
+  // packages during bundling, we can add the built packages in *after* the
+  // Rollup build because they don't need to be available until runtime.
+  packagesTree = funnel(packagesTree, {
+    destDir: 'node_modules'
+  });
+
+  nodeTests = merge([ nodeTests, packagesTree ]);
+
+  return funnel(nodeTests, {
+    destDir: 'tests/node'
+  });
 }
