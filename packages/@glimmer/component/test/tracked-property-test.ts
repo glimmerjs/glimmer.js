@@ -7,7 +7,9 @@ import { CONSTANT_TAG } from "@glimmer/reference";
 module('[@glimmer/component] Tracked Properties');
 
 if (DEBUG) {
-  test('requesting a tag for an untracked property should throw an exception if mutated', (assert) => {
+  test('requesting a tag for an untracked property should throw an exception if mutated in development mode', (assert) => {
+    assert.expect(2);
+
     class UntrackedPerson {
       firstName = 'Tom';
       get lastName() {
@@ -32,6 +34,32 @@ if (DEBUG) {
     assert.throws(() => {
       obj.lastName = 'Mendes';
     }, /The property 'lastName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
+  });
+} else {
+  test('requesting a tag for an untracked property should not throw an exception if mutated in production mode', (assert) => {
+    assert.expect(1);
+
+    class UntrackedPerson {
+      firstName = 'Tom';
+      get lastName() {
+        return 'Dale';
+      }
+      set lastName(value) {
+      }
+
+      toString() {
+        return 'UntrackedPerson';
+      }
+    }
+
+    let obj = new UntrackedPerson();
+    tagForProperty(obj, 'firstName');
+    tagForProperty(obj, 'lastName');
+
+    obj.firstName = 'Ricardo';
+    obj.lastName = 'Mendes';
+
+    assert.ok(true, 'did not throw an exception after mutating tracked properties');
   });
 }
 
@@ -191,7 +219,7 @@ test('tracked computed properties are invalidated when their dependencies are in
   assert.strictEqual(tag.validate(snapshot), true);
 });
 
-module('Tracked Properties - Mandatory @tracked');
+module('[@glimmer/component] Tracked Property Warning in Development Mode');
 
 if (DEBUG) {
   test('interceptor works correctly for own value descriptor', (assert) => {

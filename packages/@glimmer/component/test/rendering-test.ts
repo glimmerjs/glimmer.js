@@ -1,4 +1,4 @@
-import Component from '@glimmer/component';
+import Component, { UntrackedPropertyError } from '@glimmer/component';
 import { buildApp } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
 
@@ -17,7 +17,9 @@ test('A component can be rendered in a template', (assert) => {
 });
 
 if (DEBUG) {
-  test('Mutating a tracked property throws an exception', (assert) => {
+  test('Mutating a tracked property throws an exception in development mode', (assert) => {
+    assert.expect(1);
+
     let done = assert.async();
 
     class HelloWorldComponent extends Component {
@@ -28,10 +30,41 @@ if (DEBUG) {
       }
 
       didInsertElement() {
+        let error = UntrackedPropertyError.for(this, 'firstName');
+
         assert.throws(() => {
           this.firstName = 'Chad';
-        }, /The 'firstName' property on the hello-world component was changed after it had been rendered. Properties that change after being rendered must be tracked. Use the @tracked decorator to mark this as a tracked property./);
+        }, error);
 
+        done();
+      }
+    }
+
+    buildApp()
+      .template('Main', '<div><HelloWorld></HelloWorld></div>')
+      .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
+      .component('HelloWorld', HelloWorldComponent)
+      .boot();
+  });
+} else {
+  test('Mutating a tracked property should not throw an exception in production mode', (assert) => {
+    assert.expect(1);
+
+    let done = assert.async();
+
+    class HelloWorldComponent extends Component {
+      firstName: string;
+
+      constructor(options: any) {
+        super(options);
+      }
+
+      didInsertElement() {
+        // This won't update, but shouldn't throw an error in production mode,
+        // either, due to the overhead of installing setters for untracked
+        // properties.
+        this.firstName = 'Chad';
+        assert.ok(true, 'firstName was mutated without throwing an exception');
         done();
       }
     }
