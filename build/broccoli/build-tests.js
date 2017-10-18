@@ -12,13 +12,13 @@ const monorepo = require('../rollup/monorepo-resolve');
 const handlebarsCompat = require('../rollup/handlebars-compat');
 
 const buildTestsIndex = require('./build-tests-index');
+const optimize = require('./optimize');
 
 /**
- * For development, this returns a Broccoli tree with:
+ * For running tests, this function returns a Broccoli tree with:
  *
- * 1. All of Glimmer's AMD modules, concatenated into glimmer-vm.js.
- * 2. Test files as AMD modules.
- * 3. A test harness, including HTML page, QUnit, dependencies, etc.
+ * 1. All of Glimmer.js's tests, bundled into tests.js with Rollup.
+ * 3. A test harness, including an HTML page and QUnit.
  */
 module.exports = function(tsTree, jsTree, packagesTree) {
   packagesTree = funnel(packagesTree, {
@@ -27,10 +27,15 @@ module.exports = function(tsTree, jsTree, packagesTree) {
 
   jsTree = merge([jsTree, packagesTree]);
 
+  // We include a number of assertions and logging information that can be
+  // statically optimized in development builds and stripped entirely from
+  // production builds for better runtime performance.
+  jsTree = optimize(jsTree);
+
   let browserTests = merge([
-    includeTestHarness(),
-    generateTSLintTests(tsTree),
-    rollupTests(jsTree)
+    includeTests(jsTree),
+    includeTSLintTests(tsTree),
+    includeTestHarness()
   ]);
 
   browserTests = funnel(browserTests, {
@@ -40,7 +45,7 @@ module.exports = function(tsTree, jsTree, packagesTree) {
   return browserTests;
 }
 
-function rollupTests(packagesTree) {
+function includeTests(packagesTree) {
   let testsIndex = buildTestsIndex();
   let testsRoot = merge([testsIndex, packagesTree]);
 
@@ -68,7 +73,7 @@ function rollupTests(packagesTree) {
   });
 }
 
-function generateTSLintTests(tsTree) {
+function includeTSLintTests(tsTree) {
   // The TSLint plugin passes through all files, so we need to filter out any
   // non-TypeScript files.
   tsTree = funnel(tsTree, {

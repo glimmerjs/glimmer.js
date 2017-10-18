@@ -7,7 +7,7 @@
     "build": "ember build --env production",
     "changelog": "lerna-changelog",
     "start": "ember serve",
-    "test": "ember test",
+    "test": "ember test && ember test --env production",
     "problems": "tsc -p tsconfig.json --noEmit"
   },
   "workspaces": [

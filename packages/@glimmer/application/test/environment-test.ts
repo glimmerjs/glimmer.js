@@ -134,7 +134,7 @@ test('custom elements are rendered', function(assert) {
 
 test('components without a template raise an error', function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'hello-world';
+    debugName: 'HelloWorld';
   }
 
   let app = buildApp()

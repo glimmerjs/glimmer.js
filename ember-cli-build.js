@@ -7,7 +7,6 @@ const { typescript } = require('broccoli-typescript-compiler');
 const buildTests = require('./build/broccoli/build-tests');
 const buildPackages = require('./build/broccoli/build-packages.js');
 const mergeDefinitionFiles = require('./build/broccoli/merge-definition-files');
-const stripGlimmerUtilities = require('./build/broccoli/strip-glimmer-utilities');
 const GlimmerTemplatePrecompiler = require('ember-build-utilities').GlimmerTemplatePrecompiler;
 
 const PRODUCTION = process.env.EMBER_ENV === 'production';
@@ -30,13 +29,13 @@ module.exports = function(_options) {
   // TypeScript compiler understands the project as a whole, it's faster to do
   // this once and use the transpiled JavaScript as the input to any further
   // transformations.
-
   let jsTree = typescript(tsTree);
 
   // The TypeScript compiler doesn't emit `.d.ts` files, so we need to manually
   // merge them back into our JavaScript output.
   jsTree = mergeDefinitionFiles(tsTree, jsTree);
 
+  // Third, gather any Handlebars templates and compile them.
   let templates = funnel(tsTree, {
     srcDir: 'packages/',
     include: ['**/*.hbs']
@@ -48,12 +47,6 @@ module.exports = function(_options) {
   compiledTemplates.targetExtension = 'js';
 
   jsTree = merge([compiledTemplates, jsTree]);
-
-  // Glimmer includes a number of assertions and logging information that can be
-  // stripped from production builds for better runtime performance.
-  if (PRODUCTION) {
-    jsTree = stripGlimmerUtilities(jsTree);
-  }
 
   let matrix;
 
@@ -73,20 +66,9 @@ module.exports = function(_options) {
     ];
   }
 
-  // Third, build our module/ES combinations for each package.
+  // Third, build our module/ES combinations for each package, and their tests.
   let packagesTree = buildPackages(jsTree, matrix);
+  let testsTree = buildTests(tsTree, jsTree, packagesTree);
 
-  let output;
-
-  // Unless we're in production, bundle the tests and test harness. We'll also
-  // grab the AMD build of Glimmer and concatenate it into a single
-  // glimmer-vm.js file.
-  if (PRODUCTION) {
-    output = [packagesTree];
-  } else {
-    let testsTree = buildTests(tsTree, jsTree, packagesTree);
-    output = [packagesTree, testsTree];
-  }
-
-  return merge(output);
+  return merge([packagesTree, testsTree]);
 }
