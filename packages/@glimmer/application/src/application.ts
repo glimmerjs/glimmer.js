@@ -8,11 +8,8 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  templateFactory,
-  Template,
-  TemplateIterator,
-  RenderResult,
-  clientBuilder
+  ElementBuilder,
+  TemplateIterator
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -21,17 +18,68 @@ import {
   Option
 } from '@glimmer/util';
 import {
-  Simple
+  Simple, Opaque
 } from '@glimmer/interfaces';
-import {
-  Specifier
-} from '@glimmer/opcode-compiler';
+import { PathReference } from '@glimmer/reference';
+
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
-import mainTemplate from './templates/main';
+
+import DOMBuilder from './builders/dom-builder';
+import RuntimeLoader from './loaders/runtime-loader';
+import SyncRenderer from './renderers/sync-renderer';
+
+/**
+ * A Builder encapsulates the building of template output. For example, in the
+ * browser a builder might construct DOM elements, while on the server it may
+ * instead construct HTML. An object implementing the Builder interface should
+ * return a concrete instance of an ElementBuilder from its getBuilder method.
+ */
+export interface Builder {
+  /**
+   * Returns a concrete instance of an ElementBuilder for the given Environment.
+   */
+  getBuilder(env: Environment): ElementBuilder;
+}
+
+/**
+ * Loaders are responsible for loading and preparing all of the templates and
+ * other metadata required to get a Glimmer.js application into a functioning
+ * state.
+ */
+export interface Loader {
+  /**
+   * Returns a template iterator for on the provided application state.
+   */
+  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator;
+}
+
+/**
+ * Renderers are responsible for iterating over the template iterator returned
+ * from a Loader, and re-rendering when component state has been invalidated.
+ * The Renderer may be either synchronous or asynchronous, and controls its own
+ * scheduling.
+ */
+export interface Renderer {
+  /**
+   * Responsible for iterating over the passed template iterator until no more
+   * values remain. If this process is asynchronous, should return a promise
+   * that resolves once the iterator is exhausted.
+   */
+  render(iterator: TemplateIterator): void | Promise<void>;
+
+  /**
+   * Revalidates the initial render result. Called any time any component state
+   * may have changed.
+   */
+  rerender(): void | Promise<void>;
+}
 
 export interface ApplicationOptions {
+  builder?: Builder;
+  loader?: Loader;
+  renderer?: Renderer;
   rootName: string;
   resolver: Resolver;
   document?: Simple.Document;
@@ -55,6 +103,8 @@ export interface ApplicationConstructor<T = Application> {
 
 export type Notifier = [() => void, (err) => void];
 
+const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
+
 export default class Application implements Owner {
   public rootName: string;
   public resolver: Resolver;
@@ -70,14 +120,26 @@ export default class Application implements Owner {
   private _rendering = false;
   private _rendered = false;
   private _scheduled = false;
-  private _result: RenderResult;
+
+  protected builder: Builder;
+  protected loader: Loader;
+  protected renderer: Renderer;
 
   protected _notifiers: Notifier[] = [];
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
-    this.document = options.document || (typeof window !== 'undefined' && window.document);
+
+    this.document = options.document || DEFAULT_DOCUMENT;
+    this.loader = options.loader || new RuntimeLoader(this.resolver);
+    this.renderer = options.renderer || new SyncRenderer();
+
+    let body = this.document ? (this.document as Document).body : null;
+    this.builder = options.builder || new DOMBuilder({
+      element: body,
+      nextSibling: null
+    });
   }
 
   /**
@@ -186,23 +248,9 @@ export default class Application implements Owner {
     };
   }
 
-  /**
-   * @hidden
-   *
-   * The compiled `main` root layout template.
-   */
-  protected get mainLayout(): Template<Specifier> {
-    return templateFactory(mainTemplate).create(this.env.compileOptions);
-  }
-
-  /**
-   * @hidden
-   *
-   * Configures and returns a template iterator for the root template, appropriate
-   * for performing the initial render of the Glimmer application.
-   */
-  protected get templateIterator(): TemplateIterator {
-    let { env, mainLayout } = this;
+  /** @hidden */
+  protected _render(): void {
+    let { env } = this;
 
     // Create the template context for the root `main` template, which just
     // contains the array of component roots. Any property references in that
@@ -212,18 +260,35 @@ export default class Application implements Owner {
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
 
-    // The cursor tells the template which element to render into.
-    let cursor = {
-      element: (this.document as Document).body,
-      nextSibling: null
+    let builder = this.builder.getBuilder(env);
+    let templateIterator = this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
+
+    let didRender = () => {
+      // Finally, commit the transaction and flush component lifecycle hooks.
+      env.commit();
+      this._didRender();
     };
 
-    return mainLayout.renderLayout({
-      env,
-      self,
-      dynamicScope,
-      builder: clientBuilder(env, cursor)
-    });
+    let didError = (err) => {
+      this._didError(err);
+      throw err;
+    };
+
+    try {
+      // Begin a new transaction. The transaction stores things like component
+      // lifecycle events so they can be flushed once rendering has completed.
+      env.begin();
+
+      let result = this.renderer.render(templateIterator);
+
+      if (result && result.then) {
+        result.then(didRender, didError);
+      } else {
+        didRender();
+      }
+    } catch (err) {
+      didError(err);
+    }
   }
 
   /** @hidden
@@ -235,47 +300,16 @@ export default class Application implements Owner {
    * at the end of the browser's event loop.
    */
   protected _rerender() {
-    let { env, _result: result } = this;
-
-    if (!result) {
-      throw new Error('Cannot re-render before initial render has completed');
-    }
+    let { env } = this;
 
     try {
       env.begin();
-      result.rerender();
+      this.renderer.rerender();
       env.commit();
 
       this._didRender();
     } catch (err) {
       this._didError(err);
-    }
-  }
-
-  /** @hidden */
-  protected _render(): void {
-    let { env, templateIterator } = this;
-
-    try {
-      // Begin a new transaction. The transaction stores things like component
-      // lifecycle events so they can be flushed once rendering has completed.
-      env.begin();
-
-      // Iterate the template iterator, executing the compiled template program
-      // until there are no more instructions left to execute.
-      let result;
-      do {
-        result = templateIterator.next();
-      } while (!result.done);
-
-      // Finally, commit the transaction and flush component lifecycle hooks.
-      env.commit();
-
-      this._result = result.value;
-      this._didRender();
-    } catch (err) {
-      this._didError(err);
-      throw err;
     }
   }
 
