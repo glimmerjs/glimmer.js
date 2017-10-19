@@ -73,7 +73,7 @@ export default class Application implements Owner {
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
-    this.document = options.document || window.document;
+    this.document = options.document || (typeof window !== 'undefined' && window.document);
   }
 
   /**

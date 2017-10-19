@@ -8,6 +8,7 @@
     "changelog": "lerna-changelog",
     "start": "ember serve",
     "test": "ember test && ember test --env production",
+    "test:node": "bin/run-node-tests.js",
     "problems": "tsc -p tsconfig.json --noEmit"
   },
   "workspaces": [
