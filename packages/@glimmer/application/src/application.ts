@@ -8,11 +8,7 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  templateFactory,
-  Template,
-  TemplateIterator,
-  RenderResult,
-  clientBuilder
+  RenderResult
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -23,18 +19,16 @@ import {
 import {
   Simple
 } from '@glimmer/interfaces';
-import {
-  Specifier
-} from '@glimmer/opcode-compiler';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
-import mainTemplate from './templates/main';
+import ApplicationDelegate, { DefaultApplicationDelegate } from './application-delegate';
 
 export interface ApplicationOptions {
   rootName: string;
   resolver: Resolver;
   document?: Simple.Document;
+  delegate?: ApplicationDelegate;
 }
 
 export interface Initializer {
@@ -70,10 +64,13 @@ export default class Application implements Owner {
   private _scheduled = false;
   private _result: RenderResult;
 
+  protected delegate: ApplicationDelegate;
+
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
     this.document = options.document || (typeof window !== 'undefined' && window.document);
+    this.delegate = options.delegate || new DefaultApplicationDelegate();
   }
 
   /**
@@ -182,46 +179,6 @@ export default class Application implements Owner {
     };
   }
 
-  /**
-   * @hidden
-   *
-   * The compiled `main` root layout template.
-   */
-  protected get mainLayout(): Template<Specifier> {
-    return templateFactory(mainTemplate).create(this.env.compileOptions);
-  }
-
-  /**
-   * @hidden
-   *
-   * Configures and returns a template iterator for the root template, appropriate
-   * for performing the initial render of the Glimmer application.
-   */
-  protected get templateIterator(): TemplateIterator {
-    let { env, mainLayout } = this;
-
-    // Create the template context for the root `main` template, which just
-    // contains the array of component roots. Any property references in that
-    // template will be looked up from this object.
-    let self = new UpdatableReference({ roots: this._roots });
-
-    // Create an empty root scope.
-    let dynamicScope = new DynamicScope();
-
-    // The cursor tells the template which element to render into.
-    let cursor = {
-      element: (this.document as Document).body,
-      nextSibling: null
-    };
-
-    return mainLayout.renderLayout({
-      env,
-      self,
-      dynamicScope,
-      builder: clientBuilder(env, cursor)
-    });
-  }
-
   /** @hidden
    *
    * Ensures the DOM is up-to-date by performing a revalidation on the root
@@ -246,23 +203,29 @@ export default class Application implements Owner {
 
   /** @hidden */
   protected _render(): void {
-    let { env, templateIterator } = this;
+    let { env } = this;
+
+    // Create the template context for the root `main` template, which just
+    // contains the array of component roots. Any property references in that
+    // template will be looked up from this object.
+    let self = new UpdatableReference({ roots: this._roots });
+
+    // Create an empty root scope.
+    let dynamicScope = new DynamicScope();
+    let elementBuilder = this.delegate.elementBuilder(env, this.document);
+
+    let templateIterator = this.delegate.prepareMainLayout(env, self, dynamicScope, elementBuilder);
 
     // Begin a new transaction. The transaction stores things like component
     // lifecycle events so they can be flushed once rendering has completed.
     env.begin();
 
-    // Iterate the template iterator, executing the compiled template program
-    // until there are no more instructions left to execute.
-    let result;
-    do {
-      result = templateIterator.next();
-    } while (!result.done);
+    let result = this.delegate.render(templateIterator);
 
     // Finally, commit the transaction and flush component lifecycle hooks.
     env.commit();
 
-    this._result = result.value;
+    this._result = result;
     this._didRender();
   }
 
