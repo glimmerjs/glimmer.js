@@ -3,7 +3,6 @@ import { Simple, Opaque } from '@glimmer/interfaces';
 import Environment from './environment';
 import { UpdatableReference } from '@glimmer/object-reference';
 import DynamicScope from './dynamic-scope';
-import mainTemplate from './templates/main';
 
 export default abstract class ApplicationDelegate {
   abstract elementBuilder(env: Environment, document: Simple.Document): ElementBuilder;
@@ -21,13 +20,7 @@ export class DefaultApplicationDelegate implements ApplicationDelegate {
   }
 
   prepareMainLayout(env: Environment, self: UpdatableReference<Opaque>, dynamicScope: DynamicScope, elementBuilder: ElementBuilder): TemplateIterator {
-    let mainLayout = templateFactory(mainTemplate).create(env.compileOptions);
-    return mainLayout.renderLayout({
-      env,
-      self,
-      dynamicScope,
-      builder: elementBuilder
-    });
+
   }
 
   render(templateIterator: TemplateIterator): RenderResult {

@@ -24,11 +24,15 @@ import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import ApplicationDelegate, { DefaultApplicationDelegate } from './application-delegate';
 
+import Builder from './builders/builder';
+import Loader from './loaders/loader';
+
 export interface ApplicationOptions {
+  builder: Builder;
+  loader: Loader;
   rootName: string;
   resolver: Resolver;
   document?: Simple.Document;
-  delegate?: ApplicationDelegate;
 }
 
 export interface Initializer {

@@ -50,7 +50,7 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
   meta: Specifier;
 }
 
-export class RuntimeResolver implements IRuntimeResolver<Specifier> {
+export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   templateOptions: TemplateOptions<Specifier>;
   handleLookup: TypedRegistry<Opaque>[] = [];
   private cache = {
