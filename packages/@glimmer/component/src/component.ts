@@ -1,3 +1,4 @@
+import { assert } from "@glimmer/util";
 import { metaFor } from "./tracked";
 
 export interface Bounds {
@@ -223,7 +224,11 @@ class Component {
    * You should not try to access this property until after the component's `didInsertElement()`
    * lifecycle hook is called.
    */
-  element: HTMLElement;
+  get element(): HTMLElement {
+    let { bounds } = this;
+    assert(bounds && bounds.firstNode === bounds.lastNode, `The 'element' property can only be accessed on components that contain a single root element in their template. Try using 'bounds' instead to access the first and last nodes.`);
+    return bounds.firstNode as HTMLElement;
+  }
 
   /**
    * Development-mode only name of the component, useful for debugging.
