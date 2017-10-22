@@ -92,9 +92,7 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return new RootReference(bucket.component);
   }
 
-  didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) {
-    bucket.component.element = element;
-  }
+  didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) { }
 
   didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
     bucket.component.bounds = new Bounds(bounds);

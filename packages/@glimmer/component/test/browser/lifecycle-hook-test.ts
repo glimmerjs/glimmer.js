@@ -32,11 +32,11 @@ test('Lifecycle hook ordering', (assert) => {
 
   let app = buildApp()
     .template('Main', '<div><ComponentOne /></div>')
-    .template('ComponentOne', '<div ...attributes><ComponentTwo /><ComponentThree /></div>')
-    .template('ComponentTwo', '<div ...attributes><ComponentFour /><ComponentFive /></div>')
-    .template('ComponentThree', '<div ...attributes></div>')
-    .template('ComponentFour', '<div ...attributes></div>')
-    .template('ComponentFive', '<div ...attributes></div>')
+    .template('ComponentOne', '<div><ComponentTwo /><ComponentThree /></div>')
+    .template('ComponentTwo', '<div><ComponentFour /><ComponentFive /></div>')
+    .template('ComponentThree', '<div></div>')
+    .template('ComponentFour', '<div></div>')
+    .template('ComponentFive', '<div></div>')
     .component('ComponentOne', Component1)
     .component('ComponentTwo', Component2)
     .component('ComponentThree', Component3)
@@ -58,8 +58,27 @@ test('Lifecycle hook ordering', (assert) => {
   assert.ok(didCallWillDestroy);
 });
 
-test('component element bounds are set', assert => {
-  class BoundsComponent extends Component {
+test('element is set before didInsertElement', assert => {
+  assert.expect(1);
+
+  class Element extends Component {
+    didInsertElement() {
+      assert.equal(this.element.tagName, 'H1');
+    }
+  }
+
+  buildApp()
+    .component('Element', Element)
+    .template('Main', '<Element />')
+    .template('Element', trim(`
+      <h1>Chad Hietala - Greatest thinker of our generation</h1>
+     `)).boot();
+});
+
+test('fragment bounds are set before didInsertElement', assert => {
+  assert.expect(2);
+
+  class Fragment extends Component {
     didInsertElement() {
       assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
       assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
@@ -67,33 +86,13 @@ test('component element bounds are set', assert => {
   }
 
   buildApp()
-    .component('BoundsComponent', BoundsComponent)
-    .template('Main', '<BoundsComponent />')
-    .template('BoundsComponent', trim(`
+    .component('Fragment', Fragment)
+    .template('Main', '<Fragment />')
+    .template('Fragment', trim(`
       Hello world!
       <h1>Chad Hietala</h1>
       <span>Greatest thinker of our generation</span>
      `)).boot();
-});
-
-test('component element is set to element with ...attributes', assert => {
-  class SplatElementComponent extends Component {
-    didInsertElement() {
-      assert.equal(this.element.textContent, 'Chad Hietala', 'component element should be splatted h1');
-      assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
-      assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
-    }
-  }
-
-  buildApp()
-    .component('SplatElementComponent', SplatElementComponent)
-    .template('Main', '<SplatElementComponent />')
-    .template('SplatElementComponent', trim(`
-      Hello world!
-      <h1 ...attributes>Chad Hietala</h1>
-      <span>Greatest thinker of our generation</span>
-     `)).boot();
-
 });
 
 function trim(str) {
