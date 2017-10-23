@@ -11,12 +11,13 @@ import { TemplateOptions } from '@glimmer/opcode-compiler';
 import {
   unwrap
 } from "@glimmer/util";
-import { TypedRegistry } from "./typed-registry";
 import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
 import { Owner } from "@glimmer/di";
 import Component, { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
-import Application from "./application";
-import { HelperReference } from './helpers/user-helper';
+
+import { TypedRegistry } from "./typed-registry";
+import Application from "../application";
+import { HelperReference } from '../helpers/user-helper';
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
 

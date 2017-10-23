@@ -1,5 +1,5 @@
-import { Cursor, NewElementBuilder, Environment } from '@glimmer/runtime';
-import Builder from '../builder';
+import { Cursor, NewElementBuilder, Environment } from "@glimmer/runtime";
+import { Builder } from "../application";
 
 export interface DOMBuilderOptions {
   element: Element;

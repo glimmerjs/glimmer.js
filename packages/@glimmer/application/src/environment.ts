@@ -1,35 +1,22 @@
 import {
   DOMChanges,
   DOMTreeConstruction,
-  Environment as GlimmerEnvironment,
-  WithStaticLayout,
-  ComponentDefinition
+  Environment as GlimmerEnvironment
 } from '@glimmer/runtime';
 import {
   Reference,
   OpaqueIterable
 } from "@glimmer/reference";
-import {
-  Opaque, Option, assert,
-} from '@glimmer/util';
+import { Opaque } from '@glimmer/util';
 import {
   getOwner,
   setOwner
 } from '@glimmer/di';
 import Iterable from './iterable';
-import { Program, LazyConstants } from '@glimmer/program';
-import action from './helpers/action';
-import { RuntimeResolver, Specifier } from "./runtime-resolver";
-import {
-  TemplateOptions,
-  Macros,
-  CompileTimeLookup as ICompileTimeLookup,
-  LazyOpcodeBuilder,
-  OpcodeBuilderConstructor,
-  ICompilableTemplate
-} from '@glimmer/opcode-compiler';
-import { ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
-import mainTemplate from './templates/main';
+import { Program } from '@glimmer/program';
+import { TemplateOptions } from '@glimmer/opcode-compiler';
+
+import RuntimeResolver, { Specifier } from './runtime-compiler/runtime-resolver';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -55,24 +42,6 @@ export default class Environment extends GlimmerEnvironment {
     super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument || document) });
 
     setOwner(this, getOwner(options));
-
-    let resolver = this.resolver = new RuntimeResolver(getOwner(this));
-    let program = this.program = new Program(new LazyConstants(resolver));
-    let macros = new Macros();
-    let lookup = new CompileTimeLookup(resolver);
-
-    this.compileOptions = {
-      program,
-      macros,
-      lookup,
-      Builder: LazyOpcodeBuilder as OpcodeBuilderConstructor
-    };
-
-    this.resolver.setCompileOptions(this.compileOptions);
-
-    resolver.registerTemplate('main', mainTemplate);
-    resolver.registerInternalHelper('action', action);
-    resolver.registerHelper('if', (params) => params[0] ? params[1] : params[2]);
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember

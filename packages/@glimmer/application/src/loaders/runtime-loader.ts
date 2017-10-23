@@ -1,18 +1,27 @@
-import { Environment, ElementBuilder, templateFactory } from '@glimmer/runtime';
+import { TemplateIterator, Environment, ElementBuilder, templateFactory, DynamicScope } from '@glimmer/runtime';
 import { Resolver } from '@glimmer/di';
-import { Macros, CompileTimeLookup as ICompileTimeLookup, LazyOpcodeBuilder, OpcodeBuilderConstructor,} from '@glimmer/opcode-compiler';
-
-import Application from '../application';
-import Loader from './loader';
-import mainTemplate from '../templates/main';
-import RuntimeResolver from '../runtime-resolver';
+import { Macros, LazyOpcodeBuilder, OpcodeBuilderConstructor } from '@glimmer/opcode-compiler';
 import { Program, LazyConstants } from '@glimmer/program';
+import { Opaque } from '@glimmer/interfaces';
+import { PathReference } from '@glimmer/reference';
+
+import Application, { Loader } from '../application';
+import mainTemplate from '../templates/main';
+import action from '../helpers/action';
+
+import RuntimeResolver from '../runtime-compiler/runtime-resolver';
+import CompileTimeLookup from '../runtime-compiler/compile-time-lookup';
+
+export interface Specifier {
+  specifier: string;
+  managerId?: string;
+};
 
 export default class RuntimeLoader implements Loader {
   constructor(protected resolver: Resolver) {
   }
 
-  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder) {
+  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator {
     let resolver = new RuntimeResolver(app);
     let program = new Program(new LazyConstants(resolver));
     let macros = new Macros();
@@ -25,58 +34,19 @@ export default class RuntimeLoader implements Loader {
       Builder: LazyOpcodeBuilder as OpcodeBuilderConstructor
     };
 
+    resolver.setCompileOptions(compileOptions);
+
+    resolver.registerTemplate('main', mainTemplate);
+    resolver.registerInternalHelper('action', action);
+    resolver.registerHelper('if', (params) => params[0] ? params[1] : params[2]);
+
     let mainLayout = templateFactory(mainTemplate).create(compileOptions);
 
     return mainLayout.renderLayout({
       env,
-      self,
+      builder,
       dynamicScope,
-      builder: elementBuilder
+      self
     });
-  }
-}
-
-class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
-  constructor(private resolver: RuntimeResolver) {}
-
-  private getComponentDefinition(handle: number): ComponentDefinition {
-    let spec = this.resolver.resolve<Option<ComponentDefinition>>(handle);
-
-    assert(!!spec, `Couldn't find a template for ${handle}`);
-
-    return spec!;
-  }
-
-  getCapabilities(handle: number): ComponentCapabilities {
-    let definition = this.getComponentDefinition(handle);
-    let { manager, state } = definition!;
-    return manager.getCapabilities(state);
-  }
-
-  getLayout(handle: number): ICompilableTemplate<ProgramSymbolTable> {
-    let definition = this.getComponentDefinition(handle);
-    let { manager } = definition;
-    let invocation = (manager as WithStaticLayout<any, any, Specifier, RuntimeResolver>).getLayout(definition, this.resolver);
-
-    return {
-      compile() { return invocation.handle; },
-      symbolTable: invocation.symbolTable
-    };
-  }
-
-  lookupHelper(name: string, referrer: Specifier): Option<number> {
-    return this.resolver.lookupHelper(name, referrer);
-  }
-
-  lookupModifier(name: string, referrer: Specifier): Option<number> {
-    return this.resolver.lookupModifier(name, referrer);
-  }
-
-  lookupComponentSpec(name: string, referrer: Specifier): Option<number> {
-    return this.resolver.lookupComponentHandle(name, referrer);
-  }
-
-  lookupPartial(name: string, referrer: Specifier): Option<number> {
-    return this.resolver.lookupPartial(name, referrer);
   }
 }

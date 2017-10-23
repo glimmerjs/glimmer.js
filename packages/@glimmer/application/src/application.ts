@@ -8,7 +8,8 @@ import {
   setOwner,
 } from '@glimmer/di';
 import {
-  RenderResult
+  ElementBuilder,
+  TemplateIterator
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -17,19 +18,40 @@ import {
   Option
 } from '@glimmer/util';
 import {
-  Simple
+  Simple, Opaque
 } from '@glimmer/interfaces';
+import { PathReference } from '@glimmer/reference';
+
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
-import ApplicationDelegate, { DefaultApplicationDelegate } from './application-delegate';
 
-import Builder from './builders/builder';
-import Loader from './loaders/loader';
+import DOMBuilder from './builders/dom-builder';
+import RuntimeLoader from './loaders/runtime-loader';
+import SyncRenderer from './renderers/sync-renderer';
+
+/**
+ * A Builder encapsulates the building of template output. For example, in the
+ * browser a builder might construct DOM elements, while on the server it may
+ * instead construct HTML.
+ */
+export interface Builder {
+  getBuilder(env: Environment): ElementBuilder;
+}
+
+export interface Loader {
+  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator;
+}
+
+export interface Renderer {
+  render(iterator: TemplateIterator): void | Promise<void>;
+  rerender(): void | Promise<void>;
+}
 
 export interface ApplicationOptions {
-  builder: Builder;
-  loader: Loader;
+  builder?: Builder;
+  loader?: Loader;
+  renderer?: Renderer;
   rootName: string;
   resolver: Resolver;
   document?: Simple.Document;
@@ -66,15 +88,26 @@ export default class Application implements Owner {
   private _rendering = false;
   private _rendered = false;
   private _scheduled = false;
-  private _result: RenderResult;
 
-  protected delegate: ApplicationDelegate;
+  protected builder: Builder;
+  protected loader: Loader;
+  protected renderer: Renderer;
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
+
     this.document = options.document || (typeof window !== 'undefined' && window.document);
-    this.delegate = options.delegate || new DefaultApplicationDelegate();
+
+    this.builder = options.builder || new DOMBuilder({
+      element: (this.document as Document).body,
+      nextSibling: null
+    });
+
+    this.loader = options.loader || new RuntimeLoader(this.resolver);
+
+    this.renderer = options.renderer || new SyncRenderer();
+
   }
 
   /**
@@ -183,28 +216,6 @@ export default class Application implements Owner {
     };
   }
 
-  /** @hidden
-   *
-   * Ensures the DOM is up-to-date by performing a revalidation on the root
-   * template's render result. This method should not be called directly;
-   * instead, any mutations in the program that could cause side-effects should
-   * call `scheduleRerender()`, which ensures that DOM updates only happen once
-   * at the end of the browser's event loop.
-   */
-  protected _rerender() {
-    let { env, _result: result } = this;
-
-    if (!result) {
-      throw new Error('Cannot re-render before initial render has completed');
-    }
-
-    env.begin();
-    result.rerender();
-    env.commit();
-
-    this._didRender();
-  }
-
   /** @hidden */
   protected _render(): void {
     let { env } = this;
@@ -216,20 +227,42 @@ export default class Application implements Owner {
 
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
-    let elementBuilder = this.delegate.elementBuilder(env, this.document);
+    let builder = this.builder.getBuilder(env);
 
-    let templateIterator = this.delegate.prepareMainLayout(env, self, dynamicScope, elementBuilder);
+    let templateIterator = this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
 
     // Begin a new transaction. The transaction stores things like component
     // lifecycle events so they can be flushed once rendering has completed.
     env.begin();
 
-    let result = this.delegate.render(templateIterator);
+    let result = this.renderer.render(templateIterator);
+    if (result && result.then) {
+      result.then(() => {
+        env.commit();
+        this._didRender();
+      });
+    } else {
+      // Finally, commit the transaction and flush component lifecycle hooks.
+      env.commit();
+      this._didRender();
+    }
+  }
 
-    // Finally, commit the transaction and flush component lifecycle hooks.
+  /** @hidden
+   *
+   * Ensures the DOM is up-to-date by performing a revalidation on the root
+   * template's render result. This method should not be called directly;
+   * instead, any mutations in the program that could cause side-effects should
+   * call `scheduleRerender()`, which ensures that DOM updates only happen once
+   * at the end of the browser's event loop.
+   */
+  protected _rerender() {
+    let { env  } = this;
+
+    env.begin();
+    this.renderer.rerender();
     env.commit();
 
-    this._result = result;
     this._didRender();
   }
 

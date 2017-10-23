@@ -1,6 +1,5 @@
-import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { DOMTreeConstruction } from '@glimmer/runtime';
-import { Environment, EnvironmentOptions } from '@glimmer/application';
+import { Environment } from '@glimmer/application';
 import Component from '@glimmer/component';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import * as SimpleDOM from 'simple-dom';
@@ -21,21 +20,6 @@ test('can be instantiated with new', function(assert) {
 test('can be instantiated with create', function(assert) {
   let env = Environment.create();
   assert.ok(env, 'environment exists');
-});
-
-test('can be assigned an owner', function(assert) {
-  class FakeApp implements Owner {
-    identify(specifier: string, referrer?: string) { return ''; }
-    factoryFor(specifier: string, referrer?: string) { return null; }
-    lookup(specifier: string, referrer?: string) { return null; }
-  }
-  let app = new FakeApp;
-
-  let options: EnvironmentOptions = {};
-  setOwner(options, app);
-
-  let env = Environment.create(options);
-  assert.strictEqual(getOwner(env), app, 'owner has been set');
 });
 
 test('can render a component', function(assert) {
