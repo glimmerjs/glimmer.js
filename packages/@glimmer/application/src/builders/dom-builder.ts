@@ -1,19 +1,11 @@
 import { Cursor, NewElementBuilder, Environment } from "@glimmer/runtime";
 import { Builder } from "../application";
 
-export interface DOMBuilderOptions {
-  element: Element;
-  nextSibling?: Node;
-}
-
 export default class DOMBuilder implements Builder {
   protected cursor: Cursor;
 
-  constructor({ element, nextSibling }: DOMBuilderOptions) {
-    this.cursor = {
-      element,
-      nextSibling: nextSibling || null
-    };
+  constructor({ element, nextSibling = null }: Cursor) {
+    this.cursor = { element, nextSibling };
   }
 
   getBuilder(env: Environment) {
