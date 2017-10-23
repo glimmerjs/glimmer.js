@@ -101,6 +101,8 @@ export interface ApplicationConstructor<T = Application> {
   new (options: ApplicationOptions): T;
 }
 
+const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
+
 export default class Application implements Owner {
   public rootName: string;
   public resolver: Resolver;
@@ -125,12 +127,13 @@ export default class Application implements Owner {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
 
-    this.document = options.document || document;
+    this.document = options.document || DEFAULT_DOCUMENT;
     this.loader = options.loader || new RuntimeLoader(this.resolver);
     this.renderer = options.renderer || new SyncRenderer();
 
+    let body = this.document ? (this.document as Document).body : null;
     this.builder = options.builder || new DOMBuilder({
-      element: (this.document as Document).body,
+      element: body,
       nextSibling: null
     });
   }
