@@ -10,10 +10,10 @@ components (`Profile`). Multi-word components should be capitalized too, so
 To upgrade existing Glimmer.js applications to 0.8.0, perform the following steps:
 
 1. Modify your application's `package.json`:
-  1. `@glimmer/application` should be `^0.8.0`.
-  2. `@glimmer/component` should be `^0.8.0` (you may need to add this
+    1. `@glimmer/application` should be `^0.8.0`.
+    2. `@glimmer/component` should be `^0.8.0` (you may need to add this
      dependency).
-2. Rename component files from dasherized to `CapitalCase`. For example, the
+2. Rename component files from dasherized to CapitalCase. For example, the
      `src/ui/components/user-profile` directory should be renamed to
      `src/ui/components/UserProfile`.
 3. Change all component invocations from dasherized to `CapitalCase`. For
@@ -21,7 +21,45 @@ To upgrade existing Glimmer.js applications to 0.8.0, perform the following step
    `<UserProfile @user={{user}} />`.
 
 These are all of the changes that should be necessary to migrate an existing
-app. For more information on this and other changes in Glimmer.js, make sure to
+app.
+
+We've also introduced a new feature that makes it easier to take control of HTML
+attributes. In 0.8.0, you can add `...attributes` to an element in a component's template,
+and any attributes passed to the component will be applied to that element.
+
+For example, imagine you have a `ProfileImage` component whose template contains
+an `img` tag. You want anyone using this component to be able to treat it just
+like an `img` element, including being able to set standard HTML attributes on
+it. We'll add `...attributes` to the target element, like this:
+
+```hbs
+{{! src/ui/components/ProfileImage/template.hbs }}
+<img ...attributes>
+```
+
+Now when invoking the component, any HTML attributes (i.e. anything without a `@` prefix) will be
+transferred to the element with `...attributes` on it:
+
+```hbs
+{{! src/ui/components/Main/template.hbs }}
+<ProfileImage
+  @isAdmin={{isAdmin}} {{! not an attribute! }}
+  src={{user.imageUrl}}
+  role="complementary"
+  data-is-awesome="yes-is-awesome"
+  />
+```
+
+The final DOM will look something like this:
+
+```html
+<img
+  src="/images/profiles/chad.jpg"
+  role="complementary"
+  data-is-awesome="yes-is-awesome">
+```
+
+For more information on these and other changes in Glimmer.js, make sure to
 read the [Glimmer.js Progress
 Report](https://emberjs.com/blog/2017/10/10/glimmer-progress-report.html) blog
 post.
@@ -46,30 +84,6 @@ been upgraded.
 
 #### Committers: 2
 - Tobias Bieniek ([Turbo87](https://github.com/Turbo87))
-- Tom Dale ([tomdale](https://github.com/tomdale))
-
-
-## v0.8.0-alpha.1 (2017-10-17)
-
-#### :rocket: Enhancement
-* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`
-  * [#13](https://github.com/glimmerjs/glimmer.js/pull/13) Update glimmer-vm to 0.29.0. ([@chadhietala](https://github.com/chadhietala))
-* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/test-utils`
-  * [#10](https://github.com/glimmerjs/glimmer.js/pull/10) Compatibility with Glimmer VM 0.28. ([@tomdale](https://github.com/tomdale))
-
-#### :memo: Documentation
-* [#2](https://github.com/glimmerjs/glimmer.js/pull/2) Add Glimmer VM link. ([@MaXFalstein](https://github.com/MaXFalstein))
-* [#1](https://github.com/glimmerjs/glimmer.js/pull/1) Add description of subpackages to README. ([@tomdale](https://github.com/tomdale))
-
-#### :house: Internal
-* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/test-utils`
-  * [#24](https://github.com/glimmerjs/glimmer.js/pull/24) Use Rollup to build test suite. ([@tomdale](https://github.com/tomdale))
-* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/local-debug-flags`, `@glimmer/test-utils`
-  * [#3](https://github.com/glimmerjs/glimmer.js/pull/3) [Monorepo] Adopt @glimmer/component and @glimmer/application. ([@tomdale](https://github.com/tomdale))
-
-#### Committers: 3
-- Chad Hietala ([chadhietala](https://github.com/chadhietala))
-- MaX Falstein ([MaXFalstein](https://github.com/MaXFalstein))
 - Tom Dale ([tomdale](https://github.com/tomdale))
 
 
@@ -143,4 +157,27 @@ been upgraded.
   * [#16](https://github.com/glimmerjs/glimmer.js/pull/16) Break RuntimeResolver circular dependency. ([@tomdale](https://github.com/tomdale))
 
 #### Committers: 1
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
+## v0.8.0-alpha.1 (2017-10-17)
+
+#### :rocket: Enhancement
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`
+  * [#13](https://github.com/glimmerjs/glimmer.js/pull/13) Update glimmer-vm to 0.29.0. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/test-utils`
+  * [#10](https://github.com/glimmerjs/glimmer.js/pull/10) Compatibility with Glimmer VM 0.28. ([@tomdale](https://github.com/tomdale))
+
+#### :memo: Documentation
+* [#2](https://github.com/glimmerjs/glimmer.js/pull/2) Add Glimmer VM link. ([@MaXFalstein](https://github.com/MaXFalstein))
+* [#1](https://github.com/glimmerjs/glimmer.js/pull/1) Add description of subpackages to README. ([@tomdale](https://github.com/tomdale))
+
+#### :house: Internal
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/test-utils`
+  * [#24](https://github.com/glimmerjs/glimmer.js/pull/24) Use Rollup to build test suite. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/local-debug-flags`, `@glimmer/test-utils`
+  * [#3](https://github.com/glimmerjs/glimmer.js/pull/3) [Monorepo] Adopt @glimmer/component and @glimmer/application. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 3
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+- MaX Falstein ([MaXFalstein](https://github.com/MaXFalstein))
 - Tom Dale ([tomdale](https://github.com/tomdale))
