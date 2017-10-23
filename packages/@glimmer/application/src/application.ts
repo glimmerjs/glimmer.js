@@ -33,18 +33,46 @@ import SyncRenderer from './renderers/sync-renderer';
 /**
  * A Builder encapsulates the building of template output. For example, in the
  * browser a builder might construct DOM elements, while on the server it may
- * instead construct HTML.
+ * instead construct HTML. An object implementing the Builder interface should
+ * return a concrete instance of an ElementBuilder from its getBuilder method.
  */
 export interface Builder {
+  /**
+   * Returns a concrete instance of an ElementBuilder for the given Environment.
+   */
   getBuilder(env: Environment): ElementBuilder;
 }
 
+/**
+ * Loaders are responsible for loading and preparing all of the templates and
+ * other metadata required to get a Glimmer.js application into a functioning
+ * state.
+ */
 export interface Loader {
+  /**
+   * Returns a template iterator for on the provided application state.
+   */
   getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator;
 }
 
+/**
+ * Renderers are responsible for iterating over the template iterator returned
+ * from a Loader, and re-rendering when component state has been invalidated.
+ * The Renderer may be either synchronous or asynchronous, and controls its own
+ * scheduling.
+ */
 export interface Renderer {
+  /**
+   * Responsible for iterating over the passed template iterator until no more
+   * values remain. If this process is asynchronous, should return a promise
+   * that resolves once the iterator is exhausted.
+   */
   render(iterator: TemplateIterator): void | Promise<void>;
+
+  /**
+   * Revalidates the initial render result. Called any time any component state
+   * may have changed.
+   */
   rerender(): void | Promise<void>;
 }
 
@@ -97,17 +125,14 @@ export default class Application implements Owner {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
 
-    this.document = options.document || (typeof window !== 'undefined' && window.document);
+    this.document = options.document || document;
+    this.loader = options.loader || new RuntimeLoader(this.resolver);
+    this.renderer = options.renderer || new SyncRenderer();
 
     this.builder = options.builder || new DOMBuilder({
       element: (this.document as Document).body,
       nextSibling: null
     });
-
-    this.loader = options.loader || new RuntimeLoader(this.resolver);
-
-    this.renderer = options.renderer || new SyncRenderer();
-
   }
 
   /**
@@ -227,8 +252,8 @@ export default class Application implements Owner {
 
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
-    let builder = this.builder.getBuilder(env);
 
+    let builder = this.builder.getBuilder(env);
     let templateIterator = this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
 
     // Begin a new transaction. The transaction stores things like component
@@ -236,6 +261,7 @@ export default class Application implements Owner {
     env.begin();
 
     let result = this.renderer.render(templateIterator);
+
     if (result && result.then) {
       result.then(() => {
         env.commit();

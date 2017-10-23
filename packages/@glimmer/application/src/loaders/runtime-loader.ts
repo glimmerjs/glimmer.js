@@ -17,6 +17,12 @@ export interface Specifier {
   managerId?: string;
 };
 
+/**
+ * The RuntimeLoader is used by Glimmer.js applications that perform the final
+ * template compilation step client-side. It configures the compiler to resolve
+ * templates, helpers and other objects from the runtime registry, and enables
+ * just-in-time compilation of templates as they are encountered.
+ */
 export default class RuntimeLoader implements Loader {
   constructor(protected resolver: Resolver) {
   }
