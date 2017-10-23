@@ -8,9 +8,7 @@ import {
   Arguments
 } from '@glimmer/runtime';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
-import {
-  unwrap
-} from "@glimmer/util";
+import { expect } from "@glimmer/util";
 import { TypedRegistry } from "./typed-registry";
 import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
 import { Owner } from "@glimmer/di";
@@ -165,7 +163,7 @@ export class RuntimeResolver implements IRuntimeResolver<Specifier> {
   lookupComponent(name: string, meta: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
-      let specifier = unwrap(this.identifyComponent(name, meta));
+      let specifier = expect(this.identifyComponent(name, meta), `Could not find the component '${name}'`);
       let template = this.owner.lookup('template', specifier);
       let componentSpecifier = this.owner.identify('component', specifier);
       let componentFactory: ComponentFactory = null;
