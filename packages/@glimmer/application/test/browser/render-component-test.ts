@@ -1,4 +1,5 @@
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
+import { DEBUG } from '@glimmer/env';
 
 const { module, test } = QUnit;
 
@@ -126,3 +127,33 @@ test('renders multiple components in the same container in particular places', a
 
   assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer!</h1>');
 });
+
+if (DEBUG) {
+  test('throws an exception if an invoked component is not found', async function(assert) {
+    assert.expect(1);
+
+    let containerElement = document.createElement('div');
+
+    let app = buildApp()
+      .template('HelloWorld', `<NonExistent />`)
+      .boot();
+
+    app.renderComponent('HelloWorld', containerElement);
+
+    await rejects(assert, didRender(app), /Could not find the component 'NonExistent'/);
+  });
+}
+
+async function rejects(assert: Assert, promise: Promise<any>, message: RegExp) {
+  try {
+    let value = await promise;
+    assert.ok(false, `Expected promise to reject, got ${value}`);
+  } catch (err) {
+    assert.pushResult({
+      result: err.message.match(message),
+      actual: err.message,
+      expected: message,
+      message: 'Expected error message to match'
+    });
+  }
+}
