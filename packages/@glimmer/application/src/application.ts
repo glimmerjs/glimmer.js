@@ -53,6 +53,8 @@ export interface ApplicationConstructor<T = Application> {
   new (options: ApplicationOptions): T;
 }
 
+export type Notifier = [() => void, (err) => void];
+
 export default class Application implements Owner {
   public rootName: string;
   public resolver: Resolver;
@@ -69,6 +71,8 @@ export default class Application implements Owner {
   private _rendered = false;
   private _scheduled = false;
   private _result: RenderResult;
+
+  protected _notifiers: Notifier[] = [];
 
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
@@ -237,37 +241,58 @@ export default class Application implements Owner {
       throw new Error('Cannot re-render before initial render has completed');
     }
 
-    env.begin();
-    result.rerender();
-    env.commit();
+    try {
+      env.begin();
+      result.rerender();
+      env.commit();
 
-    this._didRender();
+      this._didRender();
+    } catch (err) {
+      this._didError(err);
+    }
   }
 
   /** @hidden */
   protected _render(): void {
     let { env, templateIterator } = this;
 
-    // Begin a new transaction. The transaction stores things like component
-    // lifecycle events so they can be flushed once rendering has completed.
-    env.begin();
+    try {
+      // Begin a new transaction. The transaction stores things like component
+      // lifecycle events so they can be flushed once rendering has completed.
+      env.begin();
 
-    // Iterate the template iterator, executing the compiled template program
-    // until there are no more instructions left to execute.
-    let result;
-    do {
-      result = templateIterator.next();
-    } while (!result.done);
+      // Iterate the template iterator, executing the compiled template program
+      // until there are no more instructions left to execute.
+      let result;
+      do {
+        result = templateIterator.next();
+      } while (!result.done);
 
-    // Finally, commit the transaction and flush component lifecycle hooks.
-    env.commit();
+      // Finally, commit the transaction and flush component lifecycle hooks.
+      env.commit();
 
-    this._result = result.value;
-    this._didRender();
+      this._result = result.value;
+      this._didRender();
+    } catch (err) {
+      this._didError(err);
+      throw err;
+    }
   }
 
-  _didRender(): void {
+  protected _didRender(): void {
     this._rendered = true;
+
+    let notifiers = this._notifiers;
+    this._notifiers = [];
+
+    notifiers.forEach(n => n[0]());
+  }
+
+  protected _didError(err: Error): void {
+    let notifiers = this._notifiers;
+    this._notifiers = [];
+
+    notifiers.forEach(n => n[1](err));
   }
 
   /**
