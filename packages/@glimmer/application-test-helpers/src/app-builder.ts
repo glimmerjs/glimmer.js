@@ -15,6 +15,8 @@ import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
 import { CompilableTemplate as ICompilableTemplate } from '@glimmer/runtime';
 
+import { DOMBuilder, SyncRenderer } from '@glimmer/application';
+
 export interface AppBuilderOptions<T> {
   appName?: string;
   loader?: string;
@@ -145,16 +147,24 @@ export class AppBuilder<T extends TestApplication> {
         throw new Error(`Unrecognized loader ${this.options.loader}`);
     }
 
+    let doc: Document = this.options.document as Document || document;
+    let element = doc.body;
+
+    let builder = new DOMBuilder({ element });
+    let renderer = new SyncRenderer();
+
     let app = new this.options.ApplicationClass({
       resolver,
+      builder,
       loader,
+      renderer,
       rootName: this.rootName,
       document: this.options.document
     });
 
-    let rootElement = (app.document as Document).createElement('div');
-    app.renderComponent('Main', rootElement);
+    let rootElement = doc.createElement('div');
     app.rootElement = rootElement;
+    app.renderComponent('Main', rootElement);
 
     await app.boot();
 

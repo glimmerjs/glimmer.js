@@ -27,10 +27,6 @@ import DynamicScope from './dynamic-scope';
 import Environment from './environment';
 import action from './helpers/action';
 
-import DOMBuilder from './builders/dom-builder';
-import RuntimeLoader from './loaders/runtime-compiler/loader';
-import SyncRenderer from './renderers/sync-renderer';
-
 /**
  * A Builder encapsulates the building of template output. For example, in the
  * browser a builder might construct DOM elements, while on the server it may
@@ -78,9 +74,9 @@ export interface Renderer {
 }
 
 export interface ApplicationOptions {
-  builder?: Builder;
-  loader?: Loader;
-  renderer?: Renderer;
+  builder: Builder;
+  loader: Loader;
+  renderer: Renderer;
   rootName: string;
   resolver?: Resolver;
   document?: Simple.Document;
@@ -129,18 +125,14 @@ export default class Application implements Owner {
   protected _notifiers: Notifier[] = [];
 
   constructor(options: ApplicationOptions) {
-    this.rootName = options.rootName;
-    this.resolver = options.resolver;
-
+    Object.assign(this, options);
     this.document = options.document || DEFAULT_DOCUMENT;
-    this.loader = options.loader || new RuntimeLoader(this.resolver);
-    this.renderer = options.renderer || new SyncRenderer();
+    // this.rootName = options.rootName;
+    // this.resolver = options.resolver;
 
-    let body = this.document ? (this.document as Document).body : null;
-    this.builder = options.builder || new DOMBuilder({
-      element: body,
-      nextSibling: null
-    });
+    // this.loader = options.loader;
+    // this.renderer = options.renderer;
+    // this.builder = options.builder;
   }
 
   /**
