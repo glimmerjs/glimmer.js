@@ -5,3 +5,4 @@ export { tracked, setPropertyDidChange, tagForProperty, UntrackedPropertyError }
 export { RootReference, CachedReference, UpdatableReference, ConditionalReference } from './src/references';
 export { default as TemplateMeta } from './src/template-meta';
 export { default as Bounds } from './src/bounds';
+export { CAPABILITIES } from './src/capabilities';

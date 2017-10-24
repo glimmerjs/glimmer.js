@@ -1,5 +1,11 @@
 import { Specifier } from "@glimmer/bundle-compiler";
 import { dict, Dict } from "@glimmer/util";
+import { Option } from "@glimmer/interfaces";
+
+export interface OutputFiles {
+  dataSegment: Option<string>;
+  heapFile: Option<string>;
+}
 
 /**
 * Generates a valid JavaScript identifier for a module path. Can optionally take
