@@ -179,6 +179,15 @@ class CompilerDelegate implements ICompilerDelegate {
     return CAPABILITIES;
   }
 
+  hasHelperInScope(helperName: string, referrer: Specifier): boolean {
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.module);
+  }
+
+  resolveHelperSpecifier(helperName: string, referrer: Specifier): Specifier {
+    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.module);
+    return specifierFor(resolved, 'default');
+  }
+
   hasPartialInScope(partialName: string, referrer: Specifier): boolean {
     throw new Error("Method not implemented.");
   }
@@ -189,15 +198,6 @@ class CompilerDelegate implements ICompilerDelegate {
 
   getComponentLayout(specifier: Specifier, block: SerializedTemplateBlock, options: CompileOptions<Specifier>): ICompilableTemplate<ProgramSymbolTable> {
     return CompilableTemplate.topLevel(block, options);
-  }
-
-  hasHelperInScope(helperName: string, referrer: Specifier): boolean {
-    return !!this.resolver.identify(`helper:${helperName}`, referrer.module);
-  }
-
-  resolveHelperSpecifier(helperName: string, referrer: Specifier): Specifier {
-    let resolved = this.resolver.identify(`template:${name}`, referrer.module);
-    return specifierFor(resolved, 'default');
   }
 
   hasModifierInScope(modifierName: string, referrer: Specifier): boolean {

@@ -1,7 +1,7 @@
 import { RuntimeResolver, ComponentDefinition, SymbolTable } from '@glimmer/interfaces';
 import { Specifier } from '@glimmer/bundle-compiler';
 import { unreachable, Opaque, expect } from '@glimmer/util';
-import { ComponentManager } from '@glimmer/runtime';
+import { ComponentManager, Helper } from '@glimmer/runtime';
 import { Owner, Factory } from '@glimmer/di';
 import { CAPABILITIES } from '@glimmer/component';
 
@@ -38,7 +38,7 @@ export default class BytecodeResolver implements RuntimeResolver<Specifier> {
 
     let resolvedClass = owner.identify('component:', resolved);
     let ComponentClass;
-    debugger;
+
     if (resolvedClass) {
       ComponentClass = owner.lookup(resolvedClass);
     }
@@ -51,14 +51,22 @@ export default class BytecodeResolver implements RuntimeResolver<Specifier> {
   }
 
   resolve<U>(handle: number): U {
-    console.log({ handle }, this.table[handle]);
-    return this.resolveComponentDefinition(handle) as any as U;
+    let spec = this.table[handle] as Specifier;
+    if (spec.module.substring(0, 6) === 'helper') {
+      return this.resolveHelper(spec) as any as U;
+    } else {
+      return this.resolveComponentDefinition(spec) as any as U;
+    }
   }
 
-  resolveComponentDefinition(handle: number): ComponentDefinition {
+  resolveComponentDefinition(spec: Specifier): ComponentDefinition {
     let manager = this.owner.lookup(`component-manager:main`);
-    let ComponentClass = this.owner.factoryFor(`component:`, (this.table[handle] as Specifier).module);
+    let ComponentClass = this.owner.factoryFor(`component:`, spec.module);
 
     return buildComponentDefinition(ComponentClass, manager);
+  }
+
+  resolveHelper(spec: Specifier): Helper {
+    return this.owner.lookup(spec.module);
   }
 }
