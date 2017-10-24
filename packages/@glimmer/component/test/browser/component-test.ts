@@ -6,7 +6,7 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Component');
 
-test('can be instantiated with an owner', function(assert) {
+test('can be instantiated with an owner', async function(assert) {
   let component: MyComponent;
 
   class MyComponent extends Component {
@@ -16,7 +16,7 @@ test('can be instantiated with an owner', function(assert) {
     }
   }
 
-  let app = buildApp('test-app')
+  let app = await buildApp()
     .template('Main', '<div><HelloWorld></HelloWorld></div>')
     .template('HelloWorld', '<div>Hello world</div>')
     .component('HelloWorld', MyComponent)

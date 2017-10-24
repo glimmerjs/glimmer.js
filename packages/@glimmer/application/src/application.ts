@@ -25,9 +25,10 @@ import { PathReference } from '@glimmer/reference';
 import ApplicationRegistry from './application-registry';
 import DynamicScope from './dynamic-scope';
 import Environment from './environment';
+import action from './helpers/action';
 
 import DOMBuilder from './builders/dom-builder';
-import RuntimeLoader from './loaders/runtime-loader';
+import RuntimeLoader from './loaders/runtime-compiler/loader';
 import SyncRenderer from './renderers/sync-renderer';
 
 /**
@@ -52,7 +53,7 @@ export interface Loader {
   /**
    * Returns a template iterator for on the provided application state.
    */
-  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator;
+  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator | Promise<TemplateIterator>;
 }
 
 /**
@@ -81,7 +82,7 @@ export interface ApplicationOptions {
   loader?: Loader;
   renderer?: Renderer;
   rootName: string;
-  resolver: Resolver;
+  resolver?: Resolver;
   document?: Simple.Document;
 }
 
@@ -161,12 +162,12 @@ export default class Application implements Owner {
    * Initializes the application and renders any components that have been
    * registered via `renderComponent()`.
    */
-  boot(): void {
+  async boot(): Promise<void> {
     this.initialize();
 
     this.env = this.lookup(`environment:/${this.rootName}/main/main`);
 
-    this._render();
+    await this._render();
   }
 
   /**
@@ -221,6 +222,7 @@ export default class Application implements Owner {
     registry.registerOption('document', 'instantiate', false);
     registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
     registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
+    registry.register(`helper:/${this.rootName}/action`, action);
 
     let initializers = this._initializers;
     for (let i = 0; i < initializers.length; i++) {
@@ -249,7 +251,7 @@ export default class Application implements Owner {
   }
 
   /** @hidden */
-  protected _render(): void {
+  protected async _render(): Promise<void> {
     let { env } = this;
 
     // Create the template context for the root `main` template, which just
@@ -261,33 +263,20 @@ export default class Application implements Owner {
     let dynamicScope = new DynamicScope();
 
     let builder = this.builder.getBuilder(env);
-    let templateIterator = this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
-
-    let didRender = () => {
-      // Finally, commit the transaction and flush component lifecycle hooks.
-      env.commit();
-      this._didRender();
-    };
-
-    let didError = (err) => {
-      this._didError(err);
-      throw err;
-    };
+    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
 
     try {
       // Begin a new transaction. The transaction stores things like component
       // lifecycle events so they can be flushed once rendering has completed.
       env.begin();
+      await this.renderer.render(templateIterator);
+      // Finally, commit the transaction and flush component lifecycle hooks.
+      env.commit();
 
-      let result = this.renderer.render(templateIterator);
-
-      if (result && result.then) {
-        result.then(didRender, didError);
-      } else {
-        didRender();
-      }
+      this._didRender();
     } catch (err) {
-      didError(err);
+      this._didError(err);
+      throw err;
     }
   }
 
@@ -299,12 +288,12 @@ export default class Application implements Owner {
    * call `scheduleRerender()`, which ensures that DOM updates only happen once
    * at the end of the browser's event loop.
    */
-  protected _rerender() {
+  protected async _rerender() {
     let { env } = this;
 
     try {
       env.begin();
-      this.renderer.rerender();
+      await this.renderer.rerender();
       env.commit();
 
       this._didRender();
