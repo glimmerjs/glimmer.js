@@ -1,9 +1,9 @@
 import ComponentManager from "./component-manager";
-import { Option, ComponentCapabilities } from '@glimmer/interfaces';
+import { Option, ComponentCapabilities, SymbolTable } from '@glimmer/interfaces';
 import { ComponentFactory } from './component';
 import { ComponentDefinition as IComponentDefinition } from '@glimmer/runtime';
 
-const capabilities: ComponentCapabilities = {
+export const capabilities: ComponentCapabilities = {
   dynamicLayout: false,
   dynamicTag: true,
   prepareArgs: false,
@@ -19,17 +19,18 @@ export interface DefinitionState {
   /* Component-related */
   name: string;
   ComponentClass: any;
-  layout: Option<number>;
+  handle?: number;
+  symbolTable?: SymbolTable;
 }
 
 export default class ComponentDefinition implements IComponentDefinition {
   state: DefinitionState;
-  constructor(public name: string, public manager: ComponentManager, public ComponentClass: ComponentFactory, public layout: Option<number>) {
+  constructor(public name: string, public manager: ComponentManager, public ComponentClass: ComponentFactory, public handle: Option<number>) {
     this.state = {
       name,
       capabilities,
       ComponentClass,
-      layout
+      handle
     };
   }
 

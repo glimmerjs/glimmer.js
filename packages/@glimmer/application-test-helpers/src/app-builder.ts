@@ -2,15 +2,24 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict } from '@glimmer/interfaces';
+import { Opaque, Dict, ProgramSymbolTable } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
-import Application, { ApplicationConstructor } from '@glimmer/application';
-import { ComponentManager } from '@glimmer/component';
+import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
+import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
+import { BundleCompiler, CompilerDelegate as ICompilerDelegate, Specifier, specifierFor } from '@glimmer/bundle-compiler';
+import { buildAction, mainTemplate } from '@glimmer/application';
+import { SerializedTemplateBlock } from '@glimmer/wire-format';
+import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
+import { CompilableTemplate as ICompilableTemplate } from '@glimmer/runtime';
+
+import { DOMBuilder, SyncRenderer } from '@glimmer/application';
 
 export interface AppBuilderOptions<T> {
+  appName?: string;
+  loader?: string;
   ApplicationClass?: ApplicationConstructor<T>;
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
@@ -33,6 +42,7 @@ export class AppBuilder<T extends TestApplication> {
     this.options = options;
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
     this.template('Main', '<div />');
+    this.helper('action', buildAction);
   }
 
   template(name: string, template: string) {
@@ -55,7 +65,7 @@ export class AppBuilder<T extends TestApplication> {
     return this;
   }
 
-  boot(): T {
+  protected buildResolver() {
     let resolverConfiguration = this.options.resolverConfiguration || defaultResolverConfiguration;
     resolverConfiguration.app = resolverConfiguration.app || {
       name: this.rootName,
@@ -63,29 +73,159 @@ export class AppBuilder<T extends TestApplication> {
     };
 
     let registry = new BasicModuleRegistry(this.modules);
-    let resolver = new Resolver(resolverConfiguration, registry);
+    return new Resolver(resolverConfiguration, registry);
+  }
+
+  protected buildRuntimeCompilerLoader(resolver: Resolver) {
+    return new RuntimeCompilerLoader(resolver);
+  }
+
+  protected buildBytecodeLoader(resolver: Resolver) {
+    let delegate = new CompilerDelegate(resolver);
+    let compiler = new BundleCompiler(delegate);
+
+    let mainSpecifier = specifierFor(mainTemplate.meta.specifier, 'default');
+    compiler.addCustom(mainSpecifier, JSON.parse(mainTemplate.block));
+
+    for (let mod in this.modules) {
+      let [key] = mod.split(':');
+
+      if (key === 'template') {
+        compiler.addCustom(specifierFor(mod, 'default'), JSON.parse((this.modules[mod] as any).block));
+      }
+    }
+
+    let { heap, pool } = compiler.compile();
+
+    let specifierMap = compiler.getSpecifierMap();
+    let entryHandle = specifierMap.vmHandleBySpecifier.get(mainSpecifier);
+
+    let table = [];
+    let map = new Map();
+    let symbols = new Map();
+
+    for (let [spec, handle] of specifierMap.vmHandleBySpecifier.entries()) {
+      map.set(spec.module, handle);
+    }
+
+    for (let [handle, mod] of specifierMap.byHandle.entries()) {
+      table[handle] = mod;
+    }
+
+    for (let [spec, block] of compiler.compiledBlocks.entries()) {
+      symbols.set(spec.module, { symbols: (block as SerializedTemplateBlock).symbols, hasEval: (block as SerializedTemplateBlock).hasEval });
+    }
+
+    let bytecode = heap.buffer;
+    let data = {
+      pool,
+      table,
+      map,
+      symbols,
+      entryHandle,
+      heap: {
+        table: heap.table,
+        handle: heap.handle
+      }
+    };
+
+    return new BytecodeLoader({ bytecode, data });
+  }
+
+  async boot(): Promise<T> {
+    let resolver = this.buildResolver();
+    let loader: Loader;
+
+    switch (this.options.loader) {
+      case 'runtime-compiler':
+        loader = this.buildRuntimeCompilerLoader(resolver);
+        break;
+      case 'bytecode':
+        loader = this.buildBytecodeLoader(resolver);
+        break;
+      default:
+        throw new Error(`Unrecognized loader ${this.options.loader}`);
+    }
+
+    let doc: Document = this.options.document as Document || document;
+    let element = doc.body;
+
+    let builder = new DOMBuilder({ element });
+    let renderer = new SyncRenderer();
 
     let app = new this.options.ApplicationClass({
-      rootName: this.rootName,
       resolver,
+      builder,
+      loader,
+      renderer,
+      rootName: this.rootName,
       document: this.options.document
     });
 
-    let rootElement = (app.document as Document).createElement('div');
-    app.renderComponent('Main', rootElement);
+    let rootElement = doc.createElement('div');
     app.rootElement = rootElement;
+    app.renderComponent('Main', rootElement);
 
-    app.boot();
+    await app.boot();
 
     return app;
   }
 }
 
-function buildApp<T extends TestApplication>(appName = 'test-app', options: AppBuilderOptions<T> = {}): AppBuilder<T> {
+class CompilerDelegate implements ICompilerDelegate {
+  constructor(protected resolver: Resolver) {
+  }
+
+  hasComponentInScope(name: string, referrer: Specifier): boolean {
+    return !!this.resolver.identify(`template:${name}`, referrer.module);
+  }
+
+  resolveComponentSpecifier(name: string, referrer: Specifier): Specifier {
+    let resolved = this.resolver.identify(`template:${name}`, referrer.module);
+    return specifierFor(resolved, 'default');
+  }
+
+  getComponentCapabilities() {
+    return CAPABILITIES;
+  }
+
+  hasHelperInScope(helperName: string, referrer: Specifier): boolean {
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.module);
+  }
+
+  resolveHelperSpecifier(helperName: string, referrer: Specifier): Specifier {
+    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.module);
+    return specifierFor(resolved, 'default');
+  }
+
+  hasPartialInScope(partialName: string, referrer: Specifier): boolean {
+    throw new Error("Method not implemented.");
+  }
+
+  resolvePartialSpecifier(partialName: string, referrer: Specifier): Specifier {
+    throw new Error("Method not implemented.");
+  }
+
+  getComponentLayout(specifier: Specifier, block: SerializedTemplateBlock, options: CompileOptions<Specifier>): ICompilableTemplate<ProgramSymbolTable> {
+    return CompilableTemplate.topLevel(block, options);
+  }
+
+  hasModifierInScope(modifierName: string, referrer: Specifier): boolean {
+    throw new Error("Method not implemented.");
+  }
+
+  resolveModifierSpecifier(modifierName: string, referrer: Specifier): Specifier {
+    throw new Error("Method not implemented.");
+  }
+}
+
+function buildApp<T extends TestApplication>(options: AppBuilderOptions<T> = {}): AppBuilder<T> {
+  options.appName = options.appName || 'test-app';
+  options.loader = options.loader || 'runtime-compiler';
   options.ComponentManager = options.ComponentManager || ComponentManager;
   options.ApplicationClass = options.ApplicationClass || TestApplication as ApplicationConstructor<T>;
 
-  return new AppBuilder(appName, options);
+  return new AppBuilder(options.appName, options);
 }
 
 export { buildApp };

@@ -5,7 +5,7 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Lifecycle Hooks');
 
-test('Lifecycle hook ordering', (assert) => {
+test('Lifecycle hook ordering', async function(assert) {
   assert.expect(7);
 
   let invocations: [string, string][] = [];
@@ -30,7 +30,7 @@ test('Lifecycle hook ordering', (assert) => {
   class Component4 extends HookLoggerComponent { name = 'component4'; };
   class Component5 extends HookLoggerComponent { name = 'component5'; };
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('Main', '<div><ComponentOne /></div>')
     .template('ComponentOne', '<div><ComponentTwo /><ComponentThree /></div>')
     .template('ComponentTwo', '<div><ComponentFour /><ComponentFive /></div>')
@@ -58,7 +58,7 @@ test('Lifecycle hook ordering', (assert) => {
   assert.ok(didCallWillDestroy);
 });
 
-test('element is set before didInsertElement', assert => {
+test('element is set before didInsertElement', async function(assert) {
   assert.expect(1);
 
   class Element extends Component {
@@ -67,7 +67,7 @@ test('element is set before didInsertElement', assert => {
     }
   }
 
-  buildApp()
+  await buildApp()
     .component('Element', Element)
     .template('Main', '<Element />')
     .template('Element', trim(`
@@ -75,7 +75,7 @@ test('element is set before didInsertElement', assert => {
      `)).boot();
 });
 
-test('fragment bounds are set before didInsertElement', assert => {
+test('fragment bounds are set before didInsertElement', async function(assert) {
   assert.expect(2);
 
   class Fragment extends Component {
@@ -85,7 +85,7 @@ test('fragment bounds are set before didInsertElement', assert => {
     }
   }
 
-  buildApp()
+  await buildApp()
     .component('Fragment', Fragment)
     .template('Main', '<Fragment />')
     .template('Fragment', trim(`
