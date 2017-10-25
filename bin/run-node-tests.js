@@ -22,8 +22,10 @@ if ('EMBER_CLI_TEST_OUTPUT' in process.env) {
 
 // Executes a command and pipes stdout back to the user.
 function exec(command, args) {
-  execa.sync(command, args, {
-    stdio: 'inherit',
-    preferLocal: true
-  });
+  try {
+    execa.sync(command, args, {
+      stdio: 'inherit',
+      preferLocal: true
+    });
+  } catch (e) { }
 }
