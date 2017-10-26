@@ -1,6 +1,5 @@
-import Application from '@glimmer/application';
 import { Resolver, getOwner, isSpecifierStringAbsolute } from '@glimmer/di';
-import { BlankResolver } from '@glimmer/test-utils';
+import { BlankResolver, createApp } from '@glimmer/test-utils';
 
 const { module, test } = QUnit;
 
@@ -21,7 +20,7 @@ test('#identify - uses a resolver to convert a relative specifier to an absolute
   }
 
   let resolver = new FakeResolver();
-  let app = new Application({ rootName: 'app', resolver });
+  let app = createApp({ rootName: 'app', resolver });
   let specifier = 'component:date-picker';
   assert.equal(app.identify(specifier, 'component:/app/components/form-controls'), 'component:/app/components/date-picker', 'absolute specifier was returned');
 });
@@ -31,7 +30,7 @@ test('#factoryFor - returns a registered factory', function(assert) {
     static create() { return { foo: 'bar' }; }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
     initialize(app) {
@@ -67,7 +66,7 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
   }
 
   let resolver = new FakeResolver();
-  let app = new Application({ rootName: 'app', resolver });
+  let app = createApp({ rootName: 'app', resolver });
 
   app.initialize();
 
@@ -102,7 +101,7 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
 
   let resolver = new FakeResolver();
 
-  let app = new Application({ rootName: 'app', resolver });
+  let app = createApp({ rootName: 'app', resolver });
   app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', Foo);
@@ -128,7 +127,7 @@ test('#lookup - returns an instance created by the factory', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
@@ -153,7 +152,7 @@ test('#lookup - caches looked up instances by default', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar);
@@ -182,7 +181,7 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', FooBar, { singleton: false });
@@ -203,7 +202,7 @@ test('#lookup - returns the factory when registrations specify instantiate: fals
 
   let factory = {};
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
     initialize(app) {
       app.register('foo:/app/foos/bar', factory, { instantiate: false });
@@ -238,7 +237,7 @@ test('#lookup - uses the resolver to locate a registration', function(assert) {
   }
 
   let resolver = new FakeResolver();
-  let app = new Application({ rootName: 'app', resolver });
+  let app = createApp({ rootName: 'app', resolver });
   app.initialize();
 
   let foo1 = app.lookup('foo:bar');
@@ -268,7 +267,7 @@ test('#lookup - injects references registered by name', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
     initialize(app) {
@@ -306,7 +305,7 @@ test('#lookup - injects references registered by type', function(assert) {
     }
   }
 
-  let app = new Application({ rootName: 'app', resolver: new BlankResolver() });
+  let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
     initialize(app) {

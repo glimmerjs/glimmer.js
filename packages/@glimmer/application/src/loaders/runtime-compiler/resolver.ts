@@ -14,8 +14,8 @@ import { Owner } from "@glimmer/di";
 import Component, { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
 
 import { TypedRegistry } from "./typed-registry";
-import Application from "../application";
-import { HelperReference } from '../helpers/user-helper';
+import Application from "../../application";
+import { HelperReference } from '../../helpers/user-helper';
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
 

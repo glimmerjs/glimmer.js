@@ -10,7 +10,7 @@ test('renders a component', async function(assert) {
 
   let containerElement = document.createElement('div');
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
@@ -31,7 +31,7 @@ test('renders a component without affecting existing content', async function(as
   containerElement.appendChild(previousSibling);
   containerElement.appendChild(document.createTextNode('bar'));
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
@@ -54,7 +54,7 @@ test('renders a component before a given sibling', async function(assert) {
   containerElement.appendChild(previousSibling);
   containerElement.appendChild(nextSibling);
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
@@ -73,7 +73,7 @@ test('renders multiple components in different places', async function(assert) {
   let firstContainerElement = document.createElement('div');
   let secondContainerElement = document.createElement('div');
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
@@ -92,7 +92,7 @@ test('renders multiple components in the same container', async function(assert)
 
   let containerElement = document.createElement('div');
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
@@ -113,7 +113,7 @@ test('renders multiple components in the same container in particular places', a
 
   containerElement.appendChild(nextSibling);
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
     .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
     .boot();
@@ -134,7 +134,7 @@ if (DEBUG) {
 
     let containerElement = document.createElement('div');
 
-    let app = buildApp()
+    let app = await buildApp()
       .template('HelloWorld', `<NonExistent />`)
       .boot();
 

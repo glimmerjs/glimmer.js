@@ -5,7 +5,7 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Component Elements');
 
-test('fragments are supported', (assert) => {
+test('fragments are supported', async function(assert) {
   assert.expect(2);
 
   class Fragment extends Component {
@@ -20,14 +20,14 @@ test('fragments are supported', (assert) => {
     }
   }
 
-  buildApp()
+  await buildApp()
     .template('Main', '<Fragment />')
     .template('Fragment', '{{#if showUser}}<h1>User</h1>{{/if}}Hello world!')
     .component('Fragment', Fragment)
     .boot();
 });
 
-test('elements are supported', (assert) => {
+test('elements are supported', async function(assert) {
   assert.expect(5);
 
   class Element extends Component {
@@ -45,14 +45,14 @@ test('elements are supported', (assert) => {
     }
   }
 
-  buildApp()
+  await buildApp()
     .template('Main', '<Element />')
     .template('Element', '<nav>{{#if showUser}}<h1>User</h1>{{/if}}Hello world!</nav>')
     .component('Element', Element)
     .boot();
 });
 
-test('accessing element throws an exception if template is a fragment', (assert) => {
+test('accessing element throws an exception if template is a fragment', async function(assert) {
   assert.expect(1);
 
   class Fragment extends Component {
@@ -63,7 +63,7 @@ test('accessing element throws an exception if template is a fragment', (assert)
     }
   }
 
-  buildApp()
+  await buildApp()
     .template('Main', '<Fragment />')
     .template('Fragment', '{{#if showUser}}<h1>User</h1>{{/if}}Hello world!')
     .component('Fragment', Fragment)

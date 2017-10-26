@@ -24,7 +24,7 @@ class HelloWorld extends Component {
 
     let containerElement = document.createElement('div');
 
-    let app = buildApp()
+    let app = await buildApp()
       .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`)
       .component('HelloWorld', HelloWorld)
       .boot();
@@ -43,7 +43,7 @@ class HelloWorld extends Component {
 
     let containerElement = document.createElement('div');
 
-    let app = buildApp()
+    let app = await buildApp()
       .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`)
       .component('HelloWorld', HelloWorld)
       .boot();
@@ -62,7 +62,7 @@ class HelloWorld extends Component {
 
     let containerElement = document.createElement('div');
 
-    let app = buildApp()
+    let app = await buildApp()
       .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`)
       .component('HelloWorld', HelloWorld)
       .boot();
