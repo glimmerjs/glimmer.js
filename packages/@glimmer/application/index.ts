@@ -7,3 +7,4 @@ export { default as DOMBuilder } from './src/builders/dom-builder';
 export { default as SyncRenderer } from './src/renderers/sync-renderer';
 export { default as Iterable } from './src/iterable';
 export { debugInfoForReference } from './src/helpers/action';
+export { default as mainLayout } from './src/templates/main';

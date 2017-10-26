@@ -2,6 +2,21 @@
 # yarn lockfile v1
 
 
+"@glimmer/application@0.8.0-alpha.10":
+  version "0.8.0-alpha.10"
+  resolved "https://registry.yarnpkg.com/@glimmer/application/-/application-0.8.0-alpha.10.tgz#829a84e6d3e52af9fb4faed30f73f3a8c5847013"
+  dependencies:
+    "@glimmer/compiler" "^0.29.8"
+    "@glimmer/di" "^0.1.9"
+    "@glimmer/env" "^0.1.7"
+    "@glimmer/interfaces" "^0.29.8"
+    "@glimmer/object-reference" "^0.29.8"
+    "@glimmer/opcode-compiler" "^0.29.8"
+    "@glimmer/reference" "^0.29.8"
+    "@glimmer/resolver" "^0.3.0"
+    "@glimmer/runtime" "^0.29.8"
+    "@glimmer/util" "^0.29.8"
+
 "@glimmer/build@^0.6.1", "@glimmer/build@^0.6.2":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@glimmer/build/-/build-0.6.3.tgz#be259e08cb50da4f249a8e57e1cc7570029bd214"
@@ -140,6 +155,14 @@
   dependencies:
     "@glimmer/util" "^0.29.8"
 
+"@glimmer/resolution-map-builder@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@glimmer/resolution-map-builder/-/resolution-map-builder-0.4.0.tgz#b999b51ea3046a44b323e7ef3683c22c99807ee3"
+  dependencies:
+    broccoli-plugin "^1.3.0"
+    silent-error "^1.0.1"
+    walk-sync "^0.3.1"
+
 "@glimmer/resolver@^0.3.0":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@glimmer/resolver/-/resolver-0.3.1.tgz#41069345b6f41beb0948cc35d8e4aa60adcadfc5"
@@ -160,7 +183,7 @@
     "@glimmer/vm" "^0.29.8"
     "@glimmer/wire-format" "^0.29.8"
 
-"@glimmer/syntax@^0.29.8":
+"@glimmer/syntax@^0.29.1", "@glimmer/syntax@^0.29.8":
   version "0.29.8"
   resolved "https://registry.yarnpkg.com/@glimmer/syntax/-/syntax-0.29.8.tgz#ada0e17d34fe0c8ce5b60f637e44c707f035d5ba"
   dependencies:
@@ -204,6 +227,10 @@
   resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.29.8.tgz#11f5b3c51d0f08cb185705a49647bd7b0ee3073a"
   dependencies:
     "@glimmer/util" "^0.29.8"
+
+"@types/node@^8.0.46":
+  version "8.0.46"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.46.tgz#6e1766b2d0ed06631d5b5f87bb8e72c8dbb6888e"
 
 "@types/qunit@^1.16.30":
   version "1.16.31"
@@ -1700,7 +1727,7 @@ broccoli-source@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/broccoli-source/-/broccoli-source-1.1.0.tgz#54f0e82c8b73f46580cbbc4f578f0b32fca8f809"
 
-broccoli-stew@^1.1.1, broccoli-stew@^1.2.0, broccoli-stew@^1.3.3:
+broccoli-stew@^1.1.1, broccoli-stew@^1.2.0, broccoli-stew@^1.3.3, broccoli-stew@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/broccoli-stew/-/broccoli-stew-1.5.0.tgz#d7af8c18511dce510e49d308a62e5977f461883c"
   dependencies:
@@ -1733,7 +1760,7 @@ broccoli-string-replace@^0.1.1:
     broccoli-persistent-filter "^1.1.5"
     minimatch "^3.0.3"
 
-broccoli-test-helper@^1.1.0:
+broccoli-test-helper@^1.1.0, broccoli-test-helper@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/broccoli-test-helper/-/broccoli-test-helper-1.2.0.tgz#d01005d8611fd73ebe1b29552bf052ff59badfb4"
   dependencies:
@@ -2435,7 +2462,7 @@ debug@2.3.3:
   dependencies:
     ms "0.7.2"
 
-debug@^3.0.1:
+debug@^3.0.1, debug@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
@@ -3760,6 +3787,16 @@ git-repo-version@0.3.0:
   resolved "https://registry.yarnpkg.com/git-repo-version/-/git-repo-version-0.3.0.tgz#c9b97d0d21c4357d669dc1269c2b6a75da6cc0e9"
   dependencies:
     git-repo-info "^1.0.4"
+
+glimmer-analyzer@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/glimmer-analyzer/-/glimmer-analyzer-0.3.2.tgz#801f051db5943e529c60cb483c4f78e35623e395"
+  dependencies:
+    "@glimmer/resolution-map-builder" "^0.4.0"
+    "@glimmer/resolver" "^0.3.0"
+    "@glimmer/syntax" "^0.29.1"
+    debug "^3.1.0"
+    simple-html-tokenizer "^0.4.1"
 
 glob-base@^0.3.0:
   version "0.3.0"

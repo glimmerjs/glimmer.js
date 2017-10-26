@@ -2,15 +2,7 @@ import ComponentManager from "./component-manager";
 import { Option, ComponentCapabilities } from '@glimmer/interfaces';
 import { ComponentFactory } from './component';
 import { ComponentDefinition as IComponentDefinition } from '@glimmer/runtime';
-
-const capabilities: ComponentCapabilities = {
-  dynamicLayout: false,
-  dynamicTag: true,
-  prepareArgs: false,
-  createArgs: true,
-  attributeHook: true,
-  elementHook: true
-};
+import { CAPABILITIES as capabilities } from './capabilities';
 
 export interface DefinitionState {
   /* Manager-related */
