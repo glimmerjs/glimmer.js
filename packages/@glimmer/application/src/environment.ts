@@ -16,7 +16,7 @@ import Iterable from './iterable';
 import { Program } from '@glimmer/program';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
 
-import RuntimeResolver, { Specifier } from './runtime-compiler/runtime-resolver';
+import RuntimeResolver, { Specifier } from './loaders/runtime-compiler/loader';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 

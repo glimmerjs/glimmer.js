@@ -5,12 +5,12 @@ import { Program, LazyConstants } from '@glimmer/program';
 import { Opaque } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 
-import Application, { Loader } from '../application';
-import mainTemplate from '../templates/main';
-import action from '../helpers/action';
+import Application, { Loader } from '../../application';
+import mainTemplate from '../../templates/main';
+import action from '../../helpers/action';
 
-import RuntimeResolver from '../runtime-compiler/runtime-resolver';
-import CompileTimeLookup from '../runtime-compiler/compile-time-lookup';
+import RuntimeResolver from './resolver';
+import CompileTimeLookup from './compile-time-lookup';
 
 export interface Specifier {
   specifier: string;
@@ -18,13 +18,13 @@ export interface Specifier {
 };
 
 /**
- * The RuntimeLoader is used by Glimmer.js applications that perform the final
- * template compilation step client-side. It configures the compiler to resolve
- * templates, helpers and other objects from the runtime registry, and enables
- * just-in-time compilation of templates as they are encountered.
+ * The RuntimeCompilerLoader is used by Glimmer.js applications that perform the
+ * final template compilation step client-side. It configures the compiler to
+ * resolve templates, helpers and other objects from the runtime registry, and
+ * enables just-in-time compilation of templates as they are encountered.
  */
-export default class RuntimeLoader implements Loader {
-  constructor(protected resolver: Resolver) {
+export default class RuntimeCompilerLoader implements Loader {
+  constructor(public resolver: Resolver) {
   }
 
   getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator {

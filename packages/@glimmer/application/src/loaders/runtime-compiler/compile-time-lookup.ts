@@ -1,10 +1,10 @@
 import { CompileTimeLookup as ICompileTimeLookup, ICompilableTemplate } from '@glimmer/opcode-compiler';
 import { ComponentDefinition as IComponentDefinition, Opaque, ComponentCapabilities, ProgramSymbolTable } from '@glimmer/interfaces';
 import { Option, assert } from '@glimmer/util';
-
-import RuntimeResolver from './runtime-resolver';
-import { Specifier } from '../loaders/runtime-loader';
 import { WithStaticLayout, ComponentManager } from '@glimmer/runtime';
+
+import RuntimeResolver from './resolver';
+import { Specifier } from './loader';
 
 type ComponentDefinition = IComponentDefinition<ComponentManager<Opaque, Opaque>>;
 
