@@ -1,4 +1,4 @@
-import { Cursor, NewElementBuilder, Environment } from "@glimmer/runtime";
+import { Cursor, clientBuilder, Environment, ElementBuilder } from "@glimmer/runtime";
 import { Builder } from "../application";
 
 export default class DOMBuilder implements Builder {
@@ -8,7 +8,7 @@ export default class DOMBuilder implements Builder {
     this.cursor = { element, nextSibling };
   }
 
-  getBuilder(env: Environment) {
-    return NewElementBuilder.forInitialRender(env, this.cursor);
+  getBuilder(env: Environment): ElementBuilder {
+    return clientBuilder(env, this.cursor);
   }
 }
