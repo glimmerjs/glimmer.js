@@ -134,7 +134,7 @@ function confirmPublish() {
     }
 
     packages.filter(pkg => !pkg.private).forEach(package => {
-      execWithSideEffects(`npm publish --tag ${distTag}`, {
+      execWithSideEffects(`npm publish --tag ${distTag}  --access public`, {
         cwd: package.absolutePath
       });
     });
