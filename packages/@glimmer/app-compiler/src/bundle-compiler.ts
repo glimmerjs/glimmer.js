@@ -4,7 +4,7 @@ import Plugin from 'broccoli-plugin';
 import walkSync from 'walk-sync';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';
-import { mainLayout } from '@glimmer/application';
+import { mainTemplate } from '@glimmer/application';
 import { CompilableTemplate } from '@glimmer/opcode-compiler';
 
 export type CompilerMode = 'module-unification';
@@ -78,7 +78,7 @@ export default class GlimmerBundleCompiler extends Plugin {
     let { outputPath } = this;
 
     let specifier = specifierFor('__BUILTIN__', 'default');
-    let compilable = CompilableTemplate.topLevel(JSON.parse(mainLayout.block), this.compiler.compileOptions(specifier));
+    let compilable = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), this.compiler.compileOptions(specifier));
 
     this.compiler.addCustom(specifier, compilable);
 

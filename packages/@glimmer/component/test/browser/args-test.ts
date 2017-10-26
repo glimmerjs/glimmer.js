@@ -5,7 +5,7 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Component Arguments');
 
-test('Args smoke test', (assert) => {
+test('Args smoke test', async function (assert) {
   let done = assert.async();
   assert.expect(5);
 
@@ -52,7 +52,7 @@ test('Args smoke test', (assert) => {
     }
   }
 
-  app = buildApp()
+  app = await buildApp()
     .component('ParentComponent', ParentComponent)
     .component('ChildComponent', ChildComponent)
     .template('Main', '<div><ParentComponent /></div>')
@@ -74,7 +74,7 @@ test('Args smoke test', (assert) => {
   parent.firstName = "Thomas";
 });
 
-test('Tracked properties that depend on `args` re-render correctly', (assert) => {
+test('Tracked properties that depend on `args` re-render correctly', async function (assert) {
   assert.expect(2);
 
   let parent: ParentComponent;
@@ -95,7 +95,7 @@ test('Tracked properties that depend on `args` re-render correctly', (assert) =>
     }
   }
 
-  app = buildApp()
+  app = await buildApp()
     .component('ParentComponent', ParentComponent)
     .component('ChildComponent', ChildComponent)
     .template('Main', '<div><ParentComponent /></div>')
@@ -120,7 +120,7 @@ test('Tracked properties that depend on `args` re-render correctly', (assert) =>
   });
 });
 
-test('Properties that depend on `args` are properly updated before the `didUpdate` hook', (assert) => {
+test('Properties that depend on `args` are properly updated before the `didUpdate` hook', async function(assert) {
   assert.expect(4);
 
   let parent: ParentComponent;
@@ -152,7 +152,7 @@ test('Properties that depend on `args` are properly updated before the `didUpdat
     }
   }
 
-  app = buildApp()
+  app = await buildApp()
     .component('ParentComponent', ParentComponent)
     .component('ChildComponent', ChildComponent)
     .template('Main', '<div><ParentComponent /></div>')
@@ -173,7 +173,7 @@ test('Properties that depend on `args` are properly updated before the `didUpdat
   return didRender(app);
 });
 
-test("Setting args should not schedule a rerender", function(assert) {
+test("Setting args should not schedule a rerender", async function(assert) {
   let done = assert.async();
   let app: TestApplication;
 
@@ -196,7 +196,7 @@ test("Setting args should not schedule a rerender", function(assert) {
   class ChildComponent extends Component {
   }
 
-  app = buildApp()
+  app = await buildApp()
     .template('Main', '<div><ParentComponent /></div>')
     .template('ParentComponent', '<div><ChildComponent @foo={{foo}}></ChildComponent></div>')
     .component('ParentComponent', ParentComponent)

@@ -30,7 +30,7 @@ test('can curry arguments to actions', async function(assert) {
     }
   }
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('HelloWorld', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
     .template('Main', '<div><HelloWorld /></div>')
     .component('HelloWorld', HelloWorld)
@@ -60,7 +60,7 @@ test('can curry arguments to actions', async function(assert) {
   assert.strictEqual(passedEvent, fakeEvent);
 });
 
-test('actions can be passed and invoked with additional arguments', function(assert) {
+test('actions can be passed and invoked with additional arguments', async function(assert) {
   assert.expect(2);
 
   let fakeEvent: any = {
@@ -83,7 +83,7 @@ test('actions can be passed and invoked with additional arguments', function(ass
     }
   }
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
     .template('Parent', '<div><Child @userDidClick={{action userDidClick 1 2}} /></div>')
     .component('Parent', ParentComponent)
@@ -99,19 +99,20 @@ test('actions can be passed and invoked with additional arguments', function(ass
   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);
 });
 
-test('action helper invoked without a function raises an error', function(assert) {
+test('action helper invoked without a function raises an error', async function(assert) {
   class ParentComponent extends Component {
     debugName = 'ParentComponent';
   }
 
-  let app = buildApp()
+  let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
     .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
     .component('Parent', ParentComponent);
-
-  assert.raises(() => {
-    app.boot();
-  }, /You tried to create an action with the \{\{action\}\} helper, but the first argument \('doesntExist' on ParentComponent\) was undefined instead of a function./);
+  try {
+    await app.boot();
+  } catch (e) {
+    assert.equal(e.message, "You tried to create an action with the \{\{action\}\} helper, but the first argument \('doesntExist' on ParentComponent\) was undefined instead of a function.");
+  }
 });
 
 test('debug name from references can be extracted', function(assert) {
