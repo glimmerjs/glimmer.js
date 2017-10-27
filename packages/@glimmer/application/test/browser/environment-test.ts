@@ -4,6 +4,7 @@ import Component from '@glimmer/component';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import * as SimpleDOM from 'simple-dom';
 import { Simple } from '@glimmer/interfaces';
+import { DEBUG } from '@glimmer/env';
 
 const { module, test } = QUnit;
 const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
@@ -199,3 +200,29 @@ test('renders a component using simple-dom', async function(assert) {
 
   assert.equal(serializedHTML, '<div><h1>Hello Glimmer!</h1></div>');
 });
+
+if (DEBUG) {
+  test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
+    assert.expect(1);
+
+    try {
+      await buildApp()
+        .template('Main', '<h1>Hello, {{name}}!</h1>')
+        .boot();
+    } catch (err) {
+      assert.ok(err.message.match("You tried to reference {{name}} from the Main template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@name}}?"));
+    }
+  });
+} else {
+  test('accessing properties in template-only components produces an exception in production mode', async function(assert) {
+    assert.expect(1);
+
+    try {
+      await buildApp()
+        .template('Main', '<h1>Hello, {{name}}!</h1>')
+        .boot();
+    } catch (err) {
+      assert.ok(err instanceof TypeError);
+    }
+  });
+}

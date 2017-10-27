@@ -171,12 +171,6 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
 
       if (componentSpecifier !== undefined) {
         componentFactory = this.owner.factoryFor(componentSpecifier);
-      } else {
-        componentFactory = {
-          create(injections) {
-            return Component.create(injections);
-          }
-        };
       }
 
       handle = this.registerComponent(name, specifier, componentFactory, template);
