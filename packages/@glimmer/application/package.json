@@ -15,22 +15,22 @@
     "dist"
   ],
   "dependencies": {
-    "@glimmer/compiler": "^0.29.8",
+    "@glimmer/compiler": "^0.29.9",
     "@glimmer/component": "^0.9.0-alpha.1",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/interfaces": "^0.29.8",
-    "@glimmer/opcode-compiler": "^0.29.8",
-    "@glimmer/reference": "^0.29.8",
+    "@glimmer/interfaces": "^0.29.9",
+    "@glimmer/opcode-compiler": "^0.29.9",
+    "@glimmer/reference": "^0.29.9",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/runtime": "^0.29.8",
-    "@glimmer/util": "^0.29.8"
+    "@glimmer/runtime": "^0.29.9",
+    "@glimmer/util": "^0.29.9"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^0.9.0-alpha.1",
     "@glimmer/component": "^0.9.0-alpha.1",
-    "@glimmer/test-helpers": "^0.29.8",
-    "@glimmer/wire-format": "^0.29.8",
+    "@glimmer/test-helpers": "^0.29.9",
+    "@glimmer/wire-format": "^0.29.9",
     "simple-dom": "^1.2.0"
   }
 }
