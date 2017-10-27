@@ -15,7 +15,7 @@ import {
 } from "@glimmer/runtime";
 import { Dict, Destroyable, Opaque, Option } from "@glimmer/util";
 import { Tag } from "@glimmer/reference";
-import { RuntimeResolver, ComponentCapabilities } from "@glimmer/interfaces";
+import { RuntimeResolver, ComponentCapabilities, Recast, VMHandle } from "@glimmer/interfaces";
 import { VersionedPathReference } from '@glimmer/reference';
 
 import Component from "./component";
@@ -44,7 +44,9 @@ export class ComponentStateBucket {
     };
 
     setOwner(injections, owner);
-    this.component = componentFactory.create(injections);
+    if (componentFactory) {
+      this.component = componentFactory.create(injections);
+    }
   }
 
   get tag(): Tag {
@@ -79,8 +81,15 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return state.capabilities;
   }
 
-  getLayout({ name, layout }: DefinitionState, resolver: CompilableRuntimeResolver): Invocation {
-    return resolver.compileTemplate(name, layout);
+  getLayout({ name, handle, symbolTable }: DefinitionState, resolver: CompilableRuntimeResolver): Invocation {
+    if (handle && symbolTable) {
+      return {
+        handle,
+        symbolTable
+      };
+    }
+
+    return resolver.compileTemplate(name, handle as Recast<VMHandle, number>);
   }
 
   create(_env: Environment, definition: DefinitionState, args: Arguments, _dynamicScope: DynamicScope, _caller: VersionedPathReference<Opaque>, _hasDefaultBlock: boolean): ComponentStateBucket {
@@ -95,11 +104,13 @@ export default class ComponentManager implements IComponentManager<ComponentStat
   didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) { }
 
   didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
-    bucket.component.bounds = new Bounds(bounds);
+    if (bucket.component) {
+      bucket.component.bounds = new Bounds(bounds);
+    }
   }
 
   didCreate(bucket: ComponentStateBucket) {
-    if (bucket) { bucket.component.didInsertElement(); }
+    if (bucket && bucket.component) { bucket.component.didInsertElement(); }
   }
 
   getTag({ tag }: ComponentStateBucket): Tag {
@@ -107,16 +118,26 @@ export default class ComponentManager implements IComponentManager<ComponentStat
   }
 
   update(bucket: ComponentStateBucket, scope: DynamicScope) {
-    bucket.component.args = bucket.namedArgsSnapshot();
+    if (bucket && bucket.component) {
+      bucket.component.args = bucket.namedArgsSnapshot();
+    }
   }
 
   didUpdateLayout() {}
 
   didUpdate({ component }: ComponentStateBucket) {
-    component.didUpdate();
+    if (component) {
+      component.didUpdate();
+    }
   }
 
   getDestructor(bucket: ComponentStateBucket): Destroyable {
-    return bucket.component;
+    if (bucket.component) {
+      return bucket.component;
+    }
+
+    return NOOP_DESTROYABLE;
   }
 }
+
+const NOOP_DESTROYABLE = { destroy() {} };
