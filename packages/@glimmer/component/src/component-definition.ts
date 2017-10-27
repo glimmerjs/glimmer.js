@@ -1,5 +1,5 @@
 import ComponentManager from "./component-manager";
-import { Option, ComponentCapabilities } from '@glimmer/interfaces';
+import { Option, ComponentCapabilities, VMHandle, ProgramSymbolTable } from '@glimmer/interfaces';
 import { ComponentFactory } from './component';
 import { ComponentDefinition as IComponentDefinition } from '@glimmer/runtime';
 import { CAPABILITIES as capabilities } from './capabilities';
@@ -11,17 +11,18 @@ export interface DefinitionState {
   /* Component-related */
   name: string;
   ComponentClass: any;
-  layout: Option<number>;
+  handle: Option<VMHandle>;
+  symbolTable?: ProgramSymbolTable;
 }
 
 export default class ComponentDefinition implements IComponentDefinition {
   state: DefinitionState;
-  constructor(public name: string, public manager: ComponentManager, public ComponentClass: ComponentFactory, public layout: Option<number>) {
+  constructor(public name: string, public manager: ComponentManager, public ComponentClass: ComponentFactory, public handle: Option<VMHandle>) {
     this.state = {
       name,
       capabilities,
       ComponentClass,
-      layout
+      handle
     };
   }
 
