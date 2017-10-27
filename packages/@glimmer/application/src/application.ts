@@ -9,7 +9,8 @@ import {
 } from '@glimmer/di';
 import {
   ElementBuilder,
-  TemplateIterator
+  TemplateIterator,
+  Environment as AbstractEnvironment
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -36,7 +37,7 @@ export interface Builder {
   /**
    * Returns a concrete instance of an ElementBuilder for the given Environment.
    */
-  getBuilder(env: Environment): ElementBuilder;
+  getBuilder(env: AbstractEnvironment): ElementBuilder;
 }
 
 /**

@@ -15,15 +15,15 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/compiler": "^0.29.9",
+    "@glimmer/compiler": "^0.29.10",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/interfaces": "^0.29.9",
-    "@glimmer/reference": "^0.29.9",
+    "@glimmer/interfaces": "^0.29.10",
+    "@glimmer/reference": "^0.29.10",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/runtime": "^0.29.9",
-    "@glimmer/util": "^0.29.9",
-    "@glimmer/wire-format": "^0.29.9",
+    "@glimmer/runtime": "^0.29.10",
+    "@glimmer/util": "^0.29.10",
+    "@glimmer/wire-format": "^0.29.10",
     "simple-dom": "^1.2.0"
   },
   "devDependencies": {
