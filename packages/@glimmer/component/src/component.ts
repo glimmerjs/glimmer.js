@@ -51,14 +51,14 @@ export interface Bounds {
  * 2. Properties
  *
  * Arguments are data that is passed in to a component from its parent
- * component. For example, if I have a `user-greeting` component, I can pass it
+ * component. For example, if I have a `UserGreeting` component, I can pass it
  * a name and greeting to use:
  *
  * ```hbs
- * <user-greeting @name="Ricardo" @greeting="Olá">
+ * <UserGreeting @name="Ricardo" @greeting="Olá" />
  * ```
  *
- * Inside my `user-greeting` template, I can access the `@name` and `@greeting`
+ * Inside my `UserGreeting` template, I can access the `@name` and `@greeting`
  * arguments that I've been given:
  *
  * ```hbs
@@ -95,10 +95,10 @@ export interface Bounds {
  * ```
  *
  * We can also take that property and pass it as an argument to the
- * `user-greeting` component we defined above:
+ * `UserGreeting` component we defined above:
  *
  * ```hbs
- * <user-greeting @greeting="Hello" @name={{user.name}} />
+ * <UserGreeting @greeting="Hello" @name={{user.name}} />
  * ```
  *
  * ## Arguments vs. Properties
