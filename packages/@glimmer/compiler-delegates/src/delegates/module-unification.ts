@@ -1,9 +1,9 @@
-import { BundleCompilerDelegate } from '../bundle';
+import { BundleCompilerDelegate, AddedTemplate } from '../bundle';
 import { getImportStatements, OutputFiles } from '../utils/code-gen';
 import { BundleCompiler, Specifier, specifierFor, SpecifierMap } from '@glimmer/bundle-compiler';
 import { SymbolTable, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
 import { expect, Dict } from '@glimmer/util';
-import { relative } from 'path';
+import { relative, extname, dirname } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
 import { ConstantPool } from '@glimmer/program';
@@ -91,14 +91,14 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     return CompilableTemplate.topLevel(block, options);
   }
 
-  generateDataSegment(map: SpecifierMap, pool: ConstantPool, table: number[]) {
+  generateDataSegment(map: SpecifierMap, pool: ConstantPool, table: number[], nextFreeHandle: number, compiledBlocks: Map<Specifier, AddedTemplate>) {
     debug('generating data segment');
 
     let externalModuleTable = this.generateExternalModuleTable(map);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeapTable(table);
     let specifierMap = this.generateSpecifierMap(map);
-    let symbolTables = this.generateSymbolTables();
+    let symbolTables = this.generateSymbolTables(compiledBlocks);
 
     let source = strip`
       ${externalModuleTable}
@@ -112,12 +112,18 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     return source;
   }
 
-  generateSymbolTables() {
-    let symbolTables: Dict<SymbolTable> = {};
+  generateSymbolTables(compiledBlocks: Map<Specifier, AddedTemplate>) {
+    let symbolTables: Dict<ProgramSymbolTable> = {};
 
-    for (let [specifier, table] of this.specifiersToSymbolTable) {
+    for (let [specifier, template ] of compiledBlocks) {
       let muSpecifier = this.muSpecifierForSpecifier(specifier);
-      symbolTables[muSpecifier] = table;
+
+      symbolTables[muSpecifier] = {
+        hasEval: (template as SerializedTemplateBlock).hasEval,
+        symbols: (template as SerializedTemplateBlock).symbols,
+        referrer: null
+      };
+
     }
 
     return `const symbolTables = ${inlineJSON(symbolTables)};`;
@@ -165,10 +171,11 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   generateExternalModuleTable(map: SpecifierMap) {
     let project = this.project;
     let self = this;
+    let dataSegmentPath = dirname(this.outputFiles.dataSegment);
 
     // First, convert the map into an array of specifiers, using the handle
     // as the index.
-    let modules = toSparseArray(map.byHandle)
+    let modules = toSparseArray(map.byVMHandle)
       .map(normalizeModulePaths)
       .filter(m => m) as Specifier[];
 
@@ -199,7 +206,10 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
       let componentSpec = project.resolver.identify('component:', referrer);
       if (componentSpec) {
         let componentPath = project.pathForSpecifier(componentSpec)!;
-        debug('found corresponding component; referrer=%s; path=%s', referrer, componentPath);
+        componentPath = relative(dataSegmentPath, componentPath);
+        debug('found corresponding component; referrer=%s; path=%s; dataSegment=%s', referrer, componentPath, dataSegmentPath);
+        componentPath = componentPath.replace(extname(componentPath), '');
+
         return specifierFor(componentPath, 'default');
       }
 
