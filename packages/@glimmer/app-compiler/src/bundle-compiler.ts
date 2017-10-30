@@ -1,5 +1,5 @@
 import { BundleCompiler, BundleCompilerOptions, specifierFor } from '@glimmer/bundle-compiler';
-import { ModuleUnificationCompilerDelegate, BundleCompilerDelegate, OutputFiles } from '@glimmer/compiler-delegates';
+import { ModuleUnificationCompilerDelegate, BundleCompilerDelegate, OutputFiles, Builtins } from '@glimmer/compiler-delegates';
 import Plugin from 'broccoli-plugin';
 import walkSync from 'walk-sync';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
@@ -10,7 +10,7 @@ import { CompilableTemplate } from '@glimmer/opcode-compiler';
 export type CompilerMode = 'module-unification';
 
 export interface BundleCompilerDelegateConstructor {
-  new(projectPath: string, outputFiles: OutputFiles): BundleCompilerDelegate;
+  new(projectPath: string, outputFiles: OutputFiles, builtins?: Builtins): BundleCompilerDelegate;
 }
 
 export interface GlimmerBundleCompilerOptions {
@@ -19,6 +19,7 @@ export interface GlimmerBundleCompilerOptions {
   outputFiles?: OutputFiles;
   delegate?: BundleCompilerDelegateConstructor;
   mode?: CompilerMode;
+  builtins?: Builtins;
 }
 
 export default class GlimmerBundleCompiler extends Plugin {
@@ -62,9 +63,9 @@ export default class GlimmerBundleCompiler extends Plugin {
     let delegate;
     let { options } = this;
     if (options.mode && options.mode === 'module-unification') {
-      delegate = this.delegate = new ModuleUnificationCompilerDelegate(options.projectPath, options.outputFiles);
+      delegate = this.delegate = new ModuleUnificationCompilerDelegate(options.projectPath, options.outputFiles, options.builtins);
     } else if (options.delegate) {
-      delegate = this.delegate = new options.delegate(options.projectPath, options.outputFiles);
+      delegate = this.delegate = new options.delegate(options.projectPath, options.outputFiles, options.builtins);
     }
 
     this.compiler = new BundleCompiler(delegate, options.bundleCompiler = {});
@@ -77,7 +78,7 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     let { outputPath } = this;
 
-    let specifier = specifierFor('__BUILTIN__', 'default');
+    let specifier = specifierFor('main', 'mainTemplate');
     let compilable = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), this.compiler.compileOptions(specifier));
 
     this.compiler.addCustom(specifier, compilable);

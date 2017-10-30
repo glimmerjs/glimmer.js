@@ -7,7 +7,7 @@ import { PathReference } from '@glimmer/reference';
 
 import Application, { Loader } from '../../application';
 import mainTemplate from '../../templates/main';
-import action from '../../helpers/action';
+import { actionHelper, ifHelper } from '../../helpers';
 
 import RuntimeResolver from './resolver';
 import CompileTimeLookup from './compile-time-lookup';
@@ -43,8 +43,8 @@ export default class RuntimeCompilerLoader implements Loader {
     resolver.setCompileOptions(compileOptions);
 
     resolver.registerTemplate('main', mainTemplate);
-    resolver.registerInternalHelper('action', action);
-    resolver.registerHelper('if', (params) => params[0] ? params[1] : params[2]);
+    resolver.registerInternalHelper('action', actionHelper);
+    resolver.registerHelper('if', ifHelper);
 
     let mainLayout = templateFactory(mainTemplate).create(compileOptions);
 
