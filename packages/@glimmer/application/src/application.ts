@@ -98,7 +98,7 @@ export interface ApplicationConstructor<T = Application> {
   new (options: ApplicationOptions): T;
 }
 
-export type Notifier = [() => void, (err) => void];
+export type Notifier = [() => void, (err: Error) => void];
 
 const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
 
