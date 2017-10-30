@@ -58,12 +58,18 @@ export function getModuleSpecifier(modulePath: string) {
   return JSON.stringify(`./${modulePath}`);
 }
 
-export function getImportStatements(modules: Specifier[]) {
+export function getImportStatements(modules: Specifier[], builtins: Dict<string>) {
   let identifiers = new Array<string>(modules.length).fill('');
   let seen = dict<boolean>();
 
   let imports = modules.map((specifier, i) => {
-    let { module } = specifier;
+    let { module, name } = specifier;
+
+    if (name in builtins) {
+      identifiers[i] = name;
+      return `import { ${name} } from "${module}";`;
+    }
+
     let id = getIdentifier(module, seen);
     identifiers[i] = id;
 

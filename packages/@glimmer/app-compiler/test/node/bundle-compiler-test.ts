@@ -172,11 +172,43 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     let output = yield buildOutput(compiler);
     let files = output.read();
     let dataSegment = files['my-app'].src['data.js'];
-    assert.equal(dataSegment.length, 1275);
+    assert.equal(dataSegment.length, 1219);
     assert.ok(dataSegment.indexOf('moduleTable') > -1);
     assert.ok(dataSegment.indexOf('heapTable') > -1);
     assert.ok(dataSegment.indexOf('symbolTables') > -1);
     assert.ok(dataSegment.indexOf('pool') > -1);
     assert.ok(dataSegment.indexOf('specifierMap') > -1);
   }));
+
+  test('can lookup builtins', co.wrap(function *(assert) {
+    input.write({
+      'my-app': {
+        'package.json': JSON.stringify({name: 'my-app'}),
+        src: {
+          ui: {
+            components: {
+              A: {
+                'template.hbs': '<div>Hello {{if true "wat"}}</div>'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    let compiler = new GlimmerBundleCompiler(input.path(), {
+      projectPath: `${input.path()}/my-app`,
+      delegate: TestModuleUnificationDelegate,
+      outputFiles: {
+        dataSegment: 'my-app/src/data.js',
+        heapFile: 'my-app/src/templates.gbx'
+      }
+    });
+
+    let output = yield buildOutput(compiler);
+    let files = output.read();
+    let dataSegment = files['my-app'].src['data.js'];
+    assert.ok(dataSegment.indexOf('import { ifHelper } from "@glimmer/application";') > -1);
+  }));
+
 });

@@ -1,8 +1,8 @@
-import { BundleCompilerDelegate, AddedTemplate } from '../bundle';
+import { BundleCompilerDelegate, AddedTemplate, Builtins } from '../bundle';
 import { getImportStatements, OutputFiles } from '../utils/code-gen';
 import { BundleCompiler, Specifier, specifierFor, SpecifierMap } from '@glimmer/bundle-compiler';
 import { SymbolTable, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
-import { expect, Dict } from '@glimmer/util';
+import { expect, Dict, dict } from '@glimmer/util';
 import { relative, extname, dirname } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
@@ -17,12 +17,25 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   public bundleCompiler: BundleCompiler;
   protected project: Project;
   protected specifiersToSymbolTable: Map<Specifier, SymbolTable> = new Map();
-  private builtins: string[];
+  private builtins: Builtins;
+  private builtinsByName: Dict<string>;
 
-  constructor(protected projectPath: string, public outputFiles: OutputFiles, envBuiltIns: string[] = []) {
+  constructor(protected projectPath: string, public outputFiles: OutputFiles, envBuiltIns: Builtins = {}) {
     debug('initialized MU compiler delegate; project=%s', projectPath);
     this.project = new Project(projectPath);
-    this.builtins = ['action', 'if', ...envBuiltIns];
+    this.builtins = {
+      main: specifierFor('main', 'mainTemplate'),
+      if: specifierFor('@glimmer/application', 'ifHelper'),
+      action: specifierFor('@glimmer/application', 'actionHelper'),
+      ...envBuiltIns
+    };
+
+    this.builtinsByName = dict<string>();
+
+    Object.keys(this.builtins).forEach(builtin => {
+      let specifier = this.builtins[builtin];
+      this.builtinsByName[specifier.name] = specifier.module;
+    });
   }
 
   hasComponentInScope(name: string, referrer: Specifier) {
@@ -70,15 +83,15 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   }
 
   hasHelperInScope(helperName: string, referrer: Specifier) {
-    if (this.builtins.indexOf(helperName) > -1) { return true; }
+    if (helperName in this.builtins) { return true; }
 
     let referrerSpec = this.project.specifierForPath(referrer.module) || undefined;
     return !!this.project.resolver.identify(`helper:${helperName}`, referrerSpec);
   }
 
   resolveHelperSpecifier(helperName: string, referrer: Specifier) {
-    if (this.builtins.indexOf(helperName) > -1) {
-      return specifierFor('__BUILTIN__', helperName);
+    if (helperName in this.builtins) {
+      return this.builtins[helperName];
     }
 
     let referrerSpec = this.project.specifierForPath(referrer.module) || undefined;
@@ -116,14 +129,15 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     let symbolTables: Dict<ProgramSymbolTable> = {};
 
     for (let [specifier, template ] of compiledBlocks) {
-      let muSpecifier = this.muSpecifierForSpecifier(specifier);
+      if (!(specifier.name in this.builtinsByName)) {
+        let muSpecifier = this.muSpecifierForSpecifier(specifier);
 
-      symbolTables[muSpecifier] = {
-        hasEval: (template as SerializedTemplateBlock).hasEval,
-        symbols: (template as SerializedTemplateBlock).symbols,
-        referrer: null
-      };
-
+        symbolTables[muSpecifier] = {
+          hasEval: (template as SerializedTemplateBlock).hasEval,
+          symbols: (template as SerializedTemplateBlock).symbols,
+          referrer: null
+        };
+      }
     }
 
     return `const symbolTables = ${inlineJSON(symbolTables)};`;
@@ -134,21 +148,17 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     let specifierMap: Dict<number> = {};
 
     for (let [specifier, handle] of entries) {
-      let muSpecifier = this.muSpecifierForSpecifier(specifier);
-
-      specifierMap[muSpecifier] = handle;
+      if (!(specifier.name in this.builtinsByName)) {
+        let muSpecifier = this.muSpecifierForSpecifier(specifier);
+        specifierMap[muSpecifier] = handle;
+      }
     }
 
     return `const specifierMap = ${inlineJSON(specifierMap)};`;
   }
 
   muSpecifierForSpecifier(specifier: Specifier): string {
-    let { module } = specifier;
     let project = this.project;
-
-    if (module === '__BUILTIN__') {
-      return module;
-    }
 
     return expect(
       project.specifierForPath(specifier.module),
@@ -175,30 +185,32 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
 
     // First, convert the map into an array of specifiers, using the handle
     // as the index.
-    let modules = toSparseArray(map.byVMHandle)
+    let modules = toSparseArray(map.byHandle)
       .map(normalizeModulePaths)
       .filter(m => m) as Specifier[];
 
-    let source = generateExternalModuleTable(modules);
+    let source = generateExternalModuleTable(modules, this.builtinsByName);
 
     return source;
 
     function normalizeModulePaths(moduleSpecifier: Specifier) {
-      let specifier = self.muSpecifierForSpecifier(moduleSpecifier);
+      if (moduleSpecifier.name in self.builtinsByName) {
+        return moduleSpecifier;
+      } else {
+        let specifier = self.muSpecifierForSpecifier(moduleSpecifier);
 
-      debug('resolved MU specifier; specifier=%s', specifier);
+        debug('resolved MU specifier; specifier=%s', specifier);
 
-      let [type] = specifier.split(':');
+        let [type] = specifier.split(':');
 
-      switch (type) {
-        case 'template':
-          return getComponentImport(specifier);
-        case 'helper':
-          return moduleSpecifier;
-        case '__BUILTIN__':
-          return null;
-        default:
-          throw new Error(`Unsupported type in specifier map: ${type}`);
+        switch (type) {
+          case 'template':
+            return getComponentImport(specifier);
+          case 'helper':
+            return moduleSpecifier;
+          default:
+            throw new Error(`Unsupported type in specifier map: ${type}`);
+        }
       }
     }
 
@@ -246,8 +258,8 @@ function toSparseArray<T>(map: Map<number, T>): T[] {
   return array;
 }
 
-function generateExternalModuleTable(modules: Specifier[]) {
-  let { imports, identifiers } = getImportStatements(modules);
+function generateExternalModuleTable(modules: Specifier[], builtins: Dict<string>) {
+  let { imports, identifiers } = getImportStatements(modules, builtins);
 
   return `
 ${imports.join('\n')}

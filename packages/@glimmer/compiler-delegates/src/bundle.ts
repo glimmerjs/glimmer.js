@@ -13,3 +13,7 @@ export interface BundleCompilerDelegate extends CompilerDelegate {
   specifierFor(relativePath: string): Specifier;
   generateDataSegment(map: SpecifierMap, pool: ConstantPool, heapTable: number[], nextFreeHandle: number, blocks: Map<Specifier, AddedTemplate>): string;
 }
+
+export interface Builtins {
+  [key: string]: Specifier;
+}
