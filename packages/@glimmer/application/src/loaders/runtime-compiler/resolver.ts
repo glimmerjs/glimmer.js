@@ -11,7 +11,7 @@ import { TemplateOptions } from '@glimmer/opcode-compiler';
 import { expect } from "@glimmer/util";
 import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict, VMHandle, Recast } from "@glimmer/interfaces";
 import { Owner } from "@glimmer/di";
-import Component, { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
+import { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
 
 import { TypedRegistry } from "./typed-registry";
 import Application from "../../application";
