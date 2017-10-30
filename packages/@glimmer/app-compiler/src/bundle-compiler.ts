@@ -1,7 +1,7 @@
 import { BundleCompiler, BundleCompilerOptions, specifierFor } from '@glimmer/bundle-compiler';
 import { ModuleUnificationCompilerDelegate, BundleCompilerDelegate, OutputFiles } from '@glimmer/compiler-delegates';
 import Plugin from 'broccoli-plugin';
-import walkSync from 'walk-sync';
+import walkSync, { WalkSyncEntry } from 'walk-sync';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';
 import { mainTemplate } from '@glimmer/application';
@@ -27,7 +27,7 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler;
   private delegate: BundleCompilerDelegate;
-  constructor(inputNode, options) {
+  constructor(inputNode: any, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
@@ -49,12 +49,12 @@ export default class GlimmerBundleCompiler extends Plugin {
     }, options);
   }
 
-  listEntries() {
+  listEntries(): WalkSyncEntry[] {
     let [srcPath] = this.inputPaths;
     return walkSync.entries(srcPath);
   }
 
-  _readFile(file) {
+  _readFile(file: string) {
     return readFileSync(join(this.inputPaths[0], file), 'UTF-8');
   }
 
