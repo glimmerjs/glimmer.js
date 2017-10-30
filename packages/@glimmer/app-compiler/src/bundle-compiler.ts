@@ -10,7 +10,7 @@ import { CompilableTemplate } from '@glimmer/opcode-compiler';
 export type CompilerMode = 'module-unification';
 
 export interface BundleCompilerDelegateConstructor {
-  new(projectPath: string, outputFiles: OutputFiles): BundleCompilerDelegate;
+  new(projectPath: string, outputFiles: OutputFiles, builtins?: string[]): BundleCompilerDelegate;
 }
 
 export interface GlimmerBundleCompilerOptions {
@@ -19,6 +19,7 @@ export interface GlimmerBundleCompilerOptions {
   outputFiles?: OutputFiles;
   delegate?: BundleCompilerDelegateConstructor;
   mode?: CompilerMode;
+  builtins?: string[];
 }
 
 export default class GlimmerBundleCompiler extends Plugin {
@@ -62,9 +63,9 @@ export default class GlimmerBundleCompiler extends Plugin {
     let delegate;
     let { options } = this;
     if (options.mode && options.mode === 'module-unification') {
-      delegate = this.delegate = new ModuleUnificationCompilerDelegate(options.projectPath, options.outputFiles);
+      delegate = this.delegate = new ModuleUnificationCompilerDelegate(options.projectPath, options.outputFiles, options.builtins);
     } else if (options.delegate) {
-      delegate = this.delegate = new options.delegate(options.projectPath, options.outputFiles);
+      delegate = this.delegate = new options.delegate(options.projectPath, options.outputFiles, options.builtins);
     }
 
     this.compiler = new BundleCompiler(delegate, options.bundleCompiler = {});

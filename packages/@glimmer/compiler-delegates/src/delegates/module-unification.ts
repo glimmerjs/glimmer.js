@@ -13,16 +13,16 @@ import { CAPABILITIES } from '@glimmer/component';
 
 const debug = Debug('@glimmer/compiler-delegates:mu-delegate');
 
-const BUILTINS = ['action', 'if'];
-
 export default class ModuleUnificationCompilerDelegate implements BundleCompilerDelegate {
   public bundleCompiler: BundleCompiler;
   protected project: Project;
   protected specifiersToSymbolTable: Map<Specifier, SymbolTable> = new Map();
+  private builtins: string[];
 
-  constructor(protected projectPath: string, public outputFiles: OutputFiles) {
+  constructor(protected projectPath: string, public outputFiles: OutputFiles, envBuiltIns: string[] = []) {
     debug('initialized MU compiler delegate; project=%s', projectPath);
     this.project = new Project(projectPath);
+    this.builtins = ['action', 'if', ...envBuiltIns];
   }
 
   hasComponentInScope(name: string, referrer: Specifier) {
@@ -70,14 +70,14 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   }
 
   hasHelperInScope(helperName: string, referrer: Specifier) {
-    if (BUILTINS.indexOf(helperName) > -1) { return true; }
+    if (this.builtins.indexOf(helperName) > -1) { return true; }
 
     let referrerSpec = this.project.specifierForPath(referrer.module) || undefined;
     return !!this.project.resolver.identify(`helper:${helperName}`, referrerSpec);
   }
 
   resolveHelperSpecifier(helperName: string, referrer: Specifier) {
-    if (BUILTINS.indexOf(helperName) > -1) {
+    if (this.builtins.indexOf(helperName) > -1) {
       return specifierFor('__BUILTIN__', helperName);
     }
 
