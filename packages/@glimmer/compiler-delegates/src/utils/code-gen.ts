@@ -1,6 +1,7 @@
 import { Specifier } from "@glimmer/bundle-compiler";
 import { dict, Dict } from "@glimmer/util";
 import { Option } from "@glimmer/interfaces";
+import { BuiltinsMap } from '../bundle';
 
 export interface OutputFiles {
   dataSegment: Option<string>;
@@ -58,16 +59,17 @@ export function getModuleSpecifier(modulePath: string) {
   return JSON.stringify(`./${modulePath}`);
 }
 
-export function getImportStatements(modules: Specifier[], builtins: Dict<string>) {
+export function getImportStatements(modules: Specifier[], builtins: BuiltinsMap) {
   let identifiers = new Array<string>(modules.length).fill('');
   let seen = dict<boolean>();
 
   let imports = modules.map((specifier, i) => {
     let { module, name } = specifier;
 
-    if (name in builtins) {
-      identifiers[i] = name;
-      return `import { ${name} } from "${module}";`;
+    if (builtins.byModulePath.has(module)) {
+      let id = `${name}_${i}`;
+      identifiers[i] = id;
+      return `import { ${name} as ${id} } from "${module}";`;
     }
 
     let id = getIdentifier(module, seen);

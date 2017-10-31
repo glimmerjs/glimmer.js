@@ -17,3 +17,13 @@ export interface BundleCompilerDelegate extends CompilerDelegate {
 export interface Builtins {
   [key: string]: Specifier;
 }
+
+export type ModulePath = string;
+export type Name = string;
+export type Identifier = string;
+
+export interface BuiltinsMap {
+  byName: Map<Name, ModulePath>;
+  byIdentifier: Map<Identifier, Specifier>;
+  byModulePath: Map<ModulePath, Name>;
+}

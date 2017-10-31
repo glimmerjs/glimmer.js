@@ -208,7 +208,49 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     let output = yield buildOutput(compiler);
     let files = output.read();
     let dataSegment = files['my-app'].src['data.js'];
-    assert.ok(dataSegment.indexOf('import { ifHelper } from "@glimmer/application";') > -1);
+    assert.ok(dataSegment.indexOf('import { ifHelper as ') > -1);
+  }));
+
+  test('can lookup custom builtins', co.wrap(function *(assert) {
+    input.write({
+      'my-app': {
+        'package.json': JSON.stringify({name: 'my-app'}),
+        src: {
+          ui: {
+            components: {
+              A: {
+                'template.hbs': '<div>Hello {{css-blocks/state true "wat"}} {{if true "true"}} {{css-blocks/state true "huh"}}</div>'
+              },
+              B: {
+                'template.hbs': '<A /><p class={{css-blocks/style-if true "wat"}}>Red</p>'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    let compiler = new GlimmerBundleCompiler(input.path(), {
+      projectPath: `${input.path()}/my-app`,
+      delegate: TestModuleUnificationDelegate,
+      builtins: {
+        'css-blocks/style-if': { module: '@css-block/helpers/style-if', name: 'default' },
+        'css-blocks/state': { module: '@css-block/helpers/state', name: 'default' },
+        'css-blocks/concat': { module: '@css-block/helpers/concat', name: 'default' }
+      },
+      outputFiles: {
+        dataSegment: 'my-app/src/data.js',
+        heapFile: 'my-app/src/templates.gbx'
+      }
+    });
+
+    let output = yield buildOutput(compiler);
+    let files = output.read();
+    let dataSegment = files['my-app'].src['data.js'];
+    assert.ok(dataSegment.split('@css-block/helpers/state').length === 2);
+    assert.ok(dataSegment.indexOf('@css-block/helpers/state') > -1);
+    assert.ok(dataSegment.indexOf('@css-block/helpers/style-if') > -1);
+    assert.ok(dataSegment.indexOf('@css-block/helpers/style-concat') === -1);
   }));
 
 });

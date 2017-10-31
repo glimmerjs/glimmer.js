@@ -1,8 +1,8 @@
-import { BundleCompilerDelegate, AddedTemplate, Builtins } from '../bundle';
+import { BundleCompilerDelegate, AddedTemplate, Builtins, BuiltinsMap, Name, ModulePath, Identifier } from '../bundle';
 import { getImportStatements, OutputFiles } from '../utils/code-gen';
 import { BundleCompiler, Specifier, specifierFor, SpecifierMap } from '@glimmer/bundle-compiler';
 import { SymbolTable, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
-import { expect, Dict, dict } from '@glimmer/util';
+import { expect, Dict } from '@glimmer/util';
 import { relative, extname, dirname } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
@@ -17,25 +17,34 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   public bundleCompiler: BundleCompiler;
   protected project: Project;
   protected specifiersToSymbolTable: Map<Specifier, SymbolTable> = new Map();
-  private builtins: Builtins;
-  private builtinsByName: Dict<string>;
+  private builtinsMap: BuiltinsMap;
 
   constructor(protected projectPath: string, public outputFiles: OutputFiles, envBuiltIns: Builtins = {}) {
     debug('initialized MU compiler delegate; project=%s', projectPath);
     this.project = new Project(projectPath);
-    this.builtins = {
+    let builtins = {
       main: specifierFor('main', 'mainTemplate'),
       if: specifierFor('@glimmer/application', 'ifHelper'),
       action: specifierFor('@glimmer/application', 'actionHelper'),
       ...envBuiltIns
     };
 
-    this.builtinsByName = dict<string>();
+    let byName = new Map<Name, ModulePath>();
+    let byModulePath = new Map<ModulePath, Name>();
+    let byIdentifier = new Map<Identifier, Specifier>();
 
-    Object.keys(this.builtins).forEach(builtin => {
-      let specifier = this.builtins[builtin];
-      this.builtinsByName[specifier.name] = specifier.module;
+    Object.keys(builtins).forEach(builtin => {
+      let specifier = builtins[builtin];
+      byName.set(specifier.name, specifier.module);
+      byModulePath.set(specifier.module, specifier.name);
+      byIdentifier.set(builtin, specifier);
     });
+
+    this.builtinsMap = {
+      byModulePath,
+      byName,
+      byIdentifier
+    };
   }
 
   hasComponentInScope(name: string, referrer: Specifier) {
@@ -83,15 +92,15 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   }
 
   hasHelperInScope(helperName: string, referrer: Specifier) {
-    if (helperName in this.builtins) { return true; }
+    if (this.builtinsMap.byIdentifier.has(helperName)) { return true; }
 
     let referrerSpec = this.project.specifierForPath(referrer.module) || undefined;
     return !!this.project.resolver.identify(`helper:${helperName}`, referrerSpec);
   }
 
   resolveHelperSpecifier(helperName: string, referrer: Specifier) {
-    if (helperName in this.builtins) {
-      return this.builtins[helperName];
+    if (this.builtinsMap.byIdentifier.has(helperName)) {
+      return this.builtinsMap.byIdentifier.get(helperName);
     }
 
     let referrerSpec = this.project.specifierForPath(referrer.module) || undefined;
@@ -129,7 +138,7 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     let symbolTables: Dict<ProgramSymbolTable> = {};
 
     for (let [specifier, template ] of compiledBlocks) {
-      if (!(specifier.name in this.builtinsByName)) {
+      if (!(this.builtinsMap.byName.has(specifier.name))) {
         let muSpecifier = this.muSpecifierForSpecifier(specifier);
 
         symbolTables[muSpecifier] = {
@@ -148,7 +157,7 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
     let specifierMap: Dict<number> = {};
 
     for (let [specifier, handle] of entries) {
-      if (!(specifier.name in this.builtinsByName)) {
+      if (!(this.builtinsMap.byName.has(specifier.name))) {
         let muSpecifier = this.muSpecifierForSpecifier(specifier);
         specifierMap[muSpecifier] = handle;
       }
@@ -189,12 +198,12 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
       .map(normalizeModulePaths)
       .filter(m => m) as Specifier[];
 
-    let source = generateExternalModuleTable(modules, this.builtinsByName);
+    let source = generateExternalModuleTable(modules, this.builtinsMap);
 
     return source;
 
     function normalizeModulePaths(moduleSpecifier: Specifier) {
-      if (moduleSpecifier.name in self.builtinsByName) {
+      if (self.builtinsMap.byName.has(moduleSpecifier.name)) {
         return moduleSpecifier;
       } else {
         let specifier = self.muSpecifierForSpecifier(moduleSpecifier);
@@ -258,7 +267,7 @@ function toSparseArray<T>(map: Map<number, T>): T[] {
   return array;
 }
 
-function generateExternalModuleTable(modules: Specifier[], builtins: Dict<string>) {
+function generateExternalModuleTable(modules: Specifier[], builtins: BuiltinsMap) {
   let { imports, identifiers } = getImportStatements(modules, builtins);
 
   return `
