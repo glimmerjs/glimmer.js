@@ -18,7 +18,7 @@ declare function requestIdleCallback(
 ): void;
 
 export interface AsyncRendererOptions {
-  timeout: number;
+  timeout?: number;
 }
 
 const DEFAULT_TIMEOUT = 250;
@@ -27,7 +27,7 @@ export default class AsyncRenderer implements Renderer {
   public timeout: number;
   protected result: RenderResult;
 
-  constructor(options: AsyncRendererOptions) {
+  constructor(options: AsyncRendererOptions = {}) {
     this.timeout = options.timeout || DEFAULT_TIMEOUT;
   }
 

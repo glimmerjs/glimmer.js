@@ -15,8 +15,9 @@ import {
 import Iterable from './iterable';
 import { Program } from '@glimmer/program';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
+import { ModuleLocator } from '@glimmer/bundle-compiler';
 
-import RuntimeResolver, { Specifier } from './loaders/runtime-compiler/loader';
+import RuntimeResolver from './loaders/runtime-compiler/loader';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -28,8 +29,8 @@ export interface EnvironmentOptions {
 export default class Environment extends GlimmerEnvironment {
   private uselessAnchor: HTMLAnchorElement;
   public resolver: RuntimeResolver;
-  protected program: Program<Specifier>;
-  public compileOptions: TemplateOptions<Specifier>;
+  protected program: Program<ModuleLocator>;
+  public compileOptions: TemplateOptions<ModuleLocator>;
 
   static create(options: EnvironmentOptions = {}) {
     options.document = options.document || self.document;

@@ -36,7 +36,7 @@ export default class RuntimeCompilerLoader implements Loader {
     let compileOptions = {
       program,
       macros,
-      lookup,
+      resolver: lookup,
       Builder: LazyOpcodeBuilder as OpcodeBuilderConstructor
     };
 

@@ -1,5 +1,5 @@
 import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/program';
-import { Opaque } from '@glimmer/util';
+import { Opaque, Dict } from '@glimmer/util';
 import { LowLevelVM, TemplateIterator, ElementBuilder, DynamicScope } from '@glimmer/runtime';
 
 import Application, { Loader } from '../../application';
@@ -7,7 +7,7 @@ import Environment from '../../environment';
 
 import BytecodeResolver from './resolver';
 import { PathReference } from '@glimmer/reference';
-import { SymbolTable } from '@glimmer/interfaces';
+import { SymbolTable, VMHandle, Recast } from '@glimmer/interfaces';
 
 export interface SerializedHeap {
   table: number[];
@@ -15,12 +15,12 @@ export interface SerializedHeap {
 }
 
 export interface BytecodeData {
+  main: number;
   heap: SerializedHeap;
   pool: ConstantPool;
   table: Opaque[];
-  map: Map<string, number>;
-  symbols: Map<string, SymbolTable>;
-  entryHandle: number;
+  map: Dict<number>;
+  symbols: Dict<SymbolTable>;
 }
 
 export interface BytecodeLoaderOptions {
@@ -46,13 +46,13 @@ export default class BytecodeLoader implements Loader {
       buffer: bytecode
     });
 
-    let { pool, table, entryHandle, map, symbols } = data;
+    let { pool, table, main, map, symbols } = data;
 
     let resolver = new BytecodeResolver(app, table, map, symbols);
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
-    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, entryHandle as any);
+    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, main as Recast<number, VMHandle>);
     return new TemplateIterator(vm);
   }
 }
