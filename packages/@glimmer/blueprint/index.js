@@ -56,7 +56,7 @@ module.exports = {
 
   _installWebComponentSupport(options) {
     let customElementName = options.webComponent;
-    let glimmerComponentName = options.entity.name;
+    let glimmerComponentName = classify(options.entity.name);
 
     let addPackagePromise = this.addPackageToProject('@glimmer/web-component');
     let indexTSPromise = this.insertIntoFile(
