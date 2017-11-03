@@ -172,7 +172,7 @@ test('can render a custom helper that takes args', async function(assert) {
   }
 
   let app = await buildApp()
-    .helper('greeting', (params) => `Hello ${params[0]} ${params[1]}!`)
+    .helper('greeting', (params: any[]) => `Hello ${params[0]} ${params[1]}!`)
     .template('Main', '<div>{{greeting firstName lastName}}</div>')
     .component('Main', MainComponent)
     .boot();
@@ -190,7 +190,7 @@ test('can render a custom helper that takes args', async function(assert) {
 test('renders a component using simple-dom', async function(assert) {
   assert.expect(1);
 
-  let customDocument: Simple.Document = new SimpleDOM.Document();
+  let customDocument: Simple.Document = (<any>new SimpleDOM.Document());
 
   let app = await buildApp({ document: customDocument })
     .template('Main', `<h1>Hello Glimmer!</h1>`)
