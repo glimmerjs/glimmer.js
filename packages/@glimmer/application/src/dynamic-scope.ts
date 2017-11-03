@@ -10,9 +10,9 @@ import {
 } from '@glimmer/reference';
 
 export default class DynamicScope implements GlimmerDynamicScope {
-  private bucket;
+  private bucket: any;
 
-  constructor(bucket=null) {
+  constructor(bucket: any = null) {
     if (bucket) {
       this.bucket = assign({}, bucket);
     } else {
