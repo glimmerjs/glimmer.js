@@ -1,4 +1,5 @@
 import { Iterable } from '@glimmer/application';
+import { Opaque } from '@glimmer/util';
 
 const { module, test } = QUnit;
 
@@ -11,7 +12,7 @@ test('basic iteration of an array of primitives', function(assert) {
       return ['foo', 'bar'];
     }
   };
-  let keyFor = (_, i) => i;
+  let keyFor = (_: Opaque, i: number) => String(i);
   let iterable = new Iterable(ref, keyFor);
   let iterator = iterable.iterate();
 
