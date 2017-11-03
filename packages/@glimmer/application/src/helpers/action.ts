@@ -11,7 +11,7 @@ export default function buildAction(vm: VM, _args: Arguments) {
     throwNoActionError(actionFunc, args.positional.at(0));
   }
 
-  return new UpdatableReference(function action(...invokedArgs) {
+  return new UpdatableReference(function action(...invokedArgs: any[]) {
     let curriedArgs = args.positional.value();
     // Consume the action function that was already captured above.
     curriedArgs.shift();
