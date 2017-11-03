@@ -109,8 +109,8 @@ export default class Iterable implements AbstractIterable<Opaque, Opaque, Iterat
     } else if (iterable === undefined || iterable === null) {
       return EMPTY_ITERATOR;
     } else if (iterable.forEach !== undefined) {
-      let array = [];
-      iterable.forEach(function(item) {
+      let array: Array<Opaque> = [];
+      iterable.forEach(function(item: Opaque) {
         array.push(item);
       });
       return array.length > 0 ? new ArrayIterator(array, keyFor) : EMPTY_ITERATOR;
