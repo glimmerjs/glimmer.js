@@ -18,6 +18,7 @@
     "@glimmer/program": "^0.29.10",
     "@glimmer/syntax": "^0.29.10",
     "@glimmer/util": "^0.29.10",
+    "@types/debug": "^0.0.30",
     "@types/node": "^8.0.46",
     "debug": "^3.1.0",
     "glimmer-analyzer": "^0.3.2",

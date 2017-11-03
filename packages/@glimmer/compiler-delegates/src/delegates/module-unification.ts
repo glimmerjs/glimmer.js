@@ -7,7 +7,7 @@ import { relative, extname, dirname } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
 import { ConstantPool } from '@glimmer/program';
-import Debug from 'debug';
+import * as Debug from 'debug';
 import { Project } from 'glimmer-analyzer';
 import { CAPABILITIES } from '@glimmer/component';
 
@@ -22,7 +22,9 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   constructor(protected projectPath: string, public outputFiles: OutputFiles, envBuiltIns: Builtins = {}) {
     debug('initialized MU compiler delegate; project=%s', projectPath);
     this.project = new Project(projectPath);
-    let builtins = {
+    let builtins: {
+      [key: string]: any
+    } = {
       main: specifierFor('main', 'mainTemplate'),
       if: specifierFor('@glimmer/application', 'ifHelper'),
       action: specifierFor('@glimmer/application', 'actionHelper'),
@@ -282,6 +284,6 @@ function strip(strings: TemplateStringsArray, ...args: string[]) {
       return `${str.split('\n').map(s => s.trim()).join('')}${args[i] ? args[i] : ''}`;
     }).join('');
   } else {
-    return strings[0].split('\n').map((s: string) => s.trim()).join(' ');
+    return (<any>strings)[0].split('\n').map((s: string) => s.trim()).join(' ');
   }
 }
