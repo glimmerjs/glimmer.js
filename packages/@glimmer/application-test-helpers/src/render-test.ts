@@ -36,13 +36,14 @@ export class RenderTest {
 }
 
 function setTestingDescriptor(descriptor: PropertyDescriptor): void {
-  let testFunction = descriptor.value as Function;
+  let testFunction = descriptor.value as {[key: string]: any};
   descriptor.enumerable = true;
   testFunction['isTest'] = true;
 }
 
 export interface TestMeta {
   debug?: boolean;
+  [key: string]: any;
 }
 
 export function test(meta: TestMeta): MethodDecorator;
@@ -55,7 +56,7 @@ export function test(...args: any[]) {
   if (args.length === 1) {
     let meta: TestMeta = args[0];
     return (_target: Object, _name: string, descriptor: PropertyDescriptor) => {
-      let testFunction = descriptor.value as Function;
+      let testFunction = descriptor.value as {[key: string]: any};
       Object.keys(meta).forEach(key => (testFunction[key] = meta[key]));
       setTestingDescriptor(descriptor);
     };
