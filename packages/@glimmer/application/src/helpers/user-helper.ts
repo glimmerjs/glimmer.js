@@ -19,7 +19,7 @@ import {
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => any;
 
-export default function buildUserHelper(helperFunc): GlimmerHelper {
+export default function buildUserHelper(helperFunc: any): GlimmerHelper {
   return (_vm: VM, args: Arguments) => new HelperReference(helperFunc, args);
 }
 
@@ -34,7 +34,7 @@ export class SimplePathReference<T> implements PathReference<T> {
   }
 
   value(): T {
-    return this.parent.value()[this.property];
+    return (<any>this.parent.value())[this.property];
   }
 
   get(prop: string): PathReference<Opaque> {
