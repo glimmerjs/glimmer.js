@@ -15,8 +15,14 @@ module.exports = {
     let name = dasherize(options.entity.name);
     let component = classify(name);
     let className = classify(options.entity.name);
+    let blueprintVersion = require('./package').version;
 
-    return { name, className, component };
+    return {
+      name,
+      className,
+      component,
+      blueprintVersion
+    };
   },
 
   fileMapTokens(options) {
