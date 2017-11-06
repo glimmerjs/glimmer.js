@@ -4,7 +4,8 @@
   "description": "Ember CLI blueprint for initializing a new Glimmer application.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "sh ./dev/add-to-output-repos.sh"
   },
   "repository": {
     "type": "git",
