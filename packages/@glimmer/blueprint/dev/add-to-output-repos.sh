@@ -17,7 +17,7 @@ local_folder=my-app
 git clone git@github.com:glimmerjs/$repo_folder.git --branch $branch
 pushd $repo_folder
 git rm -rf .
-ember $command $local_folder -skip-bower --skip-npm --skip-git
+ember $command $local_folder --blueprint ../../ -skip-bower --skip-npm --skip-git
 cp -r $local_folder/ .
 rm -r $local_folder
 
