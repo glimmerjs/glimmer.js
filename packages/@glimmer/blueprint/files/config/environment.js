@@ -3,7 +3,7 @@
 module.exports = function(environment) {
   let ENV = {
     modulePrefix: '<%= name %>',
-    environment: environment
+    environment
   };
 
   return ENV;
