@@ -23,9 +23,6 @@
   "dependencies": {
     "ember-cli-string-utils": "^1.1.0"
   },
-  "devDependencies": {
-    "ember-cli-valid-component-name": "^1.0.0"
-  },
   "ember-addon": {
     "main": "ember-addon-main.js"
   }
