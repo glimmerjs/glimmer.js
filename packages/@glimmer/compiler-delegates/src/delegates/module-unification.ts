@@ -2,7 +2,7 @@ import { BundleCompilerDelegate, AddedTemplate, Builtins, BuiltinsMap, Name, Mod
 import { getImportStatements, OutputFiles } from '../utils/code-gen';
 import { BundleCompiler, Specifier, specifierFor, SpecifierMap } from '@glimmer/bundle-compiler';
 import { SymbolTable, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
-import { expect, Dict } from '@glimmer/util';
+import { expect, Dict, assert } from '@glimmer/util';
 import { relative, extname, dirname } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
@@ -176,6 +176,7 @@ export default class ModuleUnificationCompilerDelegate implements BundleCompiler
   }
 
   generateHeapTable(table: number[]) {
+    assert((table.length / 2) % 1 === 0, 'Heap table should be balanced and divisible by 2');
     return strip`
       const heapTable = ${inlineJSON(table)};
     `;

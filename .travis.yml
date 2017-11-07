@@ -14,4 +14,4 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 
 node_js:
-  - "6"
+  - "8"
