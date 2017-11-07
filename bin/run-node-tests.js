@@ -27,5 +27,5 @@ function exec(command, args) {
       stdio: 'inherit',
       preferLocal: true
     });
-  } catch (e) { }
+  } catch (e) { console.log(e) }
 }

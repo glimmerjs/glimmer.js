@@ -22,5 +22,8 @@
     "debug": "^3.1.0",
     "glimmer-analyzer": "^0.3.2",
     "resolve": "^1.4.0"
+  },
+  "devDependencies": {
+    "find-up": "^2.1.0"
   }
 }
