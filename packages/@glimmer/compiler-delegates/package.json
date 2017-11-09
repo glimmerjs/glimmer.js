@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/compiler-delegates",
-  "version": "0.9.0-alpha.4",
+  "version": "0.9.0-alpha.5",
   "description": "Compiler delegates for @glimmer/bundle compiler",
   "repository": "https://github.com/glimmerjs/glimmer.js",
   "license": "MIT",
@@ -11,9 +11,9 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/application": "^0.9.0-alpha.4",
+    "@glimmer/application": "^0.9.0-alpha.5",
     "@glimmer/bundle-compiler": "^0.30.1",
-    "@glimmer/component": "^0.9.0-alpha.4",
+    "@glimmer/component": "^0.9.0-alpha.5",
     "@glimmer/interfaces": "^0.30.1",
     "@glimmer/opcode-compiler": "^0.30.1",
     "@glimmer/program": "^0.30.1",
