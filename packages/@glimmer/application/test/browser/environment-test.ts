@@ -210,7 +210,6 @@ if (DEBUG) {
         .template('Main', '<h1>Hello, {{name}}!</h1>')
         .boot();
     } catch (err) {
-      console.log(err.message);
       assert.ok(err.message.match("You tried to reference {{name}} from the Main template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@name}}?"));
     }
   });
