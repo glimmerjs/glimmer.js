@@ -17,7 +17,7 @@ test('instance initializers run at initialization', function(assert) {
   let app = new Application({
     rootName: 'app',
     loader: new RuntimeCompilerLoader(resolver),
-    builder: new DOMBuilder({ element: (<any>new Document()), nextSibling: null }),
+    builder: new DOMBuilder({ element: new Document() as any, nextSibling: null }),
     renderer: new SyncRenderer(),
     resolver
   });

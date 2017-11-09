@@ -284,6 +284,6 @@ function strip(strings: TemplateStringsArray, ...args: string[]) {
       return `${str.split('\n').map(s => s.trim()).join('')}${args[i] ? args[i] : ''}`;
     }).join('');
   } else {
-    return (<any>strings)[0].split('\n').map((s: string) => s.trim()).join(' ');
+    return (strings as any)[0].split('\n').map((s: string) => s.trim()).join(' ');
   }
 }

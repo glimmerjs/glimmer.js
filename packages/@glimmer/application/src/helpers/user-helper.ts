@@ -34,7 +34,7 @@ export class SimplePathReference<T> implements PathReference<T> {
   }
 
   value(): T {
-    return (<any>this.parent.value())[this.property];
+    return (this.parent.value() as any)[this.property];
   }
 
   get(prop: string): PathReference<Opaque> {

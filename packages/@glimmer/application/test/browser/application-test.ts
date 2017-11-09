@@ -35,7 +35,7 @@ test('accepts options for rootName, resolver and document', function(assert) {
   app = new Application({
     rootName: 'app',
     resolver,
-    document: (<any>customDocument),
+    document: customDocument as any,
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body, nextSibling: null })

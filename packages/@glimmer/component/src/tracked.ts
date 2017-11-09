@@ -76,12 +76,12 @@ function installTrackedProperty(target: any, key: Key) {
     configurable: true,
 
     get() {
-      return (<any>this)[shadowKey];
+      return (this as any)[shadowKey];
     },
 
     set(newValue) {
       metaFor(this).dirtyableTagFor(key).inner.dirty();
-      (<any>this)[shadowKey] = newValue;
+      (this as any)[shadowKey] = newValue;
       propertyDidChange();
     }
   });
