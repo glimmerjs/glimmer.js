@@ -9,7 +9,7 @@ import { precompile } from './compiler';
 import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
-import { BundleCompiler, CompilerDelegate as ICompilerDelegate, Specifier, specifierFor } from '@glimmer/bundle-compiler';
+import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
@@ -32,9 +32,26 @@ export class TestApplication extends Application {
   rootElement: Element;
 }
 
+export interface AppBuilderTemplateMeta {
+  locator: ModuleLocator;
+}
+
+function locatorFor(module: string, name: string): TemplateLocator<AppBuilderTemplateMeta> {
+  let locator = { module, name };
+  return {
+    kind: 'template',
+    module,
+    name,
+    meta: {
+      locator
+    }
+  };
+}
+
 export class AppBuilder<T extends TestApplication> {
   rootName: string;
   modules: Dict<Opaque> = {};
+  templates: Dict<string> = {};
   options: AppBuilderOptions<T>;
 
   constructor(name: string, options: AppBuilderOptions<T>) {
@@ -50,6 +67,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let specifier = `template:/${this.rootName}/components/${name}`;
     this.modules[specifier] = precompile(template, { meta: { specifier }});
+    this.templates[specifier] = template;
     return this;
   }
 
@@ -84,45 +102,41 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
 
-    let mainSpecifier = specifierFor(mainTemplate.meta.specifier, 'default');
-    compiler.addCustom(mainSpecifier, JSON.parse(mainTemplate.block));
+    let mainLocator = locatorFor(mainTemplate.meta.specifier, 'default');
+    mainLocator.meta.locator = mainLocator;
 
-    for (let mod in this.modules) {
-      let [key] = mod.split(':');
+    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
+    compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
-      if (key === 'template') {
-        compiler.addCustom(specifierFor(mod, 'default'), JSON.parse((this.modules[mod] as any).block));
-      }
+    for (let module in this.templates) {
+      compiler.add(locatorFor(module, 'default'), this.templates[module]);
     }
 
-    let { heap, pool } = compiler.compile();
+    let { main, heap, pool, table } = compiler.compile();
 
-    let specifierMap = compiler.getSpecifierMap();
-    let entryHandle = specifierMap.vmHandleBySpecifier.get(mainSpecifier);
+    let resolverTable: Opaque[] = [];
+    let resolverMap: Dict<number> = {};
+    let resolverSymbols: Dict<ProgramSymbolTable> = {};
 
-    let table = [];
-    let map = new Map();
-    let symbols = new Map();
+    table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
+      resolverMap[locator.module] = vmHandle;
+    });
 
-    for (let [spec, handle] of specifierMap.vmHandleBySpecifier.entries()) {
-      map.set(spec.module, handle);
-    }
+    compiler.compilableTemplates.forEach((template, locator) => {
+      resolverSymbols[locator.module] = template.symbolTable;
+    });
 
-    for (let [handle, mod] of specifierMap.byHandle.entries()) {
-      table[handle] = mod;
-    }
-
-    for (let [spec, block] of compiler.compiledBlocks.entries()) {
-      symbols.set(spec.module, { symbols: (block as SerializedTemplateBlock).symbols, hasEval: (block as SerializedTemplateBlock).hasEval });
-    }
+    table.byHandle.forEach((locator, handle) => {
+      resolverTable[handle] = locator;
+    });
 
     let bytecode = heap.buffer;
     let data = {
+      main,
       pool,
-      table,
-      map,
-      symbols,
-      entryHandle,
+      table: resolverTable,
+      map: resolverMap,
+      symbols: resolverSymbols,
       heap: {
         table: heap.table,
         handle: heap.handle
@@ -172,49 +186,49 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
-class CompilerDelegate implements ICompilerDelegate {
+class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   constructor(protected resolver: Resolver) {
   }
 
-  hasComponentInScope(name: string, referrer: Specifier): boolean {
-    return !!this.resolver.identify(`template:${name}`, referrer.module);
+  hasComponentInScope(name: string, referrer: AppBuilderTemplateMeta): boolean {
+    return !!this.resolver.identify(`template:${name}`, referrer.locator.module);
   }
 
-  resolveComponentSpecifier(name: string, referrer: Specifier): Specifier {
-    let resolved = this.resolver.identify(`template:${name}`, referrer.module);
-    return specifierFor(resolved, 'default');
+  resolveComponent(name: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
+    let resolved = this.resolver.identify(`template:${name}`, referrer.locator.module);
+    return { module: resolved, name: 'default' };
   }
 
   getComponentCapabilities() {
     return CAPABILITIES;
   }
 
-  hasHelperInScope(helperName: string, referrer: Specifier): boolean {
-    return !!this.resolver.identify(`helper:${helperName}`, referrer.module);
+  hasHelperInScope(helperName: string, referrer: AppBuilderTemplateMeta): boolean {
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
   }
 
-  resolveHelperSpecifier(helperName: string, referrer: Specifier): Specifier {
-    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.module);
-    return specifierFor(resolved, 'default');
+  resolveHelper(helperName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
+    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
+    return { module: resolved, name: 'default' };
   }
 
-  hasPartialInScope(partialName: string, referrer: Specifier): boolean {
+  hasPartialInScope(partialName: string, referrer: AppBuilderTemplateMeta): boolean {
     throw new Error("Method not implemented.");
   }
 
-  resolvePartialSpecifier(partialName: string, referrer: Specifier): Specifier {
+  resolvePartial(partialName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
     throw new Error("Method not implemented.");
   }
 
-  getComponentLayout(specifier: Specifier, block: SerializedTemplateBlock, options: CompileOptions<Specifier>): ICompilableTemplate<ProgramSymbolTable> {
+  getComponentLayout(_meta: AppBuilderTemplateMeta, block: SerializedTemplateBlock, options: CompileOptions<AppBuilderTemplateMeta>): ICompilableTemplate<ProgramSymbolTable> {
     return CompilableTemplate.topLevel(block, options);
   }
 
-  hasModifierInScope(modifierName: string, referrer: Specifier): boolean {
+  hasModifierInScope(modifierName: string, referrer: AppBuilderTemplateMeta): boolean {
     throw new Error("Method not implemented.");
   }
 
-  resolveModifierSpecifier(modifierName: string, referrer: Specifier): Specifier {
+  resolveModifier(modifierName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
     throw new Error("Method not implemented.");
   }
 }

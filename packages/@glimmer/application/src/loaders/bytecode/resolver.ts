@@ -1,9 +1,10 @@
 import { RuntimeResolver, ComponentDefinition, SymbolTable } from '@glimmer/interfaces';
-import { Specifier } from '@glimmer/bundle-compiler';
-import { unreachable, Opaque, expect } from '@glimmer/util';
-import { ComponentManager, Helper } from '@glimmer/runtime';
+import { unreachable, Opaque, Dict } from '@glimmer/util';
+import { ComponentManager, Helper, VM, Arguments } from '@glimmer/runtime';
 import { Owner, Factory } from '@glimmer/di';
 import { CAPABILITIES } from '@glimmer/component';
+import Application from '../../application';
+import { HelperReference, UserHelper } from '../../helpers/user-helper';
 
 function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: ComponentManager<Opaque, Opaque>, handle?: number, symbolTable?: SymbolTable) {
   return {
@@ -17,52 +18,103 @@ function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: Comp
   };
 }
 
+export const enum ModuleTypes {
+  HELPER_FACTORY,
+  HELPER
+};
+
+export interface TemplateLocator {
+  module: string;
+  name: string;
+  meta: {
+    specifier: string;
+  };
+}
 /**
  * Exchanges VM handles for concrete implementations.
  */
-export default class BytecodeResolver implements RuntimeResolver<Specifier> {
-  constructor(protected owner: Owner, protected table: Opaque[], protected map: Map<string, number>, protected symbols: Map<string, SymbolTable>) {
+export default class BytecodeResolver implements RuntimeResolver<TemplateLocator> {
+  constructor(protected owner: Owner, protected table: Opaque[], protected map: Dict<number>, protected symbols: Dict<SymbolTable>) {
   }
 
-  lookupComponent(name: string, referrer: Specifier): ComponentDefinition {
+  protected managers: Dict<ComponentManager<Opaque, Opaque>> = {};
+
+  /**
+   * Supports dynamic runtime lookup of components via the `{{component}}`
+   * helper. The VM invokes this hook and passes the name of the invoked
+   * component along with referrer information about the containing template.
+   * The resolver is responsible for returning a component definition containing
+   * the VM handle and symbol table for the resolved component.
+   */
+  lookupComponent(name: string, referrer: TemplateLocator): ComponentDefinition {
     let owner = this.owner;
+    let manager = this.managerFor();
 
-    let manager = expect(owner.lookup('component-manager:main'), 'expected to find component manager');
-    let resolved = owner.identify(`template:${name}`, referrer.module);
-    let layout = this.map.get(resolved);
-    let symbolTable = this.symbols.get(resolved);
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.meta.specifier);
+    let vmHandle = this.map[templateSpecifier];
+    let symbolTable = this.symbols[templateSpecifier];
 
-    let resolvedClass = owner.identify('component:', resolved);
-    let ComponentClass;
+    let componentSpecifier = owner.identify('component:', templateSpecifier);
+    let ComponentClass = componentSpecifier ? owner.factoryFor(componentSpecifier) : null;
 
-    if (resolvedClass) {
-      ComponentClass = owner.lookup(resolvedClass);
-    }
-
-    return buildComponentDefinition(ComponentClass, manager, layout, symbolTable);
+    return buildComponentDefinition(ComponentClass, manager, vmHandle, symbolTable);
   }
 
-  lookupPartial(name: string, referrer: Specifier): number {
+  lookupPartial(name: string, referrer: TemplateLocator): number {
     throw unreachable();
   }
 
-  resolve<U>(handle: number): U {
-    let spec = this.table[handle] as Specifier;
-    if (spec.module.substring(0, 6) === 'helper') {
-      return this.resolveHelper(spec) as any as U;
-    } else {
-      return this.resolveComponentDefinition(spec) as any as U;
+  managerFor(managerId = 'main'): ComponentManager<Opaque, Opaque> {
+    let manager = this.managers[managerId];
+
+    if (manager) {
+      return manager;
     }
+
+    let { rootName } = this.owner as Application;
+    manager = this.owner.lookup(`component-manager:/${rootName}/component-managers/${managerId}`);
+
+    if (!manager) {
+      throw new Error(`No component manager found for ID ${managerId}.`);
+    }
+    this.managers[managerId] = manager;
+
+    return manager;
   }
 
-  resolveComponentDefinition(spec: Specifier): ComponentDefinition {
-    let manager = this.owner.lookup(`component-manager:main`);
-    let ComponentClass = this.owner.factoryFor(`component:`, spec.module);
+  /**
+   * Resolves a numeric handle into a concrete object from the external module
+   * table. The VM calls this while executing binary bytecode to exchange
+   * handles for live objects like component classes or helper functions.
+   *
+   * Because helpers are opaque, anything other than component classes in the
+   * external module table is encoded as a tuple with the type information as
+   * the first member.
+   */
+  resolve<U>(handle: number): U {
+    let value = this.table[handle];
 
+    if (Array.isArray(value)) {
+      let [type, helper] = value;
+      switch (type) {
+        case ModuleTypes.HELPER_FACTORY:
+          return helper as any as U;
+        case ModuleTypes.HELPER:
+         return this.resolveHelperFactory(helper) as any as U;
+        default:
+          throw new Error(`Unsupported external module table type: ${type}`);
+      }
+    }
+
+    return this.resolveComponentDefinition(value as Factory<Opaque>) as any as U;
+  }
+
+  resolveComponentDefinition(ComponentClass: Factory<Opaque>): ComponentDefinition {
+    let manager = this.managerFor();
     return buildComponentDefinition(ComponentClass, manager);
   }
 
-  resolveHelper(spec: Specifier): Helper {
-    return this.owner.lookup(spec.module);
+  resolveHelperFactory(helper: UserHelper): Helper {
+    return (_vm: VM, args: Arguments) => new HelperReference(helper, args);
   }
 }

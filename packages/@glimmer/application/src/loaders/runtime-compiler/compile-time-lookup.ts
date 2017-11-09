@@ -44,7 +44,7 @@ export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> 
     return this.resolver.lookupModifier(name, referrer);
   }
 
-  lookupComponentSpec(name: string, referrer: Specifier): Option<number> {
+  lookupComponentDefinition(name: string, referrer: Specifier): Option<number> {
     return this.resolver.lookupComponentHandle(name, referrer);
   }
 
