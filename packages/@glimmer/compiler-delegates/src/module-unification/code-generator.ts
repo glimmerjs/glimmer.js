@@ -50,8 +50,8 @@ export default class MUCodeGenerator {
       ${constantPool}
       ${specifierMap}
       ${symbolTables}
-      const entryHandle = ${main.toString()};
-      export default { table, heap, pool, map, symbols, entryHandle, nextFreeHandle };`;
+      const main = ${main.toString()};
+      export default { table, heap, pool, map, symbols, main };`;
     debug("generated data segment; source=%s", source);
 
     return source;
@@ -88,9 +88,9 @@ export default class MUCodeGenerator {
 
   generateHeap(heap: SerializedHeap) {
     assert((heap.table.length / 2) % 1 === 0, 'Heap table should be balanced and divisible by 2');
+    let serializedHeap = { table: heap.table, handle: heap.handle };
     return strip`
-      const nextFreeHandle = ${heap.handle.toString()};
-      const heapTable = ${inlineJSON(heap.table)};
+      const heap = ${inlineJSON(serializedHeap)};
     `;
   }
 

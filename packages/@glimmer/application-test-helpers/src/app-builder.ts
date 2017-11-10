@@ -2,7 +2,7 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ProgramSymbolTable } from '@glimmer/interfaces';
+import { Opaque, Dict, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
@@ -137,6 +137,7 @@ export class AppBuilder<T extends TestApplication> {
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
+      mainSpecifier: mainLocator.module,
       heap: {
         table: heap.table,
         handle: heap.handle
@@ -186,7 +187,7 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
-class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
+export class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   constructor(protected resolver: Resolver) {
   }
 
@@ -199,7 +200,7 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
     return { module: resolved, name: 'default' };
   }
 
-  getComponentCapabilities() {
+  getComponentCapabilities(): ComponentCapabilities {
     return CAPABILITIES;
   }
 
