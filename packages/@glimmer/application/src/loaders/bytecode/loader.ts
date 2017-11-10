@@ -22,7 +22,7 @@ export interface BytecodeData {
   table: Opaque[];
   map: Dict<number>;
   symbols: Dict<ProgramSymbolTable>;
-  mainSpecifier: string;
+  mainSpec: { specifier: string };
 }
 
 export interface BytecodeLoaderOptions {
@@ -49,7 +49,8 @@ export default class BytecodeLoader implements Loader {
   }
 
   loadMain(vm: LowLevelVM<Opaque>, self: RootReference<Opaque>) {
-    let { map, mainSpecifier, symbols, main } = this.data;
+    let { map, mainSpec, symbols, main } = this.data;
+    let mainSpecifier = mainSpec.specifier;
     let symbolTable = symbols[mainSpecifier];
     vm.pc = main;
     vm.pushFrame();

@@ -43,6 +43,7 @@ export default class MUCodeGenerator {
     let heapTable = this.generateHeap(heap);
     let specifierMap = this.generateSpecifierMap(table);
     let symbolTables = this.generateSymbolTables(this.compilation.symbolTables);
+    let mainSpec = this.compilation.symbolTables.get({ module: '@glimmer/application', name: 'mainTemplate' });
 
     let source = strip`
       ${externalModuleTable}
@@ -51,7 +52,8 @@ export default class MUCodeGenerator {
       ${specifierMap}
       ${symbolTables}
       const main = ${main.toString()};
-      export default { table, heap, pool, map, symbols, main };`;
+      const mainSpec = ${JSON.stringify(mainSpec.referrer)}
+      export default { table, heap, pool, map, symbols, main, mainSpec };`;
     debug("generated data segment; source=%s", source);
 
     return source;
@@ -61,7 +63,13 @@ export default class MUCodeGenerator {
     let symbolTables: Dict<ProgramSymbolTable> = {};
 
     compilerSymbolTables.forEach((symbolTable, locator) => {
-      let specifier = this.project.specifierForPath(relativePath(locator.module));
+      let specifier;
+      if (locator.name === 'mainTemplate') {
+        specifier = 'mainTemplate';
+      } else {
+        specifier = this.project.specifierForPath(relativePath(locator.module));
+      }
+
       let { hasEval, symbols } = symbolTable;
 
       // We cast this as `any` before assignment, because symbol tables require

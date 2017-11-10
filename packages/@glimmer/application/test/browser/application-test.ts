@@ -72,7 +72,7 @@ test('can be instantiated with bytecode loader', function(assert) {
   let pool = new Program().constants.toPool();
   let bytecode = Promise.resolve(new ArrayBuffer(0));
   let data: BytecodeData = {
-    mainSpecifier: 'template:/app/components/main',
+    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: [],
       handle: 0
@@ -97,13 +97,16 @@ test('can be instantiated with bytecode loader', function(assert) {
 test('can be booted with bytecode loader', async function(assert) {
   let delegate = new TestDelegate();
   let compiler = new BundleCompiler(delegate);
-  compiler.add({ name: 'default', module: 'main'}, '{{#each @roots key="id" as |root|}}{{/each}}');
+  let locator = {
+    name: 'mainTemplate', module: '@glimmer/application'
+  };
+  compiler.add(locator, '{{#each @roots key="id" as |root|}}{{/each}}');
   let result = compiler.compile();
 
   let resolver = new BlankResolver();
-  let symbolTable = result.symbolTables.get({ name: 'default', module: 'main' });
+  let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {
-    mainSpecifier: 'template:/app/components/main',
+    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: result.heap.table,
       handle: result.heap.handle
@@ -112,10 +115,10 @@ test('can be booted with bytecode loader', async function(assert) {
     table: [],
     main: result.main,
     map: {
-      'template:/app/components/main': result.table.vmHandleByModuleLocator.get({ name: 'default', module: 'main'})
+      'mainTemplate': result.table.vmHandleByModuleLocator.get(locator)
     },
     symbols: {
-      'template:/app/components/main': symbolTable
+      'mainTemplate': symbolTable
     }
   };
 
