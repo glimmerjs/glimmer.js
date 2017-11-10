@@ -32,7 +32,11 @@ function isTestFunction(value: any): value is (this: RenderTest, assert: typeof 
 }
 
 export class RenderTest {
+  assert =  QUnit.assert;
   app: AppBuilder<TestApplication>;
+  assertHTML(html: string) {
+    this.assert.equal(html, document.getElementById('qunit-fixture').innerHTML);
+  }
 }
 
 function setTestingDescriptor(descriptor: PropertyDescriptor): void {

@@ -7,17 +7,13 @@ import { test, RenderTest, renderModule } from '@glimmer/application-test-helper
 class RenderComponentTest extends RenderTest {
   @test async "renders a component"(assert) {
     assert.expect(1);
-    let containerElement = document.createElement('div');
     let app = await this.app
       .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
       .template('Main', '<HelloWorld />')
       .boot();
 
-    // app.renderComponent('HelloWorld', containerElement);
-
     await didRender(app);
-
-    assert.equal(containerElement.innerHTML, '<h1>Hello Glimmer!</h1>');
+    assert.equal('<h1>Hello Glimmer!</h1>', document.getElementById('qunit-fixture').innerHTML);
   }
 }
 

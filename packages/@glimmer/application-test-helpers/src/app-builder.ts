@@ -102,10 +102,10 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
     let mainTemplateSingleRoot = precompile('{{component @componentName.componentName model=@model.model}}', {
-      meta: { specifier: 'fuck' }
+      meta: { specifier: 'mainTemplate' }
     });
 
-    let mainLocator = locatorFor(mainTemplateSingleRoot.meta, 'default');
+    let mainLocator = locatorFor(mainTemplateSingleRoot.meta.specifier, 'default');
     mainLocator.meta.locator = mainLocator;
 
     let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplateSingleRoot.block), compiler.compileOptions(mainLocator));
@@ -129,9 +129,9 @@ export class AppBuilder<T extends TestApplication> {
       resolverSymbols[locator.module] = template.symbolTable;
     });
 
-    table.byHandle.forEach((locator, handle) => {
-      resolverTable[handle] = locator;
-    });
+    // table.byHandle.forEach((locator, handle) => {
+    //   resolverTable[handle] = this.modules[locator.module;
+    // });
 
     let bytecode = heap.buffer;
     let data = {
@@ -168,7 +168,7 @@ export class AppBuilder<T extends TestApplication> {
     }
 
     let doc: Document = this.options.document as Document || document;
-    let element = doc.body;
+    let element = doc.getElementById('qunit-fixture');
     let cursor = new Cursor(element, null);
     let builder = new DOMBuilder(cursor);
     let renderer = new SyncRenderer();
@@ -183,9 +183,8 @@ export class AppBuilder<T extends TestApplication> {
       document: this.options.document
     });
 
-    let rootElement = doc.createElement('div');
-    app.rootElement = rootElement;
-    app.renderComponent('Main', rootElement);
+    app.rootElement = element;
+    app.renderComponent('Main', {});
 
     await app.boot();
 
