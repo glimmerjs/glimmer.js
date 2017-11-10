@@ -9,14 +9,12 @@ import BytecodeResolver from './resolver';
 import { PathReference } from '@glimmer/reference';
 import { SymbolTable, VMHandle, Recast } from '@glimmer/interfaces';
 
-export interface SerializedHeap {
-  table: number[];
-  handle: number;
-}
-
 export interface BytecodeData {
   main: number;
-  heap: SerializedHeap;
+  entryHandle: number;
+  nextFreeHandle: number;
+  heapTable: number[];
+  heap:  number[];
   pool: ConstantPool;
   table: Opaque[];
   map: Dict<number>;
@@ -39,14 +37,14 @@ export default class BytecodeLoader implements Loader {
 
   async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
     let data = this.data;
-    let bytecode = await this.bytecode;
+    let buffer = await this.bytecode;
+    let { pool, heapTable, table, entryHandle: main, map, symbols, nextFreeHandle: handle } = data;
 
     let heap = new Heap({
-      ...data.heap,
-      buffer: bytecode
+      table: heapTable,
+      handle,
+      buffer
     });
-
-    let { pool, table, main, map, symbols } = data;
 
     let resolver = new BytecodeResolver(app, table, map, symbols);
     let constants = new RuntimeConstants(resolver, pool);
