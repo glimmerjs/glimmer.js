@@ -1,8 +1,29 @@
-import { buildApp, didRender } from '@glimmer/application-test-helpers';
-import { DEBUG } from '@glimmer/env';
+import { didRender } from '@glimmer/application-test-helpers';
+import './helpers/async';
+import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
 
-const { module, test } = QUnit;
+// const { module, test } = QUnit;
 
+class RenderComponentTest extends RenderTest {
+  @test async "renders a component"(assert) {
+    assert.expect(1);
+    let containerElement = document.createElement('div');
+    let app = await this.app
+      .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
+      .template('Main', '<HelloWorld />')
+      .boot();
+
+    // app.renderComponent('HelloWorld', containerElement);
+
+    await didRender(app);
+
+    assert.equal(containerElement.innerHTML, '<h1>Hello Glimmer!</h1>');
+  }
+}
+
+renderModule('[@glimmer/application] renderComponent', RenderComponentTest);
+
+/*
 module('[@glimmer/application] renderComponent');
 
 test('renders a component', async function(assert) {
@@ -157,3 +178,4 @@ async function rejects(assert: Assert, promise: Promise<any>, message: RegExp) {
     });
   }
 }
+*/

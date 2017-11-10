@@ -15,6 +15,11 @@ export interface SerializedHeapInfos {
   handle: number;
 }
 
+export interface WTF {
+  componentName: RootReference<string>;
+  model: RootReference<Object>;
+}
+
 export interface BytecodeData {
   main: number;
   heap: SerializedHeapInfos;
@@ -48,7 +53,7 @@ export default class BytecodeLoader implements Loader {
     for (let i = 0; i <= 9; i++) { vm.stack.push(null); }
   }
 
-  loadMain(vm: LowLevelVM<Opaque>, self: RootReference<Opaque>) {
+  loadMain(vm: LowLevelVM<Opaque>, self: WTF) {
     let { map, mainSpec, symbols, main } = this.data;
     let mainSpecifier = mainSpec.specifier;
     let symbolTable = symbols[mainSpecifier];
@@ -57,7 +62,8 @@ export default class BytecodeLoader implements Loader {
 
     this.loadBlocks(vm);
 
-    vm.stack.push(self);
+    vm.stack.push(self.model);
+    vm.stack.push(self.componentName);
     ARGS.setup(vm.stack, this.getArgs(symbolTable), ['main', 'else', 'attrs'], 0, false);
     vm.stack.push(ARGS);
 

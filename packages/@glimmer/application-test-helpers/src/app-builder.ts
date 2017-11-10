@@ -10,7 +10,7 @@ import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoa
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator } from '@glimmer/bundle-compiler';
-import { buildAction, mainTemplate } from '@glimmer/application';
+import { buildAction } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
 import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runtime';
@@ -101,11 +101,14 @@ export class AppBuilder<T extends TestApplication> {
   protected buildBytecodeLoader(resolver: Resolver) {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
+    let mainTemplateSingleRoot = precompile('{{component @componentName.componentName model=@model.model}}', {
+      meta: { specifier: 'fuck' }
+    });
 
-    let mainLocator = locatorFor(mainTemplate.meta.specifier, 'default');
+    let mainLocator = locatorFor(mainTemplateSingleRoot.meta, 'default');
     mainLocator.meta.locator = mainLocator;
 
-    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
+    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplateSingleRoot.block), compiler.compileOptions(mainLocator));
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
     for (let module in this.templates) {
@@ -137,7 +140,7 @@ export class AppBuilder<T extends TestApplication> {
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
-      mainSpec: { specifier: 'mainTemplate' },
+      mainSpec: mainTemplateSingleRoot.meta,
       heap: {
         table: heap.table,
         handle: heap.handle
@@ -150,6 +153,7 @@ export class AppBuilder<T extends TestApplication> {
   async boot(): Promise<T> {
     let resolver = this.buildResolver();
     let loader: Loader;
+    let mode = 'components';
 
     switch (this.options.loader) {
       case 'runtime-compiler':
@@ -157,6 +161,7 @@ export class AppBuilder<T extends TestApplication> {
         break;
       case 'bytecode':
         loader = this.buildBytecodeLoader(resolver);
+        mode = 'application';
         break;
       default:
         throw new Error(`Unrecognized loader ${this.options.loader}`);
@@ -173,6 +178,7 @@ export class AppBuilder<T extends TestApplication> {
       builder,
       loader,
       renderer,
+      mode,
       rootName: this.rootName,
       document: this.options.document
     });

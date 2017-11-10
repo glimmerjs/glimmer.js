@@ -20,4 +20,5 @@ export { default as AsyncRenderer } from './src/renderers/async-renderer';
 export { default as Iterable } from './src/iterable';
 export { default as buildAction, debugInfoForReference } from './src/helpers/action';
 export { default as mainTemplate } from './src/templates/main';
+export { default as mainTemplateSingleRoot } from './src/templates/main-single-root';
 export * from './src/helpers';
