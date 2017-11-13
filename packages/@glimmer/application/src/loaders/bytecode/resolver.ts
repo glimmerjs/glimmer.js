@@ -30,7 +30,6 @@ export const enum ModuleTypes {
 export interface TemplateLocator {
   module: string;
   name: string;
-  specifier: string;
 }
 /**
  * Exchanges VM handles for concrete implementations.
@@ -52,7 +51,7 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     let owner = this.owner;
     let manager = this.managerFor();
 
-    let templateSpecifier = owner.identify(`template:${name}`, referrer.locator.specifier);
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.locator.module);
     let vmHandle = this.map[templateSpecifier];
     let symbolTable = this.symbols[templateSpecifier];
 

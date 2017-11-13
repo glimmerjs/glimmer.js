@@ -102,7 +102,7 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
 
-    let mainLocator = locatorFor('mainTemplate', 'default');
+    let mainLocator = locatorFor('template:mainTemplate', 'default');
     mainLocator.meta.locator = mainLocator;
 
     let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
@@ -126,9 +126,9 @@ export class AppBuilder<T extends TestApplication> {
       resolverSymbols[locator.module] = template.symbolTable;
     });
 
-    table.byHandle.forEach((locator, handle) => {
-      resolverTable[handle] = locator;
-    });
+    // table.byHandle.forEach((locator, handle) => {
+    //   resolverTable[handle] = locator;
+    // });
 
     let bytecode = heap.buffer;
     let data = {
@@ -137,7 +137,7 @@ export class AppBuilder<T extends TestApplication> {
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
-      mainSpec: { specifier: 'mainTemplate' },
+      mainSpec: { specifier: 'template:mainTemplate' },
       heap: {
         table: heap.table,
         handle: heap.handle

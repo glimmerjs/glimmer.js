@@ -10,14 +10,16 @@ class RenderComponentTest extends RenderTest {
     let containerElement = document.createElement('div');
 
     let app = await this.app
-      .template('HelloWorld', `<h1>Hello Glimmer!</h1>`)
+      .template('B', 'B')
+      .template('A', 'A {{component "B"}}')
+      .template('HelloWorld', `<h1><A /> Hello Glimmer!</h1>`)
       .boot();
 
     app.renderComponent('HelloWorld', containerElement);
 
     await didRender(app);
 
-    assert.equal(containerElement.innerHTML, '<h1>Hello Glimmer!</h1>');
+    assert.equal(containerElement.innerHTML, '<h1>A B Hello Glimmer!</h1>');
   }
 
   @test async 'renders a component without affecting existing content'(assert) {
