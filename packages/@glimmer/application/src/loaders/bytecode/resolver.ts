@@ -19,7 +19,7 @@ function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: Comp
 }
 
 export interface TemplateMeta {
-  locator: TemplateLocator;
+  specifier: string;
 }
 
 export const enum ModuleTypes {
@@ -51,7 +51,7 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     let owner = this.owner;
     let manager = this.managerFor();
 
-    let templateSpecifier = owner.identify(`template:${name}`, referrer.locator.module);
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
     let vmHandle = this.map[templateSpecifier];
     let symbolTable = this.symbols[templateSpecifier];
 

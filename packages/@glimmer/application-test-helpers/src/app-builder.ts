@@ -33,17 +33,16 @@ export class TestApplication extends Application {
 }
 
 export interface AppBuilderTemplateMeta {
-  locator: ModuleLocator;
+  specifier: string;
 }
 
 function locatorFor(module: string, name: string): TemplateLocator<AppBuilderTemplateMeta> {
-  let locator = { module, name };
   return {
     kind: 'template',
     module,
     name,
     meta: {
-      locator
+      specifier: module
     }
   };
 }
@@ -103,7 +102,7 @@ export class AppBuilder<T extends TestApplication> {
     let compiler = new BundleCompiler(delegate);
 
     let mainLocator = locatorFor('template:mainTemplate', 'default');
-    mainLocator.meta.locator = mainLocator;
+    mainLocator.meta.specifier = 'template:mainTemplate';
 
     let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
@@ -195,11 +194,11 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   }
 
   hasComponentInScope(name: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`template:${name}`, referrer.locator.module);
+    return !!this.resolver.identify(`template:${name}`, referrer.specifier);
   }
 
   resolveComponent(name: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`template:${name}`, referrer.locator.module);
+    let resolved = this.resolver.identify(`template:${name}`, referrer.specifier);
     return { module: resolved, name: 'default' };
   }
 
@@ -208,11 +207,11 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   }
 
   hasHelperInScope(helperName: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.specifier);
   }
 
   resolveHelper(helperName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
+    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.specifier);
     return { module: resolved, name: 'default' };
   }
 
