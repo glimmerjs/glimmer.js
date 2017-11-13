@@ -28,7 +28,9 @@
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^0.9.0-alpha.5",
+    "@glimmer/compiler-delegates": "^0.9.0-alpha.5",
     "@glimmer/component": "^0.9.0-alpha.5",
+    "@glimmer/bundle-compiler": "0.30.1",
     "@glimmer/wire-format": "^0.30.1",
     "simple-dom": "^1.2.0"
   }

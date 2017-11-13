@@ -137,6 +137,7 @@ export class AppBuilder<T extends TestApplication> {
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
+      mainSpec: { specifier: 'mainTemplate' },
       heap: {
         table: heap.table,
         handle: heap.handle
