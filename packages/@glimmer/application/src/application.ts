@@ -80,6 +80,7 @@ export interface ApplicationOptions {
   rootName: string;
   resolver?: Resolver;
   document?: Simple.Document;
+  mode?: string;
 }
 
 export interface Initializer {
@@ -87,11 +88,21 @@ export interface Initializer {
   initialize(registry: RegistryWriter): void;
 }
 
+export interface RenderOptions {
+  component: string;
+  data?: Object;
+}
+
 export interface AppRoot {
   id: number;
   component: string;
   parent: Simple.Node;
   nextSibling: Option<Simple.Node>;
+}
+
+export interface AppMain {
+  componentName: string;
+  model: Object;
 }
 
 export interface ApplicationConstructor<T = Application> {
@@ -108,7 +119,9 @@ export default class Application implements Owner {
   public document: Simple.Document;
   public env: Environment;
 
+  private _self: UpdatableReference<Opaque>;
   private _roots: AppRoot[] = [];
+  private mainContext: AppMain;
   private _rootsIndex = 0;
   private _registry: Registry;
   private _container: Container;
@@ -117,6 +130,7 @@ export default class Application implements Owner {
   private _rendering = false;
   private _rendered = false;
   private _scheduled = false;
+  private _mode = 'components';
 
   protected builder: Builder;
   protected loader: Loader;
@@ -127,6 +141,10 @@ export default class Application implements Owner {
   constructor(options: ApplicationOptions) {
     this.rootName = options.rootName;
     this.resolver = options.resolver;
+
+    if (options.mode) {
+      this._mode = options.mode;
+    }
 
     assert(options.loader, 'Must provide a Loader for preparing templates and other metadata required for a Glimmer Application.');
     assert(options.renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
@@ -148,8 +166,20 @@ export default class Application implements Owner {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
-    this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
+  renderComponent(component: string | RenderOptions, ...args: Simple.Node[]): void {
+    if (typeof component === 'object') {
+      let options = component;
+      if (this._self === undefined) {
+        this.mainContext = { componentName: options.component, model: options.data };
+      } else {
+        this._self.update({ componentName: options.component, model: options.data });
+      }
+    } else {
+      let parent = args[0];
+      let nextSibling = args[1];
+      this._roots.push({ id: this._rootsIndex++, component, parent: parent, nextSibling });
+    }
+
     this.scheduleRerender();
   }
 
@@ -251,13 +281,18 @@ export default class Application implements Owner {
     // Create the template context for the root `main` template, which just
     // contains the array of component roots. Any property references in that
     // template will be looked up from this object.
-    let self = new UpdatableReference({ roots: this._roots });
+
+    if (this._mode === 'application') {
+      this._self = new UpdatableReference(this.mainContext);
+    } else {
+      this._self = new UpdatableReference({ roots: this._roots });
+    }
 
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
 
     let builder = this.builder.getBuilder(env);
-    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
+    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, this._self);
 
     try {
       // Begin a new transaction. The transaction stores things like component

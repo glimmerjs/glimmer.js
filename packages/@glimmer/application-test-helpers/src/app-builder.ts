@@ -2,7 +2,7 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ProgramSymbolTable } from '@glimmer/interfaces';
+import { Opaque, Dict, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
@@ -10,7 +10,7 @@ import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoa
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator } from '@glimmer/bundle-compiler';
-import { buildAction, mainTemplate } from '@glimmer/application';
+import { buildAction } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
 import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runtime';
@@ -24,6 +24,7 @@ export interface AppBuilderOptions<T> {
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
+  renderMode?: string;
 }
 
 export interface ComponentFactory extends FactoryDefinition<Opaque> {};
@@ -53,6 +54,7 @@ export class AppBuilder<T extends TestApplication> {
   modules: Dict<Opaque> = {};
   templates: Dict<string> = {};
   options: AppBuilderOptions<T>;
+  document: Document;
 
   constructor(name: string, options: AppBuilderOptions<T>) {
     this.rootName = name;
@@ -60,6 +62,7 @@ export class AppBuilder<T extends TestApplication> {
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
     this.template('Main', '<div />');
     this.helper('action', buildAction);
+    this.document = this.options.document as Document || document;
   }
 
   template(name: string, template: string) {
@@ -101,11 +104,14 @@ export class AppBuilder<T extends TestApplication> {
   protected buildBytecodeLoader(resolver: Resolver) {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
+    let mainTemplateSingleRoot = precompile('{{component @componentName model=@model}}', {
+      meta: { specifier: 'mainTemplate' }
+    });
 
-    let mainLocator = locatorFor(mainTemplate.meta.specifier, 'default');
+    let mainLocator = locatorFor(mainTemplateSingleRoot.meta.specifier, 'default');
     mainLocator.meta.locator = mainLocator;
 
-    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
+    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplateSingleRoot.block), compiler.compileOptions(mainLocator));
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
     for (let module in this.templates) {
@@ -126,9 +132,9 @@ export class AppBuilder<T extends TestApplication> {
       resolverSymbols[locator.module] = template.symbolTable;
     });
 
-    table.byHandle.forEach((locator, handle) => {
-      resolverTable[handle] = locator;
-    });
+    // table.byHandle.forEach((locator, handle) => {
+    //   resolverTable[handle] = this.modules[locator.module;
+    // });
 
     let bytecode = heap.buffer;
     let data = {
@@ -137,6 +143,7 @@ export class AppBuilder<T extends TestApplication> {
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
+      mainSpec: mainTemplateSingleRoot.meta,
       heap: {
         table: heap.table,
         handle: heap.handle
@@ -146,9 +153,33 @@ export class AppBuilder<T extends TestApplication> {
     return new BytecodeLoader({ bytecode, data });
   }
 
+  rootElement() {
+    let { document: doc } = this;
+    doc = doc as Document;
+    if (doc.getElementById && doc.getElementById('root')) {
+      return doc.getElementById('root');
+    }
+
+    let element;
+    if (this.options.renderMode === 'server') {
+      element = doc.body;
+    } else {
+      element = doc.getElementById('qunit-fixture');
+    }
+
+    let root = doc.createElement('div');
+
+    root.id = 'root';
+
+    element.appendChild(root);
+
+    return root;
+  }
+
   async boot(): Promise<T> {
     let resolver = this.buildResolver();
     let loader: Loader;
+    let mode = 'components';
 
     switch (this.options.loader) {
       case 'runtime-compiler':
@@ -156,13 +187,13 @@ export class AppBuilder<T extends TestApplication> {
         break;
       case 'bytecode':
         loader = this.buildBytecodeLoader(resolver);
+        mode = 'application';
         break;
       default:
         throw new Error(`Unrecognized loader ${this.options.loader}`);
     }
 
-    let doc: Document = this.options.document as Document || document;
-    let element = doc.body;
+    let element = this.rootElement();
     let cursor = new Cursor(element, null);
     let builder = new DOMBuilder(cursor);
     let renderer = new SyncRenderer();
@@ -172,13 +203,21 @@ export class AppBuilder<T extends TestApplication> {
       builder,
       loader,
       renderer,
+      mode,
       rootName: this.rootName,
       document: this.options.document
     });
 
-    let rootElement = doc.createElement('div');
-    app.rootElement = rootElement;
-    app.renderComponent('Main', rootElement);
+    app.rootElement = element;
+
+    if (mode === 'application') {
+      app.renderComponent({
+        component: 'Main',
+        data: {}
+      });
+    } else {
+      app.renderComponent('Main', element);
+    }
 
     await app.boot();
 
@@ -186,7 +225,7 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
-class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
+export class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   constructor(protected resolver: Resolver) {
   }
 
@@ -199,7 +238,7 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
     return { module: resolved, name: 'default' };
   }
 
-  getComponentCapabilities() {
+  getComponentCapabilities(): ComponentCapabilities {
     return CAPABILITIES;
   }
 
