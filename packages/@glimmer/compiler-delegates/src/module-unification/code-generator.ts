@@ -36,14 +36,13 @@ export default class MUCodeGenerator {
 
   generateDataSegment() {
     debug("generating data segment");
-    let { main, heap, pool, table } = this.compilation;
+    let { heap, pool, table } = this.compilation;
 
     let externalModuleTable = this.generateExternalModuleTable(table);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
     let specifierMap = this.generateSpecifierMap(table);
     let symbolTables = this.generateSymbolTables(this.compilation.symbolTables);
-    let mainSpec = this.compilation.symbolTables.get({ module: '@glimmer/application', name: 'mainTemplate' });
 
     let source = strip`
       ${externalModuleTable}
@@ -51,9 +50,7 @@ export default class MUCodeGenerator {
       ${constantPool}
       ${specifierMap}
       ${symbolTables}
-      const main = ${main.toString()};
-      const mainSpec = ${JSON.stringify(mainSpec.referrer)}
-      export default { table, heap, pool, map, symbols, main, mainSpec };`;
+      export default { table, heap, pool, map, symbols };`;
     debug("generated data segment; source=%s", source);
 
     return source;
