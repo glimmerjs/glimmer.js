@@ -30,9 +30,7 @@ export const enum ModuleTypes {
 export interface TemplateLocator {
   module: string;
   name: string;
-  meta: {
-    specifier: string;
-  };
+  specifier: string;
 }
 /**
  * Exchanges VM handles for concrete implementations.

@@ -102,7 +102,7 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
 
-    let mainLocator = locatorFor(mainTemplate.meta.specifier, 'default');
+    let mainLocator = locatorFor('mainTemplate', 'default');
     mainLocator.meta.locator = mainLocator;
 
     let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
@@ -112,7 +112,7 @@ export class AppBuilder<T extends TestApplication> {
       compiler.add(locatorFor(module, 'default'), this.templates[module]);
     }
 
-    let { main, heap, pool, table } = compiler.compile();
+    let { heap, pool, table } = compiler.compile();
 
     let resolverTable: Opaque[] = [];
     let resolverMap: Dict<number> = {};
@@ -132,7 +132,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let bytecode = heap.buffer;
     let data = {
-      main,
+      main: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
       map: resolverMap,
