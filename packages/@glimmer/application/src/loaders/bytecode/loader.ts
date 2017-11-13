@@ -15,33 +15,34 @@ export interface SerializedHeap {
 }
 
 export interface BytecodeData {
-  main: number;
   heap: SerializedHeap;
   pool: ConstantPool;
   table: Opaque[];
   map: Dict<number>;
   symbols: Dict<ProgramSymbolTable>;
-  mainSpec: { specifier: string };
 }
 
 export interface BytecodeLoaderOptions {
   bytecode: ArrayBuffer | Promise<ArrayBuffer>;
   data: BytecodeData;
+  main: string;
 }
 
 export default class BytecodeLoader implements Loader {
   protected data: BytecodeData;
   protected bytecode: Promise<ArrayBuffer>;
+  protected mainSpecifier: string;
 
-  constructor({ bytecode, data }: BytecodeLoaderOptions) {
+  constructor({ bytecode, data, main }: BytecodeLoaderOptions) {
     this.data = data;
     this.bytecode = Promise.resolve(bytecode);
+    this.mainSpecifier = main;
   }
 
   async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
     let data = this.data;
     let bytecode = await this.bytecode;
-    let { pool, heap: serializedHeap, table, map, symbols, main } = data;
+    let { pool, heap: serializedHeap, table, map, symbols } = data;
 
     let heap = new Heap({
       table: serializedHeap.table,
@@ -52,6 +53,7 @@ export default class BytecodeLoader implements Loader {
     let resolver = new BytecodeResolver(app, table, map, symbols);
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
+    let main = map[this.mainSpecifier];
 
     let vm = LowLevelVM.initial(program, env, self, null, scope, builder, main as Recast<number, VMHandle>);
     return new TemplateIterator(vm);

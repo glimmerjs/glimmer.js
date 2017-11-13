@@ -73,21 +73,19 @@ test('can be instantiated with bytecode loader', function(assert) {
   let pool = new Program().constants.toPool();
   let bytecode = Promise.resolve(new ArrayBuffer(0));
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: [],
       handle: 0
     },
     pool,
     table: [],
-    main: 0,
     map: {},
     symbols: {}
   };
 
   let app = new Application({
     rootName: 'app',
-    loader: new BytecodeLoader({ bytecode, data }),
+    loader: new BytecodeLoader({ bytecode, data, main: 'mainTemplate' }),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body, nextSibling: null }),
     resolver
@@ -114,14 +112,12 @@ test('can be booted with bytecode loader', async function(assert) {
   let resolver = new BlankResolver();
   let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: result.heap.table,
       handle: result.heap.handle
     },
     pool: result.pool,
     table: [],
-    main: result.table.vmHandleByModuleLocator.get(locator),
     map: {
       'mainTemplate': result.table.vmHandleByModuleLocator.get(locator)
     },
@@ -132,7 +128,7 @@ test('can be booted with bytecode loader', async function(assert) {
 
   let app = new Application({
     rootName: 'app',
-    loader: new BytecodeLoader({ bytecode: result.heap.buffer, data }),
+    loader: new BytecodeLoader({ bytecode: result.heap.buffer, data, main: 'mainTemplate' }),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body, nextSibling: null }),
     resolver

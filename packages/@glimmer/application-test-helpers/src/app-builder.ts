@@ -134,19 +134,17 @@ export class AppBuilder<T extends TestApplication> {
 
     let bytecode = heap.buffer;
     let data = {
-      main: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
-      mainSpec: { specifier: 'template:mainTemplate' },
       heap: {
         table: heap.table,
         handle: heap.handle
       }
     };
 
-    return new BytecodeLoader({ bytecode, data });
+    return new BytecodeLoader({ bytecode, data, main: 'template:mainTemplate' });
   }
 
   async boot(): Promise<T> {
