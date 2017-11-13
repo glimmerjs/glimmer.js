@@ -24,6 +24,7 @@ export interface AppBuilderOptions<T> {
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
+  renderMode?: string;
 }
 
 export interface ComponentFactory extends FactoryDefinition<Opaque> {};
@@ -53,6 +54,7 @@ export class AppBuilder<T extends TestApplication> {
   modules: Dict<Opaque> = {};
   templates: Dict<string> = {};
   options: AppBuilderOptions<T>;
+  document: Document;
 
   constructor(name: string, options: AppBuilderOptions<T>) {
     this.rootName = name;
@@ -60,6 +62,7 @@ export class AppBuilder<T extends TestApplication> {
     this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
     this.template('Main', '<div />');
     this.helper('action', buildAction);
+    this.document = this.options.document as Document || document;
   }
 
   template(name: string, template: string) {
@@ -101,7 +104,7 @@ export class AppBuilder<T extends TestApplication> {
   protected buildBytecodeLoader(resolver: Resolver) {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
-    let mainTemplateSingleRoot = precompile('{{component @componentName.componentName model=@model.model}}', {
+    let mainTemplateSingleRoot = precompile('{{component @componentName model=@model}}', {
       meta: { specifier: 'mainTemplate' }
     });
 
@@ -150,6 +153,29 @@ export class AppBuilder<T extends TestApplication> {
     return new BytecodeLoader({ bytecode, data });
   }
 
+  rootElement() {
+    let { document: doc } = this;
+    doc = doc as Document;
+    if (doc.getElementById && doc.getElementById('root')) {
+      return doc.getElementById('root');
+    }
+
+    let element;
+    if (this.options.renderMode === 'server') {
+      element = doc.body;
+    } else {
+      element = doc.getElementById('qunit-fixture');
+    }
+
+    let root = doc.createElement('div');
+
+    root.id = 'root';
+
+    element.appendChild(root);
+
+    return root;
+  }
+
   async boot(): Promise<T> {
     let resolver = this.buildResolver();
     let loader: Loader;
@@ -167,8 +193,7 @@ export class AppBuilder<T extends TestApplication> {
         throw new Error(`Unrecognized loader ${this.options.loader}`);
     }
 
-    let doc: Document = this.options.document as Document || document;
-    let element = doc.getElementById('qunit-fixture');
+    let element = this.rootElement();
     let cursor = new Cursor(element, null);
     let builder = new DOMBuilder(cursor);
     let renderer = new SyncRenderer();
@@ -184,7 +209,15 @@ export class AppBuilder<T extends TestApplication> {
     });
 
     app.rootElement = element;
-    app.renderComponent('Main', {});
+
+    if (mode === 'application') {
+      app.renderComponent({
+        component: 'Main',
+        data: {}
+      });
+    } else {
+      app.renderComponent('Main', element);
+    }
 
     await app.boot();
 

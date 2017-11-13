@@ -113,9 +113,9 @@ test('custom elements are rendered', async function(assert) {
     .template('Main', '<hello-world>foo</hello-world>')
     .boot();
 
-  let serializedHTML = serializer.serialize(app.rootElement);
+  let serializedHTML = serializer.serializeChildren(app.rootElement);
 
-  assert.equal(serializedHTML, '<div><hello-world>foo</hello-world></div>');
+  assert.equal(serializedHTML, '<hello-world>foo</hello-world><!---->');
 });
 
 test('components without a template raise an error', async function(assert) {
@@ -192,13 +192,13 @@ test('renders a component using simple-dom', async function(assert) {
 
   let customDocument: Simple.Document = new SimpleDOM.Document();
 
-  let app = await buildApp({ document: customDocument })
+  let app = await buildApp({ document: customDocument, renderMode: 'server' })
     .template('Main', `<h1>Hello Glimmer!</h1>`)
     .boot();
 
   let serializedHTML = serializer.serialize(app.rootElement);
 
-  assert.equal(serializedHTML, '<div><h1>Hello Glimmer!</h1></div>');
+  assert.equal(serializedHTML, '<div><h1>Hello Glimmer!</h1><!----></div>');
 });
 
 if (DEBUG) {

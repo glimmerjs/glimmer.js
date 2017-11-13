@@ -100,7 +100,7 @@ test('can be booted with bytecode loader', async function(assert) {
   let locator = {
     name: 'mainTemplate', module: '@glimmer/application'
   };
-  compiler.add(locator, '{{#each @roots key="id" as |root|}}{{/each}}');
+  compiler.add(locator, '{{component @componentName model=@model}}');
   let result = compiler.compile();
 
   let resolver = new BlankResolver();

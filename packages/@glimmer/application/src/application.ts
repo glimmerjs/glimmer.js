@@ -88,6 +88,11 @@ export interface Initializer {
   initialize(registry: RegistryWriter): void;
 }
 
+export interface RenderOptions {
+  component: string;
+  data?: Object;
+}
+
 export interface AppRoot {
   id: number;
   component: string;
@@ -114,6 +119,7 @@ export default class Application implements Owner {
   public document: Simple.Document;
   public env: Environment;
 
+  private _self: UpdatableReference<Opaque>;
   private _roots: AppRoot[] = [];
   private mainContext: AppMain;
   private _rootsIndex = 0;
@@ -160,14 +166,21 @@ export default class Application implements Owner {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(component: string, data: Object): void;
-  renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null, data?: Object): void {
-    if (this._mode === 'application') {
-      this.mainContext = { componentName: component, model: data };
+  renderComponent(component: string | RenderOptions, ...args: Simple.Node[]): void {
+    if (typeof component === 'object') {
+      let options = component;
+      if (this._self === undefined) {
+        this.mainContext = { componentName: options.component, model: options.data };
+      } else {
+        this._self.update({ componentName: options.component, model: options.data });
+      }
     } else {
-      this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
-      this.scheduleRerender();
+      let parent = args[0];
+      let nextSibling = args[1];
+      this._roots.push({ id: this._rootsIndex++, component, parent: parent, nextSibling });
     }
+
+    this.scheduleRerender();
   }
 
   /**
@@ -269,21 +282,17 @@ export default class Application implements Owner {
     // contains the array of component roots. Any property references in that
     // template will be looked up from this object.
 
-    let self;
     if (this._mode === 'application') {
-      self = {
-        componentName: new UpdatableReference({ componentName: this.mainContext.componentName }),
-        model: new UpdatableReference({ model: this.mainContext.model })
-      };
+      this._self = new UpdatableReference(this.mainContext);
     } else {
-      self = new UpdatableReference({ roots: this._roots });
+      this._self = new UpdatableReference({ roots: this._roots });
     }
 
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
 
     let builder = this.builder.getBuilder(env);
-    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
+    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, this._self);
 
     try {
       // Begin a new transaction. The transaction stores things like component
