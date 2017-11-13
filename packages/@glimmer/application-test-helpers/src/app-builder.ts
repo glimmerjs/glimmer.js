@@ -33,17 +33,16 @@ export class TestApplication extends Application {
 }
 
 export interface AppBuilderTemplateMeta {
-  locator: ModuleLocator;
+  specifier: string;
 }
 
 function locatorFor(module: string, name: string): TemplateLocator<AppBuilderTemplateMeta> {
-  let locator = { module, name };
   return {
     kind: 'template',
     module,
     name,
     meta: {
-      locator
+      specifier: module
     }
   };
 }
@@ -102,8 +101,8 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
 
-    let mainLocator = locatorFor(mainTemplate.meta.specifier, 'default');
-    mainLocator.meta.locator = mainLocator;
+    let mainLocator = locatorFor('template:mainTemplate', 'default');
+    mainLocator.meta.specifier = 'template:mainTemplate';
 
     let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
@@ -112,7 +111,7 @@ export class AppBuilder<T extends TestApplication> {
       compiler.add(locatorFor(module, 'default'), this.templates[module]);
     }
 
-    let { main, heap, pool, table } = compiler.compile();
+    let { heap, pool, table } = compiler.compile();
 
     let resolverTable: Opaque[] = [];
     let resolverMap: Dict<number> = {};
@@ -127,16 +126,20 @@ export class AppBuilder<T extends TestApplication> {
     });
 
     table.byHandle.forEach((locator, handle) => {
-      resolverTable[handle] = locator;
+      let component = locator.module.replace('template:/', 'component:/');
+      if (this.modules[component]) {
+        resolverTable[handle] = this.modules[component];
+      }
     });
 
     let bytecode = heap.buffer;
     let data = {
-      main,
+      main: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
+      mainSpec: { specifier: 'template:mainTemplate' },
       heap: {
         table: heap.table,
         handle: heap.handle
@@ -191,11 +194,11 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   }
 
   hasComponentInScope(name: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`template:${name}`, referrer.locator.module);
+    return !!this.resolver.identify(`template:${name}`, referrer.specifier);
   }
 
   resolveComponent(name: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`template:${name}`, referrer.locator.module);
+    let resolved = this.resolver.identify(`template:${name}`, referrer.specifier);
     return { module: resolved, name: 'default' };
   }
 
@@ -204,11 +207,11 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   }
 
   hasHelperInScope(helperName: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.specifier);
   }
 
   resolveHelper(helperName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.locator.module);
+    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.specifier);
     return { module: resolved, name: 'default' };
   }
 

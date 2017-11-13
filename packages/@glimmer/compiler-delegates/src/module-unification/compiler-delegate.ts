@@ -39,8 +39,12 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
   }
 
   protected _builtins() {
+    let mainTemplate = this.templateLocatorFor({
+      module: '@glimmer/application',
+      name: 'mainTemplate'
+    });
     return {
-      main: helperLocatorFor('main', 'mainTemplate'),
+      mainTemplate,
       if: helperLocatorFor('@glimmer/application', 'ifHelper'),
       action: helperLocatorFor('@glimmer/application', 'actionHelper')
     };
@@ -62,9 +66,15 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
    */
   templateLocatorFor({ module, name }: ModuleLocator): TemplateLocator<TemplateMeta> {
     let relativePath = module.replace(/^\.\//, '');
-    let meta = {
-      specifier: this.project.specifierForPath(relativePath)
-    };
+
+    let meta;
+    if (this._builtins[name]) {
+      meta = { specifier: name };
+    } else {
+      meta = {
+        specifier: this.project.specifierForPath(relativePath)
+      };
+    }
 
     return { kind: 'template', module, name, meta };
   }

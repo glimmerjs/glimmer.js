@@ -18,6 +18,10 @@ function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: Comp
   };
 }
 
+export interface TemplateMeta {
+  specifier: string;
+}
+
 export const enum ModuleTypes {
   HELPER_FACTORY,
   HELPER
@@ -26,14 +30,11 @@ export const enum ModuleTypes {
 export interface TemplateLocator {
   module: string;
   name: string;
-  meta: {
-    specifier: string;
-  };
 }
 /**
  * Exchanges VM handles for concrete implementations.
  */
-export default class BytecodeResolver implements RuntimeResolver<TemplateLocator> {
+export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
   constructor(protected owner: Owner, protected table: Opaque[], protected map: Dict<number>, protected symbols: Dict<SymbolTable>) {
   }
 
@@ -46,11 +47,11 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateLocator
    * The resolver is responsible for returning a component definition containing
    * the VM handle and symbol table for the resolved component.
    */
-  lookupComponent(name: string, referrer: TemplateLocator): ComponentDefinition {
+  lookupComponent(name: string, referrer: TemplateMeta): ComponentDefinition {
     let owner = this.owner;
     let manager = this.managerFor();
 
-    let templateSpecifier = owner.identify(`template:${name}`, referrer.meta.specifier);
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
     let vmHandle = this.map[templateSpecifier];
     let symbolTable = this.symbols[templateSpecifier];
 
@@ -60,7 +61,7 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateLocator
     return buildComponentDefinition(ComponentClass, manager, vmHandle, symbolTable);
   }
 
-  lookupPartial(name: string, referrer: TemplateLocator): number {
+  lookupPartial(name: string, referrer: TemplateMeta): number {
     throw unreachable();
   }
 

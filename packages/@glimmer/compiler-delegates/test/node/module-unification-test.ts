@@ -54,9 +54,10 @@ test('can generate the serialized constants pool ', (assert) => {
 });
 
 test('can generate the heap table', (assert) => {
-  let serializedHeaptable = generator.generateHeap({ table: [0, 650, 40, 700] } as any);
+  let heap = { table: [0, 650, 40, 700], handle: 50, buffer: new ArrayBuffer(1) };
+  let serializedHeaptable = generator.generateHeap(heap as any);
 
-  assert.equal(serializedHeaptable, `const heap =JSON.parse(${JSON.stringify(JSON.stringify([0, 650, 40, 700]))});`);
+  assert.equal(serializedHeaptable, `const heap =JSON.parse(${JSON.stringify(JSON.stringify({ table: [0, 650, 40, 700], handle: 50 }))});`);
 });
 
 test('heap table should be balanced', (assert) => {
