@@ -126,9 +126,12 @@ export class AppBuilder<T extends TestApplication> {
       resolverSymbols[locator.module] = template.symbolTable;
     });
 
-    // table.byHandle.forEach((locator, handle) => {
-    //   resolverTable[handle] = locator;
-    // });
+    table.byHandle.forEach((locator, handle) => {
+      let component = locator.module.replace('template:/', 'component:/');
+      if (this.modules[component]) {
+        resolverTable[handle] = this.modules[component];
+      }
+    });
 
     let bytecode = heap.buffer;
     let data = {
