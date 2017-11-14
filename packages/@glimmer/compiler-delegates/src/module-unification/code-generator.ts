@@ -9,11 +9,10 @@ import {
   TemplateLocator as ITemplateLocator
 } from "@glimmer/bundle-compiler";
 import { ICompilableTemplate } from "@glimmer/opcode-compiler";
-import { ConstantPool, SerializedHeap } from "@glimmer/program";
-import { Dict, assert } from "@glimmer/util";
 import { ProgramSymbolTable } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
+import { CodeGenerator } from './basic-code-generator';
 
 import { OutputFiles } from "../app-compiler-delegate";
 import { TemplateMeta } from "./compiler-delegate";
@@ -26,86 +25,25 @@ export type CompilableTemplates = ModuleLocatorMap<
   ICompilableTemplate<ProgramSymbolTable>
 >;
 
-export default class MUCodeGenerator {
+export default class MUCodeGenerator extends CodeGenerator {
   constructor(
     protected project: Project,
     protected outputFiles: OutputFiles,
     protected builtins: Builtins,
     protected compilation: BundleCompilationResult
-  ) {}
+  ) {
+    super(compilation);
+  }
+
+  specifierForPath(path: string) {
+    return this.project.specifierForPath(path);
+  }
 
   generateDataSegment() {
     debug("generating data segment");
-    let { main, heap, pool, table } = this.compilation;
-
-    let externalModuleTable = this.generateExternalModuleTable(table);
-    let constantPool = this.generateConstantPool(pool);
-    let heapTable = this.generateHeap(heap);
-    let specifierMap = this.generateSpecifierMap(table);
-    let symbolTables = this.generateSymbolTables(this.compilation.symbolTables);
-    let mainSpec = this.compilation.symbolTables.get({ module: '@glimmer/application', name: 'mainTemplate' });
-
-    let source = strip`
-      ${externalModuleTable}
-      ${heapTable}
-      ${constantPool}
-      ${specifierMap}
-      ${symbolTables}
-      const main = ${main.toString()};
-      const mainSpec = ${JSON.stringify(mainSpec.referrer)}
-      export default { table, heap, pool, map, symbols, main, mainSpec };`;
-    debug("generated data segment; source=%s", source);
-
-    return source;
-  }
-
-  generateSymbolTables(compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
-    let symbolTables: Dict<ProgramSymbolTable> = {};
-
-    compilerSymbolTables.forEach((symbolTable, locator) => {
-      let specifier;
-      if (locator.name === 'mainTemplate') {
-        specifier = 'mainTemplate';
-      } else {
-        specifier = this.project.specifierForPath(relativePath(locator.module));
-      }
-
-      let { hasEval, symbols } = symbolTable;
-
-      // We cast this as `any` before assignment, because symbol tables require
-      // a `referrer` but we're omitting it here because it will always be null
-      // for top-level symbol tables. Rather than serializing a redundant field
-      // for every symbol table for every template in the system, we can fill
-      // this in at runtime on the client.
-      symbolTables[specifier] = { hasEval, symbols } as any;
-    });
-
-    return `const symbols = ${inlineJSON(symbolTables)};`;
-  }
-
-  generateSpecifierMap(table: ExternalModuleTable) {
-    let map: Dict<number> = {};
-
-    table.vmHandleByModuleLocator.forEach((handle, locator) => {
-      let specifier = this.project.specifierForPath(relativePath(locator.module));
-      if (specifier) { map[specifier] = handle; }
-    });
-
-    return `const map = ${inlineJSON(map)};`;
-  }
-
-  generateHeap(heap: SerializedHeap) {
-    assert((heap.table.length / 2) % 1 === 0, 'Heap table should be balanced and divisible by 2');
-    let serializedHeap = { table: heap.table, handle: heap.handle };
-    return strip`
-      const heap = ${inlineJSON(serializedHeap)};
-    `;
-  }
-
-  generateConstantPool(pool: ConstantPool) {
-    return strip`
-      const pool = ${inlineJSON(pool)};
-    `;
+    let dataSegment = super.generateDataSegment();
+    debug("generated data segment; source=%s", dataSegment.code);
+    return dataSegment.code;
   }
 
   generateExternalModuleTable(table: ExternalModuleTable) {
@@ -124,7 +62,10 @@ export default class MUCodeGenerator {
 
     let source = generateExternalModuleTable(modules, this.builtins);
 
-    return source;
+    return {
+      code: source,
+      table: []
+    };
 
     function replaceTemplatesWithComponents(locator) {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
@@ -193,10 +134,6 @@ function isHelperLocator(
   return false;
 }
 
-function inlineJSON(data: any) {
-  return `JSON.parse(${JSON.stringify(JSON.stringify(data))})`;
-}
-
 function toSparseArray<T>(map: Map<number, T>): T[] {
   let array: T[] = [];
 
@@ -205,10 +142,6 @@ function toSparseArray<T>(map: Map<number, T>): T[] {
   }
 
   return array;
-}
-
-function relativePath(path: string) {
-  return path.replace(/^\.\//, '');
 }
 
 function generateExternalModuleTable(
@@ -230,24 +163,6 @@ function generateExternalModuleTable(
 ${imports.join("\n")}
 const table = [${identifiers.join(",")}];
 `;
-}
-
-function strip(strings: TemplateStringsArray, ...args: string[]) {
-  if (typeof strings === "object") {
-    return strings
-      .map((str: string, i: number) => {
-        return `${str
-          .split("\n")
-          .map(s => s.trim())
-          .join("")}${args[i] ? args[i] : ""}`;
-      })
-      .join("");
-  } else {
-    return strings[0]
-      .split("\n")
-      .map((s: string) => s.trim())
-      .join(" ");
-  }
 }
 
 /**

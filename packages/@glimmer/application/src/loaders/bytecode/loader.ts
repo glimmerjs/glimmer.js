@@ -21,7 +21,6 @@ export interface BytecodeData {
   table: Opaque[];
   map: Dict<number>;
   symbols: Dict<ProgramSymbolTable>;
-  mainSpec: { specifier: string };
 }
 
 export interface BytecodeLoaderOptions {

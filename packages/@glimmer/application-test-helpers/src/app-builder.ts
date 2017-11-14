@@ -9,13 +9,35 @@ import { precompile } from './compiler';
 import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
-import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator } from '@glimmer/bundle-compiler';
+import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator, ExternalModuleTable, BundleCompilationResult} from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
 import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runtime';
+import { CodeGenerator } from '@glimmer/compiler-delegates';
 
 import { DOMBuilder, SyncRenderer } from '@glimmer/application';
+
+export class TestCodeGenerator extends CodeGenerator {
+  constructor(compilation: BundleCompilationResult, private modules: Dict<Opaque>) {
+    super(compilation);
+  }
+  generateExternalModuleTable(table: ExternalModuleTable) {
+    let resolverTable = [];
+
+    table.byHandle.forEach((locator, handle) => {
+      let component = locator.module.replace('template:/', 'component:/');
+      if (this.modules[component]) {
+        resolverTable[handle] = this.modules[component];
+      }
+    });
+
+    return {
+      code: '',
+      table: resolverTable
+    };
+  }
+}
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -111,39 +133,19 @@ export class AppBuilder<T extends TestApplication> {
       compiler.add(locatorFor(module, 'default'), this.templates[module]);
     }
 
-    let { heap, pool, table } = compiler.compile();
+    let compilation = compiler.compile();
+    let codegen = new TestCodeGenerator(compilation, this.modules);
 
-    let resolverTable: Opaque[] = [];
-    let resolverMap: Dict<number> = {};
-    let resolverSymbols: Dict<ProgramSymbolTable> = {};
+    let { data: dataSegment } = codegen.generateDataSegment();
 
-    table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
-      resolverMap[locator.module] = vmHandle;
-    });
-
-    compiler.compilableTemplates.forEach((template, locator) => {
-      resolverSymbols[locator.module] = template.symbolTable;
-    });
-
-    table.byHandle.forEach((locator, handle) => {
-      let component = locator.module.replace('template:/', 'component:/');
-      if (this.modules[component]) {
-        resolverTable[handle] = this.modules[component];
-      }
-    });
-
-    let bytecode = heap.buffer;
+    let bytecode = compilation.heap.buffer;
     let data = {
-      main: table.vmHandleByModuleLocator.get(mainLocator),
-      pool,
-      table: resolverTable,
-      map: resolverMap,
-      symbols: resolverSymbols,
-      mainSpec: { specifier: 'template:mainTemplate' },
-      heap: {
-        table: heap.table,
-        handle: heap.handle
-      }
+      main: compilation.table.vmHandleByModuleLocator.get(mainLocator),
+      pool: dataSegment.pool,
+      table: dataSegment.table,
+      map: dataSegment.map,
+      symbols: dataSegment.symbols,
+      heap: dataSegment.heap
     };
 
     return new BytecodeLoader({ bytecode, data });

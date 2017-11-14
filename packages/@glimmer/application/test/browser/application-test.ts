@@ -1,13 +1,12 @@
 import Application, { RuntimeCompilerLoader, SyncRenderer, DOMBuilder, BytecodeLoader, BytecodeData } from '@glimmer/application';
 import { BlankResolver } from '@glimmer/test-utils';
 import { Document } from 'simple-dom';
-import { Program } from '@glimmer/program';
 import { BundleCompiler, ModuleLocator, TemplateLocator, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { AppCompilerDelegate } from '@glimmer/compiler-delegates';
 import { ComponentCapabilities, Opaque } from '@glimmer/interfaces';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompileOptions, CompilableTemplate } from '@glimmer/opcode-compiler';
-import { precompile } from '@glimmer/application-test-helpers';
+import { precompile, TestCodeGenerator } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
@@ -70,19 +69,19 @@ test('can be instantiated', function(assert) {
 
 test('can be instantiated with bytecode loader', function(assert) {
   let resolver = new BlankResolver();
-  let pool = new Program().constants.toPool();
   let bytecode = Promise.resolve(new ArrayBuffer(0));
+  let delegate = new TestDelegate();
+  let compiler = new BundleCompiler(delegate);
+  let result = compiler.compile();
+  let codegen = new TestCodeGenerator(result, {});
+  let { data: dataSegment } = codegen.generateDataSegment();
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
-    heap: {
-      table: [],
-      handle: 0
-    },
-    pool,
-    table: [],
+    heap: dataSegment.heap,
+    pool: dataSegment.pool,
+    table: dataSegment.table,
     main: 0,
-    map: {},
-    symbols: {}
+    map: dataSegment.map,
+    symbols: dataSegment.symbols
   };
 
   let app = new Application({
@@ -111,23 +110,17 @@ test('can be booted with bytecode loader', async function(assert) {
   compiler.addCompilableTemplate(locator as TemplateLocator<Opaque>, template);
   let result = compiler.compile();
 
+  let codegen = new TestCodeGenerator(result, {});
+  let { data: dataSegment } = codegen.generateDataSegment();
+
   let resolver = new BlankResolver();
-  let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
-    heap: {
-      table: result.heap.table,
-      handle: result.heap.handle
-    },
-    pool: result.pool,
-    table: [],
+    heap: dataSegment.heap,
+    pool: dataSegment.pool,
+    table: dataSegment.table,
     main: result.table.vmHandleByModuleLocator.get(locator),
-    map: {
-      'mainTemplate': result.table.vmHandleByModuleLocator.get(locator)
-    },
-    symbols: {
-      'mainTemplate': symbolTable
-    }
+    map: dataSegment.map,
+    symbols: dataSegment.symbols
   };
 
   let app = new Application({
