@@ -25,6 +25,8 @@
     "resolve": "^1.4.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "find-up": "^2.1.0"
   }
 }
