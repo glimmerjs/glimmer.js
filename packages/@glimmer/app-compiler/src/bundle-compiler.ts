@@ -82,7 +82,7 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     let { outputPath } = this;
 
-    let locator = this.delegate.templateLocatorFor({ module: '@glimmer/application', name: 'mainTemplate' });
+    let locator = this.delegate.templateLocatorFor({ module: '@glimmer/application', name: 'mainLayout' });
     let compilable = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), this.compiler.compileOptions(locator));
 
     this.compiler.addCompilableTemplate(locator, compilable);

@@ -134,12 +134,11 @@ export class AppBuilder<T extends TestApplication> {
 
     let bytecode = heap.buffer;
     let data = {
-      main: table.vmHandleByModuleLocator.get(mainLocator),
+      mainEntry: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
       map: resolverMap,
       symbols: resolverSymbols,
-      mainSpec: { specifier: 'template:mainTemplate' },
       heap: {
         table: heap.table,
         handle: heap.handle

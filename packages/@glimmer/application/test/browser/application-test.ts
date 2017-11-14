@@ -73,14 +73,13 @@ test('can be instantiated with bytecode loader', function(assert) {
   let pool = new Program().constants.toPool();
   let bytecode = Promise.resolve(new ArrayBuffer(0));
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: [],
       handle: 0
     },
     pool,
     table: [],
-    main: 0,
+    mainEntry: 0,
     map: {},
     symbols: {}
   };
@@ -114,14 +113,13 @@ test('can be booted with bytecode loader', async function(assert) {
   let resolver = new BlankResolver();
   let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {
-    mainSpec: { specifier: 'mainTemplate' },
     heap: {
       table: result.heap.table,
       handle: result.heap.handle
     },
     pool: result.pool,
     table: [],
-    main: result.table.vmHandleByModuleLocator.get(locator),
+    mainEntry: result.table.vmHandleByModuleLocator.get(locator),
     map: {
       'mainTemplate': result.table.vmHandleByModuleLocator.get(locator)
     },

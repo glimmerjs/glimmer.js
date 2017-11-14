@@ -25,12 +25,17 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
   protected project: Project;
   protected specifiersToSymbolTable: Map<ModuleLocator, SymbolTable> = new Map();
   protected builtins: Builtins;
+  protected mainTemplateLocator: ModuleLocator;
 
-  constructor({ projectPath, outputFiles, builtins = {} }: AppCompilerDelegateOptions) {
+  constructor({ mainTemplateLocator, projectPath, outputFiles, builtins = {} }: AppCompilerDelegateOptions) {
     debug('initialized MU compiler delegate; project=%s', projectPath);
     this.outputFiles = outputFiles;
     this.projectPath = projectPath;
     this.project = new Project(projectPath);
+    this.mainTemplateLocator = mainTemplateLocator || {
+      module: '@glimmer/application',
+      name: 'mainLayout'
+    };
 
     this.builtins = {
       ...this._builtins(),
@@ -80,8 +85,8 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
   }
 
   generateDataSegment(compilation: BundleCompilationResult): string {
-    let { project, builtins, outputFiles } = this;
-    let codegen = new MUCodeGenerator(project, outputFiles, builtins, compilation);
+    let { project, builtins, outputFiles, mainTemplateLocator } = this;
+    let codegen = new MUCodeGenerator(project, outputFiles, builtins, compilation, mainTemplateLocator);
     return codegen.generateDataSegment();
   }
 
