@@ -12,6 +12,8 @@ export {
   default as MUCodeGenerator
 } from "./src/module-unification/code-generator";
 
+export { CodeGenerator } from './src/module-unification/basic-code-generator';
+
 export {
   Builtins,
   BuiltinLocator,

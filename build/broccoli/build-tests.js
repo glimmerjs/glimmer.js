@@ -6,6 +6,7 @@ const funnel = require('broccoli-funnel');
 const concat = require('broccoli-concat');
 const Rollup = require('broccoli-rollup');
 const TSLint = require('broccoli-tslinter');
+const writeFile = require('broccoli-file-creator');
 
 const nodeResolve = require('rollup-plugin-node-resolve');
 const monorepo = require('../rollup/monorepo-resolve');
@@ -54,7 +55,19 @@ function buildBrowserTests(tsTree, jsTree, packagesTree) {
   return browserTests;
 }
 
+function compilerDelegatePath(relativePath) {
+  return `glimmer-node_modules/@glimmer/compiler-delegates/dist/modules/es2017/${relativePath}`;
+}
+
+function generateCodegenStub(jsTree) {
+  let codegenMain = writeFile(compilerDelegatePath('index.js'), 'export {CodeGenerator} from "./src/module-unification/basic-code-generator";');
+
+  return merge([jsTree, codegenMain], { overwrite: true });
+}
+
 function includeTests(jsTree) {
+  jsTree = generateCodegenStub(jsTree)
+
   let testsIndex = buildTestIndex(jsTree, {
     filter: '@glimmer/*/test/{!(node)/**/,}*-test.{js,ts}',
     outputFile: 'tests.js'

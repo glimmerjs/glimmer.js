@@ -48,14 +48,14 @@ test('can generate the serialized constants pool ', (assert) => {
   pool.strings.push('a', 'b', 'c');
   pool.floats.push(1.2, 1.1);
   pool.handles.push(1, 2, 3);
-  let serializedPool = generator.generateConstantPool(pool);
+  let serializedPool = generator.generateConstantPool(pool).code;
 
-  assert.equal(serializedPool, `const pool =JSON.parse(${JSON.stringify(JSON.stringify(pool))});`);
+  assert.equal(serializedPool, `const pool = JSON.parse(${JSON.stringify(JSON.stringify(pool))});`);
 });
 
 test('can generate the heap table', (assert) => {
   let heap = { table: [0, 650, 40, 700], handle: 50, buffer: new ArrayBuffer(1) };
-  let serializedHeaptable = generator.generateHeap(heap as any);
+  let serializedHeaptable = generator.generateHeap(heap as any).code;
 
   assert.equal(serializedHeaptable, `const heap =JSON.parse(${JSON.stringify(JSON.stringify({ table: [0, 650, 40, 700], handle: 50 }))});`);
 });
@@ -68,7 +68,7 @@ test('heap table should be balanced', (assert) => {
 
 test('can generate the specifier map', (assert) => {
   table.vmHandleByModuleLocator.set({name: 'default', module: './src/ui/components/x/template.hbs' }, 0);
-  let serializedTable = generator.generateSpecifierMap(table);
+  let serializedTable = generator.generateSpecifierMap(table).code;
 
   assert.equal(serializedTable, `const map = JSON.parse(${JSON.stringify(JSON.stringify({'template:/my-project/components/x': 0}))});`);
 });
@@ -76,7 +76,7 @@ test('can generate the specifier map', (assert) => {
 test('specifier\'s module path needs to be well formed', (assert) => {
   table.vmHandleByModuleLocator.set({name: 'default', module: 'B' }, 0);
 
-  assert.equal(generator.generateSpecifierMap(table), 'const map = JSON.parse("{}");', 'does not generate specifier map entry for non-MU modules');
+  assert.equal(generator.generateSpecifierMap(table).code, 'const map = JSON.parse("{}");', 'does not generate specifier map entry for non-MU modules');
 });
 
 test('can generate symbol tables', (assert) => {
@@ -84,12 +84,12 @@ test('can generate symbol tables', (assert) => {
     hasEval: false,
     symbols: []
   } as any);
-  let serializedSymbolTables = generator.generateSymbolTables(symbolTables);
+  let serializedSymbolTables = generator.generateSymbolTables(symbolTables).code;
   assert.equal(serializedSymbolTables, `const symbols = JSON.parse(${JSON.stringify(JSON.stringify({"template:/my-project/components/x": {hasEval: false, symbols: []} }))});`);
 });
 
 test('can generate the external module table', (assert) => {
   table.byHandle.set(0, {name: 'default', module: './src/ui/components/x/template.hbs'});
-  let serializedModuleTable = generator.generateExternalModuleTable(table);
+  let serializedModuleTable = generator.generateExternalModuleTable(table).code;
   assert.equal(serializedModuleTable, `\nimport component_0 from \"./src/ui/components/x/component\";\nconst table = [component_0];\n`);
 });
