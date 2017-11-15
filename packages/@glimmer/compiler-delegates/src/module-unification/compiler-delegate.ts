@@ -50,7 +50,7 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
     });
     return {
       mainTemplate,
-      if: helperLocatorFor('@glimmer/application', 'ifHelper'),
+      if: helperLocatorFor('@glimmer/application', 'ifHelper', false),
       action: helperLocatorFor('@glimmer/application', 'actionHelper')
     };
   }
