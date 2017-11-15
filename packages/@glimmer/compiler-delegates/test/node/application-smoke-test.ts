@@ -1,14 +1,21 @@
-// import { Application } from '@glimmer/application';
+import Application, { BytecodeLoader, BytecodeData, SyncRenderer } from '@glimmer/application';
+import { StringBuilder } from '@glimmer/ssr';
 import { BundleCompiler } from '@glimmer/bundle-compiler';
 import { module, /*test, */ only} from 'qunitjs';
 import { MUCompilerDelegate } from '@glimmer/compiler-delegates';
 import { sync as findup } from 'find-up';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import babel from 'babel-core';
 import transformCJS from 'babel-plugin-transform-es2015-modules-commonjs';
+import * as SimpleDOM from 'simple-dom';
+import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
+import { ComponentManager } from '@glimmer/component';
 
 let compiler;
+let tmp = os.tmpdir();
+let bytecode;
 module('Application smoke tests', {
   beforeEach() {
     let projectPath = findup('packages/@glimmer/compiler-delegates/test/node/fixtures/mu');
@@ -16,6 +23,9 @@ module('Application smoke tests', {
     let delegate = new MUCompilerDelegate({
       projectPath,
       mainTemplateLocator: { module: './src/ui/components/My-Main/template.hbs', name: 'default' },
+      builtins: {
+        if: helperLocatorFor('@glimmer/application', 'ifHelper')
+      },
       outputFiles: {
         dataSegment: 'data.js',
         heapFile: 'templates.gbx'
@@ -31,10 +41,69 @@ module('Application smoke tests', {
       plugins: [transformCJS]
     });
 
-    console.log(transformed);
+    fs.writeFileSync(path.join(tmp, 'smoke-data.js'), transformed.code);
+    bytecode = result.heap.buffer;
   }
 });
 
-only('ok', (assert) => {
-  assert.ok(true);
-})
+let defaultResolverMap = {
+  app: {
+    name: 'smoke',
+    rootName: 'smoke'
+  },
+  types: {
+    application: { definitiveCollection: 'main' },
+    component: { definitiveCollection: 'components' },
+    helper: { definitiveCollection: 'components' },
+    renderer: { definitiveCollection: 'main' },
+    template: { definitiveCollection: 'components' },
+    util: { definitiveCollection: 'utils' },
+    'component-manager': { definitiveCollection: 'component-managers' }
+  },
+  collections: {
+    main: {
+      types: ['application', 'renderer']
+    },
+    components: {
+      group: 'ui',
+      types: ['component', 'template', 'helper'],
+      defaultType: 'component'
+    },
+    'component-managers': {
+      types: ['component-manager']
+    },
+    utils: {
+      unresolvable: true
+    }
+  }
+};
+
+only('Boots and renders an app', async function(assert) {
+  let data = require(path.join(tmp, 'smoke-data.js')).default as BytecodeData;
+  let loader = new BytecodeLoader({ bytecode, data });
+  let doc = new SimpleDOM.Document();
+  let builder = new StringBuilder({ element: doc.body, nextSibling: null });
+  let renderer = new SyncRenderer();
+  let serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
+  let registry = new BasicModuleRegistry();
+  let resolver = new Resolver(defaultResolverMap, registry);
+
+  let app = new Application({
+    rootName: 'app',
+    loader,
+    document: doc,
+    builder,
+    renderer,
+    resolver
+  });
+
+  app.registerInitializer({
+    initialize(registry) {
+      registry.register(`component-manager:/${app.rootName}/component-managers/main`, ComponentManager);
+    }
+  });
+
+  await app.boot();
+
+  assert.equals(serializer.serializeChildren(doc.body), '<div class="user">Chad</div>');
+});
