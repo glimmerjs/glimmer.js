@@ -22,6 +22,9 @@ export class BuildServer {
     this.projectPath = findup(relativeProjectPath);
     this.delegate = new MUCompilerDelegate({
       projectPath: this.projectPath,
+      builtins: {
+        'wat': { kind: 'helper', module: '@css-blocks', name: 'wat', meta: { factory: false } },
+      },
       mainTemplateLocator: customLocator,
       outputFiles: {
         dataSegment: 'data.js',
@@ -50,7 +53,9 @@ export class BuildServer {
       entry: path.join(tmp, 'smoke-data.js'),
       plugins: [
         virtual({
-          '@glimmer/application': 'export const ifHelper = () => { return "STUB" };'
+          './src/ui/components/id/helper': 'export default function id() { return "ID_STUB"; }',
+          '@css-blocks': 'export const wat = () => { return "WAT_STUB"; }',
+          '@glimmer/application': 'export const ifHelper = () => { return "IF_STUB" };'
         })
       ]
     });

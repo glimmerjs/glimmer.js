@@ -182,7 +182,7 @@ export default class MUCodeGenerator {
         relativePath
       );
 
-      return { module: relativePath, name };
+      return {...locator, module: relativePath, name };
     }
   }
 }
