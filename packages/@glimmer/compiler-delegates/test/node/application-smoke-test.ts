@@ -5,68 +5,43 @@ import * as SimpleDOM from 'simple-dom';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 import { ComponentManager } from '@glimmer/component';
 import { BuildServer } from './helpers/build-server';
+import { defaultResolverConfiguration } from '@glimmer/application-test-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
 
 let buildServer;
 module('Application smoke tests', {
   beforeEach() {
-    buildServer = new BuildServer();
+    let mainLocator = {
+      module: './src/ui/components/My-Main/template.hbs',
+      name: 'default'
+    };
+    let relativeProjectPath = 'packages/@glimmer/compiler-delegates/test/node/fixtures/mu';
+
+    buildServer = new BuildServer(relativeProjectPath, mainLocator);
     let { projectPath } = buildServer;
 
-    buildServer.addTemplate({ module: './src/ui/components/My-Main/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString());
+    buildServer.addTemplate(mainLocator, fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString());
     buildServer.addTemplate({ module: './src/ui/components/User/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString());
 
     buildServer.build();
   }
 });
 
-let defaultResolverMap = {
-  app: {
-    name: 'smoke',
-    rootName: 'smoke'
-  },
-  types: {
-    application: { definitiveCollection: 'main' },
-    component: { definitiveCollection: 'components' },
-    helper: { definitiveCollection: 'components' },
-    renderer: { definitiveCollection: 'main' },
-    template: { definitiveCollection: 'components' },
-    util: { definitiveCollection: 'utils' },
-    'component-manager': { definitiveCollection: 'component-managers' }
-  },
-  collections: {
-    main: {
-      types: ['application', 'renderer']
-    },
-    components: {
-      group: 'ui',
-      types: ['component', 'template', 'helper'],
-      defaultType: 'component'
-    },
-    'component-managers': {
-      types: ['component-manager']
-    },
-    utils: {
-      unresolvable: true
-    }
-  }
-};
-
 test('Boots and renders an app', async function(assert) {
   let { bytecode, data } = await buildServer.fetch();
   let loader = new BytecodeLoader({ bytecode, data });
   let doc = new SimpleDOM.Document();
-  let builder = new StringBuilder({ element: doc.body, nextSibling: null });
+  let builder = new StringBuilder({ element: doc.body as any, nextSibling: null });
   let renderer = new SyncRenderer();
   let serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
   let registry = new BasicModuleRegistry();
-  let resolver = new Resolver(defaultResolverMap, registry);
+  let resolver = new Resolver(defaultResolverConfiguration, registry);
 
   let app = new Application({
     rootName: 'app',
     loader,
-    document: doc,
+    document: doc as any,
     builder,
     renderer,
     resolver
@@ -80,5 +55,5 @@ test('Boots and renders an app', async function(assert) {
 
   await app.boot();
 
-  assert.equal(serializer.serializeChildren(doc.body).trim(), '<div class="user">Chad STUB</div>');
+  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad STUB</div>');
 });

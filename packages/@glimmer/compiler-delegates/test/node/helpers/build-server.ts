@@ -17,12 +17,12 @@ export class BuildServer {
   public projectPath: string;
   private tmp: string;
   private bytecode: ArrayBuffer;
-  constructor() {
+  constructor(relativeProjectPath: string, customLocator: ModuleLocator) {
     this.tmp = os.tmpdir();
-    this.projectPath = findup('packages/@glimmer/compiler-delegates/test/node/fixtures/mu');
+    this.projectPath = findup(relativeProjectPath);
     this.delegate = new MUCompilerDelegate({
       projectPath: this.projectPath,
-      mainTemplateLocator: { module: './src/ui/components/My-Main/template.hbs', name: 'default' },
+      mainTemplateLocator: customLocator,
       outputFiles: {
         dataSegment: 'data.js',
         heapFile: 'templates.gbx'
