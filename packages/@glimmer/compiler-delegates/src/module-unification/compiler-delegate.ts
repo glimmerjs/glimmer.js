@@ -50,8 +50,8 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
     });
     return {
       mainTemplate,
-      if: helperLocatorFor('@glimmer/application', 'ifHelper', false),
-      action: helperLocatorFor('@glimmer/application', 'actionHelper')
+      if: helperLocatorFor('@glimmer/application', 'ifHelper'),
+      action: helperLocatorFor('@glimmer/application', 'actionHelper', true)
     };
   }
 
@@ -114,7 +114,8 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
     if (helperName in this.builtins) { return this.builtins[helperName]; }
 
     let specifier = this.project.resolver.identify(`helper:${helperName}`, referrer.specifier);
-    return this.moduleLocatorFor(specifier);
+    let module = `./${this.project.pathForSpecifier(specifier)}`;
+    return helperLocatorFor(module, 'default');
   }
 
   getComponentLayout(_meta: TemplateMeta, block: SerializedTemplateBlock, options: CompileOptions<TemplateMeta>): ICompilableTemplate<ProgramSymbolTable> {
@@ -143,7 +144,7 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
   }
 }
 
-function helperLocatorFor(module: string, name: string, factory = true): HelperLocator {
+function helperLocatorFor(module: string, name: string, factory = false): HelperLocator {
   return {
     kind: 'helper',
     module,

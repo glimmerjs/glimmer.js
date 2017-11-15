@@ -1,6 +1,6 @@
 import Application, { BytecodeLoader, SyncRenderer } from '@glimmer/application';
 import { StringBuilder } from '@glimmer/ssr';
-import { module, test} from 'qunitjs';
+import { module, test } from 'qunitjs';
 import * as SimpleDOM from 'simple-dom';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 import { ComponentManager } from '@glimmer/component';
@@ -55,5 +55,5 @@ test('Boots and renders an app', async function(assert) {
 
   await app.boot();
 
-  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad STUB</div>');
+  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>');
 });
