@@ -15,13 +15,12 @@ export interface SerializedHeap {
 }
 
 export interface BytecodeData {
-  main: number;
+  mainEntry: number;
   heap: SerializedHeap;
   pool: ConstantPool;
   table: Opaque[];
   map: Dict<number>;
   symbols: Dict<ProgramSymbolTable>;
-  mainSpec: { specifier: string };
 }
 
 export interface BytecodeLoaderOptions {
@@ -41,7 +40,7 @@ export default class BytecodeLoader implements Loader {
   async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
     let data = this.data;
     let bytecode = await this.bytecode;
-    let { pool, heap: serializedHeap, table, map, symbols, main } = data;
+    let { pool, heap: serializedHeap, table, map, symbols, mainEntry } = data;
 
     let heap = new Heap({
       table: serializedHeap.table,
@@ -53,7 +52,7 @@ export default class BytecodeLoader implements Loader {
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
-    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, main as Recast<number, VMHandle>);
+    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, mainEntry as Recast<number, VMHandle>);
     return new TemplateIterator(vm);
   }
 }

@@ -15,7 +15,7 @@ let symbolTables: ModuleLocatorMap<ProgramSymbolTable>;
 
 module('Module Unification Delegate', {
   beforeEach() {
-    let projectPath = findup('packages/@glimmer/compiler-delegates/test/node/fixtures');
+    let projectPath = findup('packages/@glimmer/compiler-delegates/test/node/fixtures/code-gen');
     let project = new Project(projectPath);
 
     table = new ExternalModuleTable();
@@ -39,7 +39,8 @@ module('Module Unification Delegate', {
       project,
       outputFiles,
       {},
-      compilation
+      compilation,
+      { module: '@glimmer/application', name: 'mainLayout' }
     );
   }
 });

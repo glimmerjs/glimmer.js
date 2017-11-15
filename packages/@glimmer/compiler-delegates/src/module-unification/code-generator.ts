@@ -10,7 +10,7 @@ import {
 } from "@glimmer/bundle-compiler";
 import { ICompilableTemplate } from "@glimmer/opcode-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
-import { Dict, assert } from "@glimmer/util";
+import { Dict, assert, expect } from "@glimmer/util";
 import { ProgramSymbolTable } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
@@ -31,19 +31,24 @@ export default class MUCodeGenerator {
     protected project: Project,
     protected outputFiles: OutputFiles,
     protected builtins: Builtins,
-    protected compilation: BundleCompilationResult
+    protected compilation: BundleCompilationResult,
+    protected mainTemplateLocator: ModuleLocator
   ) {}
 
   generateDataSegment() {
     debug("generating data segment");
-    let { main, heap, pool, table } = this.compilation;
+    let { mainTemplateLocator } = this;
+    let { heap, pool, table } = this.compilation;
 
     let externalModuleTable = this.generateExternalModuleTable(table);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
     let specifierMap = this.generateSpecifierMap(table);
     let symbolTables = this.generateSymbolTables(this.compilation.symbolTables);
-    let mainSpec = this.compilation.symbolTables.get({ module: '@glimmer/application', name: 'mainTemplate' });
+
+    let main = table.vmHandleByModuleLocator.get(mainTemplateLocator);
+
+    expect(main, `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`);
 
     let source = strip`
       ${externalModuleTable}
@@ -51,9 +56,8 @@ export default class MUCodeGenerator {
       ${constantPool}
       ${specifierMap}
       ${symbolTables}
-      const main = ${main.toString()};
-      const mainSpec = ${JSON.stringify(mainSpec.referrer)}
-      export default { table, heap, pool, map, symbols, main, mainSpec };`;
+      const mainEntry = ${main.toString()};
+      export default { table, heap, pool, map, symbols, mainEntry };`;
     debug("generated data segment; source=%s", source);
 
     return source;
@@ -184,13 +188,9 @@ export default class MUCodeGenerator {
 }
 
 function isHelperLocator(
-  locator: HelperLocator | ModuleLocator
+  locator: ModuleLocator
 ): locator is HelperLocator {
-  if ((locator as HelperLocator).meta !== undefined) {
-    let meta = (locator as TemplateLocator).meta;
-    return !!(meta && meta.specifier);
-  }
-  return false;
+  return (locator as HelperLocator).kind === 'helper';
 }
 
 function inlineJSON(data: any) {
@@ -216,7 +216,6 @@ function generateExternalModuleTable(
   builtins: Builtins
 ) {
   let { imports, identifiers } = getImportStatements(modules);
-
   identifiers = identifiers.map((id, handle) => {
     let locator = modules[handle];
     if (locator && isHelperLocator(locator)) {

@@ -21,6 +21,7 @@ export interface AppCompilerDelegateOptions {
   projectPath: string;
   outputFiles: OutputFiles;
   builtins?: Builtins;
+  mainTemplateLocator?: ModuleLocator;
 }
 
 /**

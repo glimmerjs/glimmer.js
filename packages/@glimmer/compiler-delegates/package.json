@@ -25,6 +25,12 @@
     "resolve": "^1.4.0"
   },
   "devDependencies": {
-    "find-up": "^2.1.0"
+    "babel-core": "^6.26.0",
+    "@glimmer/application-test-helpers": "^0.9.0-alpha.6",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "@glimmer/resolver": "^0.4.1",
+    "find-up": "^2.1.0",
+    "rollup": "^0.51.5",
+    "rollup-plugin-virtual": "^1.0.1"
   }
 }
