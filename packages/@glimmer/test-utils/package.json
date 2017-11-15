@@ -1,10 +1,10 @@
 {
   "name": "@glimmer/test-utils",
-  "version": "0.9.0-alpha.6",
+  "version": "0.9.0-alpha.7",
   "description": "Helpers for tests in the glimmer.js mono repo",
   "private": true,
   "dependencies": {
     "@glimmer/di": "^0.2.0",
-    "@glimmer/application": "^0.9.0-alpha.6"
+    "@glimmer/application": "^0.9.0-alpha.7"
   }
 }

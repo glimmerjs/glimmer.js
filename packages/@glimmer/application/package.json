@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/application",
-  "version": "0.9.0-alpha.6",
+  "version": "0.9.0-alpha.7",
   "description": "Glimmer standalone applications",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "@glimmer/compiler": "^0.30.1",
-    "@glimmer/component": "^0.9.0-alpha.6",
+    "@glimmer/component": "^0.9.0-alpha.7",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
     "@glimmer/interfaces": "^0.30.1",
@@ -27,9 +27,9 @@
     "@glimmer/util": "^0.30.1"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.9.0-alpha.6",
-    "@glimmer/compiler-delegates": "^0.9.0-alpha.6",
-    "@glimmer/component": "^0.9.0-alpha.6",
+    "@glimmer/application-test-helpers": "^0.9.0-alpha.7",
+    "@glimmer/compiler-delegates": "^0.9.0-alpha.7",
+    "@glimmer/component": "^0.9.0-alpha.7",
     "@glimmer/bundle-compiler": "0.30.1",
     "@glimmer/wire-format": "^0.30.1",
     "simple-dom": "^1.2.0"
