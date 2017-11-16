@@ -15,6 +15,7 @@ export { default as RuntimeCompilerLoader } from './src/loaders/runtime-compiler
 export { default as BytecodeLoader, BytecodeData } from './src/loaders/bytecode/loader';
 export { default as BytecodeResolver, ModuleTypes } from './src/loaders/bytecode/resolver';
 export { default as DOMBuilder } from './src/builders/dom-builder';
+export { default as RehydratingBuilder } from './src/builders/rehydrating-builder';
 export { default as SyncRenderer } from './src/renderers/sync-renderer';
 export { default as AsyncRenderer } from './src/renderers/async-renderer';
 export { default as Iterable } from './src/iterable';
