@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "broccoli-stew": "^1.5.0",
-    "broccoli-test-helper": "^1.2.0",
-    "co": "^4.6.0"
+    "broccoli-test-helper": "^1.2.0"
   }
 }
