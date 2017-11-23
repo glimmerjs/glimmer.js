@@ -2342,7 +2342,7 @@ ember-cli-version-checker@^1.1.6, ember-cli-version-checker@^1.1.7:
   dependencies:
     semver "^5.3.0"
 
-ember-cli@^2.12.0, ember-cli@^2.14.2:
+ember-cli@^2.14.2:
   version "2.16.2"
   resolved "https://registry.yarnpkg.com/ember-cli/-/ember-cli-2.16.2.tgz#53b922073a8e6f34255a6e0dcb1794a91ba3e1b7"
   dependencies:
