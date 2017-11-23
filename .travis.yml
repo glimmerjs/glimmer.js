@@ -22,4 +22,5 @@ install:
   - yarn install --non-interactive
 
 script:
+  - yarn problems
   - yarn test
