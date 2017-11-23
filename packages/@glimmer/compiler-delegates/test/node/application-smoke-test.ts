@@ -1,6 +1,6 @@
 import Application, { BytecodeLoader, SyncRenderer } from '@glimmer/application';
 import { StringBuilder } from '@glimmer/ssr';
-import { module, test } from 'qunitjs';
+import { module, test } from 'qunit';
 import * as SimpleDOM from 'simple-dom';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 import { ComponentManager } from '@glimmer/component';

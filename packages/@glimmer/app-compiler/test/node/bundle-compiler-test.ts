@@ -1,4 +1,4 @@
-import { module, test } from 'qunitjs';
+import { module, test } from 'qunit';
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
 import { createTempDir, buildOutput } from 'broccoli-test-helper';
 import co from 'co';
