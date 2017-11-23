@@ -1,5 +1,5 @@
 import { MUCodeGenerator } from '@glimmer/compiler-delegates';
-import { module, test } from 'qunitjs';
+import { module, test } from 'qunit';
 import { ModuleLocatorMap, ExternalModuleTable, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { Program, ConstantPool } from '@glimmer/program';
 import { sync as findup} from 'find-up';
