@@ -1,7 +1,6 @@
 import { module, test } from 'qunitjs';
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
 import { createTempDir, buildOutput } from 'broccoli-test-helper';
-import co from 'co';
 import { MUCompilerDelegate } from '@glimmer/compiler-delegates';
 
 class TestModuleUnificationDelegate extends MUCompilerDelegate {
@@ -33,7 +32,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     }, /Must supply a projectPath/);
   });
 
-  test('syncs forward all files', co.wrap(function *(assert) {
+  test('syncs forward all files', async function(assert) {
     input.write({
       'my-app': {
         'package.json': JSON.stringify({name: 'my-app'}),
@@ -74,20 +73,20 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
       }
     });
 
-    let output = yield buildOutput(compiler);
+    let output = await buildOutput(compiler);
     let files = output.read();
 
     assert.deepEqual(Object.keys(files), ['my-app']);
     assert.deepEqual(Object.keys(files['my-app']).sort(), ['src', 'package.json', 'templates.gbx', 'data.js'].sort());
-    assert.deepEqual(Object.keys(files['my-app'].src).sort(), ['ui'].sort());
-    assert.deepEqual(Object.keys(files['my-app'].src.ui), ['components']);
+    assert.deepEqual(Object.keys(files['my-app']['src']).sort(), ['ui'].sort());
+    assert.deepEqual(Object.keys(files['my-app']['src'].ui), ['components']);
 
-    Object.keys(files['my-app'].src.ui.components).forEach((component) => {
-      assert.deepEqual(Object.keys(files['my-app'].src.ui.components[component]), ['component.ts']);
+    Object.keys(files['my-app']['src'].ui.components).forEach((component) => {
+      assert.deepEqual(Object.keys(files['my-app']['src'].ui.components[component]), ['component.ts']);
     });
-  }));
+  });
 
-  test('[MU] compiles the gbx and data segment', co.wrap(function *(assert) {
+  test('[MU] compiles the gbx and data segment', async function(assert) {
     input.write({
       'my-app': {
         'package.json': JSON.stringify({name: 'my-app'}),
@@ -124,15 +123,15 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
       }
     });
 
-    let output = yield buildOutput(compiler);
+    let output = await buildOutput(compiler);
     let files = output.read();
 
-    let buffer = new Uint16Array(files['my-app'].src['templates.gbx']);
+    let buffer = new Uint16Array(files['my-app']['src']['templates.gbx']);
 
     assert.ok(buffer, 'Buffer is aligned');
-  }));
+  });
 
-  test('data segment has all segments', co.wrap(function *(assert) {
+  test('data segment has all segments', async function(assert) {
     input.write({
       'my-app': {
         'package.json': JSON.stringify({name: 'my-app'}),
@@ -169,18 +168,18 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
       }
     });
 
-    let output = yield buildOutput(compiler);
+    let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['my-app'].src['data.js'];
+    let dataSegment = files['my-app']['src']['data.js'];
     assert.ok(dataSegment.length > 0, 'data segment is populated');
     assert.ok(dataSegment.indexOf('table') > -1, 'has a table');
     assert.ok(dataSegment.indexOf('heap') > -1, 'has a heap');
     assert.ok(dataSegment.indexOf('symbols') > -1, 'has symbol tables');
     assert.ok(dataSegment.indexOf('pool') > -1, 'has a constant pool');
     assert.ok(dataSegment.indexOf('map') > -1, 'has a specifier map');
-  }));
+  });
 
-  test('can lookup builtins', co.wrap(function *(assert) {
+  test('can lookup builtins', async function(assert) {
     input.write({
       'my-app': {
         'package.json': JSON.stringify({name: 'my-app'}),
@@ -205,13 +204,13 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
       }
     });
 
-    let output = yield buildOutput(compiler);
+    let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['my-app'].src['data.js'];
+    let dataSegment = files['my-app']['src']['data.js'];
     assert.ok(dataSegment.indexOf('import { ifHelper as ') > -1);
-  }));
+  });
 
-  test('can lookup custom builtins', co.wrap(function *(assert) {
+  test('can lookup custom builtins', async function(assert) {
     input.write({
       'my-app': {
         'package.json': JSON.stringify({name: 'my-app'}),
@@ -244,13 +243,13 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
       }
     });
 
-    let output = yield buildOutput(compiler);
+    let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['my-app'].src['data.js'];
+    let dataSegment = files['my-app']['src']['data.js'];
     assert.ok(dataSegment.split('@css-block/helpers/state').length === 2);
     assert.ok(dataSegment.indexOf('@css-block/helpers/state') > -1);
     assert.ok(dataSegment.indexOf('@css-block/helpers/style-if') > -1);
     assert.ok(dataSegment.indexOf('@css-block/helpers/style-concat') === -1);
-  }));
+  });
 
 });
