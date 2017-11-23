@@ -1,6 +1,10 @@
-language: node_js
 sudo: required
 dist: trusty
+
+language: node_js
+node_js:
+  - "8"
+
 cache: yarn
 
 addons:
@@ -13,5 +17,3 @@ before_install:
   - "curl -o- -L https://yarnpkg.com/install.sh | bash -s --"
   - export PATH="$HOME/.yarn/bin:$PATH"
 
-node_js:
-  - "8"
