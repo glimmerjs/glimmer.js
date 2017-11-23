@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@glimmer/build@^0.6.1", "@glimmer/build@^0.6.2":
+"@glimmer/build@^0.6.1":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@glimmer/build/-/build-0.6.3.tgz#be259e08cb50da4f249a8e57e1cc7570029bd214"
   dependencies:
