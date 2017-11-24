@@ -1,0 +1,30 @@
+{
+  "name": "@glimmer/blueprint",
+  "version": "0.6.4",
+  "description": "Ember CLI blueprint for initializing a new Glimmer application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "sh ./dev/add-to-output-repos.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glimmerjs/glimmer-blueprint.git"
+  },
+  "keywords": [
+    "ember-blueprint",
+    "ember-addon"
+  ],
+  "author": "Tom Dale <tom@tomdale.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/glimmerjs/glimmer-blueprint/issues"
+  },
+  "homepage": "https://github.com/glimmerjs/glimmer-blueprint#readme",
+  "dependencies": {
+    "ember-cli-string-utils": "^1.1.0"
+  },
+  "ember-addon": {
+    "main": "ember-addon-main.js"
+  }
+}

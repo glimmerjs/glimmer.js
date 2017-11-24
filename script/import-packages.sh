@@ -48,7 +48,7 @@ fi'
 }
 
 USER="glimmerjs"
-LIBS=("glimmer-component glimmer-application glimmer-application-test-helpers")
+LIBS=("glimmer-blueprint")
 
 for lib in $LIBS; do
     import_repo $lib
