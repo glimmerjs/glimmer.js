@@ -69,4 +69,3 @@ rm -rf packages/*/*/tmp
 rm -rf packages/*/*/dist
 
 yarn
-node_modules/.bin/lerna bootstrap
