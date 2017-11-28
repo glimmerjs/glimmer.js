@@ -1,12 +1,13 @@
-import { RuntimeResolver, ComponentDefinition, SymbolTable } from '@glimmer/interfaces';
+import { RuntimeResolver, ComponentDefinition, ProgramSymbolTable } from '@glimmer/interfaces';
 import { unreachable, Opaque, Dict } from '@glimmer/util';
 import { ComponentManager, Helper, VM, Arguments } from '@glimmer/runtime';
 import { Owner, Factory } from '@glimmer/di';
 import { CAPABILITIES } from '@glimmer/component';
 import Application from '../../application';
 import { HelperReference, UserHelper } from '../../helpers/user-helper';
+import { Metadata } from './loader';
 
-function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: ComponentManager<Opaque, Opaque>, handle?: number, symbolTable?: SymbolTable) {
+function buildComponentDefinition(ComponentClass: Factory<Opaque>, manager: ComponentManager<Opaque, Opaque>, handle?: number, symbolTable?: ProgramSymbolTable) {
   return {
     manager,
     state: {
@@ -35,7 +36,7 @@ export interface TemplateLocator {
  * Exchanges VM handles for concrete implementations.
  */
 export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
-  constructor(protected owner: Owner, protected table: Opaque[], protected map: Dict<number>, protected symbols: Dict<SymbolTable>) {
+  constructor(protected owner: Owner, protected table: Opaque[], protected meta: Dict<Metadata>, private prefix: string) {
   }
 
   protected managers: Dict<ComponentManager<Opaque, Opaque>> = {};
@@ -51,9 +52,9 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     let owner = this.owner;
     let manager = this.managerFor();
 
-    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
-    let vmHandle = this.map[templateSpecifier];
-    let symbolTable = this.symbols[templateSpecifier];
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier).replace(this.prefix, '');
+    let vmHandle = this.meta[templateSpecifier].h;
+    let symbolTable = this.meta[templateSpecifier].table;
 
     let componentSpecifier = owner.identify('component:', templateSpecifier);
     let ComponentClass = componentSpecifier ? owner.factoryFor(componentSpecifier) : null;

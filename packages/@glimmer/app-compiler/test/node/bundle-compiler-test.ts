@@ -174,9 +174,8 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(dataSegment.length > 0, 'data segment is populated');
     assert.ok(dataSegment.indexOf('table') > -1, 'has a table');
     assert.ok(dataSegment.indexOf('heap') > -1, 'has a heap');
-    assert.ok(dataSegment.indexOf('symbols') > -1, 'has symbol tables');
     assert.ok(dataSegment.indexOf('pool') > -1, 'has a constant pool');
-    assert.ok(dataSegment.indexOf('map') > -1, 'has a specifier map');
+    assert.ok(dataSegment.indexOf('meta') > -1, 'has a specifier map');
   });
 
   test('can lookup builtins', async function(assert) {
