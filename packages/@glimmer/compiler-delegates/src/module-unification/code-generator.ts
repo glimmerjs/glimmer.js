@@ -43,9 +43,7 @@ export default class MUCodeGenerator {
     let externalModuleTable = this.generateExternalModuleTable(table);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
-    let specifierMap = this.generateSpecifierMap(table);
-    let symbolTables = this.generateSymbolTables(this.compilation.symbolTables);
-
+    let meta = this.generateTemplateMetaData(table, this.compilation.symbolTables);
     let main = table.vmHandleByModuleLocator.get(mainTemplateLocator);
 
     expect(main, `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`);
@@ -54,13 +52,50 @@ export default class MUCodeGenerator {
       ${externalModuleTable}
       ${heapTable}
       ${constantPool}
-      ${specifierMap}
-      ${symbolTables}
+      ${meta}
       const mainEntry = ${main.toString()};
-      export default { table, heap, pool, map, symbols, mainEntry };`;
+      export default { table, heap, pool, meta, mainEntry };`;
     debug("generated data segment; source=%s", source);
 
     return source;
+  }
+
+  generateTemplateMetaData(table: ExternalModuleTable, compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
+    let specifiers: string[] = [];
+    let symbolTables = this.generateSymbolTables(compilerSymbolTables);
+    let map = this.generateSpecifierMap(table);
+
+    Object.keys(map).forEach((k) => {
+      if (specifiers.indexOf(k) === -1) {
+        specifiers.push(k);
+      }
+    });
+
+    Object.keys(symbolTables).forEach((k) => {
+      if (specifiers.indexOf(k) === -1) {
+        specifiers.push(k);
+      }
+    });
+
+    let commonPrefix = this.commonPrefix(specifiers);
+    let prefix = `const prefix = "${commonPrefix}";`;
+    let mergedMeta = {};
+
+    Object.keys(map).forEach(specifier => {
+      let trimmed = specifier.replace(prefix, '');
+      mergedMeta[trimmed] = { h: map[specifier] };
+    });
+
+    Object.keys(symbolTables).forEach(specifier => {
+      let trimmed = specifier.replace(prefix, '');
+      if (mergedMeta[trimmed]) {
+        mergedMeta[trimmed].symbolTable = {...symbolTables[specifier]};
+      } else {
+        mergedMeta[trimmed] = { table: symbolTables[specifier] };
+      }
+    });
+
+    return `${prefix} const meta = ${inlineJSON(mergedMeta)};`;
   }
 
   generateSymbolTables(compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
@@ -81,10 +116,26 @@ export default class MUCodeGenerator {
       // for top-level symbol tables. Rather than serializing a redundant field
       // for every symbol table for every template in the system, we can fill
       // this in at runtime on the client.
-      symbolTables[specifier] = { hasEval, symbols } as any;
+      symbolTables[specifier] = { hasEval: +hasEval, symbols } as any;
     });
 
-    return `const symbols = ${inlineJSON(symbolTables)};`;
+    return symbolTables;
+  }
+
+  private commonPrefix(strings: string[]) {
+    let first = strings[0];
+    let commonLength = first.length;
+
+    for (let i = 0; i < strings.length; ++i) {
+      for (let j = 0; j < commonLength; ++j) {
+        if (strings[i].charAt(j) !== first.charAt(j)) {
+          commonLength = j;
+          break;
+        }
+      }
+    }
+
+    return first.slice(0, commonLength);
   }
 
   generateSpecifierMap(table: ExternalModuleTable) {
@@ -95,7 +146,7 @@ export default class MUCodeGenerator {
       if (specifier) { map[specifier] = handle; }
     });
 
-    return `const map = ${inlineJSON(map)};`;
+    return map;
   }
 
   generateHeap(heap: SerializedHeap) {

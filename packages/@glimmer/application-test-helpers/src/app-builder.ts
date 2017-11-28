@@ -114,15 +114,18 @@ export class AppBuilder<T extends TestApplication> {
     let { heap, pool, table } = compiler.compile();
 
     let resolverTable: Opaque[] = [];
-    let resolverMap: Dict<number> = {};
-    let resolverSymbols: Dict<ProgramSymbolTable> = {};
+    let meta = {};
 
     table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
-      resolverMap[locator.module] = vmHandle;
+      meta[locator.module] = { h: vmHandle };
     });
 
     compiler.compilableTemplates.forEach((template, locator) => {
-      resolverSymbols[locator.module] = template.symbolTable;
+      if (meta[locator.module]) {
+        meta[locator.module].table = template.symbolTable;
+      } else {
+        meta[locator.module] = { table: template.symbolTable };
+      }
     });
 
     table.byHandle.forEach((locator, handle) => {
@@ -134,11 +137,11 @@ export class AppBuilder<T extends TestApplication> {
 
     let bytecode = heap.buffer;
     let data = {
+      prefix: '',
       mainEntry: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
-      map: resolverMap,
-      symbols: resolverSymbols,
+      meta,
       heap: {
         table: heap.table,
         handle: heap.handle

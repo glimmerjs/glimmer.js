@@ -71,22 +71,22 @@ test('can generate the specifier map', (assert) => {
   table.vmHandleByModuleLocator.set({name: 'default', module: './src/ui/components/x/template.hbs' }, 0);
   let serializedTable = generator.generateSpecifierMap(table);
 
-  assert.equal(serializedTable, `const map = JSON.parse(${JSON.stringify(JSON.stringify({'template:/my-project/components/x': 0}))});`);
+  assert.deepEqual(serializedTable, {'template:/my-project/components/x': 0});
 });
 
 test('specifier\'s module path needs to be well formed', (assert) => {
   table.vmHandleByModuleLocator.set({name: 'default', module: 'B' }, 0);
 
-  assert.equal(generator.generateSpecifierMap(table), 'const map = JSON.parse("{}");', 'does not generate specifier map entry for non-MU modules');
+  assert.deepEqual(generator.generateSpecifierMap(table), {}, 'does not generate specifier map entry for non-MU modules');
 });
 
 test('can generate symbol tables', (assert) => {
   symbolTables.set({name: 'default', module: './src/ui/components/x/template.hbs' }, {
-    hasEval: false,
+    hasEval: 0,
     symbols: []
   } as any);
   let serializedSymbolTables = generator.generateSymbolTables(symbolTables);
-  assert.equal(serializedSymbolTables, `const symbols = JSON.parse(${JSON.stringify(JSON.stringify({"template:/my-project/components/x": {hasEval: false, symbols: []} }))});`);
+  assert.deepEqual(serializedSymbolTables, {"template:/my-project/components/x": {hasEval: 0, symbols: [] }});
 });
 
 test('can generate the external module table', (assert) => {
