@@ -54,7 +54,7 @@ export default class MUCodeGenerator {
       ${constantPool}
       ${meta}
       const mainEntry = ${main.toString()};
-      export default { table, heap, pool, meta, mainEntry };`;
+      export default { table, heap, pool, meta, mainEntry, prefix };`;
     debug("generated data segment; source=%s", source);
 
     return source;
@@ -82,14 +82,14 @@ export default class MUCodeGenerator {
     let mergedMeta = {};
 
     Object.keys(map).forEach(specifier => {
-      let trimmed = specifier.replace(prefix, '');
+      let trimmed = specifier.replace(commonPrefix, '');
       mergedMeta[trimmed] = { h: map[specifier] };
     });
 
     Object.keys(symbolTables).forEach(specifier => {
-      let trimmed = specifier.replace(prefix, '');
+      let trimmed = specifier.replace(commonPrefix, '');
       if (mergedMeta[trimmed]) {
-        mergedMeta[trimmed].symbolTable = {...symbolTables[specifier]};
+        mergedMeta[trimmed].table = {...symbolTables[specifier]};
       } else {
         mergedMeta[trimmed] = { table: symbolTables[specifier] };
       }
