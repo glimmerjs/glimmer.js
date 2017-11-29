@@ -23,6 +23,7 @@ module('Application smoke tests', {
 
     buildServer.addTemplate(mainLocator, fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString());
     buildServer.addTemplate({ module: './src/ui/components/User/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString());
+    buildServer.addTemplate({ module: './src/ui/components/Other/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/Other/template.hbs')).toString());
 
     buildServer.build();
   }
@@ -35,11 +36,21 @@ test('Boots and renders an app', async function(assert) {
   let builder = new StringBuilder({ element: doc.body as any, nextSibling: null });
   let renderer = new SyncRenderer();
   let serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
-  let registry = new BasicModuleRegistry();
-  let resolver = new Resolver(defaultResolverConfiguration, registry);
+  let registry = new BasicModuleRegistry({
+    "template:/mu/components/Other": true
+  });
+
+  let config = {
+    app: {
+      rootName: 'mu',
+      name: 'mu'
+    }
+  };
+
+  let resolver = new Resolver({...config, ...defaultResolverConfiguration}, registry);
 
   let app = new Application({
-    rootName: 'app',
+    rootName: 'mu',
     loader,
     document: doc as any,
     builder,
@@ -55,5 +66,5 @@ test('Boots and renders an app', async function(assert) {
 
   await app.boot();
 
-  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>');
+  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });

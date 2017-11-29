@@ -52,9 +52,10 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     let owner = this.owner;
     let manager = this.managerFor();
 
-    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier).replace(this.prefix, '');
-    let vmHandle = this.meta[templateSpecifier].h;
-    let symbolTable = this.meta[templateSpecifier].table;
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
+    let trimmed = templateSpecifier.replace(this.prefix, '');
+    let vmHandle = this.meta[trimmed].h;
+    let symbolTable = this.meta[trimmed].table;
 
     let componentSpecifier = owner.identify('component:', templateSpecifier);
     let ComponentClass = componentSpecifier ? owner.factoryFor(componentSpecifier) : null;
