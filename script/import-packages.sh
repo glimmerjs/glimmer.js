@@ -48,7 +48,7 @@ fi'
 }
 
 USER="glimmerjs"
-LIBS=("glimmer-component glimmer-application glimmer-application-test-helpers")
+LIBS=("glimmer-blueprint")
 
 for lib in $LIBS; do
     import_repo $lib
@@ -69,4 +69,3 @@ rm -rf packages/*/*/tmp
 rm -rf packages/*/*/dist
 
 yarn
-node_modules/.bin/lerna bootstrap

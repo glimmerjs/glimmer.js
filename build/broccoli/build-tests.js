@@ -91,6 +91,7 @@ function includeTSLintTests(tsTree) {
   // non-TypeScript files.
   tsTree = funnel(tsTree, {
     include: ['**/*.ts'],
+    exclude: ['@glimmer/blueprint/files/**/*.ts'],
     srcDir: 'packages'
   });
 
