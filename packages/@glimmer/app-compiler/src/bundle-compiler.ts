@@ -41,8 +41,8 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     return Object.assign({
       outputFiles: {
-        heapFile: 'src/templates.gbx',
-        dataSegment: 'src/data-segment.js'
+        heapFile: 'templates.gbx',
+        dataSegment: 'data-segment.js'
       }
     }, options);
   }
@@ -83,6 +83,8 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     this.compiler.addCompilableTemplate(locator, compilable);
 
+    let [projectPath] = this.inputPaths;
+
     this.listEntries().forEach(entry => {
       let { relativePath } = entry;
       if (entry.isDirectory()) {
@@ -90,7 +92,7 @@ export default class GlimmerBundleCompiler extends Plugin {
       } else {
         let content = this._readFile(relativePath);
         if (extname(relativePath) === '.hbs') {
-          let normalizedPath = this.delegate.normalizePath(relativePath);
+          let normalizedPath = this.delegate.normalizePath(join(projectPath, relativePath));
           let moduleLocator = { module: normalizedPath, name: 'default' };
           let templateLocator = this.delegate.templateLocatorFor(moduleLocator);
           this.compiler.add(templateLocator, content);

@@ -1,13 +1,6 @@
 import { module, test } from 'qunit';
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
 import { createTempDir, buildOutput } from 'broccoli-test-helper';
-import { MUCompilerDelegate } from '@glimmer/compiler-delegates';
-
-class TestModuleUnificationDelegate extends MUCompilerDelegate {
-  normalizePath(modulePath: string): string {
-    return `./${modulePath}`;
-  }
-}
 
 module('Broccol Glimmer Bundle Compiler', function(hooks) {
   let input = null;
@@ -55,17 +48,13 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      delegate: TestModuleUnificationDelegate,
-      outputFiles: {
-        dataSegment: 'data.js',
-        heapFile: 'templates.gbx'
-      }
+      mode: 'module-unification'
     });
 
     let output = await buildOutput(compiler);
     let files = output.read();
 
-    assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data.js'].sort());
+    assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort());
     assert.deepEqual(Object.keys(files['src']).sort(), ['ui'].sort());
     assert.deepEqual(Object.keys(files['src']['ui']), ['components']);
 
@@ -101,11 +90,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      delegate: TestModuleUnificationDelegate,
-      outputFiles: {
-        dataSegment: 'src/data.js',
-        heapFile: 'src/templates.gbx'
-      }
+      mode: 'module-unification'
     });
 
     let output = await buildOutput(compiler);
@@ -143,16 +128,12 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      delegate: TestModuleUnificationDelegate,
-      outputFiles: {
-        dataSegment: 'src/data.js',
-        heapFile: 'src/templates.gbx'
-      }
+      mode: 'module-unification'
     });
 
     let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['src']['data.js'];
+    let dataSegment = files['data-segment.js'] as string;
     assert.ok(dataSegment.length > 0, 'data segment is populated');
     assert.ok(dataSegment.indexOf('table') > -1, 'has a table');
     assert.ok(dataSegment.indexOf('heap') > -1, 'has a heap');
@@ -175,17 +156,41 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      delegate: TestModuleUnificationDelegate,
+      mode: 'module-unification'
+    });
+
+    let output = await buildOutput(compiler);
+    let files = output.read();
+    let dataSegment = files['data-segment.js'] as string;
+    assert.ok(dataSegment.indexOf('import { ifHelper as ') > -1);
+  });
+
+  test('can write binary and data to different output paths', async function(assert) {
+    input.write({
+      'package.json': JSON.stringify({name: 'my-app'}),
+      src: {
+        ui: {
+          components: {
+            A: {
+              'template.hbs': '<div>Hello {{if true "wat"}}</div>'
+            }
+          }
+        }
+      }
+    });
+
+    let compiler = new GlimmerBundleCompiler(input.path(), {
+      mode: 'module-unification',
       outputFiles: {
-        dataSegment: 'src/data.js',
-        heapFile: 'src/templates.gbx'
+        dataSegment: 'stuff.js',
+        heapFile: 'templates.bin'
       }
     });
 
     let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['src']['data.js'];
-    assert.ok(dataSegment.indexOf('import { ifHelper as ') > -1);
+    assert.ok(files['stuff.js']);
+    assert.ok(files['templates.bin']);
   });
 
   test('can lookup custom builtins', async function(assert) {
@@ -206,21 +211,17 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      delegate: TestModuleUnificationDelegate,
       builtins: {
         'css-blocks/style-if': { module: '@css-block/helpers/style-if', name: 'default' },
         'css-blocks/state': { module: '@css-block/helpers/state', name: 'default' },
         'css-blocks/concat': { module: '@css-block/helpers/concat', name: 'default' }
       },
-      outputFiles: {
-        dataSegment: 'src/data.js',
-        heapFile: 'src/templates.gbx'
-      }
+      mode: 'module-unification'
     });
 
     let output = await buildOutput(compiler);
     let files = output.read();
-    let dataSegment = files['src']['data.js'];
+    let dataSegment = files['data-segment.js'] as string;
     assert.ok(dataSegment.split('@css-block/helpers/state').length === 2);
     assert.ok(dataSegment.indexOf('@css-block/helpers/state') > -1);
     assert.ok(dataSegment.indexOf('@css-block/helpers/style-if') > -1);
