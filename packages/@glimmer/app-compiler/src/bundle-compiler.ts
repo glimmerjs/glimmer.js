@@ -16,8 +16,7 @@ export interface AppCompilerDelegateConstructor {
 }
 
 export interface GlimmerBundleCompilerOptions {
-  projectPath: string;
-  bundleCompiler: BundleCompilerOptions;
+  bundleCompiler?: BundleCompilerOptions;
   outputFiles?: OutputFiles;
   delegate?: AppCompilerDelegateConstructor;
   mode?: CompilerMode;
@@ -30,16 +29,12 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler<Opaque>;
   private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode, options) {
+  constructor(inputNode, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
 
   private defaultOptions(options: GlimmerBundleCompilerOptions) {
-    if (!options.projectPath) {
-      throw new Error('Must supply a projectPath');
-    }
-
     if (!options.mode && !options.delegate) {
       throw new Error('Must pass a bundle compiler mode or pass a custom compiler delegate.');
     }
@@ -64,7 +59,8 @@ export default class GlimmerBundleCompiler extends Plugin {
   createBundleCompiler() {
     let delegate;
     let options = this.options;
-    let { projectPath, outputFiles, builtins } = options;
+    let { outputFiles, builtins } = options;
+    let [projectPath] = this.inputPaths;
 
     if (options.mode && options.mode === 'module-unification') {
       delegate = this.delegate = new MUCompilerDelegate({ projectPath, outputFiles, builtins });
