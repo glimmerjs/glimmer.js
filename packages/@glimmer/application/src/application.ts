@@ -114,9 +114,9 @@ export default class Application implements Owner {
   private _container: Container;
   private _initializers: Initializer[] = [];
   private _initialized = false;
-  private _rendering = false;
-  private _rendered = false;
-  private _scheduled = false;
+  protected _rendering = false;
+  protected _rendered = false;
+  protected _scheduled = false;
 
   protected builder: Builder;
   protected loader: Loader;
