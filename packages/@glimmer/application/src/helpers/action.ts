@@ -1,4 +1,4 @@
-import { UpdatableReference } from "@glimmer/object-reference";
+import { UpdatableReference } from "@glimmer/component";
 import { VM, Arguments } from "@glimmer/runtime";
 import { Opaque } from '@glimmer/interfaces';
 
