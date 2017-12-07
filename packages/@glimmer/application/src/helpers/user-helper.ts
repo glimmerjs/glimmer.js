@@ -6,8 +6,8 @@ import {
 import {
   PathReference,
   Reference,
-  VOLATILE_TAG,
-  TagWrapper
+  TagWrapper,
+  RevisionTag
 } from "@glimmer/reference";
 
 import {
@@ -26,10 +26,11 @@ export default function buildUserHelper(helperFunc): GlimmerHelper {
 export class SimplePathReference<T> implements PathReference<T> {
   private parent: Reference<T>;
   private property: string;
-  public tag: TagWrapper<null> = VOLATILE_TAG;
+  public tag: TagWrapper<RevisionTag>;
 
   constructor(parent: Reference<T>, property: string) {
     this.parent = parent;
+    this.tag = parent.tag;
     this.property = property;
   }
 
@@ -45,10 +46,11 @@ export class SimplePathReference<T> implements PathReference<T> {
 export class HelperReference implements PathReference<Opaque> {
   private helper: UserHelper;
   private args: CapturedArguments;
-  public tag: TagWrapper<null> = VOLATILE_TAG;
+  public tag: TagWrapper<RevisionTag>;
 
   constructor(helper: UserHelper, args: Arguments) {
     this.helper = helper;
+    this.tag = args.tag;
     this.args = args.capture();
   }
 
