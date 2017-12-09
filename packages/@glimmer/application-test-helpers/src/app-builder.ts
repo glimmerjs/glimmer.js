@@ -30,6 +30,20 @@ export interface ComponentFactory extends FactoryDefinition<Opaque> {};
 
 export class TestApplication extends Application {
   rootElement: Element;
+
+  async scheduleRerender(): Promise<void> {
+    await new Promise(res => {
+      if (this._scheduled || !this._rendered) return;
+      this._rendering = true;
+      this._scheduled = true;
+      requestAnimationFrame(() => {
+        this._scheduled = false;
+        this._rerender();
+        this._rendering = false;
+        res();
+      });
+    });
+  }
 }
 
 export interface AppBuilderTemplateMeta {
@@ -129,9 +143,14 @@ export class AppBuilder<T extends TestApplication> {
     });
 
     table.byHandle.forEach((locator, handle) => {
-      let component = locator.module.replace('template:/', 'component:/');
-      if (this.modules[component]) {
-        resolverTable[handle] = this.modules[component];
+      let module = locator.module.replace('template:/', 'component:/');
+      if (this.modules[module]) {
+        if (module.indexOf('helper:') === 0) {
+          resolverTable[handle] = [1, this.modules[module]];
+        } else {
+          resolverTable[handle] = this.modules[module];
+        }
+
       }
     });
 

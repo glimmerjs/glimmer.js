@@ -1,6 +1,6 @@
 import { didRender } from '@glimmer/application-test-helpers';
 import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
-
+import Component, { tracked } from '@glimmer/component';
 import '../helpers/async';
 
 class RenderComponentTest extends RenderTest {
@@ -127,6 +127,60 @@ class RenderComponentTest extends RenderTest {
     await didRender(app);
 
     assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer!</h1>');
+  }
+
+  @test async 'user helpers are not volatile'(assert) {
+    assert.expect(6);
+
+    let containerElement = document.createElement('div');
+    let nextSibling = document.createElement('aside');
+
+    containerElement.appendChild(nextSibling);
+
+    let component;
+
+    class HelloWorld extends Component {
+      @tracked a = 'a';
+      constructor(options) {
+        super(options);
+        component = this;
+      }
+    }
+
+    let count = 0;
+
+    let app = await this.app
+      .helper('woot', (params) => {
+        count++;
+        return params[0];
+      })
+      .component('HelloWorld', HelloWorld)
+      .template('HelloWorld', `<h1>Hello Glimmer! {{woot a}}</h1>`)
+      .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
+      .boot();
+
+    assert.equal(containerElement.innerHTML, '<aside></aside>');
+
+    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloRobbie', containerElement, nextSibling);
+
+    await didRender(app);
+
+    assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer! a</h1>');
+
+    await app.scheduleRerender();
+
+    assert.equal(count, 1);
+
+    assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer! a</h1>');
+
+    component.a = 'b';
+
+    await app.scheduleRerender();
+
+    assert.equal(count, 2);
+
+    assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer! b</h1>');
   }
 
   @test({ debug: true })
