@@ -178,11 +178,11 @@ export default class Application implements Owner {
 
     this._rendering = true;
     this._scheduled = true;
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       this._scheduled = false;
       this._rerender();
       this._rendering = false;
-    });
+    }, 0);
   }
 
   /** @hidden */
