@@ -16,8 +16,7 @@ export interface AppCompilerDelegateConstructor {
 }
 
 export interface GlimmerBundleCompilerOptions {
-  projectPath: string;
-  bundleCompiler: BundleCompilerOptions;
+  bundleCompiler?: BundleCompilerOptions;
   outputFiles?: OutputFiles;
   delegate?: AppCompilerDelegateConstructor;
   mode?: CompilerMode;
@@ -30,24 +29,20 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler<Opaque>;
   private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode, options) {
+  constructor(inputNode, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
 
   private defaultOptions(options: GlimmerBundleCompilerOptions) {
-    if (!options.projectPath) {
-      throw new Error('Must supply a projectPath');
-    }
-
     if (!options.mode && !options.delegate) {
       throw new Error('Must pass a bundle compiler mode or pass a custom compiler delegate.');
     }
 
     return Object.assign({
       outputFiles: {
-        heapFile: 'src/templates.gbx',
-        dataSegment: 'src/data-segment.js'
+        heapFile: 'templates.gbx',
+        dataSegment: 'data-segment.js'
       }
     }, options);
   }
@@ -64,7 +59,8 @@ export default class GlimmerBundleCompiler extends Plugin {
   createBundleCompiler() {
     let delegate;
     let options = this.options;
-    let { projectPath, outputFiles, builtins } = options;
+    let { outputFiles, builtins } = options;
+    let [projectPath] = this.inputPaths;
 
     if (options.mode && options.mode === 'module-unification') {
       delegate = this.delegate = new MUCompilerDelegate({ projectPath, outputFiles, builtins });
@@ -87,6 +83,8 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     this.compiler.addCompilableTemplate(locator, compilable);
 
+    let [projectPath] = this.inputPaths;
+
     this.listEntries().forEach(entry => {
       let { relativePath } = entry;
       if (entry.isDirectory()) {
@@ -94,7 +92,7 @@ export default class GlimmerBundleCompiler extends Plugin {
       } else {
         let content = this._readFile(relativePath);
         if (extname(relativePath) === '.hbs') {
-          let normalizedPath = this.delegate.normalizePath(relativePath);
+          let normalizedPath = this.delegate.normalizePath(join(projectPath, relativePath));
           let moduleLocator = { module: normalizedPath, name: 'default' };
           let templateLocator = this.delegate.templateLocatorFor(moduleLocator);
           this.compiler.add(templateLocator, content);
