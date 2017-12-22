@@ -37,7 +37,7 @@ import { dict, Dict } from "@glimmer/util";
  * properties, you want to track both so that when one of the
  * dependents change, a rerender is scheduled.
  *
- * In the following example we have three properties, `totalApples`,
+ * In the following example we have two properties,
  * `eatenApples`, and `remainingApples`.
  *
  *
