@@ -7,7 +7,7 @@ import Environment from '../../environment';
 
 import BytecodeResolver from './resolver';
 import { PathReference } from '@glimmer/reference';
-import { VMHandle, Recast, ProgramSymbolTable } from '@glimmer/interfaces';
+import { ProgramSymbolTable } from '@glimmer/interfaces';
 
 export interface SerializedHeap {
   table: number[];
@@ -57,7 +57,7 @@ export default class BytecodeLoader implements Loader {
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
-    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, mainEntry as Recast<number, VMHandle>);
+    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, mainEntry);
     return new TemplateIterator(vm);
   }
 }
