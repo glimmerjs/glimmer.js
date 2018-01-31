@@ -49,7 +49,7 @@ export interface Loader {
   /**
    * Returns a template iterator for on the provided application state.
    */
-  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator | Promise<TemplateIterator>;
+  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator>;
 }
 
 /**

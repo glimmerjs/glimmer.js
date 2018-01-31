@@ -15,7 +15,8 @@ let config = {
     "Chrome": [
       "--headless",
       "--disable-gpu",
-      "--remote-debugging-port=9222"
+      "--remote-debugging-port=9222",
+      "--no-sandbox"
     ]
   },
   "launch_in_dev": [

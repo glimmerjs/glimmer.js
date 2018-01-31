@@ -27,7 +27,7 @@ export default class RuntimeCompilerLoader implements Loader {
   constructor(public resolver: Resolver) {
   }
 
-  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): TemplateIterator {
+  async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
     let resolver = new RuntimeResolver(app);
     let program = new Program(new LazyConstants(resolver));
     let macros = new Macros();
@@ -48,11 +48,11 @@ export default class RuntimeCompilerLoader implements Loader {
 
     let mainLayout = templateFactory(mainTemplate).create(compileOptions);
 
-    return mainLayout.renderLayout({
+    return Promise.resolve(mainLayout.renderLayout({
       env,
       builder,
       dynamicScope,
       self
-    });
+    }));
   }
 }
