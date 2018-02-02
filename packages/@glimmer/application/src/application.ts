@@ -14,7 +14,7 @@ import {
 } from '@glimmer/runtime';
 import {
   UpdatableReference
-} from '@glimmer/object-reference';
+} from '@glimmer/component';
 import {
   Option, assert
 } from '@glimmer/util';
@@ -114,6 +114,12 @@ export default class Application implements Owner {
   private _container: Container;
   private _initializers: Initializer[] = [];
   private _initialized = false;
+
+  /** @hidden
+   * The root Reference whose value provides the context of the main template.
+   */
+  private _self: UpdatableReference<{ roots: AppRoot[] }>;
+
   protected _rendering = false;
   protected _rendered = false;
   protected _scheduled = false;
@@ -149,8 +155,16 @@ export default class Application implements Owner {
    * ```
    */
   renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
-    this._roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
-    this.scheduleRerender();
+    let { _roots: roots, _self: self } = this;
+
+    roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
+
+    // If we've already rendered, need to invalidate the root reference and
+    // schedule a re-render for the new component to appear in DOM.
+    if (self) {
+      self.update({ roots });
+      this.scheduleRerender();
+    }
   }
 
   /**
@@ -251,7 +265,7 @@ export default class Application implements Owner {
     // Create the template context for the root `main` template, which just
     // contains the array of component roots. Any property references in that
     // template will be looked up from this object.
-    let self = new UpdatableReference({ roots: this._roots });
+    let self = this._self = new UpdatableReference({ roots: this._roots });
 
     // Create an empty root scope.
     let dynamicScope = new DynamicScope();
