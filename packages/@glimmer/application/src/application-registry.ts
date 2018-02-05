@@ -10,6 +10,14 @@ function isTypeSpecifier(specifier: string) {
   return specifier.indexOf(':') === -1;
 }
 
+/**
+ * A repository of application objects, indexed by type and name.
+ *
+ * {@link Initializer | Initializers} can add or override objects in the system
+ * before the application boots, customizing runtime behavior.
+ *
+ * @internal
+ */
 export default class ApplicationRegistry implements RegistryAccessor {
   private _registry: Registry;
   private _resolver: Resolver;

@@ -21,11 +21,13 @@ import RuntimeResolver from './loaders/runtime-compiler/loader';
 
 type KeyFor<T> = (item: Opaque, index: T) => string;
 
+/** @internal */
 export interface EnvironmentOptions {
   document?: HTMLDocument;
   appendOperations?: DOMTreeConstruction;
 }
 
+/** @internal */
 export default class Environment extends GlimmerEnvironment {
   private uselessAnchor: HTMLAnchorElement;
   public resolver: RuntimeResolver;

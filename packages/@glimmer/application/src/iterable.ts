@@ -88,6 +88,7 @@ class EmptyIterator implements OpaqueIterator {
 
 const EMPTY_ITERATOR = new EmptyIterator();
 
+/** @internal */
 export default class Iterable implements AbstractIterable<Opaque, Opaque, IterationItem<Opaque, Opaque>, UpdatableReference<Opaque>, UpdatableReference<Opaque>> {
   public tag: Tag;
   private ref: Reference<Opaque>;

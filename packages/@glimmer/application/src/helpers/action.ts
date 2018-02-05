@@ -2,6 +2,7 @@ import { UpdatableReference } from "@glimmer/component";
 import { VM, Arguments } from "@glimmer/runtime";
 import { Opaque } from '@glimmer/interfaces';
 
+/** @internal */
 export default function buildAction(vm: VM, _args: Arguments) {
   let componentRef = vm.getSelf();
   let args = _args.capture();
@@ -30,6 +31,7 @@ function throwNoActionError(actionFunc: any, actionFuncReference: Opaque) {
   throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`);
 }
 
+/** @internal */
 export function debugInfoForReference(reference: any): string {
   let message = '';
   let parent;

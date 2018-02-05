@@ -22,6 +22,8 @@ export interface Specifier {
  * final template compilation step client-side. It configures the compiler to
  * resolve templates, helpers and other objects from the runtime registry, and
  * enables just-in-time compilation of templates as they are encountered.
+ *
+ * @public
  */
 export default class RuntimeCompilerLoader implements Loader {
   constructor(public resolver: Resolver) {

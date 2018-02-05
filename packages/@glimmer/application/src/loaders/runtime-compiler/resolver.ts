@@ -49,6 +49,7 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
   meta: Specifier;
 }
 
+/** @public */
 export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   templateOptions: TemplateOptions<Specifier>;
   handleLookup: TypedRegistry<Opaque>[] = [];
