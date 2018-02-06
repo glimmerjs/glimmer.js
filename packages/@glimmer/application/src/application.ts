@@ -32,6 +32,8 @@ import Environment from './environment';
  * browser a builder might construct DOM elements, while on the server it may
  * instead construct HTML. An object implementing the Builder interface should
  * return a concrete instance of an ElementBuilder from its getBuilder method.
+ *
+ * @public
  */
 export interface Builder {
   /**
@@ -44,6 +46,8 @@ export interface Builder {
  * Loaders are responsible for loading and preparing all of the templates and
  * other metadata required to get a Glimmer.js application into a functioning
  * state.
+ *
+ * @public
  */
 export interface Loader {
   /**
@@ -57,6 +61,8 @@ export interface Loader {
  * from a Loader, and re-rendering when component state has been invalidated.
  * The Renderer may be either synchronous or asynchronous, and controls its own
  * scheduling.
+ *
+ * @public
  */
 export interface Renderer {
   /**
@@ -73,6 +79,11 @@ export interface Renderer {
   rerender(): void | Promise<void>;
 }
 
+/**
+ * Options for configuring an instance of [Application].
+ *
+ * @public
+ */
 export interface ApplicationOptions {
   builder: Builder;
   loader: Loader;
@@ -82,11 +93,24 @@ export interface ApplicationOptions {
   document?: Simple.Document;
 }
 
+/**
+ * Initializers run when an [Application] boots and allow extending the
+ * application with additional functionality. See
+ * [Application#registerInitializer].
+ *
+ * @public
+ */
 export interface Initializer {
   name?: string;
   initialize(registry: RegistryWriter): void;
 }
 
+/**
+ * A data structure created when a root Glimmer component is rendered into the
+ * DOM via the [Application#renderComponent] method.
+ *
+ * @internal
+ */
 export interface AppRoot {
   id: number;
   component: string;
@@ -94,14 +118,21 @@ export interface AppRoot {
   nextSibling: Option<Simple.Node>;
 }
 
+/** @internal */
 export interface ApplicationConstructor<T = Application> {
   new (options: ApplicationOptions): T;
 }
 
+/** @internal */
 export type Notifier = [() => void, (err: Error) => void];
 
 const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
 
+/**
+ * The central control point for starting and running Glimmer components.
+ *
+ * @public
+ */
 export default class Application implements Owner {
   public rootName: string;
   public resolver: Resolver;
@@ -169,7 +200,9 @@ export default class Application implements Owner {
 
   /**
    * Initializes the application and renders any components that have been
-   * registered via `renderComponent()`.
+   * registered via [renderComponent].
+   *
+   * @public
    */
   async boot(): Promise<void> {
     this.initialize();
@@ -199,23 +232,23 @@ export default class Application implements Owner {
     }, 0);
   }
 
-  /** @hidden */
+  /** @internal */
   initialize(): void {
     this.initRegistry();
     this.initContainer();
   }
 
-  /** @hidden */
+  /** @internal */
   registerInitializer(initializer: Initializer): void {
     this._initializers.push(initializer);
   }
 
   /**
-   * @hidden
-   *
    * Initializes the registry, which maps names to objects in the system. Addons
    * and subclasses can customize the behavior of a Glimmer application by
    * overriding objects in the registry.
+   *
+   * @internal
    */
   protected initRegistry(): void {
     let registry = this._registry = new Registry();
@@ -241,10 +274,10 @@ export default class Application implements Owner {
   }
 
   /**
-   * @hidden
-   *
    * Initializes the container, which stores instances of objects that come from
    * the registry.
+   *
+   * @internal
    */
   protected initContainer(): void {
     this._container = new Container(this._registry, this.resolver);
@@ -258,7 +291,7 @@ export default class Application implements Owner {
     };
   }
 
-  /** @hidden */
+  /** @internal */
   protected async _render(): Promise<void> {
     let { env } = this;
 
@@ -290,13 +323,14 @@ export default class Application implements Owner {
     }
   }
 
-  /** @hidden
-   *
+  /**
    * Ensures the DOM is up-to-date by performing a revalidation on the root
    * template's render result. This method should not be called directly;
    * instead, any mutations in the program that could cause side-effects should
    * call `scheduleRerender()`, which ensures that DOM updates only happen once
    * at the end of the browser's event loop.
+   *
+   * @internal
    */
   protected async _rerender() {
     let { env } = this;
@@ -332,18 +366,18 @@ export default class Application implements Owner {
   /**
    * Owner interface implementation
    *
-   * @hidden
+   * @internal
    */
   identify(specifier: string, referrer?: string): string {
     return this.resolver.identify(specifier, referrer);
   }
 
-  /** @hidden */
+  /** @internal */
   factoryFor(specifier: string, referrer?: string): Factory<any> {
     return this._container.factoryFor(this.identify(specifier, referrer));
   }
 
-  /** @hidden */
+  /** @internal */
   lookup(specifier: string, referrer?: string): any {
     return this._container.lookup(this.identify(specifier, referrer));
   }

@@ -1,6 +1,22 @@
 import { TemplateIterator, RenderResult } from '@glimmer/runtime';
 import { Renderer } from '../application';
 
+/**
+ * Performs a synchronous initial render of templates.
+ *
+ * @remarks
+ *
+ * The SyncRenderer will render a template as fast as possible, continuing to
+ * work until the template has been completely rendered.
+ *
+ * While this delivers the fastest absolute rendering performance, large
+ * templates may cause the main thread to be consumed for long periods of time,
+ * leading to user-noticeable performance degradation, or jank.
+ *
+ * See also: {@link AsyncRenderer}
+ *
+ * @public
+ */
 export default class SyncRenderer implements Renderer {
   result: RenderResult;
 

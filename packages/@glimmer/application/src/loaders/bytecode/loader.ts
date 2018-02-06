@@ -19,6 +19,11 @@ export interface Metadata {
   table: ProgramSymbolTable;
 }
 
+/**
+ * Additional metadata that accompanies the binary bytecode data.
+ *
+ * @public
+ */
 export interface BytecodeData {
   prefix: string;
   mainEntry: number;
@@ -33,6 +38,22 @@ export interface BytecodeLoaderOptions {
   data: BytecodeData;
 }
 
+/**
+ * Initializes an Application with a binary bytecode (.gbx) file containing
+ * compiled templates.
+ *
+ * @remarks
+ * Once all of the templates have been parsed into IR, the compiler performs a
+ * final pass that resolves symbolic addresses and writes the final opcodes into
+ * a shared binary buffer. In native compiler terms, you can think of this as
+ * the "linking" step that produces the final executable. This binary executable
+ * is saved to disk as a .gbx file that can be served to a browser and evaluated
+ * with the runtime.
+ *
+ * For details, see {@link Application}.
+ *
+ * @public
+ */
 export default class BytecodeLoader implements Loader {
   protected data: BytecodeData;
   protected bytecode: Promise<ArrayBuffer>;

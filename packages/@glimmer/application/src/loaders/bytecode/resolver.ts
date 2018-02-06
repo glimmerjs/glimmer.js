@@ -23,6 +23,9 @@ export interface TemplateMeta {
   specifier: string;
 }
 
+/**
+ * @internal
+ */
 export const enum ModuleTypes {
   HELPER_FACTORY,
   HELPER
@@ -34,6 +37,8 @@ export interface TemplateLocator {
 }
 /**
  * Exchanges VM handles for concrete implementations.
+ *
+ * @internal
  */
 export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
   constructor(protected owner: Owner, protected table: Opaque[], protected meta: Dict<Metadata>, private prefix: string) {
