@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@glimmer/application": "^0.8.0",
-    "@glimmer/application-pipeline": "^0.9.0",
+    "@glimmer/application-pipeline": "^0.10.0",
     "@glimmer/blueprint": "~<%= blueprintVersion %>",
     "@glimmer/component": "^0.8.0",
     "@glimmer/inline-precompile": "^1.0.0",
@@ -27,7 +27,7 @@
     "ember-cli-tslint": "^0.1.3",
     "ember-cli-uglify": "^2.0.0-beta.1",
     "qunitjs": "^2.3.3",
-    "typescript": "^2.2.2"
+    "typescript": "~2.6.0"
   },
   "engines": {
     "node": ">= 4.0"
