@@ -1,6 +1,7 @@
-import { module, test } from 'qunit';
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
 import { createTempDir, buildOutput } from 'broccoli-test-helper';
+
+const { module, test } = QUnit;
 
 module('Broccol Glimmer Bundle Compiler', function(hooks) {
   let input = null;
