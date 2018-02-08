@@ -1,6 +1,8 @@
-export default {
-  block: '',
+declare const _default: {
+  block: string;
   meta: {
-    specifier: 'main'
+    specifier: string;
   }
 };
+
+export default _default;
