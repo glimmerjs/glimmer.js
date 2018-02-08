@@ -105,13 +105,37 @@ function applyNewVersion() {
       execWithSideEffects(`git add "${package.packageJSONPath}"`);
     });
 
+  // Update blueprint's package.json
+  let blueprintPkgPath = path.join(PACKAGES_PATH, '@glimmer/blueprint/files/package.json');
+  let blueprintPkg = JSON.parse(fs.readFileSync(blueprintPkgPath));
+
+  packages.forEach(package => {
+    // Blueprint version is interpolated by the blueprint templating system at
+    // install time.
+    if (package.name === '@glimmer/blueprint') { return; }
+
+    let { dependencies, devDependencies } = blueprintPkg
+
+    if (dependencies && dependencies[package.name]) {
+      dependencies[package.name] = `^${package.version}`;
+    }
+
+    if (devDependencies && devDependencies[package.name]) {
+      devDependencies[package.name] = `^${package.version}`;
+    }
+  });
+
+  if (!DRY_RUN) {
+    fs.writeFileSync(blueprintPkgPath, JSON.stringify(blueprintPkg, null, 2));
+  }
+
   // Update root package.json
   let rootPkgPath = path.join(__dirname, '../package.json');
   let rootPkg = JSON.parse(fs.readFileSync(rootPkgPath, 'utf8'));
   rootPkg.version = newVersion;
   if (!DRY_RUN) {
     fs.writeFileSync(rootPkgPath, JSON.stringify(rootPkg, null, 2));
-      execWithSideEffects(`git add package.json`);
+    execWithSideEffects(`git add package.json`);
   }
 }
 

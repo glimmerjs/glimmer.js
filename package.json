@@ -15,6 +15,7 @@
     "packages/@glimmer/*"
   ],
   "devDependencies": {
+    "@glimmer/compiler": "^0.31.0",
     "@types/qunit": "^2.0.31",
     "amd-name-resolver": "^1.0.0",
     "babel-plugin-debug-macros": "^0.1.11",
@@ -43,6 +44,7 @@
     "qunit-tap": "^1.5.1",
     "qunit": "^2.4.1",
     "rimraf": "^2.6.1",
+    "rollup": "^0.41.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "semver": "^5.3.0",
@@ -50,7 +52,7 @@
     "simple-html-tokenizer": "^0.4.3",
     "testem": "^1.16.0",
     "tslint": "^4.0.2",
-    "typescript": "^2.5.2"
+    "typescript": "~2.5.2"
   },
   "dependencies": {
     "tslib": "^1.8.0"

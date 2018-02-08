@@ -35,11 +35,13 @@ module.exports = function buildPackages(es2017, matrix) {
     let pkgName = pkg.name;
     let builds;
 
-    // The TypeScript compiler doesn't re-emit `.d.ts` files, which is all that
-    // @glimmer/interfaces exports. We need to special case this package and
-    // copy over the definition files from source.
-    if (pkgName === '@glimmer/interfaces') {
-      builds = [copyVerbatim('@glimmer/interfaces')];
+    // The blueprint package is structured differently from other packages, so
+    // we just copy it over verbatim to the build output.
+    if (pkgName === '@glimmer/blueprint') {
+      builds = [funnel(`packages/${pkgName}`, {
+        destDir: `${pkgName}/`,
+        exclude: ['**/node_modules/**']
+      })];
     } else {
       builds = buildMatrix(pkgName, matrix);
     }
@@ -68,12 +70,6 @@ module.exports = function buildPackages(es2017, matrix) {
       }
     });
   }
-}
-
-function copyVerbatim(pkgName) {
-  return funnel(`packages/${pkgName}`, {
-    destDir: `${pkgName}/dist/types/`
-  });
 }
 
 function flatten(arr) {

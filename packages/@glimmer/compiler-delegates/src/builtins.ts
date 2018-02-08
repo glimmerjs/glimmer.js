@@ -1,4 +1,4 @@
-import { ModuleLocator, TemplateLocator, AnnotatedModuleLocator } from '@glimmer/bundle-compiler';
+import { ModuleLocator, TemplateLocator, AnnotatedModuleLocator } from '@glimmer/interfaces';
 
 /*
  * "Builtins" describe helpers, components and templates that originate from

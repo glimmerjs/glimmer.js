@@ -1,5 +1,5 @@
-import { ModuleLocator, TemplateLocator, BundleCompilationResult } from '@glimmer/bundle-compiler';
-import { SymbolTable, ProgramSymbolTable, ComponentCapabilities } from '@glimmer/interfaces';
+import { BundleCompilationResult } from '@glimmer/bundle-compiler';
+import { SymbolTable, ProgramSymbolTable, ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { expect } from '@glimmer/util';
 import { relative } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';

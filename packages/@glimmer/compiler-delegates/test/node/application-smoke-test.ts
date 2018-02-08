@@ -1,6 +1,5 @@
 import Application, { BytecodeLoader, SyncRenderer } from '@glimmer/application';
 import { StringBuilder } from '@glimmer/ssr';
-import { module, test } from 'qunit';
 import * as SimpleDOM from 'simple-dom';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 import { ComponentManager } from '@glimmer/component';
@@ -8,6 +7,8 @@ import { BuildServer } from './helpers/build-server';
 import { defaultResolverConfiguration } from '@glimmer/application-test-helpers';
 import * as fs from 'fs';
 import * as path from 'path';
+
+const { module, test } = QUnit;
 
 let buildServer;
 module('Application smoke tests', {

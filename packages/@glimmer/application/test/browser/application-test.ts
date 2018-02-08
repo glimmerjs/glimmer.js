@@ -2,9 +2,9 @@ import Application, { RuntimeCompilerLoader, SyncRenderer, DOMBuilder, BytecodeL
 import { BlankResolver } from '@glimmer/test-utils';
 import { Document } from 'simple-dom';
 import { Program } from '@glimmer/program';
-import { BundleCompiler, ModuleLocator, TemplateLocator, BundleCompilationResult } from '@glimmer/bundle-compiler';
+import { BundleCompiler, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { AppCompilerDelegate } from '@glimmer/compiler-delegates';
-import { ComponentCapabilities, Opaque } from '@glimmer/interfaces';
+import { ComponentCapabilities, Opaque, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompileOptions, CompilableTemplate } from '@glimmer/opcode-compiler';
 import { precompile } from '@glimmer/application-test-helpers';
@@ -159,7 +159,7 @@ test('accepts options for rootName, resolver and document', function(assert) {
   app = new Application({
     rootName: 'app',
     resolver,
-    document: customDocument,
+    document: customDocument as any,
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body, nextSibling: null })

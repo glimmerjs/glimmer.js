@@ -1,10 +1,11 @@
 import { MUCodeGenerator } from '@glimmer/compiler-delegates';
-import { module, test } from 'qunit';
 import { ModuleLocatorMap, ExternalModuleTable, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { Program, ConstantPool } from '@glimmer/program';
 import { sync as findup} from 'find-up';
 import { ProgramSymbolTable } from '@glimmer/interfaces';
 import { Project } from 'glimmer-analyzer';
+
+const { module, test } = QUnit;
 
 let generator: MUCodeGenerator;
 
