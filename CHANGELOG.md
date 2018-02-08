@@ -1,5 +1,209 @@
 # Changelog
 
+## v0.9.0-alpha.14 (2018-02-08)
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#109](https://github.com/glimmerjs/glimmer.js/pull/109) Fix Yarn failure + other updates. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/application`
+  * [#107](https://github.com/glimmerjs/glimmer.js/pull/107) Use non-volatile UpdatableReference from @glimmer/component. ([@tomdale](https://github.com/tomdale))
+  * [#104](https://github.com/glimmerjs/glimmer.js/pull/104) Unify Loader Interface. ([@chadhietala](https://github.com/chadhietala))
+  * [#97](https://github.com/glimmerjs/glimmer.js/pull/97) Don't use rAF for scheduling re-render. ([@chadhietala](https://github.com/chadhietala))
+
+#### :memo: Documentation
+* `@glimmer/application`
+  * [#108](https://github.com/glimmerjs/glimmer.js/pull/108) Inline API docs for @glimmer/application. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/component`
+  * [#53](https://github.com/glimmerjs/glimmer.js/pull/53) Update and improve Component documentation. ([@locks](https://github.com/locks))
+
+#### :house: Internal
+* `@glimmer/blueprint`
+  * [#106](https://github.com/glimmerjs/glimmer.js/pull/106) add set -e to fail early. ([@kellyselden](https://github.com/kellyselden))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`
+  * [#105](https://github.com/glimmerjs/glimmer.js/pull/105) Bump glimmer-vm to 0.30.5. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`
+  * [#93](https://github.com/glimmerjs/glimmer.js/pull/93) Implicit 'projectPath' for Broccoli Plugin. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 4
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+- Kelly Selden ([kellyselden](https://github.com/kellyselden))
+- Ricardo Mendes ([locks](https://github.com/locks))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
+
+## v0.9.0-alpha.13 (2017-12-09)
+
+#### :rocket: Enhancement
+* `@glimmer/application-test-helpers`, `@glimmer/application`
+  * [#96](https://github.com/glimmerjs/glimmer.js/pull/96) Helpers should not be volatile. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/blueprint`
+  * [#87](https://github.com/glimmerjs/glimmer.js/pull/87) Import `@glimmer/blueprint` into monorepo. ([@Turbo87](https://github.com/Turbo87))
+
+#### :bug: Bug Fix
+* `@glimmer/application`
+  * [#95](https://github.com/glimmerjs/glimmer.js/pull/95) Use Glimmer.js version of UpdatableReference to avoid action volatility. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 3
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+- Tobias Bieniek ([Turbo87](https://github.com/Turbo87))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
+
+## v0.9.0-alpha.12 (2017-11-28)
+
+#### :bug: Bug Fix
+* `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#91](https://github.com/glimmerjs/glimmer.js/pull/91) Confirm dynamic invocations work post-refactor. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.10 (2017-11-28)
+
+#### :rocket: Enhancement
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#89](https://github.com/glimmerjs/glimmer.js/pull/89) Refactor Data Segment. ([@chadhietala](https://github.com/chadhietala))
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`
+  * [#90](https://github.com/glimmerjs/glimmer.js/pull/90) Update @glimmer/vm packages. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application-test-helpers`, `@glimmer/component`
+  * [#85](https://github.com/glimmerjs/glimmer.js/pull/85) Remove unused/duplicate dev dependencies. ([@Turbo87](https://github.com/Turbo87))
+* Other
+  * [#80](https://github.com/glimmerjs/glimmer.js/pull/80) Remove unused `emberjs-build` dependency. ([@Turbo87](https://github.com/Turbo87))
+  * [#83](https://github.com/glimmerjs/glimmer.js/pull/83) TravisCI improvements. ([@Turbo87](https://github.com/Turbo87))
+  * [#84](https://github.com/glimmerjs/glimmer.js/pull/84) Update broccoli dependencies. ([@Turbo87](https://github.com/Turbo87))
+* `@glimmer/app-compiler`
+  * [#82](https://github.com/glimmerjs/glimmer.js/pull/82) app-compiler: Remove unnecessary `co` dependency. ([@Turbo87](https://github.com/Turbo87))
+* `@glimmer/app-compiler`, `@glimmer/compiler-delegates`
+  * [#81](https://github.com/glimmerjs/glimmer.js/pull/81) Replace deprecated `qunitjs` dependency with `qunit`. ([@Turbo87](https://github.com/Turbo87))
+
+#### Committers: 2
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+- Tobias Bieniek ([Turbo87](https://github.com/Turbo87))
+
+
+## v0.9.0-alpha.9 (2017-11-16)
+
+#### :rocket: Enhancement
+* `@glimmer/application`
+  * [#75](https://github.com/glimmerjs/glimmer.js/pull/75) Actually Expose The Rehydrating Builder. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.8 (2017-11-15)
+
+#### :bug: Bug Fix
+* `@glimmer/compiler-delegates`
+  * [#74](https://github.com/glimmerjs/glimmer.js/pull/74) BUGFIX: Builtin helpers and app helpers serialization. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.7 (2017-11-15)
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#73](https://github.com/glimmerjs/glimmer.js/pull/73) Add End To End Smoke Test. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.6 (2017-11-13)
+
+#### :bug: Bug Fix
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#69](https://github.com/glimmerjs/glimmer.js/pull/69) Fix serialization. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.5 (2017-11-09)
+
+#### :rocket: Enhancement
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`
+  * [#66](https://github.com/glimmerjs/glimmer.js/pull/66) Improve bytecode compilation. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/blueprint`
+  * [#66](https://github.com/glimmerjs/glimmer.js/pull/66) Improve bytecode compilation. ([@tomdale](https://github.com/tomdale))
+
+#### :bug: Bug Fix
+* `@glimmer/blueprint`
+  * [#69](https://github.com/glimmerjs/glimmer.js/pull/69) Fix serialization. ([@chadhietala](https://github.com/chadhietala))
+
+#### :house: Internal
+* `@glimmer/application`
+  * [#65](https://github.com/glimmerjs/glimmer.js/pull/65) Remove dependency on @glimmer/test-helpers. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/compiler-delegates`
+  * [#64](https://github.com/glimmerjs/glimmer.js/pull/64) Data Segment Generation Tests. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/blueprint`
+  * [#73](https://github.com/glimmerjs/glimmer.js/pull/73) Add End To End Smoke Test. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`, `@glimmer/compiler-delegates`
+  * [#60](https://github.com/glimmerjs/glimmer.js/pull/60) Add more tests for 3rd party builtins. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 4
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+- Toran Billups ([toranb](https://github.com/toranb))
+- [OlmoDalco](https://github.com/OlmoDalco)
+
+
+## v0.9.0-alpha.4 (2017-10-30)
+
+#### :rocket: Enhancement
+* `@glimmer/app-compiler`, `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#59](https://github.com/glimmerjs/glimmer.js/pull/59) Allow for host to pass builtin names. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.3 (2017-10-30)
+
+#### :house: Internal
+* `@glimmer/application`
+  * [#57](https://github.com/glimmerjs/glimmer.js/pull/57) Remove unused Component import. ([@chadhietala](https://github.com/chadhietala))
+  * [#55](https://github.com/glimmerjs/glimmer.js/pull/55) Type Notifier. ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([chadhietala](https://github.com/chadhietala))
+
+
+## v0.9.0-alpha.2 (2017-10-30)
+
+#### :rocket: Enhancement
+* `@glimmer/application`, `@glimmer/component`
+  * [#51](https://github.com/glimmerjs/glimmer.js/pull/51) Optimize template-only components. ([@tomdale](https://github.com/tomdale))
+  * [#47](https://github.com/glimmerjs/glimmer.js/pull/47) Adding guards to component manager. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`
+  * [#50](https://github.com/glimmerjs/glimmer.js/pull/50) Update glimmer-vm packages to 0.29.9. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/test-utils`
+  * [#46](https://github.com/glimmerjs/glimmer.js/pull/46) Async Boot. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application`, `@glimmer/ssr`
+  * [#45](https://github.com/glimmerjs/glimmer.js/pull/45) Introduce Builders. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`
+  * [#39](https://github.com/glimmerjs/glimmer.js/pull/39) Broccoli bundle compiler. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application`
+  * [#34](https://github.com/glimmerjs/glimmer.js/pull/34) Separate Application responsibilities. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/compiler-delegates`
+  * [#25](https://github.com/glimmerjs/glimmer.js/pull/25) Introduce @glimmer/compiler-delegates. ([@chadhietala](https://github.com/chadhietala))
+
+#### :bug: Bug Fix
+* `@glimmer/app-compiler`, `@glimmer/compiler-delegates`
+  * [#54](https://github.com/glimmerjs/glimmer.js/pull/54) [BUGFIX] Fix data segment generation. ([@chadhietala](https://github.com/chadhietala))
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`
+  * [#52](https://github.com/glimmerjs/glimmer.js/pull/52) Bump Glimmer-VM deps to 0.29.10. ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/test-utils`
+  * [#44](https://github.com/glimmerjs/glimmer.js/pull/44) Fix publishing. ([@chadhietala](https://github.com/chadhietala))
+
+
 ## v0.8.0 (2017-10-22)
 
 We've got some big changes in v0.8.0 of Glimmer.js! The most notable change is
