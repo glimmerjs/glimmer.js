@@ -13,8 +13,8 @@ export default class App extends Application {
       builder: new DOMBuilder({ element, nextSibling: null }),
       loader: new RuntimeCompilerLoader(resolver),
       renderer: new AsyncRenderer(),
-      rootName: resolverConfiguration.app.rootName,
-      resolver
+      resolver,
+      rootName: resolverConfiguration.app.rootName
     });
   }
 }
