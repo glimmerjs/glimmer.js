@@ -3,6 +3,6 @@ declare const _default: {
   meta: {
     specifier: string;
   }
-}
+};
 
 export default _default;
