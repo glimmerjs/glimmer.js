@@ -1,5 +1,62 @@
 # Changelog
 
+## v0.9.0 (2018-02-08)
+
+Glimmer.js v0.9.0 is a big infrastructural upgrade that lays the groundwork for
+some exciting new features.
+
+The biggest change in 0.9.0 is that we've broken apart the monolithic `Application` class
+into composable objects to change how Glimmer.js behaves:
+
+1. A `Renderer` controls how Glimmer performs the initial render.
+2. A `Loader` controls how Glimmer loads and compiles templates.
+3. A `Builder` controls how DOM elements are constructed when templates are
+   rendered.
+
+One benefit of this design is that we can add different modes to Glimmer without
+having to ship code for unused modes. For more discussion, see [#34: Separate
+Application responsibilities](https://github.com/glimmerjs/glimmer.js/pull/34).
+
+Out of the box, you can experiment with incremental rendering in your Glimmer.js
+app using the new `AsyncRenderer`. This renderer breaks initial rendering into
+small, discrete units of work. Each unit of work is scheduled using the
+browser's [`requestIdleCallback`
+API](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback),
+ensuring the browser stays responsive even on slower devices and complex pages.
+
+We will also be adding binary bytecode templates and server-side rendering with
+rehydration in a future release. The implementation for these features are in
+the 0.9.0 release, but not yet integrated into the default application produced
+by the blueprint.
+
+To upgrade existing Glimmer.js applications, you will need to update the `src/main.ts` file
+to specify the renderer, loader and builder to use. To preserve the rendering behavior
+of Glimmer.js 0.8.0, use the `DOMRenderer`, `RuntimeCompilerLoader`, and `SyncRenderer`:
+
+```ts
+// src/main.ts
+import Application, { AsyncRenderer, DOMBuilder, RuntimeCompilerLoader } from '@glimmer/application';
+import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
+import moduleMap from '../config/module-map';
+import resolverConfiguration from '../config/resolver-configuration';
+
+export default class App extends Application {
+  constructor() {
+    let moduleRegistry = new BasicModuleRegistry(moduleMap);
+    let resolver = new Resolver(resolverConfiguration, moduleRegistry);
+    const element = document.body;
+
+    super({
+      builder: new DOMBuilder({ element, nextSibling: null }),
+      loader: new RuntimeCompilerLoader(resolver),
+      renderer: new AsyncRenderer(),
+      resolver,
+      rootName: resolverConfiguration.app.rootName,
+    });
+  }
+}
+```
+
 ## v0.9.0-alpha.14 (2018-02-08)
 
 #### :rocket: Enhancement
@@ -129,20 +186,12 @@
 #### :rocket: Enhancement
 * `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`
   * [#66](https://github.com/glimmerjs/glimmer.js/pull/66) Improve bytecode compilation. ([@tomdale](https://github.com/tomdale))
-* `@glimmer/blueprint`
-  * [#66](https://github.com/glimmerjs/glimmer.js/pull/66) Improve bytecode compilation. ([@tomdale](https://github.com/tomdale))
-
-#### :bug: Bug Fix
-* `@glimmer/blueprint`
-  * [#69](https://github.com/glimmerjs/glimmer.js/pull/69) Fix serialization. ([@chadhietala](https://github.com/chadhietala))
 
 #### :house: Internal
 * `@glimmer/application`
   * [#65](https://github.com/glimmerjs/glimmer.js/pull/65) Remove dependency on @glimmer/test-helpers. ([@chadhietala](https://github.com/chadhietala))
 * `@glimmer/compiler-delegates`
   * [#64](https://github.com/glimmerjs/glimmer.js/pull/64) Data Segment Generation Tests. ([@chadhietala](https://github.com/chadhietala))
-* `@glimmer/blueprint`
-  * [#73](https://github.com/glimmerjs/glimmer.js/pull/73) Add End To End Smoke Test. ([@chadhietala](https://github.com/chadhietala))
 * `@glimmer/app-compiler`, `@glimmer/compiler-delegates`
   * [#60](https://github.com/glimmerjs/glimmer.js/pull/60) Add more tests for 3rd party builtins. ([@chadhietala](https://github.com/chadhietala))
 
