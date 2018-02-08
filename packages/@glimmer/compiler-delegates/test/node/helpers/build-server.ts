@@ -1,9 +1,10 @@
 import { BytecodeData } from '@glimmer/application';
-import { BundleCompiler, ModuleLocator } from '@glimmer/bundle-compiler';
+import { BundleCompiler } from '@glimmer/bundle-compiler';
 import { MUCompilerDelegate } from '@glimmer/compiler-delegates';
+import { Opaque, ModuleLocator } from '@glimmer/interfaces';
+
 import rollup from 'rollup';
 import virtual from 'rollup-plugin-virtual';
-import { Opaque } from '@glimmer/util';
 import babel from 'babel-core';
 import transformCJS from 'babel-plugin-transform-es2015-modules-commonjs';
 import * as fs from 'fs';

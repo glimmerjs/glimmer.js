@@ -2,11 +2,13 @@ import { Option } from "@glimmer/util";
 import {
   CompilerDelegate,
   BundleCompilationResult,
-  TemplateLocator,
-  ModuleLocator,
   ExternalModuleTable,
   ModuleLocatorMap
 } from "@glimmer/bundle-compiler";
+import {
+  ModuleLocator,
+  TemplateLocator
+} from "@glimmer/interfaces";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 

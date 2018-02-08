@@ -15,7 +15,7 @@ import {
 import Iterable from './iterable';
 import { Program } from '@glimmer/program';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
-import { ModuleLocator } from '@glimmer/bundle-compiler';
+import { ModuleLocator } from '@glimmer/interfaces';
 
 import RuntimeResolver from './loaders/runtime-compiler/loader';
 

@@ -3,15 +3,13 @@ import { relative, extname, dirname, basename } from "path";
 
 import {
   BundleCompilationResult,
-  ModuleLocator,
   ModuleLocatorMap,
   ExternalModuleTable,
-  TemplateLocator as ITemplateLocator
 } from "@glimmer/bundle-compiler";
 import { ICompilableTemplate } from "@glimmer/opcode-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
-import { ProgramSymbolTable } from "@glimmer/interfaces";
+import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
 

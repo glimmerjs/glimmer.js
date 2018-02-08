@@ -2,14 +2,14 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ProgramSymbolTable } from '@glimmer/interfaces';
+import { Opaque, Dict, ProgramSymbolTable, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
-import { BundleCompiler, CompilerDelegate as ICompilerDelegate, ModuleLocator, TemplateLocator } from '@glimmer/bundle-compiler';
+import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';

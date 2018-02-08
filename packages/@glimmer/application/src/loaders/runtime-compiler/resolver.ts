@@ -9,7 +9,7 @@ import {
 } from '@glimmer/runtime';
 import { TemplateOptions } from '@glimmer/opcode-compiler';
 import { expect } from "@glimmer/util";
-import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict, VMHandle, Recast } from "@glimmer/interfaces";
+import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
 import { Owner } from "@glimmer/di";
 import { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
 
@@ -125,7 +125,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   registerComponent(name: string, resolvedSpecifier: string, Component: ComponentFactory, template: SerializedTemplateWithLazyBlock<Specifier>): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
-    let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle as Recast<number, VMHandle>);
+    let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
 
     return this.register('component', name, definition);
   }

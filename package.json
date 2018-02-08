@@ -15,6 +15,7 @@
     "packages/@glimmer/*"
   ],
   "devDependencies": {
+    "@glimmer/compiler": "^0.31.0",
     "@types/qunit": "^2.0.31",
     "amd-name-resolver": "^1.0.0",
     "babel-plugin-debug-macros": "^0.1.11",
