@@ -50,7 +50,7 @@
     "simple-html-tokenizer": "^0.4.3",
     "testem": "^1.16.0",
     "tslint": "^4.0.2",
-    "typescript": "^2.5.2"
+    "typescript": "~2.5.2"
   },
   "dependencies": {
     "tslib": "^1.8.0"
