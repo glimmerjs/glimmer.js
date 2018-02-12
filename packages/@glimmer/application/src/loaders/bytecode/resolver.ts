@@ -58,12 +58,15 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     let manager = this.managerFor();
 
     let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
-    let trimmed = templateSpecifier.replace(this.prefix, '');
-    let vmHandle = this.meta[trimmed].h;
-    let symbolTable = this.meta[trimmed].table;
 
-    let componentSpecifier = owner.identify('component:', templateSpecifier);
-    let ComponentClass = componentSpecifier ? owner.factoryFor(componentSpecifier) : null;
+    if (!templateSpecifier) {
+      throw new Error(`Could not find component '${name}', invoked using the {{component}} helper in ${referrer.specifier}`);
+    }
+
+    let trimmed = templateSpecifier.replace(this.prefix, '');
+    let { v: vmHandle, h: handle, table: symbolTable } = this.meta[trimmed];
+
+    let ComponentClass = this.table[handle] as Factory<Opaque> || null;
 
     return buildComponentDefinition(ComponentClass, manager, vmHandle, symbolTable);
   }
