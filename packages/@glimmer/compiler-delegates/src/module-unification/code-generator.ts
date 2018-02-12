@@ -41,7 +41,7 @@ export default class MUCodeGenerator {
     let externalModuleTable = this.generateExternalModuleTable(table);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
-    let meta = this.generateTemplateMetaData(table, this.compilation.symbolTables);
+    let meta = this.generateTemplateMetadata(table, this.compilation.symbolTables);
     let main = table.vmHandleByModuleLocator.get(mainTemplateLocator);
 
     expect(main, `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`);
@@ -58,42 +58,35 @@ export default class MUCodeGenerator {
     return source;
   }
 
-  generateTemplateMetaData(table: ExternalModuleTable, compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
-    let specifiers: string[] = [];
+  generateTemplateMetadata(table: ExternalModuleTable, compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
     let symbolTables = this.generateSymbolTables(compilerSymbolTables);
     let map = this.generateSpecifierMap(table);
 
-    Object.keys(map).forEach((k) => {
-      if (specifiers.indexOf(k) === -1) {
-        specifiers.push(k);
-      }
-    });
-
-    Object.keys(symbolTables).forEach((k) => {
-      if (specifiers.indexOf(k) === -1) {
-        specifiers.push(k);
-      }
-    });
+    // Get the union of specifiers contained in the symbol tables and specifier
+    // map.
+    let specifiers = Array.from(new Set([
+      ...Object.keys(map),
+      ...Object.keys(symbolTables)
+    ]));
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
-    let mergedMeta = {};
+    let meta = {};
 
-    Object.keys(map).forEach(specifier => {
+    specifiers.forEach(specifier => {
       let trimmed = specifier.replace(commonPrefix, '');
-      mergedMeta[trimmed] = { h: map[specifier] };
+
+      let [vmHandle, handle] = map[specifier] || [null, null];
+      let table = symbolTables[specifier];
+
+      meta[trimmed] = removeEmpty({
+        v: vmHandle,
+        h: handle,
+        table
+      });
     });
 
-    Object.keys(symbolTables).forEach(specifier => {
-      let trimmed = specifier.replace(commonPrefix, '');
-      if (mergedMeta[trimmed]) {
-        mergedMeta[trimmed].table = {...symbolTables[specifier]};
-      } else {
-        mergedMeta[trimmed] = { table: symbolTables[specifier] };
-      }
-    });
-
-    return `${prefix} const meta = ${inlineJSON(mergedMeta)};`;
+    return `${prefix} const meta = ${inlineJSON(meta)};`;
   }
 
   generateSymbolTables(compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
@@ -137,11 +130,14 @@ export default class MUCodeGenerator {
   }
 
   generateSpecifierMap(table: ExternalModuleTable) {
-    let map: Dict<number> = {};
+    let map: Dict<number[]> = {};
 
-    table.vmHandleByModuleLocator.forEach((handle, locator) => {
+    table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
       let specifier = this.project.specifierForPath(relativePath(locator.module));
-      if (specifier) { map[specifier] = handle; }
+      if (specifier) {
+        map[specifier] = [vmHandle];
+        map[specifier].push(table.byModuleLocator.get(locator));
+      }
     });
 
     return map;
@@ -392,4 +388,19 @@ export function getImportStatements(modules: ModuleLocator[]) {
   });
 
   return { imports, identifiers };
+}
+
+/**
+ * To keep file size down, we can eliminate null and undefined values.
+ */
+function removeEmpty(obj) {
+  let trimmed = {};
+
+  for (let key in obj) {
+    if (obj[key] !== undefined) {
+      trimmed[key] = obj[key];
+    }
+  }
+
+  return trimmed;
 }

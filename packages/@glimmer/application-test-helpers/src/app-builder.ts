@@ -131,15 +131,14 @@ export class AppBuilder<T extends TestApplication> {
     let meta = {};
 
     table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
-      meta[locator.module] = { h: vmHandle };
-    });
+      let handle = table.byModuleLocator.get(locator);
+      let template = compiler.compilableTemplates.get(locator);
 
-    compiler.compilableTemplates.forEach((template, locator) => {
-      if (meta[locator.module]) {
-        meta[locator.module].table = template.symbolTable;
-      } else {
-        meta[locator.module] = { table: template.symbolTable };
-      }
+      meta[locator.module] = {
+        v: vmHandle,
+        h: handle,
+        table: template.symbolTable
+      };
     });
 
     table.byHandle.forEach((locator, handle) => {

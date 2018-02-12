@@ -69,10 +69,12 @@ test('heap table should be balanced', (assert) => {
 });
 
 test('can generate the specifier map', (assert) => {
-  table.vmHandleByModuleLocator.set({name: 'default', module: './src/ui/components/x/template.hbs' }, 0);
+  let locator = { name: 'default', module: './src/ui/components/x/template.hbs' };
+  table.vmHandleByModuleLocator.set(locator, 0);
+  table.byModuleLocator.set(locator, 100);
   let serializedTable = generator.generateSpecifierMap(table);
 
-  assert.deepEqual(serializedTable, {'template:/my-project/components/x': 0});
+  assert.deepEqual(serializedTable, {'template:/my-project/components/x': [0, 100]});
 });
 
 test('specifier\'s module path needs to be well formed', (assert) => {

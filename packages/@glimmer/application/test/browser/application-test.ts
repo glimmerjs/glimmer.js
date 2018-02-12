@@ -123,7 +123,8 @@ test('can be booted with bytecode loader', async function(assert) {
     mainEntry: result.table.vmHandleByModuleLocator.get(locator),
     meta: {
       'mainTemplate': {
-        h: result.table.vmHandleByModuleLocator.get(locator),
+        v: result.table.vmHandleByModuleLocator.get(locator),
+        h: result.table.byModuleLocator.get(locator),
         table: symbolTable
       }
     }
