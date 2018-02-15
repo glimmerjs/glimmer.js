@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.9.1 (2018-02-15)
+
+#### :house: Internal
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`
+  * [#113](https://github.com/glimmerjs/glimmer.js/pull/113) Include handle in bytecode data segment metadata. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 1
+- Tom Dale ([tomdale](https://github.com/tomdale))
+Done in 0.88s.
+
 ## v0.9.0 (2018-02-08)
 
 Glimmer.js v0.9.0 is a big infrastructural upgrade that lays the groundwork for
