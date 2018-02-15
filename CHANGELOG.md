@@ -8,7 +8,6 @@
 
 #### Committers: 1
 - Tom Dale ([tomdale](https://github.com/tomdale))
-Done in 0.88s.
 
 ## v0.9.0 (2018-02-08)
 
