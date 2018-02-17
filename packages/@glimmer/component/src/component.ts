@@ -1,5 +1,6 @@
 import { assert } from "@glimmer/util";
 import { metaFor } from "./tracked";
+import { CURRENT_TAG } from "@glimmer/reference";
 
 export interface Bounds {
   firstNode: Node;
@@ -266,7 +267,7 @@ class Component {
 
   set args(args) {
     this.__args__ = args;
-    metaFor(this).dirtyableTagFor("args").inner.dirty();
+    metaFor(this).updatableTagFor("args").inner.update(CURRENT_TAG);
   }
 
   /** @private
