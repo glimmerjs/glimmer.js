@@ -72,9 +72,7 @@ export default class GlimmerBundleCompiler extends Plugin {
   }
 
   build() {
-    if (!this.compiler && !this.delegate) {
-      this.createBundleCompiler();
-    }
+    this.createBundleCompiler();
 
     let { outputPath } = this;
 
