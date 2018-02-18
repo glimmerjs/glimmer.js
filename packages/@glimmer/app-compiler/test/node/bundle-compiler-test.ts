@@ -79,7 +79,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
             },
 
             C: {
-              'template.hbs': 'From C'
+              'template.hbs': 'Hello From C'
             },
 
             D: {
@@ -100,6 +100,30 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     let buffer = new Uint16Array(files['src']['templates.gbx']);
 
     assert.ok(buffer, 'Buffer is aligned');
+    assert.ok((files['data-segment.js'] as string).match(/Hello From C/));
+
+    input.write({
+      src: {
+        ui: {
+          components: {
+            C: {
+              'template.hbs': 'Goodbye From C'
+            }
+          }
+        }
+      }
+    });
+
+    await output.build();
+
+    files = output.read();
+    buffer = new Uint16Array(files['src']['templates.gbx']);
+
+    assert.ok(buffer, 'Buffer is aligned');
+
+    let dataSegment = files['data-segment.js'] as string;
+    assert.ok(dataSegment.match(/Goodbye From C/), "string constants should contain updated template contents");
+    assert.ok(!(dataSegment.match(/Hello From C/)), "string constants should not contain old content");
   });
 
   test('data segment has all segments', async function(assert) {
