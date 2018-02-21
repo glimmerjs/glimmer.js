@@ -102,12 +102,12 @@ export function tracked(...dependencies: any[]): any {
 /**
  * Whenever a tracked computed property is entered, the current tracker is
  * saved off and a new tracker is replaced.
- * 
+ *
  * Any tracked properties consumed are added to the current tracker.
- * 
+ *
  * When a tracked computed property is exited, the tracker's tags are
  * combined and added to the parent tracker.
- * 
+ *
  * The consequence is that each tracked computed property has a tag
  * that corresponds to the tracked properties consumed inside of
  * itself, including child tracked computed properties.
