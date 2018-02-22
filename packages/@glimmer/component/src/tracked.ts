@@ -1,6 +1,23 @@
 import { DEBUG } from "@glimmer/env";
-import { Tag, DirtyableTag, TagWrapper, combine, CONSTANT_TAG } from "@glimmer/reference";
-import { dict, Dict } from "@glimmer/util";
+import { Tag, DirtyableTag, UpdatableTag, TagWrapper, combine, CONSTANT_TAG, CURRENT_TAG } from "@glimmer/reference";
+import { dict, Dict, Option } from "@glimmer/util";
+
+/**
+ * An object that that tracks @tracked properties that were consumed.
+ */
+class Tracker {
+  private tags = new Set<Tag>();
+
+  add(tag: Tag) {
+    this.tags.add(tag);
+  }
+
+  combine(): Tag {
+    let tags: Tag[] = [];
+    this.tags.forEach(tag => tags.push(tag));
+    return combine(tags);
+  }
+}
 
 /**
  * @decorator
@@ -82,19 +99,62 @@ export function tracked(...dependencies: any[]): any {
   }
 }
 
+/**
+ * Whenever a tracked computed property is entered, the current tracker is
+ * saved off and a new tracker is replaced.
+ *
+ * Any tracked properties consumed are added to the current tracker.
+ *
+ * When a tracked computed property is exited, the tracker's tags are
+ * combined and added to the parent tracker.
+ *
+ * The consequence is that each tracked computed property has a tag
+ * that corresponds to the tracked properties consumed inside of
+ * itself, including child tracked computed properties.
+ */
+let CURRENT_TRACKER: Option<Tracker> = null;
+
 function descriptorForTrackedComputedProperty(target: any, key: any, descriptor: PropertyDescriptor, dependencies: string[]): PropertyDescriptor {
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
   meta.trackedPropertyDependencies[key] = dependencies || [];
 
+  let get = descriptor.get as Function;
+  let set = descriptor.set as Function;
+
+  function getter(this: any) {
+    // Swap the parent tracker for a new tracker
+    let old = CURRENT_TRACKER;
+    let tracker = CURRENT_TRACKER = new Tracker();
+
+    // Call the getter
+    let ret = get.call(this);
+
+    // Swap back the parent tracker
+    CURRENT_TRACKER = old;
+
+    // Combine the tags in the new tracker and add them to the parent tracker
+    let tag = tracker.combine();
+    if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
+
+    // Update the UpdatableTag for this property with the tag for all of the
+    // consumed dependencies.
+    metaFor(this).updatableTagFor(key).inner.update(tag);
+
+    return ret;
+  }
+
   return {
     enumerable: true,
     configurable: false,
-    get: descriptor.get,
+    get: getter,
     set: function() {
-      metaFor(this).dirtyableTagFor(key).inner.dirty();
-      descriptor.set.apply(this, arguments);
-      propertyDidChange();
+      // Bump the global revision counter
+      EPOCH.inner.dirty();
+
+      // Mark the UpdatableTag for this property with the current tag.
+      metaFor(this).updatableTagFor(key).inner.update(CURRENT_TAG);
+      set.apply(this, arguments);
     }
   };
 }
@@ -125,11 +185,16 @@ function installTrackedProperty(target: any, key: Key) {
     configurable: true,
 
     get() {
+      if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(this).updatableTagFor(key));
       return this[shadowKey];
     },
 
     set(newValue) {
-      metaFor(this).dirtyableTagFor(key).inner.dirty();
+      // Bump the global revision counter
+      EPOCH.inner.dirty();
+
+      // Mark the UpdatableTag for this property with the current tag.
+      metaFor(this).updatableTagFor(key).inner.update(CURRENT_TAG);
       this[shadowKey] = newValue;
       propertyDidChange();
     }
@@ -152,13 +217,13 @@ function installTrackedProperty(target: any, key: Key) {
  */
 export default class Meta {
   tags: Dict<Tag>;
-  computedPropertyTags: Dict<TagWrapper<DirtyableTag>>;
+  computedPropertyTags: Dict<TagWrapper<UpdatableTag>>;
   trackedProperties: Dict<boolean>;
   trackedPropertyDependencies: Dict<string[]>;
 
   constructor(parent: Meta) {
     this.tags = dict<Tag>();
-    this.computedPropertyTags = dict<TagWrapper<DirtyableTag>>();
+    this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
     this.trackedPropertyDependencies = parent ? Object.create(parent.trackedPropertyDependencies) : dict<string[]>();
   }
@@ -168,8 +233,8 @@ export default class Meta {
    * by e.g. Glimmer VM to detect when a property should be re-rendered. Think
    * of this as the "public-facing" tag.
    *
-   * For static tracked properties, this is a single DirtyableTag. For computed
-   * properties, it is a combinator of the property's DirtyableTag as well as
+   * For static tracked properties, this is a single UpdatableTag. For computed
+   * properties, it is a combinator of the property's UpdatableTag as well as
    * all of its dependencies' tags.
    */
   tagFor(key: Key): Tag {
@@ -186,11 +251,11 @@ export default class Meta {
 
   /**
    * The tag used internally to invalidate when a tracked property is set. For
-   * static properties, this is the same DirtyableTag returned from `tagFor`.
-   * For computed properties, it is the DirtyableTag used as one of the tags in
+   * static properties, this is the same UpdatableTag returned from `tagFor`.
+   * For computed properties, it is the UpdatableTag used as one of the tags in
    * the tag combinator of the CP and its dependencies.
   */
-  dirtyableTagFor(key: Key): TagWrapper<DirtyableTag> {
+  updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
     let dependencies = this.trackedPropertyDependencies[key];
     let tag;
 
@@ -198,19 +263,19 @@ export default class Meta {
       // The key is for a computed property.
       tag = this.computedPropertyTags[key];
       if (tag) { return tag; }
-      return this.computedPropertyTags[key] = DirtyableTag.create();
+      return this.computedPropertyTags[key] = UpdatableTag.create(CURRENT_TAG);
     } else {
       // The key is for a static property.
       tag = this.tags[key];
-      if (tag) { return tag as TagWrapper<DirtyableTag>; }
-      return this.tags[key] = DirtyableTag.create();
+      if (tag) { return tag as TagWrapper<UpdatableTag>; }
+      return this.tags[key] = UpdatableTag.create(CURRENT_TAG);
     }
   }
 }
 
 function combinatorForComputedProperties(meta: Meta, key: Key, dependencies: Key[] | void): Tag {
   // Start off with the tag for the CP's own dirty state.
-  let tags: Tag[] = [meta.dirtyableTagFor(key)];
+  let tags: Tag[] = [meta.updatableTagFor(key)];
 
   // Next, add in all of the tags for its dependencies.
   if (dependencies && dependencies.length) {
@@ -242,6 +307,8 @@ let hOP = Object.prototype.hasOwnProperty;
 function hasOwnProperty(obj: any, key: symbol) {
   return hOP.call(obj, key);
 }
+
+const EPOCH = DirtyableTag.create();
 
 let propertyDidChange = function() {};
 
@@ -300,7 +367,7 @@ export function tagForProperty(obj: any, key: string, throwError: UntrackedPrope
  */
 function installDevModeErrorInterceptor(obj: object, key: string, throwError: UntrackedPropertyErrorThrower) {
   let target = obj;
-  let descriptor: PropertyDescriptor;
+  let descriptor: Option<PropertyDescriptor> = null;
 
   // Find the descriptor for the current property. We may need to walk the
   // prototype chain to do so. If the property is undefined, we may never get a
@@ -316,16 +383,18 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
   // If possible, define a property descriptor that passes through the current
   // value on reads but throws an exception on writes.
   if (descriptor) {
+    let { get, value } = descriptor;
+
     if (descriptor.configurable || !hasOwnDescriptor) {
       Object.defineProperty(obj, key, {
         configurable: descriptor.configurable,
         enumerable: descriptor.enumerable,
 
         get() {
-          if (descriptor.get) {
-            return descriptor.get.call(this);
+          if (get) {
+            return get.call(this);
           } else {
-            return descriptor.value;
+            return value;
           }
         },
 
