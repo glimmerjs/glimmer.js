@@ -1,5 +1,5 @@
 import { DEBUG } from "@glimmer/env";
-import { Tag, DirtyableTag, UpdatableTag, TagWrapper, combine, CONSTANT_TAG, CURRENT_TAG } from "@glimmer/reference";
+import { Tag, DirtyableTag, UpdatableTag, TagWrapper, combine, CONSTANT_TAG } from "@glimmer/reference";
 import { dict, Dict, Option } from "@glimmer/util";
 
 /**
@@ -13,9 +13,10 @@ class Tracker {
   }
 
   combine(): Tag {
-    let tags: Tag[] = [];
-    this.tags.forEach(tag => tags.push(tag));
-    return combine(tags);
+    let { tags } = this;
+
+    if (tags.size === 0) return CONSTANT_TAG;
+    return combine([...tags]);
   }
 }
 
@@ -133,10 +134,10 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     // Swap back the parent tracker
     CURRENT_TRACKER = old;
 
-    // Combine the tags in the new tracker and add them to the parent tracker
+    // Combine the tags in the new tracker
     let tag = tracker.combine();
-    if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
 
+    if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
     // Update the UpdatableTag for this property with the tag for all of the
     // consumed dependencies.
     metaFor(this).updatableTagFor(key).inner.update(tag);
@@ -144,18 +145,19 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     return ret;
   }
 
+  function setter(this: object, value) {
+    EPOCH.inner.dirty();
+
+    // Mark the UpdatableTag for this property with the current tag.
+    metaFor(this).updatableTagFor(key).inner.update(DirtyableTag.create());
+    set.apply(this, arguments);
+  }
+
   return {
     enumerable: true,
     configurable: false,
     get: getter,
-    set: function() {
-      // Bump the global revision counter
-      EPOCH.inner.dirty();
-
-      // Mark the UpdatableTag for this property with the current tag.
-      metaFor(this).updatableTagFor(key).inner.update(CURRENT_TAG);
-      set.apply(this, arguments);
-    }
+    set: set ? setter : undefined
   };
 }
 
@@ -194,7 +196,7 @@ function installTrackedProperty(target: any, key: Key) {
       EPOCH.inner.dirty();
 
       // Mark the UpdatableTag for this property with the current tag.
-      metaFor(this).updatableTagFor(key).inner.update(CURRENT_TAG);
+      metaFor(this).updatableTagFor(key).inner.update(DirtyableTag.create());
       this[shadowKey] = newValue;
       propertyDidChange();
     }
@@ -263,12 +265,12 @@ export default class Meta {
       // The key is for a computed property.
       tag = this.computedPropertyTags[key];
       if (tag) { return tag; }
-      return this.computedPropertyTags[key] = UpdatableTag.create(CURRENT_TAG);
+      return this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG);
     } else {
       // The key is for a static property.
       tag = this.tags[key];
       if (tag) { return tag as TagWrapper<UpdatableTag>; }
-      return this.tags[key] = UpdatableTag.create(CURRENT_TAG);
+      return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
     }
   }
 }

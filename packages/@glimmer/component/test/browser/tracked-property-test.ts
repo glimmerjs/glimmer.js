@@ -2,7 +2,14 @@ const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
 import { tracked, tagForProperty, UntrackedPropertyError } from '@glimmer/component';
-import { CONSTANT_TAG } from "@glimmer/reference";
+import { CONSTANT_TAG, DirtyableTag, Tag } from "@glimmer/reference";
+
+function unrelatedBump(tag: Tag, snapshot: number) {
+  let t = DirtyableTag.create();
+  t.inner.dirty();
+
+  QUnit.assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid after an unrelated bump');
+}
 
 module('[@glimmer/component] Tracked Properties');
 
@@ -90,6 +97,8 @@ test('can request a tag for a property', (assert) => {
   assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true, 'tag is valid on the second check');
+
+  unrelatedBump(tag, snapshot);
 });
 
 test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
@@ -118,6 +127,8 @@ test('can request a tag from a frozen objects', assert => {
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+
+  unrelatedBump(tag, snapshot);
 });
 
 test('can request a tag from an instance of a frozen class', assert => {
@@ -136,6 +147,8 @@ test('can request a tag from an instance of a frozen class', assert => {
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+
+  unrelatedBump(tag, snapshot);
 });
 
 test('can track a computed property', (assert) => {
@@ -166,8 +179,14 @@ test('can track a computed property', (assert) => {
   obj.firstName = 'Edsger';
   assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
   snapshot = tag.value();
+
+  unrelatedBump(tag, snapshot);
+
   assert.strictEqual(obj.firstName, 'Edsger3');
-  assert.strictEqual(tag.validate(snapshot), true, 'tag is valid on the second check');
+  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalid, since reading always recomputes the tags');
+  snapshot = tag.value();
+
+  unrelatedBump(tag, snapshot);
 });
 
 test('tracked computed properties are invalidated when their dependencies are invalidated', (assert) => {
@@ -216,6 +235,8 @@ test('tracked computed properties are invalidated when their dependencies are in
 
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true);
+
+  unrelatedBump(tag, snapshot);
 });
 
 test('nested @tracked in multiple objects', (assert) => {
@@ -293,6 +314,8 @@ test('nested @tracked in multiple objects', (assert) => {
 
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true);
+
+  unrelatedBump(tag, snapshot);
 });
 
 module('[@glimmer/component] Tracked Property Warning in Development Mode');
