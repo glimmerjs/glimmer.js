@@ -1,4 +1,4 @@
-import { TemplateIterator, RenderResult } from "@glimmer/runtime";
+import { TemplateIterator, IteratorResult as TemplateIteratorResult, RenderResult } from "@glimmer/runtime";
 import { Renderer } from "../application";
 
 interface Deadline {
@@ -62,7 +62,7 @@ export default class AsyncRenderer implements Renderer {
       let timeout = this.timeout;
 
       let tick = (deadline: Deadline) => {
-        let iteratorResult: IteratorResult<RenderResult>;
+        let iteratorResult: TemplateIteratorResult<RenderResult>;
 
         do {
           iteratorResult = iterator.next();

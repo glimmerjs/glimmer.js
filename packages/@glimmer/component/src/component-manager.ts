@@ -59,7 +59,8 @@ export class ComponentStateBucket {
   }
 }
 
-const EMPTY_SELF = new RootReference(null);
+// FIXME: Why does RootReference seem to think it needs object type
+const EMPTY_SELF = new RootReference(null as any);
 
 /**
  * For performance reasons, we want to avoid instantiating component buckets for

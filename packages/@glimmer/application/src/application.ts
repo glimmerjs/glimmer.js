@@ -16,7 +16,7 @@ import {
   UpdatableReference
 } from '@glimmer/component';
 import {
-  Option, assert
+  Option, assert, expect
 } from '@glimmer/util';
 import {
   Simple, Opaque
@@ -89,7 +89,7 @@ export interface ApplicationOptions {
   loader: Loader;
   renderer: Renderer;
   rootName: string;
-  resolver?: Resolver;
+  resolver: Resolver;
   document?: Simple.Document;
 }
 
@@ -144,7 +144,6 @@ export default class Application implements Owner {
   private _registry: Registry;
   private _container: Container;
   private _initializers: Initializer[] = [];
-  private _initialized = false;
 
   /** @hidden
    * The root Reference whose value provides the context of the main template.
@@ -169,7 +168,7 @@ export default class Application implements Owner {
     assert(options.renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
     assert(options.builder, 'Must provide a Builder that is responsible to building DOM.');
 
-    this.document = options.document || DEFAULT_DOCUMENT;
+    this.document = expect(options.document || DEFAULT_DOCUMENT, 'the global document was not found, so you must provide a document to new Application()');
     this.loader = options.loader;
     this.renderer = options.renderer;
     this.builder = options.builder;
@@ -269,8 +268,6 @@ export default class Application implements Owner {
     for (let i = 0; i < initializers.length; i++) {
       initializers[i].initialize(appRegistry);
     }
-
-    this._initialized = true;
   }
 
   /**

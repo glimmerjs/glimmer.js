@@ -173,15 +173,10 @@ export type Key = string;
   from it.
  */
 function installTrackedProperty(target: any, key: Key) {
-  let value: any;
   let shadowKey = Symbol(key);
 
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
-
-  if (target[key] !== undefined) {
-    value = target[key];
-  }
 
   Object.defineProperty(target, key, {
     configurable: true,
@@ -376,7 +371,7 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
   // descriptor here.
   let hasOwnDescriptor = true;
   while (target) {
-    descriptor = Object.getOwnPropertyDescriptor(target, key);
+    descriptor = Object.getOwnPropertyDescriptor(target, key) || null;
     if (descriptor) { break; }
     hasOwnDescriptor = false;
     target = Object.getPrototypeOf(target);

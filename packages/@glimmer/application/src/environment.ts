@@ -7,10 +7,11 @@ import {
   Reference,
   OpaqueIterable
 } from "@glimmer/reference";
-import { Opaque } from '@glimmer/util';
+import { Opaque, expect } from '@glimmer/util';
 import {
   getOwner,
-  setOwner
+  setOwner,
+  Owner
 } from '@glimmer/di';
 import Iterable from './iterable';
 import { Program } from '@glimmer/program';
@@ -23,8 +24,8 @@ type KeyFor<T> = (item: Opaque, index: T) => string;
 
 /** @internal */
 export interface EnvironmentOptions {
-  document?: HTMLDocument;
-  appendOperations?: DOMTreeConstruction;
+  document: HTMLDocument;
+  appendOperations: DOMTreeConstruction;
 }
 
 /** @internal */
@@ -34,17 +35,20 @@ export default class Environment extends GlimmerEnvironment {
   protected program: Program<ModuleLocator>;
   public compileOptions: TemplateOptions<ModuleLocator>;
 
-  static create(options: EnvironmentOptions = {}) {
-    options.document = options.document || self.document;
-    options.appendOperations = options.appendOperations || new DOMTreeConstruction(options.document);
+  static create(options: Partial<EnvironmentOptions> = {}) {
+    let document = expect(options.document || self.document, 'Global document not found. You must supply a document');
+    let appendOperations = options.appendOperations || new DOMTreeConstruction(document);
 
-    return new Environment(options);
+    return new Environment({
+      document,
+      appendOperations
+    }, getOwner(options));
   }
 
-  constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument || document) });
+  constructor(options: EnvironmentOptions, owner?: Owner) {
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document) });
 
-    setOwner(this, getOwner(options));
+    setOwner(this, owner || getOwner(options));
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
@@ -73,7 +77,7 @@ export default class Environment extends GlimmerEnvironment {
         keyFor = (item: Opaque) => String(item);
       break;
       default:
-        keyFor = (item: Opaque) => item[keyPath];
+        keyFor = (item: Opaque) => item && item[keyPath];
       break;
     }
 

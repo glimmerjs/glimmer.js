@@ -190,7 +190,7 @@ test('can render a custom helper that takes args', async function(assert) {
 test('renders a component using simple-dom', async function(assert) {
   assert.expect(1);
 
-  let customDocument: Simple.Document = new SimpleDOM.Document();
+  let customDocument = new SimpleDOM.Document() as any as Simple.Document;
 
   let app = await buildApp({ document: customDocument })
     .template('Main', `<h1>Hello Glimmer!</h1>`)

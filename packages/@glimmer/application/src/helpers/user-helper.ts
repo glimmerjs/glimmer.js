@@ -5,8 +5,7 @@ import {
 
 import {
   PathReference,
-  TagWrapper,
-  RevisionTag
+  Tag
 } from "@glimmer/reference";
 
 import {
@@ -29,7 +28,7 @@ export default function buildUserHelper(helperFunc): GlimmerHelper {
 export class HelperReference implements PathReference<Opaque> {
   private helper: UserHelper;
   private args: CapturedArguments;
-  public tag: TagWrapper<RevisionTag>;
+  public tag: Tag;
 
   constructor(helper: UserHelper, args: Arguments) {
     this.helper = helper;

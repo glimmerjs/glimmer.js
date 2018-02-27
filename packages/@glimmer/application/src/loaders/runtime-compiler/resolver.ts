@@ -94,7 +94,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return handle;
   }
 
-  compileTemplate(name: string, layout: Option<number>): Invocation {
+  compileTemplate(name: string, layout: number): Invocation {
     if (!this.cache.compiledTemplate.hasName(name)) {
       let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(layout);
       let { block, meta, id } = serializedTemplate;
@@ -109,7 +109,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
       return invocation;
     }
 
-    let handle = this.lookup('compiledTemplate', name);
+    let handle = expect(this.lookup('compiledTemplate', name), `Expected to find compiledTemplate ${name}`);
     return this.resolve<Invocation>(handle);
   }
 
@@ -122,7 +122,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     this.register('helper', name, helper);
   }
 
-  registerComponent(name: string, resolvedSpecifier: string, Component: ComponentFactory, template: SerializedTemplateWithLazyBlock<Specifier>): number {
+  registerComponent(name: string, resolvedSpecifier: string, Component: Option<ComponentFactory>, template: SerializedTemplateWithLazyBlock<Specifier>): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
     let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
@@ -149,8 +149,8 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
       this.register('manager', managerId, manager);
       return manager;
     } else {
-      let handle = this.cache.manager.getHandle(managerId);
-      return this.cache.manager.getByHandle(handle);
+      let handle = expect(this.cache.manager.getHandle(managerId), `expected manager for ${managerId}`);
+      return expect(this.cache.manager.getByHandle(handle), `BUG: expected manager for ${managerId}. Found handle, but it didn't resolve.`);
     }
   }
 
@@ -162,13 +162,13 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     };
   }
 
-  lookupComponent(name: string, meta: Specifier): ComponentDefinition {
+  lookupComponent(name: string, meta?: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
       let specifier = expect(this.identifyComponent(name, meta), `Could not find the component '${name}'`);
       let template = this.owner.lookup('template', specifier);
       let componentSpecifier = this.owner.identify('component', specifier);
-      let componentFactory: ComponentFactory = null;
+      let componentFactory: Option<ComponentFactory> = null;
 
       if (componentSpecifier !== undefined) {
         componentFactory = this.owner.factoryFor(componentSpecifier);
@@ -176,7 +176,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
 
       handle = this.registerComponent(name, specifier, componentFactory, template);
     } else {
-      handle = this.lookup('component', name, meta);
+      handle = expect(this.lookup('component', name, meta), `exepcted to find component ${name} from referrer ${meta && meta.specifier}`);
     }
 
     return this.resolve<ComponentDefinition>(handle);
@@ -186,14 +186,14 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     if (!this.cache.helper.hasName(name)) {
       let owner: Owner = this.owner;
       let relSpecifier = `helper:${name}`;
-      let referrer: string = meta.specifier;
+      let referrer = meta && meta.specifier;
 
       let specifier = owner.identify(relSpecifier, referrer);
       if (specifier === undefined) {
         return null;
       }
 
-      let helper = this.owner.lookup(specifier, meta.specifier);
+      let helper = this.owner.lookup(specifier, meta && meta.specifier);
       return this.registerHelper(name, helper);
     }
 
@@ -209,10 +209,10 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return registry.getByHandle(handle) as T;
   }
 
-  private identifyComponent(name: string, meta: Specifier): Maybe<string> {
+  private identifyComponent(name: string, meta?: Specifier): Maybe<string> {
     let owner: Owner = this.owner;
     let relSpecifier = `template:${name}`;
-    let referrer: string = meta.specifier;
+    let referrer = meta && meta.specifier;
 
     let specifier = owner.identify(relSpecifier, referrer);
 

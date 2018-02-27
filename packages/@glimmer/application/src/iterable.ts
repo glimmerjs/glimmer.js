@@ -13,6 +13,7 @@ import {
 import {
   UpdatableReference
 } from "@glimmer/component";
+import { Option } from '@glimmer/interfaces';
 
 export type KeyFor<T> = (item: Opaque, index: T) => string;
 
@@ -30,7 +31,7 @@ class ArrayIterator implements OpaqueIterator {
     return this.array.length === 0;
   }
 
-  next(): IterationItem<Opaque, number> {
+  next(): Option<IterationItem<Opaque, number>> {
     let { position, array, keyFor } = this;
 
     if (position >= array.length) return null;
@@ -61,7 +62,7 @@ class ObjectKeysIterator implements OpaqueIterator {
     return this.keys.length === 0;
   }
 
-  next(): IterationItem<Opaque, string> {
+  next(): Option<IterationItem<Opaque, string>> {
     let { position, keys, values, keyFor } = this;
 
     if (position >= keys.length) return null;
@@ -110,7 +111,7 @@ export default class Iterable implements AbstractIterable<Opaque, Opaque, Iterat
     } else if (iterable === undefined || iterable === null) {
       return EMPTY_ITERATOR;
     } else if (iterable.forEach !== undefined) {
-      let array = [];
+      let array: Opaque[] = [];
       iterable.forEach(function(item) {
         array.push(item);
       });

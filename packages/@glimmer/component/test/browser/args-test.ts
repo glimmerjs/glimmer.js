@@ -1,5 +1,6 @@
 import Component, { tracked, setPropertyDidChange } from '@glimmer/component';
 import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
+import { expect } from '@glimmer/util';
 
 const { module, test } = QUnit;
 
@@ -71,13 +72,13 @@ test('Args smoke test', async function (assert) {
     app.scheduleRerender();
   });
 
-  parent.firstName = "Thomas";
+  expect(parent!, `Expected didInsertElement to run already`).firstName = "Thomas";
 });
 
 test('Tracked properties that depend on `args` re-render correctly', async function (assert) {
   assert.expect(2);
 
-  let parent: ParentComponent;
+  let _parent: ParentComponent;
   let app: TestApplication;
 
   class ParentComponent extends Component {
@@ -85,7 +86,7 @@ test('Tracked properties that depend on `args` re-render correctly', async funct
     @tracked status = 'is dope';
 
     didInsertElement() {
-      parent = this;
+      _parent = this;
     }
   }
 
@@ -110,20 +111,22 @@ test('Tracked properties that depend on `args` re-render correctly', async funct
     app.scheduleRerender();
   });
 
-  assert.equal(app.rootElement.textContent.trim(), 'Tom Dale is dope');
+  assert.equal(expect(app.rootElement.textContent, `Expected text content in the root element`).trim(), 'Tom Dale is dope');
+
+  let parent = expect(_parent!, `Expected didInsertElement to run already`);
 
   parent.firstName = 'Thom';
   parent.status = 'is dank';
 
   return didRender(app).then(() => {
-    assert.equal(app.rootElement.textContent.trim(), 'Thom Dale is dank');
+    assert.equal(expect(app.rootElement.textContent, `Expected text content in the root element`).trim(), 'Thom Dale is dank');
   });
 });
 
 test('Properties that depend on `args` are properly updated before the `didUpdate` hook', async function(assert) {
   assert.expect(4);
 
-  let parent: ParentComponent;
+  let _parent: ParentComponent;
   let app: TestApplication;
 
   class ParentComponent extends Component {
@@ -131,7 +134,7 @@ test('Properties that depend on `args` are properly updated before the `didUpdat
     @tracked status = 'is dope';
 
     didInsertElement() {
-      parent = this;
+      _parent = this;
     }
   }
 
@@ -166,6 +169,8 @@ test('Properties that depend on `args` are properly updated before the `didUpdat
   setPropertyDidChange(function() {
     app.scheduleRerender();
   });
+
+  let parent = expect(_parent!, `Expected didInsertElement to run already`);
 
   parent.firstName = 'Thom';
   parent.status = 'is dank';

@@ -21,7 +21,7 @@
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": false,
     "noUnusedParameters": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "allowUnreachableCode": false,
     "noImplicitReturns": false,
 

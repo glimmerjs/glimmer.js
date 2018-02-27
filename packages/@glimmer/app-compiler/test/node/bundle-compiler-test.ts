@@ -1,10 +1,11 @@
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
-import { createTempDir, buildOutput } from 'broccoli-test-helper';
+import { TempDir, createTempDir, buildOutput } from 'broccoli-test-helper';
+import { expect } from '@glimmer/util';
 
 const { module, test } = QUnit;
 
 module('Broccol Glimmer Bundle Compiler', function(hooks) {
-  let input = null;
+  let input: TempDir;
 
   hooks.beforeEach(() => createTempDir().then(tempDir => (input = tempDir)));
 
@@ -14,7 +15,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('requires a mode or delegate', function (assert) {
     assert.throws(() => {
-      new GlimmerBundleCompiler(input.path(), {});
+      new GlimmerBundleCompiler(input.path(), {} as any);
     }, /Must pass a bundle compiler mode or pass a custom compiler delegate\./);
   });
 
@@ -56,11 +57,12 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     let files = output.read();
 
     assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort());
-    assert.deepEqual(Object.keys(files['src']).sort(), ['ui'].sort());
-    assert.deepEqual(Object.keys(files['src']['ui']), ['components']);
+    let src = expect(files['src'], 'the src directory should exist');
+    assert.deepEqual(Object.keys(src).sort(), ['ui'].sort());
+    assert.deepEqual(Object.keys(src['ui']), ['components']);
 
-    Object.keys(files['src']['ui'].components).forEach((component) => {
-      assert.deepEqual(Object.keys(files['src']['ui'].components[component]), ['component.ts']);
+    Object.keys(src['ui'].components).forEach((component) => {
+      assert.deepEqual(Object.keys(src['ui'].components[component]), ['component.ts']);
     });
   });
 
@@ -97,7 +99,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     let output = await buildOutput(compiler);
     let files = output.read();
 
-    let buffer = new Uint16Array(files['src']['templates.gbx']);
+    let src = expect(files['src'], 'the src directory should exist');
+
+    let buffer = new Uint16Array(src['templates.gbx']);
 
     assert.ok(buffer, 'Buffer is aligned');
     assert.ok((files['data-segment.js'] as string).match(/Hello From C/));
@@ -117,7 +121,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     await output.build();
 
     files = output.read();
-    buffer = new Uint16Array(files['src']['templates.gbx']);
+    buffer = new Uint16Array(src['templates.gbx']);
 
     assert.ok(buffer, 'Buffer is aligned');
 

@@ -1,7 +1,6 @@
 import { didRender } from '@glimmer/application-test-helpers';
 import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
 import Component, { tracked } from '@glimmer/component';
-import '../helpers/async';
 
 class RenderComponentTest extends RenderTest {
   @test async "renders a component"(assert) {

@@ -8,7 +8,7 @@ import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
-import { assert } from '@glimmer/util';
+import { assert, expect } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
@@ -18,10 +18,10 @@ import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runt
 import { DOMBuilder, SyncRenderer } from '@glimmer/application';
 
 export interface AppBuilderOptions<T> {
-  appName?: string;
-  loader?: string;
-  ApplicationClass?: ApplicationConstructor<T>;
-  ComponentManager?: any; // TODO - typing
+  appName: string;
+  loader: string;
+  ApplicationClass: ApplicationConstructor<T>;
+  ComponentManager: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
   document?: Simple.Document;
 }
@@ -137,7 +137,7 @@ export class AppBuilder<T extends TestApplication> {
       meta[locator.module] = {
         v: vmHandle,
         h: handle,
-        table: template.symbolTable
+        table: expect(template, 'the template should exist').symbolTable
       };
     });
 
@@ -156,7 +156,7 @@ export class AppBuilder<T extends TestApplication> {
     let bytecode = heap.buffer;
     let data = {
       prefix: '',
-      mainEntry: table.vmHandleByModuleLocator.get(mainLocator),
+      mainEntry: expect(table.vmHandleByModuleLocator.get(mainLocator), 'the main locator should exist'),
       pool,
       table: resolverTable,
       meta,
@@ -256,11 +256,13 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
   }
 }
 
-function buildApp<T extends TestApplication>(options: AppBuilderOptions<T> = {}): AppBuilder<T> {
-  options.appName = options.appName || 'test-app';
-  options.loader = options.loader || 'runtime-compiler';
-  options.ComponentManager = options.ComponentManager || ComponentManager;
-  options.ApplicationClass = options.ApplicationClass || TestApplication as ApplicationConstructor<T>;
+function buildApp<T extends TestApplication>(appOptions: Partial<AppBuilderOptions<T>> = {}): AppBuilder<T> {
+  let options = {
+    appName: appOptions.appName || 'test-app',
+    loader: appOptions.loader || 'runtime-compiler',
+    ComponentManager: appOptions.ComponentManager || ComponentManager,
+    ApplicationClass: appOptions.ApplicationClass || TestApplication as ApplicationConstructor<T>
+  };
 
   return new AppBuilder(options.appName, options);
 }

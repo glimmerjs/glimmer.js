@@ -17,7 +17,7 @@ export interface AppCompilerDelegateConstructor {
 
 export interface GlimmerBundleCompilerOptions {
   bundleCompiler?: BundleCompilerOptions;
-  outputFiles?: OutputFiles;
+  outputFiles: OutputFiles;
   delegate?: AppCompilerDelegateConstructor;
   mode?: CompilerMode;
   builtins?: Builtins;
@@ -29,12 +29,12 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler<Opaque>;
   private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode, options: GlimmerBundleCompilerOptions) {
+  constructor(inputNode, options: Partial<GlimmerBundleCompilerOptions>) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
 
-  private defaultOptions(options: GlimmerBundleCompilerOptions) {
+  private defaultOptions(options: Partial<GlimmerBundleCompilerOptions>): GlimmerBundleCompilerOptions {
     if (!options.mode && !options.delegate) {
       throw new Error('Must pass a bundle compiler mode or pass a custom compiler delegate.');
     }

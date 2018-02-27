@@ -8,6 +8,7 @@ import { ComponentCapabilities, Opaque, ModuleLocator, TemplateLocator } from '@
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompileOptions, CompilableTemplate } from '@glimmer/opcode-compiler';
 import { precompile } from '@glimmer/application-test-helpers';
+import { expect } from '@glimmer/util';
 
 const { module, test } = QUnit;
 
@@ -120,12 +121,12 @@ test('can be booted with bytecode loader', async function(assert) {
     },
     pool: result.pool,
     table: [],
-    mainEntry: result.table.vmHandleByModuleLocator.get(locator),
+    mainEntry: expect(result.table.vmHandleByModuleLocator.get(locator), `Missing mainEntry at ${JSON.stringify(locator)}`),
     meta: {
       'mainTemplate': {
-        v: result.table.vmHandleByModuleLocator.get(locator),
-        h: result.table.byModuleLocator.get(locator),
-        table: symbolTable
+        v: expect(result.table.vmHandleByModuleLocator.get(locator), `Mising meta.v at ${JSON.stringify(locator)}`),
+        h: expect(result.table.byModuleLocator.get(locator), `Missing meta.h at ${JSON.stringify(locator)}`),
+        table: expect(symbolTable, `Missing symbolTable at ${JSON.stringify(locator)}`)
       }
     }
   };

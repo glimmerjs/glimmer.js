@@ -1,4 +1,3 @@
-import { Option } from "@glimmer/util";
 import {
   CompilerDelegate,
   BundleCompilationResult,
@@ -15,8 +14,8 @@ import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { Builtins } from "./builtins";
 
 export interface OutputFiles {
-  dataSegment: Option<string>;
-  heapFile: Option<string>;
+  dataSegment: string;
+  heapFile: string;
 }
 
 export interface AppCompilerDelegateOptions {

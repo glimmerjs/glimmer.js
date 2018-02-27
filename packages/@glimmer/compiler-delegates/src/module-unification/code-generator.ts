@@ -9,7 +9,7 @@ import {
 import { ICompilableTemplate } from "@glimmer/opcode-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
-import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
+import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator, AnnotatedModuleLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
 
@@ -42,7 +42,7 @@ export default class MUCodeGenerator {
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
     let meta = this.generateTemplateMetadata(table, this.compilation.symbolTables);
-    let main = table.vmHandleByModuleLocator.get(mainTemplateLocator);
+    let main = expect(table.vmHandleByModuleLocator.get(mainTemplateLocator), `Missing main template: ${JSON.stringify(mainTemplateLocator)}`);
 
     expect(main, `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`);
 
@@ -136,7 +136,7 @@ export default class MUCodeGenerator {
       let specifier = this.project.specifierForPath(relativePath(locator.module));
       if (specifier) {
         map[specifier] = [vmHandle];
-        map[specifier].push(table.byModuleLocator.get(locator));
+        map[specifier].push(expect(table.byModuleLocator.get(locator), `Missing module at ${JSON.stringify(locator)}`));
       }
     });
 
@@ -175,14 +175,10 @@ export default class MUCodeGenerator {
 
     return source;
 
-    function replaceTemplatesWithComponents(locator) {
+    function replaceTemplatesWithComponents(locator: ModuleLocator & Partial<AnnotatedModuleLocator>): ModuleLocator {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
       if (referrer && referrer.split(':')[0] === 'template') {
-        let specifier = project.resolver.identify("component:", referrer);
-        if (!specifier) {
-          debug("no component for template; referrer=%s", referrer);
-          return null;
-        }
+        let specifier = expect(project.resolver.identify("component:", referrer), `No component for template; referrer=${referrer}`);
 
         let module = `./${project.pathForSpecifier(specifier)}`;
 
@@ -194,8 +190,8 @@ export default class MUCodeGenerator {
         );
 
         return { module, name: "default" };
-      } else if (locator.kind === 'template') {
-        return null;
+      } else {
+        assert(locator.kind !== 'template', `FIXME: Unexpected template locator (What should this error message really be?)`);
       }
 
       return locator;
@@ -205,9 +201,7 @@ export default class MUCodeGenerator {
     // For example, if a module has a path of `src/ui/components/User/component`
     // and the data segment path is `compiled/data/table`, we want to generate a
     // path like `../../src/ui/components/User/component`.
-    function normalizeModulePaths(locator: ModuleLocator) {
-      if (!locator) { return null; }
-
+    function normalizeModulePaths(locator: ModuleLocator): ModuleLocator {
       let { module, name } = locator;
 
       // Don't try to normalize imports from packages

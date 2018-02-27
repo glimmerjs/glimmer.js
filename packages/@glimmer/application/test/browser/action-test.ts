@@ -1,6 +1,8 @@
 import Component, { tracked } from '@glimmer/component';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import { debugInfoForReference } from '@glimmer/application';
+import { expect } from '@glimmer/util';
+import { Opaque } from '@glimmer/interfaces';
 
 const { module, test } = QUnit;
 
@@ -39,7 +41,7 @@ test('can curry arguments to actions', async function(assert) {
   let root = app.rootElement as HTMLElement;
   assert.strictEqual(root.innerText, 'Hello World');
 
-  let h1 = root.querySelector('h1');
+  let h1 = expect(root.querySelector('h1'), `BUG: Missing h1`);
   h1.onclick(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
@@ -47,12 +49,12 @@ test('can curry arguments to actions', async function(assert) {
   assert.strictEqual(passedEvent, fakeEvent);
   passedEvent = null;
 
-  helloWorldComponent.name = "cruel world";
+  helloWorldComponent!.name = "cruel world";
   app.scheduleRerender();
 
   await didRender(app);
 
-  h1 = root.querySelector('h1');
+  h1 = expect(root.querySelector('h1'), `BUG: Missing h1`);
   h1.onclick(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
@@ -67,7 +69,7 @@ test('actions can be passed and invoked with additional arguments', async functi
     type: 'click'
   };
   let parentComponent: ParentComponent;
-  let passed = [];
+  let passed: Opaque[] = [];
 
   class ParentComponent extends Component {
     name = "world";
