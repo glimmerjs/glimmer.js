@@ -64,7 +64,7 @@ function includeTests(jsTree) {
 
   return new Rollup(testsRoot, {
     rollup: {
-      format: 'es',
+      format: 'iife',
       entry: ['tests.js'],
       dest: 'assets/tests.js',
       plugins: [
