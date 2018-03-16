@@ -114,16 +114,42 @@ test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
   assert.ok(tagForProperty('hello world', 'foo').validate(snapshot));
 });
 
-test('can request a tag from a frozen objects', assert => {
-  class TrackedPerson {
-    @tracked firstName = 'Toran';
-  }
+test('can request a tag from a frozen POJO', assert => {
+  let obj = Object.freeze({
+    firstName: 'Toran'
+  });
 
-  let obj = Object.freeze(new TrackedPerson());
   assert.strictEqual(obj.firstName, 'Toran');
 
   let tag = tagForProperty(obj, 'firstName');
   let snapshot = tag.value();
+  assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+  snapshot = tag.value();
+  assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+
+  unrelatedBump(tag, snapshot);
+});
+
+test('can request a tag from a frozen class instance', assert => {
+  class TrackedPerson {
+    @tracked firstName = 'Toran';
+    lastName = 'Billups';
+  }
+
+  let obj = Object.freeze(new TrackedPerson());
+  assert.strictEqual(obj.firstName, 'Toran');
+  assert.strictEqual(obj.lastName, 'Billups');
+
+  // Explicitly annotated tracked properties
+  let tag = tagForProperty(obj, 'firstName');
+  let snapshot = tag.value();
+  assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+  snapshot = tag.value();
+  assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+
+  // Non-tracked data properties
+  tag = tagForProperty(obj, 'lastName');
+  snapshot = tag.value();
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');

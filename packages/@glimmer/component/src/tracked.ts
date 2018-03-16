@@ -294,20 +294,48 @@ export interface Interceptors {
   [key: string]: boolean;
 }
 
-let META = Symbol("ember-object");
+/**
+ *  A shared WeakMap for tracking an object's Meta instance, so any metadata
+ *  will be garbage collected automatically with the associated object.
+*/
+const META_MAP = new WeakMap();
 
+/**
+ * Returns the Meta instance for an object. If no existing Meta is found,
+ * creates a new instance and returns it. An object's Meta inherits from any
+ * existing Meta in its prototype chain.
+ */
 export function metaFor(obj: any): Meta {
-  let meta = obj[META];
-  if (meta && hasOwnProperty(obj, META)) {
-    return meta;
-  }
+  // Return the Meta for this object if we already have it.
+  let meta = META_MAP.get(obj);
+  if (meta) { return meta; }
 
-  return obj[META] = new Meta(meta);
+  // Otherwise, we need to walk the object's prototype chain to until we find a
+  // parent Meta to inherit from. If we reach the end of the chain and have not
+  // found a Meta, there is nothing to inherit.
+  let protoMeta = findPrototypeMeta(obj);
+  meta = new Meta(protoMeta);
+
+  // Save the object's Meta and return it.
+  META_MAP.set(obj, meta);
+  return meta;
 }
 
-let hOP = Object.prototype.hasOwnProperty;
-function hasOwnProperty(obj: any, key: symbol) {
-  return hOP.call(obj, key);
+const getPrototypeOf = Object.getPrototypeOf;
+
+// Finds the nearest Meta instance in an object's prototype chain. Returns null
+// if the end of the prototype chain is reached without finding a Meta.
+function findPrototypeMeta(obj): Meta | null {
+  let meta = null;
+  let proto = obj;
+
+  while (!meta) {
+    proto = getPrototypeOf(proto);
+    if (!proto) { return meta; }
+    meta = META_MAP.get(proto);
+  }
+
+  return meta;
 }
 
 const EPOCH = DirtyableTag.create();
@@ -319,10 +347,11 @@ export function setPropertyDidChange(cb: () => void) {
 }
 
 export function hasTag(obj: any, key: string): boolean {
-  let meta = obj[META] as Meta;
+  let meta = META_MAP.get(obj);
 
-  if (!obj[META]) { return false; }
-  if (!meta.trackedProperties[key]) { return false; }
+  if (!meta || !meta.trackedProperties[key]) {
+    return false;
+  }
 
   return true;
 }
