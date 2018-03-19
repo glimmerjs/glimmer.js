@@ -29,7 +29,7 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler<Opaque>;
   private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode, options: GlimmerBundleCompilerOptions) {
+  constructor(inputNode: any, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
@@ -52,7 +52,7 @@ export default class GlimmerBundleCompiler extends Plugin {
     return walkSync.entries(srcPath);
   }
 
-  _readFile(file) {
+  _readFile(file: string) {
     return readFileSync(join(this.inputPaths[0], file), 'UTF-8');
   }
 
@@ -83,7 +83,7 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     let [projectPath] = this.inputPaths;
 
-    this.listEntries().forEach(entry => {
+    this.listEntries().forEach((entry: any) => {
       let { relativePath } = entry;
       if (entry.isDirectory()) {
         mkdirSync(join(outputPath, relativePath));

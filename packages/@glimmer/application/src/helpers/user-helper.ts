@@ -22,7 +22,7 @@ import {
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => any;
 
-export default function buildUserHelper(helperFunc): GlimmerHelper {
+export default function buildUserHelper(helperFunc: UserHelper): GlimmerHelper {
   return (_vm: VM, args: Arguments) => new HelperReference(helperFunc, args);
 }
 

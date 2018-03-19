@@ -10,9 +10,9 @@ import {
 } from '@glimmer/reference';
 
 export default class DynamicScope implements GlimmerDynamicScope {
-  private bucket;
+  private bucket: { [key: string]: PathReference<Opaque> };
 
-  constructor(bucket=null) {
+  constructor(bucket: { [key: string]: PathReference<Opaque> } = null) {
     if (bucket) {
       this.bucket = assign({}, bucket);
     } else {

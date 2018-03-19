@@ -1,3 +1,3 @@
-export default function id(param) {
+export default function id(param: any[]) {
   return param[0];
 }

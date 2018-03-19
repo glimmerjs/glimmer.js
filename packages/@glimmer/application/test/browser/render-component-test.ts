@@ -4,7 +4,7 @@ import Component, { tracked } from '@glimmer/component';
 import '../helpers/async';
 
 class RenderComponentTest extends RenderTest {
-  @test async "renders a component"(assert) {
+  @test async "renders a component"(assert: Assert) {
     assert.expect(1);
 
     let containerElement = document.createElement('div');
@@ -22,7 +22,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(containerElement.innerHTML, '<h1>A B Hello Glimmer!</h1>');
   }
 
-  @test async 'renders a component without affecting existing content'(assert) {
+  @test async 'renders a component without affecting existing content'(assert: Assert) {
     assert.expect(2);
 
     let containerElement = document.createElement('div');
@@ -45,7 +45,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(containerElement.innerHTML, '<p>foo</p>bar<h1>Hello Glimmer!</h1>');
   }
 
-  @test async 'renders a component before a given sibling'(assert) {
+  @test async 'renders a component before a given sibling'(assert: Assert) {
     assert.expect(2);
 
     let containerElement = document.createElement('div');
@@ -68,7 +68,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(containerElement.innerHTML, '<p></p><h1>Hello Glimmer!</h1><aside></aside>');
   }
 
-  @test async 'renders multiple components in different places'(assert) {
+  @test async 'renders multiple components in different places'(assert: Assert) {
     assert.expect(2);
 
     let firstContainerElement = document.createElement('div');
@@ -88,7 +88,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(secondContainerElement.innerHTML, '<h1>Hello Robbie!</h1>');
   }
 
-  @test async 'renders multiple components in the same container'(assert) {
+  @test async 'renders multiple components in the same container'(assert: Assert) {
     assert.expect(1);
 
     let containerElement = document.createElement('div');
@@ -106,7 +106,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(containerElement.innerHTML, '<h1>Hello Glimmer!</h1><h1>Hello Robbie!</h1>');
   }
 
-  @test async 'renders multiple components in the same container in particular places'(assert) {
+  @test async 'renders multiple components in the same container in particular places'(assert: Assert) {
     assert.expect(2);
 
     let containerElement = document.createElement('div');
@@ -129,7 +129,7 @@ class RenderComponentTest extends RenderTest {
     assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer!</h1>');
   }
 
-  @test async 'user helpers are not volatile'(assert) {
+  @test async 'user helpers are not volatile'(assert: Assert) {
     assert.expect(6);
 
     let containerElement = document.createElement('div');
@@ -137,11 +137,11 @@ class RenderComponentTest extends RenderTest {
 
     containerElement.appendChild(nextSibling);
 
-    let component;
+    let component: any;
 
     class HelloWorld extends Component {
       @tracked a = 'a';
-      constructor(options) {
+      constructor(options: any) {
         super(options);
         component = this;
       }
@@ -150,7 +150,7 @@ class RenderComponentTest extends RenderTest {
     let count = 0;
 
     let app = await this.app
-      .helper('woot', (params) => {
+      .helper('woot', (params: any[]) => {
         count++;
         return params[0];
       })
@@ -184,7 +184,7 @@ class RenderComponentTest extends RenderTest {
   }
 
   @test({ debug: true })
-  async 'throws an exception if an invoked component is not found'(assert) {
+  async 'throws an exception if an invoked component is not found'(assert: Assert) {
     assert.expect(1);
 
     let containerElement = document.createElement('div');

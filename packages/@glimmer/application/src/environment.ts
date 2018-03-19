@@ -73,7 +73,7 @@ export default class Environment extends GlimmerEnvironment {
         keyFor = (item: Opaque) => String(item);
       break;
       default:
-        keyFor = (item: Opaque) => item[keyPath];
+        keyFor = (item: Opaque) => String((item as any)[keyPath]);
       break;
     }
 

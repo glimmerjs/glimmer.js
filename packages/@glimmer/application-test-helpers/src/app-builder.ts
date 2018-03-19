@@ -128,7 +128,7 @@ export class AppBuilder<T extends TestApplication> {
     let { heap, pool, table } = compiler.compile();
 
     let resolverTable: Opaque[] = [];
-    let meta = {};
+    let meta: any = {};
 
     table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
       let handle = table.byModuleLocator.get(locator);

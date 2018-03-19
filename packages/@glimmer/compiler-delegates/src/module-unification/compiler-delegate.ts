@@ -4,7 +4,7 @@ import { expect } from '@glimmer/util';
 import { relative } from 'path';
 import { SerializedTemplateBlock } from '@glimmer/wire-format';
 import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
-import Debug from 'debug';
+import Debug from "debug";
 import { Project } from 'glimmer-analyzer';
 import { CAPABILITIES } from '@glimmer/component';
 
@@ -73,7 +73,7 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
     let relativePath = module.replace(/^\.\//, '');
 
     let meta;
-    if (this._builtins[name]) {
+    if ((this as any)._builtins[name]) {
       meta = { specifier: name };
     } else {
       meta = {

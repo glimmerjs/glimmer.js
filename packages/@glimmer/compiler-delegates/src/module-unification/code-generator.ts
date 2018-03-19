@@ -9,7 +9,7 @@ import {
 import { ICompilableTemplate } from "@glimmer/opcode-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
-import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
+import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator, AnnotatedModuleLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
 
@@ -71,7 +71,7 @@ export default class MUCodeGenerator {
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
-    let meta = {};
+    let meta: any = {};
 
     specifiers.forEach(specifier => {
       let trimmed = specifier.replace(commonPrefix, '');
@@ -175,7 +175,7 @@ export default class MUCodeGenerator {
 
     return source;
 
-    function replaceTemplatesWithComponents(locator) {
+    function replaceTemplatesWithComponents(locator: AnnotatedModuleLocator) {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
       if (referrer && referrer.split(':')[0] === 'template') {
         let specifier = project.resolver.identify("component:", referrer);
@@ -287,7 +287,7 @@ function strip(strings: TemplateStringsArray, ...args: string[]) {
       })
       .join("");
   } else {
-    return strings[0]
+    return (strings as TemplateStringsArray)[0]
       .split("\n")
       .map((s: string) => s.trim())
       .join(" ");
@@ -393,8 +393,8 @@ export function getImportStatements(modules: ModuleLocator[]) {
 /**
  * To keep file size down, we can eliminate null and undefined values.
  */
-function removeEmpty(obj) {
-  let trimmed = {};
+function removeEmpty(obj: any) {
+  let trimmed: any = {};
 
   for (let key in obj) {
     if (obj[key] !== undefined) {

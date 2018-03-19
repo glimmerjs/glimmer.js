@@ -97,7 +97,7 @@ test('can be instantiated with bytecode loader', function(assert) {
 test('can be booted with bytecode loader', async function(assert) {
   let delegate = new TestDelegate();
   let compiler = new BundleCompiler(delegate);
-  let locator = {
+  let locator: TemplateLocator<Opaque> = {
     kind: 'template',
     name: 'mainTemplate',
     module: '@glimmer/application',
@@ -106,8 +106,8 @@ test('can be booted with bytecode loader', async function(assert) {
   let wireFormat = precompile('{{component @componentName model=@model}}', {
     meta: locator
   });
-  let template = CompilableTemplate.topLevel(JSON.parse(wireFormat.block), compiler.compileOptions(locator as TemplateLocator<Opaque>));
-  compiler.addCompilableTemplate(locator as TemplateLocator<Opaque>, template);
+  let template = CompilableTemplate.topLevel(JSON.parse(wireFormat.block), compiler.compileOptions(locator));
+  compiler.addCompilableTemplate(locator, template);
   let result = compiler.compile();
 
   let resolver = new BlankResolver();

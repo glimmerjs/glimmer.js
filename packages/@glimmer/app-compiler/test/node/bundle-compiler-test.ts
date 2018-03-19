@@ -1,10 +1,10 @@
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
-import { createTempDir, buildOutput } from 'broccoli-test-helper';
+import { createTempDir, buildOutput, TempDir, Tree } from 'broccoli-test-helper';
 
 const { module, test } = QUnit;
 
-module('Broccol Glimmer Bundle Compiler', function(hooks) {
-  let input = null;
+module('Broccoli Glimmer Bundle Compiler', function (hooks) {
+  let input: TempDir = null;
 
   hooks.beforeEach(() => createTempDir().then(tempDir => (input = tempDir)));
 
@@ -18,9 +18,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     }, /Must pass a bundle compiler mode or pass a custom compiler delegate\./);
   });
 
-  test('syncs forward all files', async function(assert) {
+  test('syncs forward all files', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
@@ -54,19 +54,25 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
     let output = await buildOutput(compiler);
     let files = output.read();
+    let src = files['src'] as Tree;
+    let ui = src['ui'] as Tree;
+    let components = ui['components'] as Tree;
 
     assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort());
-    assert.deepEqual(Object.keys(files['src']).sort(), ['ui'].sort());
-    assert.deepEqual(Object.keys(files['src']['ui']), ['components']);
+    assert.deepEqual(Object.keys(src).sort(), ['ui'].sort());
+    assert.deepEqual(Object.keys(ui), ['components']);
 
-    Object.keys(files['src']['ui'].components).forEach((component) => {
-      assert.deepEqual(Object.keys(files['src']['ui'].components[component]), ['component.ts']);
+    Object.keys(components).forEach((component) => {
+      assert.deepEqual(
+        Object.keys(components[component]),
+        ['component.ts']
+      );
     });
   });
 
-  test('[MU] compiles the gbx and data segment', async function(assert) {
+  test('[MU] compiles the gbx and data segment', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
@@ -96,8 +102,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
     let output = await buildOutput(compiler);
     let files = output.read();
+    let src = files['src'] as Tree;
 
-    let buffer = new Uint16Array(files['src']['templates.gbx']);
+    let buffer = new Uint16Array((src['templates.gbx'] as any));
 
     assert.ok(buffer, 'Buffer is aligned');
     assert.ok((files['data-segment.js'] as string).match(/Hello From C/));
@@ -117,7 +124,8 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     await output.build();
 
     files = output.read();
-    buffer = new Uint16Array(files['src']['templates.gbx']);
+    src = files['src'] as Tree;
+    buffer = new Uint16Array(src['templates.gbx'] as any);
 
     assert.ok(buffer, 'Buffer is aligned');
 
@@ -126,9 +134,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(!(dataSegment.match(/Hello From C/)), "string constants should not contain old content");
   });
 
-  test('data segment has all segments', async function(assert) {
+  test('data segment has all segments', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
@@ -166,9 +174,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(dataSegment.indexOf('meta') > -1, 'has a specifier map');
   });
 
-  test('can lookup builtins', async function(assert) {
+  test('can lookup builtins', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
@@ -190,9 +198,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(dataSegment.indexOf('import { ifHelper as ') > -1);
   });
 
-  test('can write binary and data to different output paths', async function(assert) {
+  test('can write binary and data to different output paths', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
@@ -218,9 +226,9 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(files['templates.bin']);
   });
 
-  test('can lookup custom builtins', async function(assert) {
+  test('can lookup custom builtins', async function (assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
