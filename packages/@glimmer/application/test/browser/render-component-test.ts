@@ -168,7 +168,8 @@ class RenderComponentTest extends RenderTest {
 
     assert.equal(containerElement.innerHTML, '<h1>Hello Robbie!</h1><aside></aside><h1>Hello Glimmer! a</h1>');
 
-    await app.scheduleRerender();
+    app.scheduleRerender();
+    await didRender(app);
 
     assert.equal(count, 1);
 
@@ -176,7 +177,8 @@ class RenderComponentTest extends RenderTest {
 
     component.a = 'b';
 
-    await app.scheduleRerender();
+    app.scheduleRerender();
+    await didRender(app);
 
     assert.equal(count, 2);
 
@@ -194,7 +196,7 @@ class RenderComponentTest extends RenderTest {
         .template('HelloWorld', `<NonExistent />`)
         .boot();
 
-      app.renderComponent('HelloWorld', containerElement);
+      await app.renderComponent('HelloWorld', containerElement);
 
       await didRender(app);
     } catch (err) {
