@@ -48,7 +48,6 @@ module('Module Unification Delegate', {
 
 test('can generate the serialized constants pool ', (assert) => {
   pool.strings.push('a', 'b', 'c');
-  pool.floats.push(1.2, 1.1);
   pool.handles.push(1, 2, 3);
   let serializedPool = generator.generateConstantPool(pool);
 

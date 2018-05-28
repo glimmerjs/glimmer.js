@@ -1,6 +1,6 @@
 import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/program';
 import { Opaque, Dict } from '@glimmer/util';
-import { LowLevelVM, TemplateIterator, ElementBuilder, DynamicScope } from '@glimmer/runtime';
+import { TemplateIterator, ElementBuilder, DynamicScope, renderMain } from '@glimmer/runtime';
 
 import Application, { Loader } from '../../application';
 import Environment from '../../environment';
@@ -82,7 +82,6 @@ export default class BytecodeLoader implements Loader {
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
-    let vm = LowLevelVM.initial(program, env, self, null, scope, builder, mainEntry);
-    return new TemplateIterator(vm);
+    return renderMain(program, env, self, scope, builder, mainEntry);
   }
 }

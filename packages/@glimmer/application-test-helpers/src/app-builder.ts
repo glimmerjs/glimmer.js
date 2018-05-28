@@ -2,7 +2,7 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ProgramSymbolTable, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import { Opaque, Dict, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
@@ -11,9 +11,8 @@ import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
-import { SerializedTemplateBlock } from '@glimmer/wire-format';
-import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
-import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runtime';
+import { CompilableProgram } from '@glimmer/opcode-compiler';
+import { Cursor } from '@glimmer/runtime';
 
 import didRender from './did-render';
 
@@ -104,7 +103,13 @@ export class AppBuilder<T extends TestApplication> {
     let mainLocator = locatorFor('template:mainTemplate', 'default');
     mainLocator.meta.specifier = 'template:mainTemplate';
 
-    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
+    let block = JSON.parse(mainTemplate.block);
+    let compilableTemplate = new CompilableProgram(compiler.compiler, {
+      block,
+      referrer: mainLocator.meta,
+      asPartial: false
+    });
+
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
     for (let module in this.templates) {
@@ -228,10 +233,6 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
 
   resolvePartial(partialName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
     throw new Error("Method not implemented.");
-  }
-
-  getComponentLayout(_meta: AppBuilderTemplateMeta, block: SerializedTemplateBlock, options: CompileOptions<AppBuilderTemplateMeta>): ICompilableTemplate<ProgramSymbolTable> {
-    return CompilableTemplate.topLevel(block, options);
   }
 
   hasModifierInScope(modifierName: string, referrer: AppBuilderTemplateMeta): boolean {

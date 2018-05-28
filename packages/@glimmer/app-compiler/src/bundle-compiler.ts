@@ -5,7 +5,7 @@ import walkSync from 'walk-sync';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, extname } from 'path';
 import { mainTemplate } from '@glimmer/application';
-import { CompilableTemplate } from '@glimmer/opcode-compiler';
+import { CompilableProgram } from '@glimmer/opcode-compiler';
 import { Opaque } from '@glimmer/util';
 import { AppCompilerDelegateOptions } from '@glimmer/compiler-delegates';
 
@@ -77,7 +77,12 @@ export default class GlimmerBundleCompiler extends Plugin {
     let { outputPath } = this;
 
     let locator = this.delegate.templateLocatorFor({ module: '@glimmer/application', name: 'mainLayout' });
-    let compilable = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), this.compiler.compileOptions(locator));
+    let block = JSON.parse(mainTemplate.block);
+    let compilable = new CompilableProgram(this.compiler.compiler, {
+      block,
+      referrer: locator.meta,
+      asPartial: false
+    });
 
     this.compiler.addCompilableTemplate(locator, compilable);
 

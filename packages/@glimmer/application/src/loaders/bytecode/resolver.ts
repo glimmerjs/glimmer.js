@@ -53,7 +53,7 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
    * The resolver is responsible for returning a component definition containing
    * the VM handle and symbol table for the resolved component.
    */
-  lookupComponent(name: string, referrer: TemplateMeta): ComponentDefinition {
+  lookupComponentDefinition(name: string, referrer: TemplateMeta): ComponentDefinition {
     let owner = this.owner;
     let manager = this.managerFor();
 

@@ -12,16 +12,16 @@
   "types": "dist/types/index.d.ts",
   "dependencies": {
     "@glimmer/application": "^0.10.0-alpha.1",
-    "@glimmer/bundle-compiler": "^0.31.0",
+    "@glimmer/bundle-compiler": "^0.34.7",
     "@glimmer/component": "^0.10.0-alpha.1",
-    "@glimmer/interfaces": "^0.31.0",
-    "@glimmer/opcode-compiler": "^0.31.0",
-    "@glimmer/program": "^0.31.0",
-    "@glimmer/syntax": "^0.31.0",
-    "@glimmer/util": "^0.31.0",
+    "@glimmer/interfaces": "^0.34.7",
+    "@glimmer/opcode-compiler": "^0.34.7",
+    "@glimmer/program": "^0.34.7",
+    "@glimmer/syntax": "^0.34.7",
+    "@glimmer/util": "^0.34.7",
     "@types/node": "^8.0.46",
     "debug": "^3.1.0",
-    "glimmer-analyzer": "^0.3.2",
+    "glimmer-analyzer": "^0.3.3",
     "resolve": "^1.4.0"
   },
   "devDependencies": {

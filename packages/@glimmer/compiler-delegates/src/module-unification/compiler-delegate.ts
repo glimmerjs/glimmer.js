@@ -1,9 +1,7 @@
 import { BundleCompilationResult } from '@glimmer/bundle-compiler';
-import { SymbolTable, ProgramSymbolTable, ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import { SymbolTable, ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { expect } from '@glimmer/util';
 import { relative } from 'path';
-import { SerializedTemplateBlock } from '@glimmer/wire-format';
-import { CompilableTemplate, CompileOptions, ICompilableTemplate } from '@glimmer/opcode-compiler';
 import Debug from 'debug';
 import { Project } from 'glimmer-analyzer';
 import { CAPABILITIES } from '@glimmer/component';
@@ -116,10 +114,6 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<TemplateM
     let specifier = this.project.resolver.identify(`helper:${helperName}`, referrer.specifier);
     let module = `./${this.project.pathForSpecifier(specifier)}`;
     return helperLocatorFor(module, 'default');
-  }
-
-  getComponentLayout(_meta: TemplateMeta, block: SerializedTemplateBlock, options: CompileOptions<TemplateMeta>): ICompilableTemplate<ProgramSymbolTable> {
-    return CompilableTemplate.topLevel(block, options);
   }
 
   protected moduleLocatorFor(specifier: string): ModuleLocator {
