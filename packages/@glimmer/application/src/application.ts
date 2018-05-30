@@ -319,7 +319,6 @@ export default class Application implements Owner {
       this._didRender();
     } catch (err) {
       this._didError(err);
-      throw err;
     }
   }
 
@@ -343,7 +342,6 @@ export default class Application implements Owner {
       this._didRender();
     } catch (err) {
       this._didError(err);
-      throw err;
     }
   }
 

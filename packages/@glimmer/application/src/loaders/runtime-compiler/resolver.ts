@@ -3,11 +3,9 @@ import {
   Helper as GlimmerHelper,
   Invocation,
   Helper,
-  ScannableTemplate,
   VM,
   Arguments
 } from '@glimmer/runtime';
-import { TemplateOptions } from '@glimmer/opcode-compiler';
 import { expect } from "@glimmer/util";
 import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
 import { Owner } from "@glimmer/di";
@@ -16,6 +14,7 @@ import { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimme
 import { TypedRegistry } from "./typed-registry";
 import Application from "../../application";
 import { HelperReference } from '../../helpers/user-helper';
+import { LazyCompiler, CompilableProgram } from '@glimmer/opcode-compiler';
 
 export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
 
@@ -51,8 +50,9 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
 
 /** @public */
 export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
-  templateOptions: TemplateOptions<Specifier>;
   handleLookup: TypedRegistry<Opaque>[] = [];
+  compiler: LazyCompiler<Specifier>;
+
   private cache = {
     component: new TypedRegistry<ComponentDefinition>(),
     template: new TypedRegistry<SerializedTemplateWithLazyBlock<Specifier>>(),
@@ -63,10 +63,6 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   };
 
   constructor(private owner: Owner) {}
-
-  setCompileOptions(compileOptions: TemplateOptions<Specifier>) {
-    this.templateOptions = compileOptions;
-  }
 
   lookup(type: LookupType, name: string, referrer?: Specifier): Option<number> {
     if (this.cache[type].hasName(name)) {
@@ -97,12 +93,16 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   compileTemplate(name: string, layout: Option<number>): Invocation {
     if (!this.cache.compiledTemplate.hasName(name)) {
       let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(layout);
-      let { block, meta, id } = serializedTemplate;
-      let parsedBlock = JSON.parse(block);
-      let template = new ScannableTemplate(this.templateOptions, { id, block: parsedBlock, referrer: meta }).asLayout();
+      let block = JSON.parse(serializedTemplate.block);
+      let compilableTemplate = new CompilableProgram(this.compiler, {
+        block,
+        referrer: serializedTemplate.meta,
+        asPartial: false
+      });
+
       let invocation = {
-        handle: template.compile(),
-        symbolTable: template.symbolTable
+        handle: compilableTemplate.compile(),
+        symbolTable: compilableTemplate.symbolTable
       };
 
       this.register('compiledTemplate', name, invocation);
@@ -132,7 +132,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
 
   lookupComponentHandle(name: string, referrer?: Specifier) {
     if (!this.cache.component.hasName(name)) {
-      this.lookupComponent(name, referrer);
+      this.lookupComponentDefinition(name, referrer);
     }
     return this.lookup('component', name, referrer);
   }
@@ -162,7 +162,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     };
   }
 
-  lookupComponent(name: string, meta: Specifier): ComponentDefinition {
+  lookupComponentDefinition(name: string, meta: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
       let specifier = expect(this.identifyComponent(name, meta), `Could not find the component '${name}'`);

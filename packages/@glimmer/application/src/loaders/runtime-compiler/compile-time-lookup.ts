@@ -1,12 +1,22 @@
-import { CompileTimeLookup as ICompileTimeLookup, ICompilableTemplate } from '@glimmer/opcode-compiler';
-import { ComponentDefinition as IComponentDefinition, Opaque, ComponentCapabilities, ProgramSymbolTable } from '@glimmer/interfaces';
-import { Option, assert } from '@glimmer/util';
-import { WithStaticLayout, ComponentManager } from '@glimmer/runtime';
+import {
+} from "@glimmer/opcode-compiler";
+import {
+  ComponentDefinition as IComponentDefinition,
+  CompileTimeLookup as ICompileTimeLookup,
+  CompilableTemplate,
+  Opaque,
+  ComponentCapabilities,
+  ProgramSymbolTable
+} from "@glimmer/interfaces";
+import { Option, assert } from "@glimmer/util";
+import { WithStaticLayout, ComponentManager } from "@glimmer/runtime";
 
-import RuntimeResolver from './resolver';
-import { Specifier } from './loader';
+import RuntimeResolver from "./resolver";
+import { Specifier } from "./loader";
 
-type ComponentDefinition = IComponentDefinition<ComponentManager<Opaque, Opaque>>;
+type ComponentDefinition = IComponentDefinition<
+  ComponentManager<Opaque, Opaque>
+>;
 
 export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
   constructor(private resolver: RuntimeResolver) {}
@@ -25,13 +35,20 @@ export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> 
     return manager.getCapabilities(state);
   }
 
-  getLayout(handle: number): ICompilableTemplate<ProgramSymbolTable> {
+  getLayout(handle: number): CompilableTemplate<ProgramSymbolTable> {
     let definition = this.getComponentDefinition(handle);
     let { manager } = definition;
-    let invocation = (manager as WithStaticLayout<any, any, Specifier, RuntimeResolver>).getLayout(definition, this.resolver);
+    let invocation = (manager as WithStaticLayout<
+      any,
+      any,
+      Specifier,
+      RuntimeResolver
+    >).getLayout(definition, this.resolver);
 
     return {
-      compile() { return invocation.handle; },
+      compile() {
+        return invocation.handle;
+      },
       symbolTable: invocation.symbolTable
     };
   }

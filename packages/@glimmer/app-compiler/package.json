@@ -12,10 +12,10 @@
   "types": "dist/types/index.d.ts",
   "dependencies": {
     "@glimmer/application": "^0.10.0-alpha.1",
-    "@glimmer/bundle-compiler": "^0.31.0",
+    "@glimmer/bundle-compiler": "^0.34.7",
     "@glimmer/compiler-delegates": "^0.10.0-alpha.1",
-    "@glimmer/interfaces": "^0.31.0",
-    "@glimmer/opcode-compiler": "^0.31.0",
+    "@glimmer/interfaces": "^0.34.7",
+    "@glimmer/opcode-compiler": "^0.34.7",
     "broccoli-plugin": "^1.3.0",
     "debug": "^3.1.0",
     "walk-sync": "^0.3.2"

@@ -12,7 +12,7 @@
   "types": "dist/types/index.d.ts",
   "dependencies": {
     "@glimmer/application": "^0.10.0-alpha.1",
-    "@glimmer/node": "^0.31.0",
-    "@glimmer/runtime": "^0.31.0"
+    "@glimmer/node": "^0.34.7",
+    "@glimmer/runtime": "^0.34.7"
   }
 }

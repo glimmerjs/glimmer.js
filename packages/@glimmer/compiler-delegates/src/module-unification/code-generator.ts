@@ -6,10 +6,9 @@ import {
   ModuleLocatorMap,
   ExternalModuleTable,
 } from "@glimmer/bundle-compiler";
-import { ICompilableTemplate } from "@glimmer/opcode-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
-import { ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
+import { CompilableTemplate, ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
 
@@ -21,7 +20,7 @@ const debug = Debug("@glimmer/compiler-delegates:mu-codegen");
 
 export type TemplateLocator = ITemplateLocator<TemplateMeta>;
 export type CompilableTemplates = ModuleLocatorMap<
-  ICompilableTemplate<ProgramSymbolTable>
+  CompilableTemplate<ProgramSymbolTable>
 >;
 
 export default class MUCodeGenerator {

@@ -4,10 +4,7 @@ import { Document } from 'simple-dom';
 import { Program } from '@glimmer/program';
 import { BundleCompiler, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { AppCompilerDelegate } from '@glimmer/compiler-delegates';
-import { ComponentCapabilities, Opaque, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
-import { SerializedTemplateBlock } from '@glimmer/wire-format';
-import { CompileOptions, CompilableTemplate } from '@glimmer/opcode-compiler';
-import { precompile } from '@glimmer/application-test-helpers';
+import { ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 
 const { module, test } = QUnit;
 
@@ -28,9 +25,6 @@ class TestDelegate implements AppCompilerDelegate<any> {
     throw new Error("Method not implemented.");
   }
   getComponentCapabilities(locator: any): ComponentCapabilities {
-    throw new Error("Method not implemented.");
-  }
-  getComponentLayout(locator: any, block: SerializedTemplateBlock, options: CompileOptions<any>): never {
     throw new Error("Method not implemented.");
   }
   hasHelperInScope(helperName: string, referrer: any): boolean {
@@ -97,19 +91,16 @@ test('can be instantiated with bytecode loader', function(assert) {
 test('can be booted with bytecode loader', async function(assert) {
   let delegate = new TestDelegate();
   let compiler = new BundleCompiler(delegate);
-  let locator = {
+  let locator: TemplateLocator<null> = {
     kind: 'template',
     name: 'mainTemplate',
     module: '@glimmer/application',
     meta: null
   };
-  let wireFormat = precompile('{{component @componentName model=@model}}', {
-    meta: locator
-  });
-  let template = CompilableTemplate.topLevel(JSON.parse(wireFormat.block), compiler.compileOptions(locator as TemplateLocator<Opaque>));
-  compiler.addCompilableTemplate(locator as TemplateLocator<Opaque>, template);
-  let result = compiler.compile();
 
+  compiler.add(locator, '{{component @componentName model=@model}}');
+
+  let result = compiler.compile();
   let resolver = new BlankResolver();
   let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {

@@ -14,7 +14,6 @@ import {
 } from '@glimmer/di';
 import Iterable from './iterable';
 import { Program } from '@glimmer/program';
-import { TemplateOptions } from '@glimmer/opcode-compiler';
 import { ModuleLocator } from '@glimmer/interfaces';
 
 import RuntimeResolver from './loaders/runtime-compiler/loader';
@@ -32,7 +31,6 @@ export default class Environment extends GlimmerEnvironment {
   private uselessAnchor: HTMLAnchorElement;
   public resolver: RuntimeResolver;
   protected program: Program<ModuleLocator>;
-  public compileOptions: TemplateOptions<ModuleLocator>;
 
   static create(options: EnvironmentOptions = {}) {
     options.document = options.document || self.document;

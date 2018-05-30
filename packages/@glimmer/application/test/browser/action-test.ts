@@ -108,6 +108,7 @@ test('action helper invoked without a function raises an error', async function(
     .template('Main', '<div><Parent /></div>')
     .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
     .component('Parent', ParentComponent);
+
   try {
     await app.boot();
   } catch (e) {

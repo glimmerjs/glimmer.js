@@ -2,20 +2,19 @@ import {
   Simple
 } from '@glimmer/interfaces';
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ProgramSymbolTable, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import { Opaque, Dict, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { FactoryDefinition } from '@glimmer/di';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
-import Application, { ApplicationConstructor, RuntimeCompilerLoader, BytecodeLoader, Loader } from '@glimmer/application';
+import Application, { ApplicationConstructor, BytecodeLoader, DOMBuilder, Loader, RuntimeCompilerLoader, SyncRenderer } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
-import { SerializedTemplateBlock } from '@glimmer/wire-format';
-import { CompilableTemplate, CompileOptions } from '@glimmer/opcode-compiler';
-import { CompilableTemplate as ICompilableTemplate, Cursor } from '@glimmer/runtime';
+import { CompilableProgram } from '@glimmer/opcode-compiler';
+import { Cursor } from '@glimmer/runtime';
 
-import { DOMBuilder, SyncRenderer } from '@glimmer/application';
+import didRender from './did-render';
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -30,20 +29,6 @@ export interface ComponentFactory extends FactoryDefinition<Opaque> {};
 
 export class TestApplication extends Application {
   rootElement: Element;
-
-  async scheduleRerender(): Promise<void> {
-    await new Promise(res => {
-      if (this._scheduled || !this._rendered) return;
-      this._rendering = true;
-      this._scheduled = true;
-      requestAnimationFrame(() => {
-        this._scheduled = false;
-        this._rerender();
-        this._rendering = false;
-        res();
-      });
-    });
-  }
 }
 
 export interface AppBuilderTemplateMeta {
@@ -118,7 +103,13 @@ export class AppBuilder<T extends TestApplication> {
     let mainLocator = locatorFor('template:mainTemplate', 'default');
     mainLocator.meta.specifier = 'template:mainTemplate';
 
-    let compilableTemplate = CompilableTemplate.topLevel(JSON.parse(mainTemplate.block), compiler.compileOptions(mainLocator));
+    let block = JSON.parse(mainTemplate.block);
+    let compilableTemplate = new CompilableProgram(compiler.compiler, {
+      block,
+      referrer: mainLocator.meta,
+      asPartial: false
+    });
+
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
     for (let module in this.templates) {
@@ -202,8 +193,9 @@ export class AppBuilder<T extends TestApplication> {
     let rootElement = doc.createElement('div');
     app.rootElement = rootElement;
     app.renderComponent('Main', rootElement);
+    app.boot();
 
-    await app.boot();
+    await didRender(app);
 
     return app;
   }
@@ -241,10 +233,6 @@ class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
 
   resolvePartial(partialName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
     throw new Error("Method not implemented.");
-  }
-
-  getComponentLayout(_meta: AppBuilderTemplateMeta, block: SerializedTemplateBlock, options: CompileOptions<AppBuilderTemplateMeta>): ICompilableTemplate<ProgramSymbolTable> {
-    return CompilableTemplate.topLevel(block, options);
   }
 
   hasModifierInScope(modifierName: string, referrer: AppBuilderTemplateMeta): boolean {
