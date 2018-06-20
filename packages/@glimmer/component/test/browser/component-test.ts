@@ -25,3 +25,15 @@ test('can be instantiated with an owner', async function(assert) {
   assert.ok(component, 'component exists');
   assert.strictEqual(getOwner(component), app, 'owner has been set');
 });
+
+test('can yield named args to the block', async function(assert) {
+  let app = await buildApp()
+    .helper('hash', (params, named) => named)
+    .template('Main', '<YieldsHash as |x|>I have {{x.number}} {{x.string}}</YieldsHash>')
+    .template('YieldsHash', '<div>{{yield (hash string="bananas" number=5)}}</div>')
+    .boot();
+
+  let root = app.rootElement as HTMLElement;
+
+  assert.equal(root.innerText, 'I have 5 bananas');
+});
