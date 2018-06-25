@@ -225,9 +225,9 @@ export default class Application implements Owner {
 
     this._rendering = true;
     this._scheduled = true;
-    setTimeout(() => {
+    setTimeout(async () => {
       this._scheduled = false;
-      this._rerender();
+      await this._rerender();
       this._rendering = false;
     }, 0);
   }
