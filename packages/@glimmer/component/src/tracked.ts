@@ -89,6 +89,9 @@ export function tracked(...dependencies: any[]): any {
 
   if (typeof target === "string") {
     return function(target: any, key: string | Symbol, descriptor: PropertyDescriptor) {
+      if (dependencies.length) {
+        console.warn('The use of dependent keys in @tracked is deprecated (e.g. `@tracked(\'myDependendentKey\')`) and will be removed in v0.12.0');
+      }
       return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
     };
   } else {
