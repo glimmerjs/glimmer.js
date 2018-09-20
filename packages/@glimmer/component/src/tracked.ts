@@ -230,6 +230,10 @@ export default class Meta {
     let tag = this.tags[key];
     if (tag) { return tag; }
 
+    if (this.trackedComputedProperties[key]) {
+      return this.tags[key] = combinatorForComputedProperties(this, key);
+    }
+
     return this.tags[key] = DirtyableTag.create();
   }
 
@@ -255,6 +259,10 @@ export default class Meta {
       return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
     }
   }
+}
+
+function combinatorForComputedProperties(meta: Meta, key: Key): Tag {
+  return combine([meta.updatableTagFor(key)]);
 }
 
 export interface Interceptors {
