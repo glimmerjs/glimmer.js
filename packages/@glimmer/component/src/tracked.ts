@@ -106,6 +106,7 @@ let CURRENT_TRACKER: Option<Tracker> = null;
 function descriptorForTrackedComputedProperty(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor {
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
+  meta.trackedComputedProperties[key] = true;
 
   let get = descriptor.get as Function;
   let set = descriptor.set as Function;
@@ -207,11 +208,13 @@ export default class Meta {
   tags: Dict<Tag>;
   computedPropertyTags: Dict<TagWrapper<UpdatableTag>>;
   trackedProperties: Dict<boolean>;
+  trackedComputedProperties: Dict<boolean>;
 
   constructor(parent: Meta) {
     this.tags = dict<Tag>();
     this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
+    this.trackedComputedProperties = parent ? Object.create(parent.trackedComputedProperties) : dict<boolean>();
   }
 
   /**
@@ -237,12 +240,20 @@ export default class Meta {
    * the tag combinator of the CP and its dependencies.
   */
   updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
+    let isComputed = this.trackedComputedProperties[key];
     let tag;
 
-    // The key is for a static property.
-    tag = this.tags[key];
-    if (tag) { return tag as TagWrapper<UpdatableTag>; }
-    return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
+    if (isComputed) {
+      // The key is for a computed property.
+      tag = this.computedPropertyTags[key];
+      if (tag) { return tag; }
+      return this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG);
+    } else {
+      // The key is for a static property.
+      tag = this.tags[key];
+      if (tag) { return tag as TagWrapper<UpdatableTag>; }
+      return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
+    }
   }
 }
 
