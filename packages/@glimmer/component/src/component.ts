@@ -1,5 +1,5 @@
 import { assert } from "@glimmer/util";
-import { metaFor } from "./tracked";
+import { metaFor, trackedGet } from "./tracked";
 import { CURRENT_TAG } from "@glimmer/reference";
 
 export interface Bounds {
@@ -262,6 +262,7 @@ class Component {
    *
    */
   get args() {
+    trackedGet(this, 'args');
     return this.__args__;
   }
 
