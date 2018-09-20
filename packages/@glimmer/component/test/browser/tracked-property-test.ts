@@ -344,36 +344,38 @@ test('nested @tracked in multiple objects', (assert) => {
   unrelatedBump(tag, snapshot);
 });
 
-test('Arguments in tracked decorator throws an error', function(assert) {
-  function createErrorProneClass() {
-    class DependentKeysAreCool {
-      @tracked('firstName', 'lastName') fullName() {
-        return `${this.firstName} ${this.lastName}`;
+if (DEBUG) {
+  test('Arguments in tracked decorator throws an error', function(assert) {
+    function createErrorProneClass() {
+      class DependentKeysAreCool {
+        @tracked('firstName', 'lastName') fullName() {
+          return `${this.firstName} ${this.lastName}`;
+        }
+
+        @tracked firstName = 'Tom';
+        @tracked lastName = 'Dale';
       }
-
-      @tracked firstName = 'Tom';
-      @tracked lastName = 'Dale';
+      return new DependentKeysAreCool();
     }
-    return new DependentKeysAreCool();
-  }
-  assert.throws(createErrorProneClass, /@tracked\('firstName', 'lastName'\)/, 'the correct error is thrown');
-});
+    assert.throws(createErrorProneClass, /@tracked\('firstName', 'lastName'\)/, 'the correct error is thrown');
+  });
 
-test('Using @tracked as a decorator factory throws an error', function(assert) {
-  function createErrorProneClass() {
-    class DependentKeysAreCool {
-      // @ts-ignore
-      @tracked() fullName() {
-        return `${this.firstName} ${this.lastName}`;
+  test('Using @tracked as a decorator factory throws an error', function(assert) {
+    function createErrorProneClass() {
+      class DependentKeysAreCool {
+        // @ts-ignore
+        @tracked() fullName() {
+          return `${this.firstName} ${this.lastName}`;
+        }
+
+        @tracked firstName = 'Tom';
+        @tracked lastName = 'Dale';
       }
-
-      @tracked firstName = 'Tom';
-      @tracked lastName = 'Dale';
+      return new DependentKeysAreCool();
     }
-    return new DependentKeysAreCool();
-  }
-  assert.throws(createErrorProneClass, /@tracked\(\)/, 'The correct error is thrown');
-});
+    assert.throws(createErrorProneClass, /@tracked\(\)/, 'The correct error is thrown');
+  });
+}
 
 module('[@glimmer/component] Tracked Property Warning in Development Mode');
 

@@ -239,7 +239,7 @@ export default class Meta {
     if (tag) { return tag; }
 
     if (this.trackedComputedProperties[key]) {
-      return this.tags[key] = combinatorForComputedProperties(this, key);
+      return this.tags[key] = this.updatableTagFor(key);
     }
 
     return this.tags[key] = DirtyableTag.create();
@@ -267,10 +267,6 @@ export default class Meta {
       return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
     }
   }
-}
-
-function combinatorForComputedProperties(meta: Meta, key: Key): Tag {
-  return combine([meta.updatableTagFor(key)]);
 }
 
 export interface Interceptors {
