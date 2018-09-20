@@ -90,7 +90,7 @@ test('Tracked properties that depend on `args` re-render correctly', async funct
   }
 
   class ChildComponent extends Component {
-    @tracked('args') get name() {
+    @tracked get name() {
       return `${this.args.firstName} Dale`;
     }
   }

@@ -30,12 +30,7 @@ class Tracker {
  * Marking a property as tracked means that when that property changes,
  * a rerender of the component is scheduled so the template is kept up to date.
  *
- * There are two usages for the `@tracked` decorator, shown below.
- *
- * @example No dependencies
- *
- * If you don't pass an argument to `@tracked`, only changes to that property
- * will be tracked:
+ * @example
  *
  * ```typescript
  * import Component, { tracked } from '@glimmer/component';
@@ -49,11 +44,13 @@ class Tracker {
  * When something changes the component's `remainingApples` property, the rerender
  * will be scheduled.
  *
- * @example Dependents
+ * @example Computed Properties
  *
  * In the case that you have a computed property that depends other
- * properties, you want to track both so that when one of the
- * dependents change, a rerender is scheduled.
+ * properties, tracked properties accessed within the computed property
+ * will automatically be tracked for you. That means when any of those
+ * dependent tracked properties is changed, a rerender of the component
+ * will be scheduled.
  *
  * In the following example we have two properties,
  * `eatenApples`, and `remainingApples`.
@@ -68,7 +65,7 @@ class Tracker {
  *    @tracked
  *    eatenApples = 0
  *
- *    @tracked('eatenApples')
+ *    @tracked
  *    get remainingApples() {
  *      return totalApples - this.eatenApples;
  *    }
@@ -78,29 +75,16 @@ class Tracker {
  *    }
  *  }
  * ```
- *
- * @param dependencies Optional dependents to be tracked.
  */
-export function tracked(...dependencies: string[]): MethodDecorator;
 export function tracked(target: any, key: any): any;
 export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
-export function tracked(...dependencies: any[]): any {
-  let [target, key, descriptor] = dependencies;
+export function tracked(...args: any[]): any {
+  let [target, key, descriptor] = args;
 
-  if (typeof target === "string") {
-    return function(target: any, key: string | Symbol, descriptor: PropertyDescriptor) {
-      if (dependencies.length) {
-        console.warn('The use of dependent keys in @tracked is deprecated (e.g. `@tracked(\'myDependendentKey\')`) and will be removed in v0.12.0');
-        console.warn(`Please remove the "${dependencies.length > 1 ? dependencies.join(', ') : dependencies[0]}" key${dependencies.length > 1 ? 's' : ''}`);
-      }
-      return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
-    };
+  if (descriptor) {
+    return descriptorForTrackedComputedProperty(target, key, descriptor);
   } else {
-    if (descriptor) {
-      return descriptorForTrackedComputedProperty(target, key, descriptor, []);
-    } else {
-      installTrackedProperty(target, key);
-    }
+    installTrackedProperty(target, key);
   }
 }
 
@@ -119,10 +103,9 @@ export function tracked(...dependencies: any[]): any {
  */
 let CURRENT_TRACKER: Option<Tracker> = null;
 
-function descriptorForTrackedComputedProperty(target: any, key: any, descriptor: PropertyDescriptor, dependencies: string[]): PropertyDescriptor {
+function descriptorForTrackedComputedProperty(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor {
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
-  meta.trackedPropertyDependencies[key] = dependencies || [];
 
   let get = descriptor.get as Function;
   let set = descriptor.set as Function;
@@ -177,15 +160,10 @@ export type Key = string;
   from it.
  */
 function installTrackedProperty(target: any, key: Key) {
-  let value: any;
   let shadowKey = Symbol(key);
 
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
-
-  if (target[key] !== undefined) {
-    value = target[key];
-  }
 
   Object.defineProperty(target, key, {
     configurable: true,
@@ -225,13 +203,11 @@ export default class Meta {
   tags: Dict<Tag>;
   computedPropertyTags: Dict<TagWrapper<UpdatableTag>>;
   trackedProperties: Dict<boolean>;
-  trackedPropertyDependencies: Dict<string[]>;
 
   constructor(parent: Meta) {
     this.tags = dict<Tag>();
     this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
-    this.trackedPropertyDependencies = parent ? Object.create(parent.trackedPropertyDependencies) : dict<string[]>();
   }
 
   /**
@@ -247,11 +223,6 @@ export default class Meta {
     let tag = this.tags[key];
     if (tag) { return tag; }
 
-    let dependencies;
-    if (dependencies = this.trackedPropertyDependencies[key]) {
-      return this.tags[key] = combinatorForComputedProperties(this, key, dependencies);
-    }
-
     return this.tags[key] = DirtyableTag.create();
   }
 
@@ -262,36 +233,13 @@ export default class Meta {
    * the tag combinator of the CP and its dependencies.
   */
   updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
-    let dependencies = this.trackedPropertyDependencies[key];
     let tag;
 
-    if (dependencies) {
-      // The key is for a computed property.
-      tag = this.computedPropertyTags[key];
-      if (tag) { return tag; }
-      return this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG);
-    } else {
-      // The key is for a static property.
-      tag = this.tags[key];
-      if (tag) { return tag as TagWrapper<UpdatableTag>; }
-      return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
-    }
+    // The key is for a static property.
+    tag = this.tags[key];
+    if (tag) { return tag as TagWrapper<UpdatableTag>; }
+    return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
   }
-}
-
-function combinatorForComputedProperties(meta: Meta, key: Key, dependencies: Key[] | void): Tag {
-  // Start off with the tag for the CP's own dirty state.
-  let tags: Tag[] = [meta.updatableTagFor(key)];
-
-  // Next, add in all of the tags for its dependencies.
-  if (dependencies && dependencies.length) {
-    for (let i = 0; i < dependencies.length; i++) {
-      tags.push(meta.tagFor(dependencies[i]));
-    }
-  }
-
-  // Return a combinator across the CP's tags and its dependencies' tags.
-  return combine(tags);
 }
 
 export interface Interceptors {
