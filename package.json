@@ -62,7 +62,8 @@
       "enhancement": ":rocket: Enhancement",
       "bug": ":bug: Bug Fix",
       "documentation": ":memo: Documentation",
-      "internal": ":house: Internal"
+      "internal": ":house: Internal",
+      "deprecation": ":warning: Deprecation"
     }
   }
 }
