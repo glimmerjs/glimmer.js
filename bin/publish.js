@@ -26,6 +26,12 @@ let cli = readline.createInterface({
   output: process.stdout
 });
 
+function question(prompt) {
+  return new Promise(resolve => {
+    cli.question(prompt, resolve);
+  });
+}
+
 // Load up the built packages in dist.
 let packages = Project.from(DIST_PATH)
   .packages
@@ -37,30 +43,35 @@ let distTag;
 
 // Begin interactive CLI
 printExistingVersions();
-promptForVersion();
+promptForVersion()
+.finally(() => cli.close())
+.catch(reason => {
+  console.error(reason);
+  process.exit(1);
+});
 
 function printExistingVersions() {
   let packageVersions = packages.map(package => [package.name, package.version]);
   printPadded(packageVersions);
 }
 
-function promptForVersion() {
+async function promptForVersion() {
   let defaultVersion = generateDefaultVersion();
 
-  cli.question(chalk.green(`\nNew version to publish? [${defaultVersion}] `), version => {
-    version = version.trim();
-    if (version === '') {
-      version = defaultVersion;
-    }
+  let version = await question(chalk.green(`\nNew version to publish? [${defaultVersion}] `))
 
-    validateNewVersion(version);
-    console.log(chalk.green(`Publishing v${version}...`));
+  version = version.trim();
+  if (version === '') {
+    version = defaultVersion;
+  }
 
-    newVersion = version;
-    applyNewVersion();
-    gitCommitAndTag();
-    confirmPublish();
-  });
+  await validateNewVersion(version);
+  console.log(chalk.green(`Publishing v${version}...`));
+
+  newVersion = version;
+  await applyNewVersion();
+  await gitCommitAndTag();
+  await confirmPublish();
 }
 
 function generateDefaultVersion() {
@@ -152,31 +163,47 @@ function gitCommitAndTag() {
   execWithSideEffects(`git tag "v${newVersion}"`);
 }
 
-function confirmPublish() {
+async function getOTPToken() {
+  let token = await question(chalk.green('\nPlease provide OTP token '));
+
+  return token.trim();
+}
+
+async function confirmPublish() {
   distTag = semver.prerelease(newVersion) ? 'next' : 'latest';
 
   console.log(chalk.blue("Version"), newVersion);
   console.log(chalk.blue("Dist Tag"), distTag);
 
-  cli.question(chalk.bgRed.white.bold("Are you sure? [Y/N]") + " ", answer => {
-    if (answer !== 'y' && answer !== 'Y') {
-      console.log(chalk.red("Aborting"));
-      cli.close();
-      return;
-    }
+  let answer = await question(chalk.bgRed.white.bold("Are you sure? [Y/N]") + " ");
+  if (answer !== 'y' && answer !== 'Y') {
+    console.log(chalk.red("Aborting"));
+    return;
+  }
 
-    packages.filter(pkg => !pkg.private).forEach(package => {
-      execWithSideEffects(`npm publish --tag ${distTag}  --access public`, {
+  let otp = await getOTPToken();
+  let publicPackages = packages.filter(pkg => !pkg.private);
+  for (let package of publicPackages) {
+    try {
+      execWithSideEffects(`npm publish --tag ${distTag} --otp ${otp} --access public`, {
         cwd: package.absolutePath
       });
-    });
+    } catch (e) {
+      // the token is outdated, we need another one
+      if (e.message.includes('E401')) {
+        otp = await getOTPToken();
 
-    execWithSideEffects(`git push origin master --tags`);
+        publishPackage(distTag, otp, package.absolutePath);
+      } else {
+        throw e;
+      }
+    }
+  }
 
-    console.log(chalk.green(`\nv${newVersion} deployed!`));
-    console.log(chalk.green('Done.'));
-    cli.close();
-  });
+  execWithSideEffects(`git push origin master --tags`);
+
+  console.log(chalk.green(`\nv${newVersion} deployed!`));
+  console.log(chalk.green('Done.'));
 }
 
 function fatalError(message) {
