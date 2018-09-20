@@ -80,6 +80,14 @@ export function tracked(target: any, key: any): any;
 export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
 export function tracked(...args: any[]): any {
   let [target, key, descriptor] = args;
+  if (DEBUG) {
+    if (typeof target === 'string') {
+      throw new Error(`ERROR: You attempted to use @tracked with ${args.length > 1 ? 'arguments' : 'an argument'} ( @tracked(${args.map(d => `'${d}'`).join(', ')}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`);
+    }
+    if (target === undefined) {
+      throw new Error('ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!');
+    }
+  }
 
   if (descriptor) {
     return descriptorForTrackedComputedProperty(target, key, descriptor);
