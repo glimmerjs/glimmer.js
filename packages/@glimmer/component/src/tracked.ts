@@ -150,6 +150,10 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
 
 export type Key = string;
 
+export function trackedGet(obj, key) {
+  if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(obj).updatableTagFor(key));
+}
+
 /**
   Installs a getter/setter for change tracking. The accessor
   acts just like a normal property, but it triggers the `propertyDidChange`
@@ -169,7 +173,7 @@ function installTrackedProperty(target: any, key: Key) {
     configurable: true,
 
     get() {
-      if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(this).updatableTagFor(key));
+      trackedGet(this, key);
       return this[shadowKey];
     },
 
