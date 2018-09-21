@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.11.1 (2018-09-20)
+
+#### :rocket: Enhancement
+* `@glimmer/component`
+  * [#119](https://github.com/glimmerjs/glimmer.js/pull/119) Use WeakMap for storing Glimmer metadata. ([@tomdale](https://github.com/tomdale))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#142](https://github.com/glimmerjs/glimmer.js/pull/142) Auto-track `args`. ([@smfoote](https://github.com/smfoote))
+  * [#119](https://github.com/glimmerjs/glimmer.js/pull/119) Use WeakMap for storing Glimmer metadata. ([@tomdale](https://github.com/tomdale))
+
+#### :warning: Deprecation
+* `@glimmer/component`
+  * [#141](https://github.com/glimmerjs/glimmer.js/pull/141) Add deprecation warning for tracked property dependent keys. ([@smfoote](https://github.com/smfoote))
+
+#### Committers: 3
+- Don Denton ([happycollision](https://github.com/happycollision))
+- Steven ([smfoote](https://github.com/smfoote))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.9.1 (2018-02-15)
 
 #### :house: Internal
