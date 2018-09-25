@@ -13,10 +13,10 @@
     "lint:ts": "tslint -c tslint.json 'src/**/*.ts' -t codeFrame"
   },
   "devDependencies": {
-    "@glimmer/application": "^0.11.1",
+    "@glimmer/application": "^0.12.0",
     "@glimmer/application-pipeline": "^0.10.0",
     "@glimmer/blueprint": "~<%= blueprintVersion %>",
-    "@glimmer/component": "^0.11.1",
+    "@glimmer/component": "^0.12.0",
     "@glimmer/inline-precompile": "^1.0.0",
     "@glimmer/resolver": "^0.4.1",
     "@glimmer/test-helpers": "^0.30.3",
