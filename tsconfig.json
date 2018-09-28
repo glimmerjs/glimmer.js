@@ -37,6 +37,7 @@
     // that include node_modules.
     "packages/@glimmer/*/src/**/*.ts",
     "packages/@glimmer/*/index.ts",
-    "packages/@glimmer/*/test/**/*.ts"
+    "packages/@glimmer/*/test/**/*.ts",
+    "packages/rollup-plugin-typescript2/src/**/*.ts"
   ]
 }

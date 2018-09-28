@@ -1,10 +1,10 @@
 import { GlimmerBundleCompiler } from '@glimmer/app-compiler';
-import { createTempDir, buildOutput } from 'broccoli-test-helper';
+import { createTempDir, buildOutput, TempDir, Tree } from 'broccoli-test-helper';
 
 const { module, test } = QUnit;
 
 module('Broccol Glimmer Bundle Compiler', function(hooks) {
-  let input = null;
+  let input:TempDir = null;
 
   hooks.beforeEach(() => createTempDir().then(tempDir => (input = tempDir)));
 
@@ -53,7 +53,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     });
 
     let output = await buildOutput(compiler);
-    let files = output.read();
+    let files: Tree = output.read();
 
     assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort());
     assert.deepEqual(Object.keys(files['src']).sort(), ['ui'].sort());

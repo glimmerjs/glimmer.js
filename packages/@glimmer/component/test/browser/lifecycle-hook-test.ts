@@ -95,6 +95,6 @@ test('fragment bounds are set before didInsertElement', async function(assert) {
      `)).boot();
 });
 
-function trim(str) {
+function trim(str: string) {
   return str.trim();
 }

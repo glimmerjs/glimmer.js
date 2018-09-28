@@ -10,7 +10,7 @@ import * as path from 'path';
 
 const { module, test } = QUnit;
 
-let buildServer;
+let buildServer: BuildServer;
 module('Application smoke tests', {
   beforeEach() {
     let mainLocator = {

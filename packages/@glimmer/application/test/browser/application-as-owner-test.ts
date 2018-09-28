@@ -5,6 +5,10 @@ const { module, test } = QUnit;
 
 module('[@glimmer/application] Owner interface');
 
+interface FooBarClass {
+  [key: string]: any;
+}
+
 test('#identify - uses a resolver to convert a relative specifier to an absolute specifier', function(assert) {
   assert.expect(2);
 
@@ -120,7 +124,7 @@ test('#lookup - returns an instance created by the factory', function(assert) {
   let instance = { foo: 'bar' };
 
   class FooBar {
-    static create(injections) {
+    static create(injections: Object) {
       assert.ok(true, 'Factory#create invoked');
       assert.strictEqual(getOwner(injections), app, 'owner is included in injections');
       return instance;
@@ -248,11 +252,11 @@ test('#lookup - uses the resolver to locate a registration', function(assert) {
 test('#lookup - injects references registered by name', function(assert) {
   assert.expect(5);
 
-  let instance = { foo: 'bar' };
+  let instance: FooBarClass = { foo: 'bar' };
   let router = { name: 'router' };
 
   class FooBar {
-    static create(injections) {
+    static create(injections: FooBarClass) {
       assert.ok(true, 'FooBarFactory#create invoked');
       assert.strictEqual(injections['router'], router, 'expected injections passed to factory');
       instance['router'] = injections['router'];
@@ -286,11 +290,11 @@ test('#lookup - injects references registered by name', function(assert) {
 test('#lookup - injects references registered by type', function(assert) {
   assert.expect(5);
 
-  let instance = { foo: 'bar' };
+  let instance: FooBarClass = { foo: 'bar' };
   let router = { name: 'router' };
 
   class FooBar {
-    static create(injections) {
+    static create(injections: FooBarClass) {
       assert.ok(true, 'FooBarFactory#create invoked');
       assert.strictEqual(injections['router'], router, 'expected injections passed to factory');
       instance['router'] = injections['router'];

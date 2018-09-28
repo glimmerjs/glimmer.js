@@ -15,12 +15,14 @@ export interface SerializedHeap {
 }
 
 export interface Metadata {
-  /** VM handle */
-  v: number;
-  /** Handle */
-  h: number;
+  [key: string]: number | ProgramSymbolTable;
 
-  table: ProgramSymbolTable;
+  /** VM handle */
+  v?: number;
+  /** Handle */
+  h?: number;
+
+  table?: ProgramSymbolTable;
 }
 
 /**

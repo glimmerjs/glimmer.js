@@ -141,7 +141,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     return ret;
   }
 
-  function setter(this: object, value) {
+  function setter(this: any) {
     EPOCH.inner.dirty();
 
     // Mark the UpdatableTag for this property with the current tag.
@@ -159,7 +159,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
 
 export type Key = string;
 
-export function trackedGet(obj, key) {
+export function trackedGet(obj: Object, key: string) {
   if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(obj).updatableTagFor(key));
 }
 
@@ -181,12 +181,12 @@ function installTrackedProperty(target: any, key: Key) {
   Object.defineProperty(target, key, {
     configurable: true,
 
-    get() {
+    get(): any {
       trackedGet(this, key);
       return this[shadowKey];
     },
 
-    set(newValue) {
+    set(newValue: any) {
       // Bump the global revision counter
       EPOCH.inner.dirty();
 
@@ -304,7 +304,7 @@ const getPrototypeOf = Object.getPrototypeOf;
 
 // Finds the nearest Meta instance in an object's prototype chain. Returns null
 // if the end of the prototype chain is reached without finding a Meta.
-function findPrototypeMeta(obj): Meta | null {
+function findPrototypeMeta(obj: Object): Meta | null {
   let meta = null;
   let proto = obj;
 
