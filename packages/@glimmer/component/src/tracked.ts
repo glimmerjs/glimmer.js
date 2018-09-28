@@ -141,7 +141,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     return ret;
   }
 
-  function setter(this: any) {
+  function setter(this: object) {
     EPOCH.inner.dirty();
 
     // Mark the UpdatableTag for this property with the current tag.
