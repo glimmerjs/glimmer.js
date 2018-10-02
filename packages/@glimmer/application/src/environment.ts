@@ -82,4 +82,8 @@ export default class Environment extends GlimmerEnvironment {
   getOwner(): Owner {
     return getOwner(this);
   }
+
+  setOwner(obj: Object, owner: Owner): void {
+    return setOwner(obj, owner);
+  }
 }
