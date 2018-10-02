@@ -1,5 +1,4 @@
 import {
-  getOwner,
   setOwner,
   Owner
 } from "@glimmer/di";
@@ -121,7 +120,7 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     // Only create a state bucket if the component is actually stateful. We can
     // skip this for template-only components, which are pure functions.
     if (definition.ComponentClass) {
-      let owner = getOwner(this.env);
+      let owner = this.env.getOwner();
       return new ComponentStateBucket(definition, args.capture(), owner);
     }
   }

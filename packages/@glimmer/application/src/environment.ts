@@ -77,4 +77,8 @@ export default class Environment extends GlimmerEnvironment {
 
     return new Iterable(ref, keyFor);
   }
+
+  getOwner() {
+    return getOwner(this);
+  }
 }
