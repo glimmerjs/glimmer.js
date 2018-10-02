@@ -10,7 +10,8 @@ import {
 import { Opaque } from '@glimmer/util';
 import {
   getOwner,
-  setOwner
+  setOwner,
+  Owner
 } from '@glimmer/di';
 import Iterable from './iterable';
 import { Program } from '@glimmer/program';
@@ -78,7 +79,7 @@ export default class Environment extends GlimmerEnvironment {
     return new Iterable(ref, keyFor);
   }
 
-  getOwner() {
+  getOwner(): Owner {
     return getOwner(this);
   }
 }
