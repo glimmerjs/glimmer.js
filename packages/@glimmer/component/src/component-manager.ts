@@ -1,8 +1,4 @@
-import {
-  getOwner,
-  setOwner,
-  Owner
-} from "@glimmer/di";
+import { Owner } from "@glimmer/di";
 import {
   Bounds as VMBounds,
   ComponentManager as IComponentManager,
@@ -33,7 +29,7 @@ export class ComponentStateBucket {
   public component: Component;
   private args: CapturedArguments;
 
-  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner) {
+  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner, env: Environment) {
     let componentFactory = definition.ComponentClass;
     let name = definition.name;
 
@@ -44,7 +40,7 @@ export class ComponentStateBucket {
       args: this.namedArgsSnapshot()
     };
 
-    setOwner(injections, owner);
+    env.setOwner(injections, owner);
     if (componentFactory) {
       this.component = componentFactory.create(injections);
     }
@@ -121,8 +117,8 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     // Only create a state bucket if the component is actually stateful. We can
     // skip this for template-only components, which are pure functions.
     if (definition.ComponentClass) {
-      let owner = getOwner(this.env);
-      return new ComponentStateBucket(definition, args.capture(), owner);
+      let owner = this.env.getOwner();
+      return new ComponentStateBucket(definition, args.capture(), owner, this.env);
     }
   }
 
