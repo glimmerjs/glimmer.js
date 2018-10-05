@@ -22,7 +22,7 @@ test('can curry arguments to actions', async function(assert) {
       helloWorldComponent = this;
     }
 
-    userDidClick(msg1, msg2, event) {
+    userDidClick(msg1: string, msg2: string, event: Event) {
       passedMsg1 = msg1;
       passedMsg2 = msg2;
       passedEvent = event;
@@ -67,7 +67,7 @@ test('actions can be passed and invoked with additional arguments', async functi
     type: 'click'
   };
   let parentComponent: ParentComponent;
-  let passed = [];
+  let passed: any[] = [];
 
   class ParentComponent extends Component {
     name = "world";
@@ -77,7 +77,7 @@ test('actions can be passed and invoked with additional arguments', async functi
       parentComponent = this;
     }
 
-    userDidClick(a1, a2, a3, a4, a5, a6, evt) {
+    userDidClick(a1: number, a2: number, a3: number, a4: number, a5: number, a6: number, evt: Event) {
       passed = [a1, a2, a3, a4, a5, a6, evt];
       assert.strictEqual(this, parentComponent, 'function context is preserved');
     }

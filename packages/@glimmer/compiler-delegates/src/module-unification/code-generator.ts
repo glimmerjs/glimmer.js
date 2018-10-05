@@ -15,6 +15,7 @@ import { Project } from "glimmer-analyzer";
 import { OutputFiles } from "../app-compiler-delegate";
 import { TemplateMeta } from "./compiler-delegate";
 import { Builtins, HelperLocator } from "../builtins";
+import { Metadata } from '../../../application/src/loaders/bytecode/loader';
 
 const debug = Debug("@glimmer/compiler-delegates:mu-codegen");
 
@@ -70,7 +71,7 @@ export default class MUCodeGenerator {
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
-    let meta = {};
+    let meta: Dict<Metadata> = {};
 
     specifiers.forEach(specifier => {
       let trimmed = specifier.replace(commonPrefix, '');
@@ -174,7 +175,7 @@ export default class MUCodeGenerator {
 
     return source;
 
-    function replaceTemplatesWithComponents(locator) {
+    function replaceTemplatesWithComponents(locator: ModuleLocator) {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
       if (referrer && referrer.split(':')[0] === 'template') {
         let specifier = project.resolver.identify("component:", referrer);
@@ -392,8 +393,8 @@ export function getImportStatements(modules: ModuleLocator[]) {
 /**
  * To keep file size down, we can eliminate null and undefined values.
  */
-function removeEmpty(obj) {
-  let trimmed = {};
+function removeEmpty(obj: Metadata): Metadata {
+  let trimmed: Metadata = {};
 
   for (let key in obj) {
     if (obj[key] !== undefined) {

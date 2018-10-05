@@ -172,7 +172,7 @@ test('can render a custom helper that takes args', async function(assert) {
   }
 
   let app = await buildApp()
-    .helper('greeting', (params) => `Hello ${params[0]} ${params[1]}!`)
+    .helper('greeting', (params: string[]) => `Hello ${params[0]} ${params[1]}!`)
     .template('Main', '<div>{{greeting firstName lastName}}</div>')
     .component('Main', MainComponent)
     .boot();

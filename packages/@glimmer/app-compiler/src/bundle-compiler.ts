@@ -8,6 +8,18 @@ import { mainTemplate } from '@glimmer/application';
 import { CompilableProgram } from '@glimmer/opcode-compiler';
 import { Opaque } from '@glimmer/util';
 import { AppCompilerDelegateOptions } from '@glimmer/compiler-delegates';
+import { TempDir } from 'broccoli-test-helper';
+
+// https://github.com/joliss/node-walk-sync/blob/984a2d6adf9facc1531fb325852f475eb260781d/index.d.ts
+export class WalkSyncEntry {
+  relativePath: string;
+  basePath: string;
+  fullPath: string;
+  mode: number;
+  size: number;
+  mtime: Date;
+  isDirectory: Function;
+}
 
 export type CompilerMode = 'module-unification';
 
@@ -29,7 +41,7 @@ export default class GlimmerBundleCompiler extends Plugin {
   outputPath: string;
   compiler: BundleCompiler<Opaque>;
   private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode, options: GlimmerBundleCompilerOptions) {
+  constructor(inputNode: TempDir|string, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
@@ -47,12 +59,12 @@ export default class GlimmerBundleCompiler extends Plugin {
     }, options);
   }
 
-  listEntries() {
+  listEntries(): WalkSyncEntry[] {
     let [srcPath] = this.inputPaths;
     return walkSync.entries(srcPath);
   }
 
-  _readFile(file) {
+  _readFile(file: string) {
     return readFileSync(join(this.inputPaths[0], file), 'UTF-8');
   }
 
@@ -88,7 +100,7 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     let [projectPath] = this.inputPaths;
 
-    this.listEntries().forEach(entry => {
+    this.listEntries().forEach((entry: WalkSyncEntry) => {
       let { relativePath } = entry;
       if (entry.isDirectory()) {
         mkdirSync(join(outputPath, relativePath));

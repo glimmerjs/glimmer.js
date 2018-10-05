@@ -13,6 +13,7 @@ import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { CompilableProgram } from '@glimmer/opcode-compiler';
 import { Cursor } from '@glimmer/runtime';
+import { Metadata } from '../../application/src/loaders/bytecode/loader';
 
 import didRender from './did-render';
 
@@ -119,9 +120,10 @@ export class AppBuilder<T extends TestApplication> {
     let { heap, pool, table } = compiler.compile();
 
     let resolverTable: Opaque[] = [];
-    let meta = {};
 
-    table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
+    let meta: Dict<Metadata> = {};
+
+    table.vmHandleByModuleLocator.forEach((vmHandle , locator) => {
       let handle = table.byModuleLocator.get(locator);
       let template = compiler.compilableTemplates.get(locator);
 

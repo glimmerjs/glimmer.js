@@ -9,10 +9,14 @@ import {
   PathReference
 } from '@glimmer/reference';
 
-export default class DynamicScope implements GlimmerDynamicScope {
-  private bucket;
+interface Bucket {
+  [key: string]: PathReference<Opaque>;
+}
 
-  constructor(bucket=null) {
+export default class DynamicScope implements GlimmerDynamicScope {
+  private bucket: Bucket;
+
+  constructor(bucket: Bucket = null) {
     if (bucket) {
       this.bucket = assign({}, bucket);
     } else {
