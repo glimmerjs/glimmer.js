@@ -38,6 +38,7 @@
     "packages/@glimmer/*/src/**/*.ts",
     "packages/@glimmer/*/index.ts",
     "packages/@glimmer/*/test/**/*.ts",
-    "packages/rollup-plugin-typescript2/src/**/*.ts"
+    "packages/rollup-plugin-typescript2/src/**/*.ts",
+    "packages/@glimmer/app-compiler/walk-sync/index.d.ts"
   ]
 }
