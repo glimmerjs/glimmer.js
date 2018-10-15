@@ -1,11 +1,10 @@
 import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/program';
 import { Opaque, Dict } from '@glimmer/util';
-import { TemplateIterator, ElementBuilder, DynamicScope, renderMain } from '@glimmer/runtime';
+import { TemplateIterator, ElementBuilder, DynamicScope, renderMain, renderComponent, Environment } from '@glimmer/runtime';
 
-import Application, { Loader } from '../../application';
-import Environment from '../../environment';
+import { Loader, BaseApplication } from '../../application';
 
-import BytecodeResolver from './resolver';
+import BytecodeResolver, { TemplateMeta } from './resolver';
 import { PathReference } from '@glimmer/reference';
 import { ProgramSymbolTable } from '@glimmer/interfaces';
 
@@ -69,7 +68,7 @@ export default class BytecodeLoader implements Loader {
     this.bytecode = Promise.resolve(bytecode);
   }
 
-  async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
+  private async getRuntimeProgram(app: BaseApplication): Promise<{mainEntry: number, program: RuntimeProgram<TemplateMeta>}> {
     let data = this.data;
     let bytecode = await this.bytecode;
     let { pool, heap: serializedHeap, table, meta, prefix, mainEntry } = data;
@@ -84,6 +83,16 @@ export default class BytecodeLoader implements Loader {
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
+    return { mainEntry, program };
+  }
+
+  async getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
+    const { mainEntry, program } = await this.getRuntimeProgram(app);
     return renderMain(program, env, self, scope, builder, mainEntry);
+  }
+
+  async getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args): Promise<TemplateIterator> {
+    const { mainEntry, program } = await this.getRuntimeProgram(app);
+    return renderComponent(program, env, builder, mainEntry, componentName, args);
   }
 }

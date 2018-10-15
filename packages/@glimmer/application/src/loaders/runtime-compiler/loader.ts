@@ -4,7 +4,7 @@ import { Macros, templateFactory, LazyCompiler } from '@glimmer/opcode-compiler'
 import { Opaque } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 
-import Application, { Loader } from '../../application';
+import Application, { Loader, BaseApplication } from '../../application';
 import mainTemplate from '../../templates/main';
 import { actionHelper, ifHelper } from '../../helpers';
 
@@ -51,5 +51,9 @@ export default class RuntimeCompilerLoader implements Loader {
       builder,
       mainLayout.asLayout().compile()
     ));
+  }
+
+  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: any): Promise<TemplateIterator> {
+    throw new Error("Method not implemented.");
   }
 }

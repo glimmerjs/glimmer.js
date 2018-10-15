@@ -6,6 +6,7 @@ import {
   RegistryWriter,
   Resolver,
   setOwner,
+  FactoryDefinition,
 } from '@glimmer/di';
 import {
   ElementBuilder,
@@ -53,7 +54,12 @@ export interface Loader {
   /**
    * Returns a template iterator for on the provided application state.
    */
-  getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator>;
+  getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator>;
+
+  /**
+   * Returns a template iterator for the specified component with the specified state arguments
+   */
+  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args): Promise<TemplateIterator>;
 }
 
 /**
@@ -77,6 +83,14 @@ export interface Renderer {
    * may have changed.
    */
   rerender(): void | Promise<void>;
+}
+
+export interface BaseApplicationOptions {
+  rootName: string;
+  resolver: Resolver;
+  environment: FactoryDefinition<AbstractEnvironment>;
+  loader: Loader;
+  renderer: Renderer;
 }
 
 /**
@@ -128,23 +142,116 @@ export type Notifier = [() => void, (err: Error) => void];
 
 const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
 
+export class BaseApplication implements Owner {
+  public rootName: string;
+  public resolver: Resolver;
+
+  private _registry: Registry;
+  private _container: Container;
+  private _initializers: Initializer[] = [];
+  private _environment: FactoryDefinition<AbstractEnvironment>;
+
+  protected loader: Loader;
+  protected renderer: Renderer;
+
+  constructor({rootName, resolver, environment, loader, renderer}: BaseApplicationOptions) {
+    this.resolver = resolver;
+    this.rootName = rootName;
+    this._environment = environment;
+
+    assert(loader, 'Must provide a Loader for preparing templates and other metadata required for a Glimmer Application.');
+    assert(renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
+
+    this.loader = loader;
+    this.renderer = renderer;
+  }
+
+    /** @internal */
+  initialize(): void {
+    this.initRegistry();
+    this.initContainer();
+  }
+
+  /** @internal */
+  registerInitializer(initializer: Initializer): void {
+    this._initializers.push(initializer);
+  }
+
+  /**
+   * Initializes the registry, which maps names to objects in the system. Addons
+   * and subclasses can customize the behavior of a Glimmer application by
+   * overriding objects in the registry.
+   *
+   * @internal
+   */
+  protected initRegistry(): void {
+    let registry = this._registry = new Registry();
+
+    // Create ApplicationRegistry as a proxy to the underlying registry
+    // that will only be available during `initialize`.
+    let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
+
+    registry.register(`environment:/${this.rootName}/main/main`, this._environment);
+    registry.registerOption('helper', 'instantiate', false);
+    registry.registerOption('template', 'instantiate', false);
+    registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
+    registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
+
+    let initializers = this._initializers;
+    for (let i = 0; i < initializers.length; i++) {
+      initializers[i].initialize(appRegistry);
+    }
+  }
+
+  /**
+   * Initializes the container, which stores instances of objects that come from
+   * the registry.
+   *
+   * @internal
+   */
+  protected initContainer(): void {
+    this._container = new Container(this._registry, this.resolver);
+
+    // Inject `this` (the app) as the "owner" of every object instantiated
+    // by its container.
+    this._container.defaultInjections = (specifier: string) => {
+      let hash = {};
+      setOwner(hash, this);
+      return hash;
+    };
+  }
+
+  /**
+   * Owner interface implementation
+   *
+   * @internal
+   */
+  identify(specifier: string, referrer?: string): string {
+    return this.resolver.identify(specifier, referrer);
+  }
+
+  /** @internal */
+  factoryFor(specifier: string, referrer?: string): Factory<any> {
+    return this._container.factoryFor(this.identify(specifier, referrer));
+  }
+
+  /** @internal */
+  lookup(specifier: string, referrer?: string): any {
+    return this._container.lookup(this.identify(specifier, referrer));
+  }
+}
+
 /**
  * The central control point for starting and running Glimmer components.
  *
  * @public
  */
-export default class Application implements Owner {
-  public rootName: string;
-  public resolver: Resolver;
+export default class Application extends BaseApplication {
   public document: Simple.Document;
   public env: Environment;
 
   private _roots: AppRoot[] = [];
   private _rootsIndex = 0;
-  private _registry: Registry;
-  private _container: Container;
-  private _initializers: Initializer[] = [];
-  private _initialized = false;
 
   /** @hidden
    * The root Reference whose value provides the context of the main template.
@@ -156,23 +263,27 @@ export default class Application implements Owner {
   protected _scheduled = false;
 
   protected builder: Builder;
-  protected loader: Loader;
-  protected renderer: Renderer;
-
   protected _notifiers: Notifier[] = [];
 
   constructor(options: ApplicationOptions) {
-    this.rootName = options.rootName;
-    this.resolver = options.resolver;
+    super({
+      rootName: options.rootName,
+      resolver: options.resolver,
+      environment: Environment,
+      loader: options.loader,
+      renderer: options.renderer
+    });
 
-    assert(options.loader, 'Must provide a Loader for preparing templates and other metadata required for a Glimmer Application.');
-    assert(options.renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
     assert(options.builder, 'Must provide a Builder that is responsible to building DOM.');
-
-    this.document = options.document || DEFAULT_DOCUMENT;
-    this.loader = options.loader;
-    this.renderer = options.renderer;
+    const document = this.document = options.document || DEFAULT_DOCUMENT;
     this.builder = options.builder;
+
+    this.registerInitializer({
+      initialize(registry) {
+        registry.register(`document:/${options.rootName}/main/main`, document);
+        registry.registerOption('document', 'instantiate', false);
+      }
+    });
   }
 
   /**
@@ -230,65 +341,6 @@ export default class Application implements Owner {
       await this._rerender();
       this._rendering = false;
     }, 0);
-  }
-
-  /** @internal */
-  initialize(): void {
-    this.initRegistry();
-    this.initContainer();
-  }
-
-  /** @internal */
-  registerInitializer(initializer: Initializer): void {
-    this._initializers.push(initializer);
-  }
-
-  /**
-   * Initializes the registry, which maps names to objects in the system. Addons
-   * and subclasses can customize the behavior of a Glimmer application by
-   * overriding objects in the registry.
-   *
-   * @internal
-   */
-  protected initRegistry(): void {
-    let registry = this._registry = new Registry();
-
-    // Create ApplicationRegistry as a proxy to the underlying registry
-    // that will only be available during `initialize`.
-    let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
-
-    registry.register(`environment:/${this.rootName}/main/main`, Environment);
-    registry.registerOption('helper', 'instantiate', false);
-    registry.registerOption('template', 'instantiate', false);
-    registry.register(`document:/${this.rootName}/main/main`, this.document as any);
-    registry.registerOption('document', 'instantiate', false);
-    registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
-    registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
-
-    let initializers = this._initializers;
-    for (let i = 0; i < initializers.length; i++) {
-      initializers[i].initialize(appRegistry);
-    }
-
-    this._initialized = true;
-  }
-
-  /**
-   * Initializes the container, which stores instances of objects that come from
-   * the registry.
-   *
-   * @internal
-   */
-  protected initContainer(): void {
-    this._container = new Container(this._registry, this.resolver);
-
-    // Inject `this` (the app) as the "owner" of every object instantiated
-    // by its container.
-    this._container.defaultInjections = (specifier: string) => {
-      let hash = {};
-      setOwner(hash, this);
-      return hash;
-    };
   }
 
   /** @internal */
@@ -359,24 +411,5 @@ export default class Application implements Owner {
     this._notifiers = [];
 
     notifiers.forEach(n => n[1](err));
-  }
-
-  /**
-   * Owner interface implementation
-   *
-   * @internal
-   */
-  identify(specifier: string, referrer?: string): string {
-    return this.resolver.identify(specifier, referrer);
-  }
-
-  /** @internal */
-  factoryFor(specifier: string, referrer?: string): Factory<any> {
-    return this._container.factoryFor(this.identify(specifier, referrer));
-  }
-
-  /** @internal */
-  lookup(specifier: string, referrer?: string): any {
-    return this._container.lookup(this.identify(specifier, referrer));
   }
 }

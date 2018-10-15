@@ -27,6 +27,28 @@ export interface EnvironmentOptions {
   appendOperations?: DOMTreeConstruction;
 }
 
+export function iterableFor(ref: Reference<Opaque>, keyPath: string): OpaqueIterable {
+  let keyFor: KeyFor<Opaque>;
+
+  if (!keyPath) {
+    throw new Error('Must specify a key for #each');
+  }
+
+  switch (keyPath) {
+    case '@index':
+      keyFor = (_, index: number) => String(index);
+    break;
+    case '@primitive':
+      keyFor = (item: Opaque) => String(item);
+    break;
+    default:
+      keyFor = (item: Opaque) => item[keyPath];
+    break;
+  }
+
+  return new Iterable(ref, keyFor);
+}
+
 /** @internal */
 export default class Environment extends GlimmerEnvironment {
   private uselessAnchor: HTMLAnchorElement;
@@ -58,25 +80,7 @@ export default class Environment extends GlimmerEnvironment {
   }
 
   iterableFor(ref: Reference<Opaque>, keyPath: string): OpaqueIterable {
-    let keyFor: KeyFor<Opaque>;
-
-    if (!keyPath) {
-      throw new Error('Must specify a key for #each');
-    }
-
-    switch (keyPath) {
-      case '@index':
-        keyFor = (_, index: number) => String(index);
-      break;
-      case '@primitive':
-        keyFor = (item: Opaque) => String(item);
-      break;
-      default:
-        keyFor = (item: Opaque) => item[keyPath];
-      break;
-    }
-
-    return new Iterable(ref, keyFor);
+    return iterableFor(ref, keyPath);
   }
 
   getOwner(): Owner {

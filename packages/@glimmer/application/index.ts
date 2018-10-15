@@ -1,5 +1,6 @@
 export {
   default,
+  BaseApplication,
   ApplicationConstructor,
   ApplicationOptions,
   Initializer,
@@ -8,7 +9,7 @@ export {
   Renderer,
   Builder
 } from './src/application';
-export { default as Environment, EnvironmentOptions } from './src/environment';
+export { default as Environment, EnvironmentOptions, iterableFor } from './src/environment';
 export { default as ApplicationRegistry } from './src/application-registry';
 export { default as RuntimeCompilerResolver } from './src/loaders/runtime-compiler/resolver';
 export { default as RuntimeCompilerLoader } from './src/loaders/runtime-compiler/loader';
