@@ -56,6 +56,7 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
   lookupComponentDefinition(name: string, referrer: TemplateMeta): ComponentDefinition {
     let owner = this.owner;
     let manager = this.managerFor();
+    referrer = referrer || { specifier: null };
 
     let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
 

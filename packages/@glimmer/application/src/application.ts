@@ -85,6 +85,11 @@ export interface Renderer {
   rerender(): void | Promise<void>;
 }
 
+/**
+ * Options for needed for setting up a base glimmer application with Dependency Injection
+ *
+ * @internal
+ */
 export interface BaseApplicationOptions {
   rootName: string;
   resolver: Resolver;
@@ -142,6 +147,13 @@ export type Notifier = [() => void, (err: Error) => void];
 
 const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
 
+/**
+ * A Base Application Class that can be shared across different glimmer application implementations.
+ * It sets up a dependency injection and sets up the necessary arguments for any glimmer application.
+ * For example this base class can be reused across a server side glimmer application and a client side glimmer application.
+ *
+ * @internal
+ */
 export class BaseApplication implements Owner {
   public rootName: string;
   public resolver: Resolver;

@@ -68,10 +68,10 @@ export default class BytecodeLoader implements Loader {
     this.bytecode = Promise.resolve(bytecode);
   }
 
-  private async getRuntimeProgram(app: BaseApplication): Promise<{mainEntry: number, program: RuntimeProgram<TemplateMeta>}> {
+  private async getRuntimeProgram(app: BaseApplication): Promise<RuntimeProgram<TemplateMeta>> {
     let data = this.data;
     let bytecode = await this.bytecode;
-    let { pool, heap: serializedHeap, table, meta, prefix, mainEntry } = data;
+    let { pool, heap: serializedHeap, table, meta, prefix } = data;
 
     let heap = new Heap({
       table: serializedHeap.table,
@@ -83,16 +83,17 @@ export default class BytecodeLoader implements Loader {
     let constants = new RuntimeConstants(resolver, pool);
     let program = new RuntimeProgram(constants, heap);
 
-    return { mainEntry, program };
+    return program;
   }
 
   async getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
-    const { mainEntry, program } = await this.getRuntimeProgram(app);
+    const program = await this.getRuntimeProgram(app);
+    const { mainEntry } = this.data;
     return renderMain(program, env, self, scope, builder, mainEntry);
   }
 
   async getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args): Promise<TemplateIterator> {
-    const { mainEntry, program } = await this.getRuntimeProgram(app);
-    return renderComponent(program, env, builder, mainEntry, componentName, args);
+    const program = await this.getRuntimeProgram(app);
+    return renderComponent(program, env, builder, 0, componentName, args);
   }
 }

@@ -5,7 +5,8 @@ import { Opaque } from '@glimmer/util';
 import StringBuilder from './string-builder';
 import { Document, HTMLSerializer, voidMap } from 'simple-dom';
 import { PathReference, ConstReference } from '@glimmer/reference';
-import { Duplex } from 'stream';
+import { PassThrough } from 'stream';
+import { ComponentManager } from '@glimmer/component';
 
 export interface SSRApplicationOptions {
   rootName: string;
@@ -14,6 +15,9 @@ export interface SSRApplicationOptions {
   renderer: Renderer;
 }
 
+/**
+ * Converts a POJO into a dictionary of references that can be used be passed as arguments to render a component.
+ */
 function convertOpaqueToReferenceDict(data: Opaque): Dict<PathReference<Opaque>> {
   if (!data) {
     return {};
@@ -38,31 +42,41 @@ export default class Application extends BaseApplication {
     });
 
     this.serializer = new HTMLSerializer(voidMap);
+    this.registerInitializer({
+      initialize(registry) {
+        registry.register(`component-manager:/${rootName}/component-managers/main`, ComponentManager);
+      }
+    });
+
+    // Setup registry and DI
+    this.initialize();
   }
 
   async renderToStream(componentName: string, data: Opaque, stream: NodeJS.WritableStream) {
-    const env = this.lookup(`environment:/${this.rootName}/main/main`);
+    try {
+      const env = this.lookup(`environment:/${this.rootName}/main/main`);
+      const doc = new Document();
 
-    const doc = new Document();
+      const builder = new StringBuilder({
+        element: doc.body,
+        nextSibling: null
+      }).getBuilder(env);
 
-    const builder = new StringBuilder({
-      element: doc.body,
-      nextSibling: null
-    }).getBuilder(env);
+      const templateIterator = await this.loader.getComponentTemplateIterator(this, env, builder, componentName, convertOpaqueToReferenceDict(data));
 
-    const templateIterator = await this.loader.getComponentTemplateIterator(this, env, builder, componentName, convertOpaqueToReferenceDict(data));
-
-    env.begin();
-    await this.renderer.render(templateIterator);
-    env.commit();
-
-    stream.write(this.serializer.serializeChildren(doc.body));
-    stream.end();
+      env.begin();
+      await this.renderer.render(templateIterator);
+      env.commit();
+      stream.write(this.serializer.serializeChildren(doc.body));
+      stream.end();
+    } catch (err) {
+      stream.emit('error', err);
+    }
   }
 
-  async renderToString(componentName: string, data: Opaque) {
-    return new Promise((resolve, reject) => {
-      const stream = new Duplex();
+  async renderToString(componentName: string, data: Opaque): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const stream = new PassThrough();
       let html = '';
 
       stream.on('data', (str) => html += str);
