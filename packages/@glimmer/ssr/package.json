@@ -12,7 +12,12 @@
   "types": "dist/types/index.d.ts",
   "dependencies": {
     "@glimmer/application": "^0.13.0",
-    "@glimmer/node": "^0.34.7",
-    "@glimmer/runtime": "^0.34.7"
+    "@glimmer/component": "^0.13.0",
+    "@glimmer/di": "^0.1.9",
+    "@glimmer/node": "^0.36.5",
+    "@glimmer/reference": "^0.36.5",
+    "@glimmer/runtime": "^0.36.5",
+    "@glimmer/util": "^0.36.5",
+    "simple-dom": "^1.2.0"
   }
 }
