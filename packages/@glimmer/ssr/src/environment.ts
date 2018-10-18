@@ -14,7 +14,7 @@ import { parse } from 'url';
 import { Document } from 'simple-dom';
 
 /**
- * Server side environment that can be used to configure the glimmer-vm to work on the server side.
+ * Server-side environment that can be used to configure the glimmer-vm to work on the server side.
  */
 export default class Environment extends AbstractEnvironment {
   static create(): Environment {

@@ -11,7 +11,8 @@ import {
 import {
   ElementBuilder,
   TemplateIterator,
-  Environment as AbstractEnvironment
+  Environment as AbstractEnvironment,
+  RenderComponentArgs
 } from '@glimmer/runtime';
 import {
   UpdatableReference
@@ -57,9 +58,9 @@ export interface Loader {
   getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator>;
 
   /**
-   * Returns a template iterator for the specified component with the specified state arguments
+   * Returns a template iterator for the specified component with the specified arguments
    */
-  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args): Promise<TemplateIterator>;
+  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: RenderComponentArgs): Promise<TemplateIterator>;
 }
 
 /**
@@ -86,7 +87,8 @@ export interface Renderer {
 }
 
 /**
- * Options for needed for setting up a base glimmer application with Dependency Injection
+ * Options needed for setting up a base Glimmer application with Dependency Injection.
+ * Dependency Injection is at the core of any Glimmer application. Specifically it sets up the environment and what other parts of the application depend on it.
  *
  * @internal
  */
@@ -148,13 +150,13 @@ export type Notifier = [() => void, (err: Error) => void];
 const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
 
 /**
- * A Base Application Class that can be shared across different glimmer application implementations.
- * It sets up a dependency injection and sets up the necessary arguments for any glimmer application.
- * For example this base class can be reused across a server side glimmer application and a client side glimmer application.
+ * A base application class that can be shared across different Glimmer application implementations.
+ * It sets up dependency injection and other configuration.
+ * For example, this base class can be reused across a server-side Glimmer application and a client-side Glimmer application.
  *
  * @internal
  */
-export class BaseApplication implements Owner {
+export abstract class BaseApplication implements Owner {
   public rootName: string;
   public resolver: Resolver;
 

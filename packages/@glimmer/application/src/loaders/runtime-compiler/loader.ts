@@ -1,4 +1,4 @@
-import { TemplateIterator, Environment, ElementBuilder, DynamicScope, renderMain } from '@glimmer/runtime';
+import { TemplateIterator, Environment, ElementBuilder, DynamicScope, renderMain, RenderComponentArgs } from '@glimmer/runtime';
 import { Resolver } from '@glimmer/di';
 import { Macros, templateFactory, LazyCompiler } from '@glimmer/opcode-compiler';
 import { Opaque } from '@glimmer/interfaces';
@@ -53,7 +53,7 @@ export default class RuntimeCompilerLoader implements Loader {
     ));
   }
 
-  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: any): Promise<TemplateIterator> {
+  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: RenderComponentArgs): Promise<TemplateIterator> {
     throw new Error("Method not implemented.");
   }
 }

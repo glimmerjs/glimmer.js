@@ -1,6 +1,6 @@
 import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/program';
 import { Opaque, Dict } from '@glimmer/util';
-import { TemplateIterator, ElementBuilder, DynamicScope, renderMain, renderComponent, Environment } from '@glimmer/runtime';
+import { TemplateIterator, ElementBuilder, DynamicScope, renderMain, renderComponent, Environment, RenderComponentArgs } from '@glimmer/runtime';
 
 import { Loader, BaseApplication } from '../../application';
 
@@ -92,7 +92,7 @@ export default class BytecodeLoader implements Loader {
     return renderMain(program, env, self, scope, builder, mainEntry);
   }
 
-  async getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args): Promise<TemplateIterator> {
+  async getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: RenderComponentArgs): Promise<TemplateIterator> {
     const program = await this.getRuntimeProgram(app);
     return renderComponent(program, env, builder, 0, componentName, args);
   }

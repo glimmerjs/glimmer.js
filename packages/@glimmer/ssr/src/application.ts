@@ -16,7 +16,7 @@ export interface SSRApplicationOptions {
 }
 
 /**
- * Converts a POJO into a dictionary of references that can be used be passed as arguments to render a component.
+ * Converts a POJO into a dictionary of references that can be passed as an argument to render a component.
  */
 function convertOpaqueToReferenceDict(data: Opaque): Dict<PathReference<Opaque>> {
   if (!data) {
