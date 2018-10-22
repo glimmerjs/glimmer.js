@@ -19,7 +19,7 @@
     "@glimmer/component": "^0.12.0",
     "@glimmer/inline-precompile": "^1.0.0",
     "@glimmer/resolver": "^0.4.1",
-    "@glimmer/test-helpers": "^0.30.3",
+    "@glimmer/test-helpers": "^0.31.1",
     "@types/qunit": "^2.0.31",
     "broccoli-asset-rev": "^2.5.0",
     "ember-cli": "^2.14.0",
