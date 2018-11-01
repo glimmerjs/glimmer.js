@@ -1,5 +1,5 @@
 import { Cursor, clientBuilder, Environment, ElementBuilder } from "@glimmer/runtime";
-import { Builder } from "../application";
+import { Builder } from "../base-application";
 
 /**
  * A {@link Builder} that creates DOM elements when templates render.

@@ -4,7 +4,8 @@ import { Macros, templateFactory, LazyCompiler } from '@glimmer/opcode-compiler'
 import { Opaque } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 
-import Application, { Loader, BaseApplication } from '../../application';
+import Application from '../../application';
+import BaseApplication, { Loader } from '../../base-application';
 import mainTemplate from '../../templates/main';
 import { actionHelper, ifHelper } from '../../helpers';
 

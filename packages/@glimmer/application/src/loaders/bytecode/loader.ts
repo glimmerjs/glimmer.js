@@ -2,7 +2,7 @@ import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/p
 import { Opaque, Dict } from '@glimmer/util';
 import { TemplateIterator, ElementBuilder, DynamicScope, renderMain, renderComponent, Environment, RenderComponentArgs } from '@glimmer/runtime';
 
-import { Loader, BaseApplication } from '../../application';
+import BaseApplication, { Loader } from '../../base-application';
 
 import BytecodeResolver, { TemplateMeta } from './resolver';
 import { PathReference } from '@glimmer/reference';

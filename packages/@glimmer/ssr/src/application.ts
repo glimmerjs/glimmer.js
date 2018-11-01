@@ -18,7 +18,7 @@ export interface SSRApplicationOptions {
 /**
  * Converts a POJO into a dictionary of references that can be passed as an argument to render a component.
  */
-function convertOpaqueToReferenceDict(data: Opaque): Dict<PathReference<Opaque>> {
+function convertOpaqueToReferenceDict(data: Dict<Opaque>): Dict<PathReference<Opaque>> {
   if (!data) {
     return {};
   };
@@ -52,7 +52,7 @@ export default class Application extends BaseApplication {
     this.initialize();
   }
 
-  async renderToStream(componentName: string, data: Opaque, stream: NodeJS.WritableStream) {
+  async renderToStream(componentName: string, data: Dict<Opaque>, stream: NodeJS.WritableStream) {
     try {
       const env = this.lookup(`environment:/${this.rootName}/main/main`);
       const doc = new Document();
@@ -74,7 +74,7 @@ export default class Application extends BaseApplication {
     }
   }
 
-  async renderToString(componentName: string, data: Opaque): Promise<string> {
+  async renderToString(componentName: string, data: Dict<Opaque>): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
       let html = '';

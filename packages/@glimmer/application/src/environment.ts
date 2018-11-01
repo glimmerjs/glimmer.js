@@ -13,40 +13,16 @@ import {
   setOwner,
   Owner
 } from '@glimmer/di';
-import Iterable from './iterable';
+import { iterableFor } from './iterable';
 import { Program } from '@glimmer/program';
 import { ModuleLocator } from '@glimmer/interfaces';
 
 import RuntimeResolver from './loaders/runtime-compiler/loader';
 
-type KeyFor<T> = (item: Opaque, index: T) => string;
-
 /** @internal */
 export interface EnvironmentOptions {
   document?: HTMLDocument;
   appendOperations?: DOMTreeConstruction;
-}
-
-export function iterableFor(ref: Reference<Opaque>, keyPath: string): OpaqueIterable {
-  let keyFor: KeyFor<Opaque>;
-
-  if (!keyPath) {
-    throw new Error('Must specify a key for #each');
-  }
-
-  switch (keyPath) {
-    case '@index':
-      keyFor = (_, index: number) => String(index);
-    break;
-    case '@primitive':
-      keyFor = (item: Opaque) => String(item);
-    break;
-    default:
-      keyFor = (item: Opaque) => item[keyPath];
-    break;
-  }
-
-  return new Iterable(ref, keyFor);
 }
 
 /** @internal */

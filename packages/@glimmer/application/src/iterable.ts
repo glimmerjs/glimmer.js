@@ -5,6 +5,7 @@ import {
 import {
   Reference,
   OpaqueIterator,
+  OpaqueIterable,
   AbstractIterable,
   IterationItem,
   Tag
@@ -87,6 +88,28 @@ class EmptyIterator implements OpaqueIterator {
 }
 
 const EMPTY_ITERATOR = new EmptyIterator();
+
+export function iterableFor(ref: Reference<Opaque>, keyPath: string): OpaqueIterable {
+  let keyFor: KeyFor<Opaque>;
+
+  if (!keyPath) {
+    throw new Error('Must specify a key for #each');
+  }
+
+  switch (keyPath) {
+    case '@index':
+      keyFor = (_, index: number) => String(index);
+    break;
+    case '@primitive':
+      keyFor = (item: Opaque) => String(item);
+    break;
+    default:
+      keyFor = (item: Opaque) => item[keyPath];
+    break;
+  }
+
+  return new Iterable(ref, keyFor);
+}
 
 /** @internal */
 export default class Iterable implements AbstractIterable<Opaque, Opaque, IterationItem<Opaque, Opaque>, UpdatableReference<Opaque>, UpdatableReference<Opaque>> {

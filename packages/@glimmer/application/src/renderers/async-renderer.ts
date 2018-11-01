@@ -1,5 +1,5 @@
 import { TemplateIterator, RenderResult } from "@glimmer/runtime";
-import { Renderer } from "../application";
+import { Renderer } from "../base-application";
 
 interface Deadline {
   didTimeout: boolean;
