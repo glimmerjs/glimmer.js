@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.13.0 (2018-11-05)
+
+#### :boom: Breaking Change
+* `@glimmer/blueprint`
+  * [#153](https://github.com/glimmerjs/glimmer.js/pull/153) Update blueprint to include tests/index.html.. ([@rondale-sc](https://github.com/rondale-sc))
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#153](https://github.com/glimmerjs/glimmer.js/pull/153) Update blueprint to include tests/index.html.. ([@rondale-sc](https://github.com/rondale-sc))
+  * [#152](https://github.com/glimmerjs/glimmer.js/pull/152) Bump @glimmer/test-helpers to 0.31.1. ([@rondale-sc](https://github.com/rondale-sc))
+* `@glimmer/application`, `@glimmer/component`
+  * [#149](https://github.com/glimmerjs/glimmer.js/pull/149) Move `getOwner` out of component manager. ([@smfoote](https://github.com/smfoote))
+
+#### :bug: Bug Fix
+* `@glimmer/application`
+  * [#134](https://github.com/glimmerjs/glimmer.js/pull/134) await for rerender to finish before changing rendering flag. ([@lifeart](https://github.com/lifeart))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`
+  * [#148](https://github.com/glimmerjs/glimmer.js/pull/148) updates towards noImplicitAny. ([@givanse](https://github.com/givanse))
+
+#### Committers: 4
+- Alex Kanunnikov ([lifeart](https://github.com/lifeart))
+- Gastón Silva ([givanse](https://github.com/givanse))
+- Jonathan ([rondale-sc](https://github.com/rondale-sc))
+- Steven ([smfoote](https://github.com/smfoote))
+
 ## v0.11.1 (2018-09-20)
 
 #### :rocket: Enhancement
