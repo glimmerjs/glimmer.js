@@ -18,3 +18,7 @@ export {
   HelperLocator,
   BuiltinsMap
 } from "./src/builtins";
+
+export {
+  default as Project
+} from './src/module-unification/project';

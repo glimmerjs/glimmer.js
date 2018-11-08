@@ -17,18 +17,18 @@
     "@glimmer/interfaces": "^0.34.7",
     "@glimmer/opcode-compiler": "^0.34.7",
     "@glimmer/program": "^0.34.7",
+    "@glimmer/resolver": "^0.4.1",
+    "@glimmer/resolution-map-builder": "~0.4.0",
     "@glimmer/syntax": "^0.34.7",
     "@glimmer/util": "^0.34.7",
     "@types/node": "^8.0.46",
     "debug": "^3.1.0",
-    "glimmer-analyzer": "^0.3.3",
     "resolve": "^1.4.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "@glimmer/application-test-helpers": "^0.12.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "@glimmer/resolver": "^0.4.1",
     "find-up": "^2.1.0",
     "rollup": "^0.51.5",
     "rollup-plugin-virtual": "^1.0.1"

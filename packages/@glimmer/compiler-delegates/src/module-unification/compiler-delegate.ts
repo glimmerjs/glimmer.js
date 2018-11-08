@@ -3,7 +3,7 @@ import { SymbolTable, ComponentCapabilities, ModuleLocator, TemplateLocator } fr
 import { expect } from '@glimmer/util';
 import { relative } from 'path';
 import Debug from 'debug';
-import { Project } from 'glimmer-analyzer';
+import Project from './project';
 import { CAPABILITIES } from '@glimmer/component';
 
 import AppCompilerDelegate, { AppCompilerDelegateOptions, OutputFiles } from '../app-compiler-delegate';

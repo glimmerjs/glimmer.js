@@ -1,0 +1,7 @@
+<div class="my-app">
+  <page-banner />
+  <text-editor disabled={{if isReadOnly}} />
+  {{#if (eq user.role 'admin')}}
+    <p>{{someText}} {{moment publishDate}}</p>
+  {{/if}}
+</div>

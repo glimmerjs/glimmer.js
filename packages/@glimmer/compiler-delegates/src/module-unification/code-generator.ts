@@ -10,7 +10,7 @@ import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
 import { CompilableTemplate, ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
-import { Project } from "glimmer-analyzer";
+import Project from "./project";
 
 import { OutputFiles } from "../app-compiler-delegate";
 import { TemplateMeta } from "./compiler-delegate";
