@@ -3,7 +3,7 @@ const {
 } = require('@glimmer/application-pipeline');
 
 module.exports = function (defaults) {
-  let addon = GlimmerAddon(defaults, {
+  let addon = new GlimmerAddon(defaults, {
     name: '<%= name %>'
   });
 

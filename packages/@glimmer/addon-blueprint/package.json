@@ -1,0 +1,26 @@
+{
+  "name": "@glimmer/addon-blueprint",
+  "version": "0.13.0",
+  "description": "Ember CLI blueprint for initializing a new Glimmer addon.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "sh ./dev/add-to-output-repos.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glimmerjs/glimmer-blueprint.git"
+  },
+  "keywords": [
+    "ember-blueprint",
+    "ember-addon"
+  ],
+  "author": "Jonathan Jackson <jonathan.jackson1@me.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ember-cli-string-utils": "^1.1.0"
+  },
+  "ember-addon": {
+    "main": "ember-addon-main.js"
+  }
+}
