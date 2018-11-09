@@ -1,12 +1,11 @@
 {
-  "name": "glimmer-boolean-helpers-polyfill",
+  "name": "<%= name %>",
   "version": "1.1.1",
   "keywords": [
     "ember-addon"
   ],
-  "description": "Glimmer version of popular Ember Truth Helpers",
+  "description": "",
   "main": "src/index.js",
-  "author": "Jonathan Jackson <jonathan.jackson1@me.com>",
   "license": "MIT",
   "dependencies": {
     "babel-plugin-external-helpers": "^6.22.0",
