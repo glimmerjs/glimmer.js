@@ -1,0 +1,41 @@
+{
+  "name": "glimmer-boolean-helpers-polyfill",
+  "version": "1.1.1",
+  "keywords": [
+    "ember-addon"
+  ],
+  "description": "Glimmer version of popular Ember Truth Helpers",
+  "main": "src/index.js",
+  "author": "Jonathan Jackson <jonathan.jackson1@me.com>",
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "broccoli-debug": "^0.6.5",
+    "broccoli-funnel": "^2.0.1",
+    "broccoli-merge-trees": "^3.0.1"
+  },
+  "scripts": {
+    "test": "ember test"
+  },
+  "ember-addon": {
+    "main": "ember-addon-index.js",
+    "configPath": "tests/dummy/config"
+  },
+  "devDependencies": {
+    "@glimmer/application-pipeline": "^0.11.2",
+    "@glimmer/build": "^0.9.1",
+    "@glimmer/component": "^0.9.1",
+    "@glimmer/inline-precompile": "^1.0.1",
+    "@glimmer/test-helpers": "^0.31.2",
+    "@types/qunit": "^2.0.31",
+    "broccoli-debug": "^0.6.5",
+    "broccoli-file-creator": "^2.1.1",
+    "broccoli-funnel": "^2.0.1",
+    "broccoli-merge-trees": "^2.0.0",
+    "ember-cli": "~3.4.3",
+    "typescript": "~2.6.0"
+  },
+  "resolutions": {
+    "@glimmer/application-pipeline/**/heimdalljs": "^0.2.6"
+  }
+}
