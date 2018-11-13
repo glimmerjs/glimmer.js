@@ -29,6 +29,7 @@ function convertOpaqueToReferenceDict(data: Dict<Opaque>): Dict<PathReference<Op
   }, {});
 }
 
+// TODO: Move out container setup out of here so that we can reuse the same application instance / registry across requests.
 export default class Application extends BaseApplication {
   protected serializer: HTMLSerializer;
 
@@ -52,9 +53,10 @@ export default class Application extends BaseApplication {
     this.initialize();
   }
 
-  async renderToStream(componentName: string, data: Dict<Opaque>, stream: NodeJS.WritableStream) {
+  static async renderToStream(componentName: string, data: Dict<Opaque>, stream: NodeJS.WritableStream, options: SSRApplicationOptions) {
+    const app = new Application(options);
     try {
-      const env = this.lookup(`environment:/${this.rootName}/main/main`);
+      const env = app.lookup(`environment:/${app.rootName}/main/main`);
       const doc = new Document();
 
       const builder = new StringBuilder({
@@ -62,19 +64,19 @@ export default class Application extends BaseApplication {
         nextSibling: null
       }).getBuilder(env);
 
-      const templateIterator = await this.loader.getComponentTemplateIterator(this, env, builder, componentName, convertOpaqueToReferenceDict(data));
+      const templateIterator = await app.loader.getComponentTemplateIterator(app, env, builder, componentName, convertOpaqueToReferenceDict(data));
 
       env.begin();
-      await this.renderer.render(templateIterator);
+      await app.renderer.render(templateIterator);
       env.commit();
-      stream.write(this.serializer.serializeChildren(doc.body));
+      stream.write(app.serializer.serializeChildren(doc.body));
       stream.end();
     } catch (err) {
       stream.emit('error', err);
     }
   }
 
-  async renderToString(componentName: string, data: Dict<Opaque>): Promise<string> {
+  static async renderToString(componentName: string, data: Dict<Opaque>, options: SSRApplicationOptions): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
       let html = '';
@@ -83,7 +85,7 @@ export default class Application extends BaseApplication {
       stream.on('end', () => resolve(html));
       stream.on('error', (err) => reject(err));
 
-      this.renderToStream(componentName, data, stream);
+      this.renderToStream(componentName, data, stream, options);
     });
   }
 }

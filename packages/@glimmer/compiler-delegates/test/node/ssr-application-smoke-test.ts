@@ -9,7 +9,8 @@ import * as path from 'path';
 const { module, test } = QUnit;
 
 let buildServer;
-let app;
+let ssrAppOpts;
+
 module('SSR Application tests', {
   async beforeEach() {
     let mainLocator = {
@@ -45,24 +46,24 @@ module('SSR Application tests', {
 
     let resolver = new Resolver({...config, ...defaultResolverConfiguration}, registry);
 
-    app = new SSRApplication({
+    ssrAppOpts = {
       rootName: 'mu',
       loader,
       renderer,
       resolver
-    });
+    };
   }
 });
 
 test('it renders component to string with specified arguments', async function (assert) {
-  const html = await app.renderToString('User', {name: 'Chad', Other: 'Other'});
+  const html = await SSRApplication.renderToString('User', {name: 'Chad', Other: 'Other'}, ssrAppOpts);
   assert.equal(html.trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });
 
 test('it does not reuse the dom across different invocations', async function (assert) {
-  let html = await app.renderToString('User', {name: 'Chad', Other: 'Other'});
+  let html = await SSRApplication.renderToString('User', {name: 'Chad', Other: 'Other'}, ssrAppOpts);
   assert.equal(html.trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 
-  html = await app.renderToString('User', {name: 'Chirag', Other: 'Other'});
+  html = await SSRApplication.renderToString('User', {name: 'Chirag', Other: 'Other'}, ssrAppOpts);
   assert.equal(html.trim(), '<div class="user">Chirag IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });
