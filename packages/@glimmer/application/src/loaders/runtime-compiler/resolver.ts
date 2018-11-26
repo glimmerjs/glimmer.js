@@ -20,7 +20,7 @@ export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => O
 
 export interface Lookup {
   helper: GlimmerHelper;
-  modifier: ModifierManager;
+  modifier: ModifierManager<Opaque, Opaque>;
   component: ComponentDefinition;
   template: SerializedTemplateWithLazyBlock<Specifier>;
   manager: ComponentManager;
@@ -59,7 +59,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     compiledTemplate: new TypedRegistry<Invocation>(),
     helper: new TypedRegistry<Helper>(),
     manager: new TypedRegistry<ComponentManager>(),
-    modifier: new TypedRegistry<ModifierManager>()
+    modifier: new TypedRegistry<ModifierManager<Opaque, Opaque>>()
   };
 
   constructor(private owner: Owner) {}

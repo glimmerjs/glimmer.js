@@ -8,7 +8,7 @@ import {
 } from "@glimmer/bundle-compiler";
 import { ConstantPool, SerializedHeap } from "@glimmer/program";
 import { Dict, assert, expect } from "@glimmer/util";
-import { CompilableTemplate, ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
+import { CompilableTemplate, ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator, AnnotatedModuleLocator } from "@glimmer/interfaces";
 import { ModuleTypes } from "@glimmer/application";
 import { Project } from "glimmer-analyzer";
 
@@ -175,7 +175,7 @@ export default class MUCodeGenerator {
 
     return source;
 
-    function replaceTemplatesWithComponents(locator: ModuleLocator) {
+    function replaceTemplatesWithComponents(locator: AnnotatedModuleLocator) {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
       if (referrer && referrer.split(':')[0] === 'template') {
         let specifier = project.resolver.identify("component:", referrer);
@@ -277,21 +277,14 @@ const table = [${identifiers.join(",")}];
 }
 
 function strip(strings: TemplateStringsArray, ...args: string[]) {
-  if (typeof strings === "object") {
-    return strings
-      .map((str: string, i: number) => {
-        return `${str
-          .split("\n")
-          .map(s => s.trim())
-          .join("")}${args[i] ? args[i] : ""}`;
-      })
-      .join("");
-  } else {
-    return strings[0]
-      .split("\n")
-      .map((s: string) => s.trim())
-      .join(" ");
-  }
+  return strings
+    .map((str: string, i: number) => {
+      return `${str
+        .split("\n")
+        .map(s => s.trim())
+        .join("")}${args[i] ? args[i] : ""}`;
+    })
+    .join("");
 }
 
 /**

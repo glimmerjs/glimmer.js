@@ -6,7 +6,7 @@ const { module, test } = QUnit;
 module('[@glimmer/application] each helper');
 
 function freeze<T>(array: T[]): ReadonlyArray<Readonly<T>> {
-  return Object.freeze(array.slice().map(Object.freeze));
+  return Object.freeze(array.slice().map<T>(Object.freeze));
 }
 
 class HelloWorld extends Component {

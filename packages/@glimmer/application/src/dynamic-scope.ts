@@ -9,7 +9,7 @@ import {
   PathReference
 } from '@glimmer/reference';
 
-interface Bucket {
+export interface Bucket {
   [key: string]: PathReference<Opaque>;
 }
 
