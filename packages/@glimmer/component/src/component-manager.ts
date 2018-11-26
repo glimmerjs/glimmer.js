@@ -21,7 +21,7 @@ import { DefinitionState } from "./component-definition";
 import { RootReference, TemplateOnlyComponentDebugReference } from "./references";
 
 export interface ConstructorOptions {
-  env: Environment;
+  env: EnvironmentWithOwner;
 }
 
 export class ComponentStateBucket {
@@ -29,7 +29,7 @@ export class ComponentStateBucket {
   public component: Component;
   private args: CapturedArguments;
 
-  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner, env: Environment) {
+  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner, env: EnvironmentWithOwner) {
     let componentFactory = definition.ComponentClass;
     let name = definition.name;
 
@@ -76,8 +76,13 @@ export interface CompilableRuntimeResolver extends RuntimeResolver<Opaque> {
   compileTemplate(name: string, layout: Option<number>): Invocation;
 }
 
+export interface EnvironmentWithOwner extends Environment {
+  getOwner(): Owner;
+  setOwner(obj: Object, owner: Owner): void;
+}
+
 export default class ComponentManager implements IComponentManager<ComponentStateBucket | TemplateOnlyComponentDebugBucket | void, DefinitionState>, WithStaticLayout<ComponentStateBucket | TemplateOnlyComponentDebugBucket | void, DefinitionState, Opaque, CompilableRuntimeResolver> {
-  private env: Environment;
+  private env: EnvironmentWithOwner;
 
   static create(options: ConstructorOptions): ComponentManager {
     return new ComponentManager(options);

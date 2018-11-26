@@ -7,6 +7,7 @@ import { Document, HTMLSerializer, voidMap } from 'simple-dom';
 import { PathReference, ConstReference } from '@glimmer/reference';
 import { PassThrough } from 'stream';
 import { ComponentManager } from '@glimmer/component';
+import { Simple } from '@glimmer/interfaces';
 
 export interface SSRApplicationOptions {
   rootName: string;
@@ -60,7 +61,7 @@ export default class Application extends BaseApplication {
       const doc = new Document();
 
       const builder = new StringBuilder({
-        element: doc.body,
+        element: (doc.body as any as Simple.Element),
         nextSibling: null
       }).getBuilder(env);
 
@@ -69,7 +70,7 @@ export default class Application extends BaseApplication {
       env.begin();
       await app.renderer.render(templateIterator);
       env.commit();
-      stream.write(app.serializer.serializeChildren(doc.body));
+      stream.write(app.serializer.serializeChildren(doc.body as any as Node));
       stream.end();
     } catch (err) {
       stream.emit('error', err);

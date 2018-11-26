@@ -1,5 +1,5 @@
 import { iterableFor } from '@glimmer/application';
-import { Environment as AbstractEnvironment } from '@glimmer/runtime';
+import { Environment as AbstractEnvironment, DOMTreeConstruction } from '@glimmer/runtime';
 import { NodeDOMTreeConstruction } from '@glimmer/node';
 import {
   getOwner,
@@ -11,6 +11,7 @@ import {
 } from "@glimmer/reference";
 import { Opaque } from '@glimmer/util';
 import { parse } from 'url';
+import { Simple } from '@glimmer/interfaces';
 import { Document } from 'simple-dom';
 
 /**
@@ -27,7 +28,9 @@ export default class Environment extends AbstractEnvironment {
 
   constructor(options) {
     super({
-      appendOperations: new NodeDOMTreeConstruction(options.document),
+      // This type coercion is caused by problems with Glimmer VM's types. Should
+      // be resolved once Glimmer VM is updated to the latest SimpleDOM.
+      appendOperations: (new NodeDOMTreeConstruction(options.document as any as Simple.Document) as any as DOMTreeConstruction),
       updateOperations: undefined // SSR does not have updateOperations
     });
 
