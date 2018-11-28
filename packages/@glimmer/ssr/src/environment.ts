@@ -1,5 +1,5 @@
 import { iterableFor } from '@glimmer/application';
-import { Environment as AbstractEnvironment, DOMTreeConstruction } from '@glimmer/runtime';
+import { Environment as AbstractEnvironment } from '@glimmer/runtime';
 import { NodeDOMTreeConstruction } from '@glimmer/node';
 import {
   getOwner,
@@ -8,11 +8,11 @@ import {
 import {
   Reference,
   OpaqueIterable
-} from "@glimmer/reference";
+} from '@glimmer/reference';
 import { Opaque } from '@glimmer/util';
+
+import createHTMLDocument from '@simple-dom/document';
 import { parse } from 'url';
-import { Simple } from '@glimmer/interfaces';
-import { Document } from 'simple-dom';
 
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work on the server side.
@@ -22,15 +22,13 @@ export default class Environment extends AbstractEnvironment {
     return new Environment({
       // Note: This is not the actual document being rendered to. This is simply used for creating elements, attributes etc.
       // The actual html node being rendered to is passed into the builder.
-      document: new Document()
+      document: createHTMLDocument()
     });
   }
 
   constructor(options) {
     super({
-      // This type coercion is caused by problems with Glimmer VM's types. Should
-      // be resolved once Glimmer VM is updated to the latest SimpleDOM.
-      appendOperations: (new NodeDOMTreeConstruction(options.document as any as Simple.Document) as any as DOMTreeConstruction),
+      appendOperations: new NodeDOMTreeConstruction(options.document),
       updateOperations: undefined // SSR does not have updateOperations
     });
 

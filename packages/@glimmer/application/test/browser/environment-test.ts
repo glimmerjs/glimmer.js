@@ -1,20 +1,23 @@
-import { DOMTreeConstruction } from '@glimmer/runtime';
 import { Environment } from '@glimmer/application';
 import Component from '@glimmer/component';
-import { buildApp, didRender } from '@glimmer/application-test-helpers';
-import * as SimpleDOM from 'simple-dom';
 import { Simple } from '@glimmer/interfaces';
+import { DOMTreeConstruction } from '@glimmer/runtime';
+import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
 
+import HTMLSerializer from '@simple-dom/serializer';
+import voidMap from '@simple-dom/void-map';
+import createHTMLDocument from '@simple-dom/document';
+
 const { module, test } = QUnit;
-const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
+const serializer = new HTMLSerializer(voidMap);
 
 module('[@glimmer/application] Environment');
 
 test('can be instantiated with new', function(assert) {
   let env = new Environment({
     document: self.document,
-    appendOperations: new DOMTreeConstruction(self.document)
+    appendOperations: new DOMTreeConstruction(self.document as Simple.Document)
   });
   assert.ok(env, 'environment exists');
 });
@@ -190,7 +193,7 @@ test('can render a custom helper that takes args', async function(assert) {
 test('renders a component using simple-dom', async function(assert) {
   assert.expect(1);
 
-  let customDocument: Simple.Document = new SimpleDOM.Document() as any as Simple.Document;
+  let customDocument = createHTMLDocument();
 
   let app = await buildApp({ document: customDocument })
     .template('Main', `<h1>Hello Glimmer!</h1>`)

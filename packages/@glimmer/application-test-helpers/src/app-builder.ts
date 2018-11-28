@@ -12,7 +12,6 @@ import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
 import { buildAction, mainTemplate } from '@glimmer/application';
 import { CompilableProgram } from '@glimmer/opcode-compiler';
-import { Cursor } from '@glimmer/runtime';
 import { Metadata } from '../../application/src/loaders/bytecode/loader';
 
 import didRender from './did-render';
@@ -179,8 +178,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let doc: Document = this.options.document as Document || document;
     let element = doc.body;
-    let cursor = new Cursor(element, null);
-    let builder = new DOMBuilder(cursor);
+    let builder = new DOMBuilder({ element });
     let renderer = new SyncRenderer();
 
     let app = new this.options.ApplicationClass({

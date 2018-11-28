@@ -15,14 +15,14 @@ import {
 } from '@glimmer/di';
 import { iterableFor } from './iterable';
 import { Program } from '@glimmer/program';
-import { ModuleLocator } from '@glimmer/interfaces';
+import { ModuleLocator, Simple } from '@glimmer/interfaces';
 
 import RuntimeResolver from './loaders/runtime-compiler/loader';
 
 /** @internal */
 export interface EnvironmentOptions {
-  document?: HTMLDocument;
-  appendOperations?: DOMTreeConstruction;
+  document: HTMLDocument;
+  appendOperations: DOMTreeConstruction;
 }
 
 /** @internal */
@@ -31,21 +31,21 @@ export default class Environment extends GlimmerEnvironment {
   public resolver: RuntimeResolver;
   protected program: Program<ModuleLocator>;
 
-  static create(options: EnvironmentOptions = {}) {
+  static create(options: Partial<EnvironmentOptions> = {}) {
     options.document = options.document || self.document;
-    options.appendOperations = options.appendOperations || new DOMTreeConstruction(options.document);
+    options.appendOperations = options.appendOperations || new DOMTreeConstruction(options.document as Simple.Document);
 
-    return new Environment(options);
+    return new Environment(options as EnvironmentOptions);
   }
 
   constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument || document) });
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as Simple.Document) });
 
     setOwner(this, getOwner(options));
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = options.document.createElement('a') as HTMLAnchorElement;
+    this.uselessAnchor = options.document.createElement('a');
   }
 
   protocolForURL(url: string): string {
