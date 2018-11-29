@@ -65,6 +65,11 @@ export default class BytecodeResolver implements RuntimeResolver<TemplateMeta> {
     }
 
     let trimmed = templateSpecifier.replace(this.prefix, '');
+
+    if (!this.meta[trimmed]) {
+      throw new Error(`Could not find component <${trimmed}> invoked from the <${referrer.specifier}> component. Available components are: ${Object.keys(this.meta)}`);
+    }
+
     let { v: vmHandle, h: handle, table: symbolTable } = this.meta[trimmed];
 
     let ComponentClass = this.table[handle] as Factory<Opaque> || null;
