@@ -38,8 +38,8 @@ export interface ApplicationOptions {
 export interface AppRoot {
   id: number;
   component: string;
-  parent: Simple.Node;
-  nextSibling: Option<Simple.Node>;
+  parent: Node;
+  nextSibling: Option<Node>;
 }
 
 /** @internal */
@@ -50,7 +50,7 @@ export interface ApplicationConstructor<T = Application> {
 /** @internal */
 export type Notifier = [() => void, (err: Error) => void];
 
-const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
+const DEFAULT_DOCUMENT = typeof document === 'object' ? document as Simple.Document : null;
 
 /**
  * The central control point for starting and running Glimmer components.
@@ -107,7 +107,7 @@ export default class Application extends BaseApplication {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(component: string, parent: Simple.Node, nextSibling: Option<Simple.Node> = null): void {
+  renderComponent(component: string, parent: Node, nextSibling: Option<Node> = null): void {
     let { _roots: roots, _self: self } = this;
 
     roots.push({ id: this._rootsIndex++, component, parent, nextSibling });

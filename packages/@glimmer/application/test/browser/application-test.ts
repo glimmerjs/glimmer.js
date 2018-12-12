@@ -1,6 +1,6 @@
 import Application, { RuntimeCompilerLoader, SyncRenderer, DOMBuilder, BytecodeLoader, BytecodeData } from '@glimmer/application';
 import { BlankResolver } from '@glimmer/test-utils';
-import { Document } from 'simple-dom';
+import createHTMLDocument from '@simple-dom/document';
 import { Program } from '@glimmer/program';
 import { BundleCompiler, BundleCompilationResult } from '@glimmer/bundle-compiler';
 import { AppCompilerDelegate } from '@glimmer/compiler-delegates';
@@ -56,7 +56,7 @@ test('can be instantiated', function(assert) {
     rootName: 'app',
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
-    builder: new DOMBuilder({ element: document.body, nextSibling: null }),
+    builder: new DOMBuilder({ element: document.body }),
     resolver
   });
   assert.ok(app, 'app exists');
@@ -82,7 +82,7 @@ test('can be instantiated with bytecode loader', function(assert) {
     rootName: 'app',
     loader: new BytecodeLoader({ bytecode, data }),
     renderer: new SyncRenderer(),
-    builder: new DOMBuilder({ element: document.body, nextSibling: null }),
+    builder: new DOMBuilder({ element: document.body }),
     resolver
   });
   assert.ok(app, 'app exists');
@@ -125,7 +125,7 @@ test('can be booted with bytecode loader', async function(assert) {
     rootName: 'app',
     loader: new BytecodeLoader({ bytecode: result.heap.buffer, data }),
     renderer: new SyncRenderer(),
-    builder: new DOMBuilder({ element: document.body, nextSibling: null }),
+    builder: new DOMBuilder({ element: document.body }),
     resolver
   });
 
@@ -140,21 +140,21 @@ test('accepts options for rootName, resolver and document', function(assert) {
     rootName: 'app',
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
-    builder: new DOMBuilder({ element: document.body, nextSibling: null }),
+    builder: new DOMBuilder({ element: document.body }),
     resolver
   });
   assert.equal(app.rootName, 'app');
   assert.equal(app.resolver, resolver);
   assert.equal(app.document, window.document, 'defaults to window document if document is not provided in options');
-  let customDocument = new Document();
+  let customDocument = createHTMLDocument();
 
   app = new Application({
     rootName: 'app',
     resolver,
-    document: customDocument as any,
+    document: customDocument,
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
-    builder: new DOMBuilder({ element: document.body, nextSibling: null })
+    builder: new DOMBuilder({ element: document.body })
   });
   assert.equal(app.document, customDocument);
 });
