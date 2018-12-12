@@ -15,7 +15,7 @@ import {
 } from '@glimmer/di';
 import { iterableFor } from './iterable';
 import { Program } from '@glimmer/program';
-import { ModuleLocator } from '@glimmer/interfaces';
+import { ModuleLocator, Simple } from '@glimmer/interfaces';
 
 import RuntimeResolver from './loaders/runtime-compiler/loader';
 
@@ -33,13 +33,13 @@ export default class Environment extends GlimmerEnvironment {
 
   static create(options: EnvironmentOptions = {}) {
     options.document = options.document || self.document;
-    options.appendOperations = options.appendOperations || new DOMTreeConstruction(options.document);
+    options.appendOperations = options.appendOperations || new DOMTreeConstruction(options.document as Simple.Document);
 
     return new Environment(options);
   }
 
   constructor(options: EnvironmentOptions) {
-    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as HTMLDocument || document) });
+    super({ appendOperations: options.appendOperations, updateOperations: new DOMChanges(options.document as Simple.Document || document as Simple.Document) });
 
     setOwner(this, getOwner(options));
 

@@ -14,10 +14,12 @@
     "@glimmer/application": "^0.13.0",
     "@glimmer/component": "^0.13.0",
     "@glimmer/di": "^0.1.9",
-    "@glimmer/node": "^0.36.5",
-    "@glimmer/reference": "^0.36.5",
-    "@glimmer/runtime": "^0.36.5",
-    "@glimmer/util": "^0.36.5",
-    "simple-dom": "^1.2.0"
+    "@glimmer/node": "^0.37.0",
+    "@glimmer/reference": "^0.37.0",
+    "@glimmer/runtime": "^0.37.0",
+    "@glimmer/util": "^0.37.0",
+    "@simple-dom/document": "^1.4.0",
+    "@simple-dom/serializer": "^1.4.0",
+    "@simple-dom/void-map": "^1.4.0"
   }
 }

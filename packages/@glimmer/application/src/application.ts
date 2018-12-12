@@ -50,7 +50,7 @@ export interface ApplicationConstructor<T = Application> {
 /** @internal */
 export type Notifier = [() => void, (err: Error) => void];
 
-const DEFAULT_DOCUMENT = typeof document === 'object' ? document : null;
+const DEFAULT_DOCUMENT = typeof document === 'object' ? document as Simple.Document : null;
 
 /**
  * The central control point for starting and running Glimmer components.

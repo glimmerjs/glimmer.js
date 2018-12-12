@@ -1,6 +1,7 @@
 import Application, { RuntimeCompilerLoader, DOMBuilder, SyncRenderer } from '@glimmer/application';
 import { BlankResolver } from '@glimmer/test-utils';
-import { Document } from 'simple-dom';
+import createHTMLDocument from '@simple-dom/document';
+import { Simple } from '@glimmer/interfaces';
 
 const { module, test } = QUnit;
 
@@ -14,11 +15,11 @@ class Component {
 
 test('instance initializers run at initialization', function(assert) {
   let resolver = new BlankResolver();
-  let document = new Document();
+  let document = createHTMLDocument();
   let app = new Application({
     rootName: 'app',
     loader: new RuntimeCompilerLoader(resolver),
-    builder: new DOMBuilder({ element: document.body as any as Element, nextSibling: null }),
+    builder: new DOMBuilder({ element: document.body as any as Simple.Element, nextSibling: null }),
     renderer: new SyncRenderer(),
     resolver
   });

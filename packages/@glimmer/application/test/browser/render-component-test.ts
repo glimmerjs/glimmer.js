@@ -2,6 +2,7 @@ import { didRender } from '@glimmer/application-test-helpers';
 import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
 import Component, { tracked } from '@glimmer/component';
 import '../helpers/async';
+import { Simple } from '@glimmer/interfaces';
 
 class RenderComponentTest extends RenderTest {
   @test async "renders a component"(assert: Assert) {
@@ -15,7 +16,7 @@ class RenderComponentTest extends RenderTest {
       .template('HelloWorld', `<h1><A /> Hello Glimmer!</h1>`)
       .boot();
 
-    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
     await didRender(app);
 
@@ -38,7 +39,7 @@ class RenderComponentTest extends RenderTest {
 
     assert.equal(containerElement.innerHTML, '<p>foo</p>bar');
 
-    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
     await didRender(app);
 
@@ -61,7 +62,7 @@ class RenderComponentTest extends RenderTest {
 
     assert.equal(containerElement.innerHTML, '<p></p><aside></aside>');
 
-    app.renderComponent('HelloWorld', containerElement, nextSibling);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node, nextSibling as Simple.Node);
 
     await didRender(app);
 
@@ -79,8 +80,8 @@ class RenderComponentTest extends RenderTest {
       .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
       .boot();
 
-    app.renderComponent('HelloWorld', firstContainerElement);
-    app.renderComponent('HelloRobbie', secondContainerElement);
+    app.renderComponent('HelloWorld', firstContainerElement as Simple.Node);
+    app.renderComponent('HelloRobbie', secondContainerElement as Simple.Node);
 
     await didRender(app);
 
@@ -98,8 +99,8 @@ class RenderComponentTest extends RenderTest {
       .template('HelloRobbie', `<h1>Hello Robbie!</h1>`)
       .boot();
 
-    app.renderComponent('HelloWorld', containerElement);
-    app.renderComponent('HelloRobbie', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
+    app.renderComponent('HelloRobbie', containerElement as Simple.Node);
 
     await didRender(app);
 
@@ -121,8 +122,8 @@ class RenderComponentTest extends RenderTest {
 
     assert.equal(containerElement.innerHTML, '<aside></aside>');
 
-    app.renderComponent('HelloWorld', containerElement);
-    app.renderComponent('HelloRobbie', containerElement, nextSibling);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
+    app.renderComponent('HelloRobbie', containerElement as Simple.Node, nextSibling as Simple.Node);
 
     await didRender(app);
 
@@ -161,8 +162,8 @@ class RenderComponentTest extends RenderTest {
 
     assert.equal(containerElement.innerHTML, '<aside></aside>');
 
-    app.renderComponent('HelloWorld', containerElement);
-    app.renderComponent('HelloRobbie', containerElement, nextSibling);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
+    app.renderComponent('HelloRobbie', containerElement as Simple.Node, nextSibling as Simple.Node);
 
     await didRender(app);
 
@@ -196,7 +197,7 @@ class RenderComponentTest extends RenderTest {
         .template('HelloWorld', `<NonExistent />`)
         .boot();
 
-      await app.renderComponent('HelloWorld', containerElement);
+      await app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
       await didRender(app);
     } catch (err) {

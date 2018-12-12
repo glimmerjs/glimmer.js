@@ -1,6 +1,8 @@
 import Application, { BytecodeLoader, SyncRenderer } from '@glimmer/application';
 import { StringBuilder } from '@glimmer/ssr';
-import * as SimpleDOM from 'simple-dom';
+import createHTMLDocument from '@simple-dom/document';
+import HTMLSerializer from '@simple-dom/serializer';
+import voidMap from '@simple-dom/void-map';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
 import { ComponentManager } from '@glimmer/component';
 import { BuildServer } from './helpers/build-server';
@@ -33,10 +35,10 @@ module('Application smoke tests', {
 test('Boots and renders an app', async function(assert) {
   let { bytecode, data } = await buildServer.fetch();
   let loader = new BytecodeLoader({ bytecode, data });
-  let doc = new SimpleDOM.Document();
-  let builder = new StringBuilder({ element: doc.body as any, nextSibling: null });
+  let doc = createHTMLDocument();
+  let builder = new StringBuilder({ element: doc.body, nextSibling: null });
   let renderer = new SyncRenderer();
-  let serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
+  let serializer = new HTMLSerializer(voidMap);
   let registry = new BasicModuleRegistry({
     "template:/mu/components/Other": true
   });
@@ -53,7 +55,7 @@ test('Boots and renders an app', async function(assert) {
   let app = new Application({
     rootName: 'mu',
     loader,
-    document: doc as any,
+    document: doc,
     builder,
     renderer,
     resolver
@@ -67,5 +69,5 @@ test('Boots and renders an app', async function(assert) {
 
   await app.boot();
 
-  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
+  assert.equal(serializer.serializeChildren(doc.body).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });

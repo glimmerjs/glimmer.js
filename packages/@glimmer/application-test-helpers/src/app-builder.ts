@@ -179,7 +179,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let doc: Document = this.options.document as Document || document;
     let element = doc.body;
-    let cursor = new Cursor(element, null);
+    let cursor = new Cursor(element as Simple.Element, null);
     let builder = new DOMBuilder(cursor);
     let renderer = new SyncRenderer();
 
@@ -194,7 +194,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let rootElement = doc.createElement('div');
     app.rootElement = rootElement;
-    app.renderComponent('Main', rootElement);
+    app.renderComponent('Main', rootElement as Simple.Node);
     app.boot();
 
     await didRender(app);

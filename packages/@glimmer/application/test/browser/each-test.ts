@@ -1,5 +1,6 @@
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import Component from '@glimmer/component';
+import { Simple } from '@glimmer/interfaces';
 
 const { module, test } = QUnit;
 
@@ -29,7 +30,7 @@ class HelloWorld extends Component {
       .component('HelloWorld', HelloWorld)
       .boot();
 
-    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
     await didRender(app);
 
@@ -48,7 +49,7 @@ class HelloWorld extends Component {
       .component('HelloWorld', HelloWorld)
       .boot();
 
-    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
     await didRender(app);
 
@@ -67,7 +68,7 @@ class HelloWorld extends Component {
       .component('HelloWorld', HelloWorld)
       .boot();
 
-    app.renderComponent('HelloWorld', containerElement);
+    app.renderComponent('HelloWorld', containerElement as Simple.Node);
 
     await didRender(app);
 
