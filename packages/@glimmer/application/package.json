@@ -33,6 +33,7 @@
     "@glimmer/component": "^0.13.0",
     "@glimmer/wire-format": "^0.37.0",
     "@simple-dom/document": "^1.4.0",
+    "@simple-dom/interface": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"
   }

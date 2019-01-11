@@ -1,10 +1,23 @@
-import Application, { RuntimeCompilerLoader, SyncRenderer, DOMBuilder, BytecodeLoader, BytecodeData } from '@glimmer/application';
-import { BlankResolver } from '@glimmer/test-utils';
-import createHTMLDocument from '@simple-dom/document';
-import { Program } from '@glimmer/program';
-import { BundleCompiler, BundleCompilationResult } from '@glimmer/bundle-compiler';
-import { AppCompilerDelegate } from '@glimmer/compiler-delegates';
-import { ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import Application, {
+  RuntimeCompilerLoader,
+  SyncRenderer,
+  DOMBuilder,
+  BytecodeLoader,
+  BytecodeData
+} from "@glimmer/application";
+import { BlankResolver } from "@glimmer/test-utils";
+import createHTMLDocument from "@simple-dom/document";
+import {
+  BundleCompiler,
+  BundleCompilationResult
+} from "@glimmer/bundle-compiler";
+import { AppCompilerDelegate } from "@glimmer/compiler-delegates";
+import {
+  ComponentCapabilities,
+  ModuleLocator,
+  TemplateLocator
+} from "@glimmer/interfaces";
+import { Constants } from "@glimmer/program";
 
 const { module, test } = QUnit;
 
@@ -45,29 +58,29 @@ class TestDelegate implements AppCompilerDelegate<any> {
   resolvePartial(partialName: string, referrer: any): ModuleLocator {
     throw new Error("Method not implemented.");
   }
-
 }
 
-module('[@glimmer/application] Application');
+module("[@glimmer/application] Application");
 
-test('can be instantiated', function(assert) {
+test("can be instantiated", function(assert) {
   let resolver = new BlankResolver();
   let app = new Application({
-    rootName: 'app',
+    rootName: "app",
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
     resolver
   });
-  assert.ok(app, 'app exists');
+  assert.ok(app, "app exists");
 });
 
-test('can be instantiated with bytecode loader', function(assert) {
+test("can be instantiated with bytecode loader", function(assert) {
   let resolver = new BlankResolver();
-  let pool = new Program().constants.toPool();
+  let pool = new Constants().toPool();
+  // let pool = new Program().constants.toPool();
   let bytecode = Promise.resolve(new ArrayBuffer(0));
   let data: BytecodeData = {
-    prefix: '',
+    prefix: "",
     heap: {
       table: [],
       handle: 0
@@ -79,32 +92,35 @@ test('can be instantiated with bytecode loader', function(assert) {
   };
 
   let app = new Application({
-    rootName: 'app',
+    rootName: "app",
     loader: new BytecodeLoader({ bytecode, data }),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
     resolver
   });
-  assert.ok(app, 'app exists');
+  assert.ok(app, "app exists");
 });
 
-test('can be booted with bytecode loader', async function(assert) {
+test("can be booted with bytecode loader", async function(assert) {
   let delegate = new TestDelegate();
   let compiler = new BundleCompiler(delegate);
   let locator: TemplateLocator<null> = {
-    kind: 'template',
-    name: 'mainTemplate',
-    module: '@glimmer/application',
+    kind: "template",
+    name: "mainTemplate",
+    module: "@glimmer/application",
     meta: null
   };
 
-  compiler.add(locator, '{{component @componentName model=@model}}');
+  compiler.addTemplateSource(
+    locator,
+    "{{component @componentName model=@model}}"
+  );
 
   let result = compiler.compile();
   let resolver = new BlankResolver();
   let symbolTable = result.symbolTables.get(locator);
   let data: BytecodeData = {
-    prefix: '',
+    prefix: "",
     heap: {
       table: result.heap.table,
       handle: result.heap.handle
@@ -113,7 +129,7 @@ test('can be booted with bytecode loader', async function(assert) {
     table: [],
     mainEntry: result.table.vmHandleByModuleLocator.get(locator),
     meta: {
-      'mainTemplate': {
+      mainTemplate: {
         v: result.table.vmHandleByModuleLocator.get(locator),
         h: result.table.byModuleLocator.get(locator),
         table: symbolTable
@@ -122,7 +138,7 @@ test('can be booted with bytecode loader', async function(assert) {
   };
 
   let app = new Application({
-    rootName: 'app',
+    rootName: "app",
     loader: new BytecodeLoader({ bytecode: result.heap.buffer, data }),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
@@ -131,25 +147,29 @@ test('can be booted with bytecode loader', async function(assert) {
 
   await app.boot();
 
-  assert.ok(true, 'renders with no errors');
+  assert.ok(true, "renders with no errors");
 });
 
-test('accepts options for rootName, resolver and document', function(assert) {
-  const resolver = new BlankResolver;
+test("accepts options for rootName, resolver and document", function(assert) {
+  const resolver = new BlankResolver();
   let app = new Application({
-    rootName: 'app',
+    rootName: "app",
     loader: new RuntimeCompilerLoader(resolver),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
     resolver
   });
-  assert.equal(app.rootName, 'app');
+  assert.equal(app.rootName, "app");
   assert.equal(app.resolver, resolver);
-  assert.equal(app.document, window.document, 'defaults to window document if document is not provided in options');
+  assert.equal(
+    app.document,
+    window.document,
+    "defaults to window document if document is not provided in options"
+  );
   let customDocument = createHTMLDocument();
 
   app = new Application({
-    rootName: 'app',
+    rootName: "app",
     resolver,
     document: customDocument,
     loader: new RuntimeCompilerLoader(resolver),

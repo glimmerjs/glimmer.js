@@ -1,19 +1,12 @@
-import {
-  Resolver
-} from '@glimmer/di';
-import {
-  UpdatableReference
-} from '@glimmer/component';
-import {
-  Option, assert
-} from '@glimmer/util';
-import {
-  Simple
-} from '@glimmer/interfaces';
+import { Resolver } from "@glimmer/di";
+import { UpdatableReference } from "@glimmer/component";
+import { Option, assert } from "@glimmer/util";
+import { DefaultDynamicScope } from "@glimmer/runtime";
+import { SimpleDocument } from "@simple-dom/interface";
 
-import BaseApplication, { Builder, Loader, Renderer } from './base-application';
-import DynamicScope from './dynamic-scope';
-import Environment from './environment';
+import BaseApplication, { Builder, Loader, Renderer } from "./base-application";
+import { Environment } from "@glimmer/interfaces";
+import EnvironmentImpl from "./environment";
 
 /**
  * Options for configuring an instance of [Application].
@@ -26,7 +19,7 @@ export interface ApplicationOptions {
   renderer: Renderer;
   rootName: string;
   resolver?: Resolver;
-  document?: Simple.Document;
+  document?: SimpleDocument;
 }
 
 /**
@@ -50,7 +43,8 @@ export interface ApplicationConstructor<T = Application> {
 /** @internal */
 export type Notifier = [() => void, (err: Error) => void];
 
-const DEFAULT_DOCUMENT = typeof document === 'object' ? document as Simple.Document : null;
+const DEFAULT_DOCUMENT =
+  typeof document === "object" ? (document as SimpleDocument) : null;
 
 /**
  * The central control point for starting and running Glimmer components.
@@ -58,7 +52,7 @@ const DEFAULT_DOCUMENT = typeof document === 'object' ? document as Simple.Docum
  * @public
  */
 export default class Application extends BaseApplication {
-  public document: Simple.Document;
+  public document: SimpleDocument;
   public env: Environment;
 
   private _roots: AppRoot[] = [];
@@ -80,19 +74,22 @@ export default class Application extends BaseApplication {
     super({
       rootName: options.rootName,
       resolver: options.resolver,
-      environment: Environment,
+      environment: EnvironmentImpl,
       loader: options.loader,
       renderer: options.renderer
     });
 
-    assert(options.builder, 'Must provide a Builder that is responsible to building DOM.');
-    const document = this.document = options.document || DEFAULT_DOCUMENT;
+    assert(
+      options.builder,
+      "Must provide a Builder that is responsible to building DOM."
+    );
+    const document = (this.document = options.document || DEFAULT_DOCUMENT);
     this.builder = options.builder;
 
     this.registerInitializer({
       initialize(registry) {
         registry.register(`document:/${options.rootName}/main/main`, document);
-        registry.registerOption('document', 'instantiate', false);
+        registry.registerOption("document", "instantiate", false);
       }
     });
   }
@@ -107,7 +104,11 @@ export default class Application extends BaseApplication {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(component: string, parent: Node, nextSibling: Option<Node> = null): void {
+  renderComponent(
+    component: string,
+    parent: Node,
+    nextSibling: Option<Node> = null
+  ): void {
     let { _roots: roots, _self: self } = this;
 
     roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
@@ -161,13 +162,20 @@ export default class Application extends BaseApplication {
     // Create the template context for the root `main` template, which just
     // contains the array of component roots. Any property references in that
     // template will be looked up from this object.
-    let self = this._self = new UpdatableReference({ roots: this._roots });
+    let self = (this._self = new UpdatableReference({ roots: this._roots }));
 
     // Create an empty root scope.
-    let dynamicScope = new DynamicScope();
+    let dynamicScope = new DefaultDynamicScope();
 
     let builder = this.builder.getBuilder(env);
-    let templateIterator = await this.loader.getTemplateIterator(this, env, builder, dynamicScope, self);
+
+    let templateIterator = await this.loader.getTemplateIterator(
+      this,
+      env,
+      builder,
+      dynamicScope,
+      self
+    );
 
     try {
       // Begin a new transaction. The transaction stores things like component

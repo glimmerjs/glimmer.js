@@ -1,4 +1,4 @@
-import { Bounds as VMBounds } from '@glimmer/runtime';
+import { Bounds as VMBounds } from '@glimmer/interfaces';
 
 /**
  * Contains the first and last DOM nodes in a component's rendered

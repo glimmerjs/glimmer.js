@@ -1,8 +1,4 @@
-import { TemplateMeta } from '@glimmer/wire-format';
-
-interface ExtendedTemplateMeta extends TemplateMeta {
+export default interface ExtendedTemplateMeta {
   specifier: string;
   managerId?: string;
 }
-
-export default ExtendedTemplateMeta;

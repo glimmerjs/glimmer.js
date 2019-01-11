@@ -7,10 +7,11 @@ import {
 } from "@glimmer/bundle-compiler";
 import {
   ModuleLocator,
-  TemplateLocator
+  TemplateLocator,
+  ConstantPool,
+  SerializedHeap,
+  SerializedTemplateBlock
 } from "@glimmer/interfaces";
-import { ConstantPool, SerializedHeap } from "@glimmer/program";
-import { SerializedTemplateBlock } from '@glimmer/wire-format';
 
 import { Builtins } from "./builtins";
 
@@ -32,7 +33,8 @@ export interface AppCompilerDelegateOptions {
  * support compiling an entire Glimmer.js application into the final JavaScript
  * and bytecode output.
  */
-export default interface AppCompilerDelegate<Meta> extends CompilerDelegate<Meta> {
+export default interface AppCompilerDelegate<Meta>
+  extends CompilerDelegate<Meta> {
   /**
    * Allows the delegate to normalize a path to a module in the project. The
    * value returned from this hook is used as the `module` field in the

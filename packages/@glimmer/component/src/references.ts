@@ -1,6 +1,4 @@
-import {
-  dict, Opaque
-} from "@glimmer/util";
+import { dict } from "@glimmer/util";
 import {
   PathReference,
   CONSTANT_TAG,
@@ -51,11 +49,14 @@ export abstract class CachedReference<T> extends ComponentPathReference<T> {
 export class RootReference extends ConstReference<object> {
   private children = dict<RootPropertyReference>();
 
-  get(propertyKey: string): RootPropertyReference{
+  get(propertyKey: string): RootPropertyReference {
     let ref = this.children[propertyKey];
 
     if (!ref) {
-      ref = this.children[propertyKey] = new RootPropertyReference(this.inner, propertyKey);
+      ref = this.children[propertyKey] = new RootPropertyReference(
+        this.inner,
+        propertyKey
+      );
     }
 
     return ref;
@@ -71,7 +72,7 @@ export abstract class PropertyReference extends CachedReference<any> {
     }
   }
 
-  get(key: string): PathReference<any>  {
+  get(key: string): PathReference<any> {
     return new NestedPropertyReference(this, key);
   }
 }
@@ -164,7 +165,7 @@ export class ConditionalReference extends GlimmerConditionalReference {
       return PrimitiveReference.create(value);
     }
 
-    return new ConditionalReference(reference);
+    return new GlimmerConditionalReference(reference);
   }
 }
 
@@ -173,7 +174,11 @@ export class TemplateOnlyComponentDebugReference extends ConstReference<void> {
     super(undefined);
   }
 
-  get(propertyKey: string): PathReference<Opaque> {
-    throw new Error(`You tried to reference {{${propertyKey}}} from the ${this.name} template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`);
+  get(propertyKey: string): PathReference<unknown> {
+    throw new Error(
+      `You tried to reference {{${propertyKey}}} from the ${
+        this.name
+      } template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
+    );
   }
-};
+}
