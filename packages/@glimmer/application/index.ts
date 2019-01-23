@@ -25,3 +25,4 @@ export { default as Iterable, iterableFor } from './src/iterable';
 export { default as buildAction, debugInfoForReference } from './src/helpers/action';
 export { default as mainTemplate } from './src/templates/main';
 export * from './src/helpers';
+export * from './src/test';

@@ -1,10 +1,9 @@
-import { mainTemplate } from "@glimmer/application";
+import { AppCompilerDelegate, mainTemplate } from "@glimmer/application";
 import {
   BundleCompiler,
   BundleCompilerOptions
 } from "@glimmer/bundle-compiler";
 import {
-  AppCompilerDelegate,
   AppCompilerDelegateOptions,
   Builtins,
   MUCompilerDelegate,

@@ -11,12 +11,13 @@ import Debug from "debug";
 import { Project } from "glimmer-analyzer";
 import { CAPABILITIES } from "@glimmer/component";
 
-import AppCompilerDelegate, {
+import {
   AppCompilerDelegateOptions,
   OutputFiles
 } from "../app-compiler-delegate";
 import { Builtins, HelperLocator } from "../builtins";
 import MUCodeGenerator from "./code-generator";
+import { AppCompilerDelegate } from '@glimmer/application';
 
 const debug = Debug("@glimmer/compiler-delegates:mu-delegate");
 

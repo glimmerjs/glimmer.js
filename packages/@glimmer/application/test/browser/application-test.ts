@@ -1,64 +1,18 @@
 import Application, {
+  BytecodeData,
+  BytecodeLoader,
+  DOMBuilder,
   RuntimeCompilerLoader,
   SyncRenderer,
-  DOMBuilder,
-  BytecodeLoader,
-  BytecodeData
+  TestDelegate
 } from "@glimmer/application";
+import { BundleCompiler } from "@glimmer/bundle-compiler";
+import { TemplateLocator } from "@glimmer/interfaces";
+import { Constants } from "@glimmer/program";
 import { BlankResolver } from "@glimmer/test-utils";
 import createHTMLDocument from "@simple-dom/document";
-import {
-  BundleCompiler,
-  BundleCompilationResult
-} from "@glimmer/bundle-compiler";
-import { AppCompilerDelegate } from "@glimmer/compiler-delegates";
-import {
-  ComponentCapabilities,
-  ModuleLocator,
-  TemplateLocator
-} from "@glimmer/interfaces";
-import { Constants } from "@glimmer/program";
 
 const { module, test } = QUnit;
-
-class TestDelegate implements AppCompilerDelegate<any> {
-  normalizePath(absolutePath: string): string {
-    throw new Error("Method not implemented.");
-  }
-  templateLocatorFor(moduleLocator: ModuleLocator): TemplateLocator<any> {
-    throw new Error("Method not implemented.");
-  }
-  generateDataSegment(compilation: BundleCompilationResult): string {
-    throw new Error("Method not implemented.");
-  }
-  hasComponentInScope(componentName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
-  }
-  resolveComponent(componentName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
-  }
-  getComponentCapabilities(locator: any): ComponentCapabilities {
-    throw new Error("Method not implemented.");
-  }
-  hasHelperInScope(helperName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
-  }
-  resolveHelper(helperName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
-  }
-  hasModifierInScope(modifierName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
-  }
-  resolveModifier(modifierName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
-  }
-  hasPartialInScope(partialName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
-  }
-  resolvePartial(partialName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
-  }
-}
 
 module("[@glimmer/application] Application");
 
