@@ -1,4 +1,5 @@
-import { ComponentManager, setPropertyDidChange } from '@glimmer/component';
+import { ComponentManager } from '@glimmer/component';
+import { setPropertyDidChange } from '@glimmer/tracking';
 import App from './main';
 
 const app = new App();

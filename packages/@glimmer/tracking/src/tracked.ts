@@ -41,7 +41,8 @@ class Tracker {
  * @example
  *
  * ```typescript
- * import Component, { tracked } from '@glimmer/component';
+ * import Component from '@glimmer/component';
+ * import { tracked } from '@glimmer/tracking';
  *
  * export default class MyComponent extends Component {
  *    @tracked
@@ -65,7 +66,8 @@ class Tracker {
  *
  *
  * ```typescript
- * import Component, { tracked } from '@glimmer/component';
+ * import Component from '@glimmer/component';
+ * import { tracked } from '@glimmer/tracking';
  *
  * const totalApples = 100;
  *
@@ -183,7 +185,7 @@ function descriptorForTrackedComputedProperty(
     enumerable: true,
     configurable: false,
     get: getter,
-    set: set ? setter : undefined
+    set: set ? setter : undefined,
   };
 }
 
@@ -226,7 +228,7 @@ function installTrackedProperty(target: any, key: Key) {
         .inner.update(DirtyableTag.create());
       this[shadowKey] = newValue;
       propertyDidChange();
-    }
+    },
   });
 }
 
@@ -472,14 +474,14 @@ function installDevModeErrorInterceptor(
 
         set() {
           throwError(this, key);
-        }
+        },
       });
     }
   } else {
     Object.defineProperty(obj, key, {
       set() {
         throwError(this, key);
-      }
+      },
     });
   }
 }

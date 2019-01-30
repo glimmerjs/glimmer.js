@@ -3,7 +3,6 @@ import Resolver, {
   ResolverConfiguration
 } from "@glimmer/resolver";
 import { Dict, ModuleLocator, TemplateLocator } from "@glimmer/interfaces";
-import { FactoryDefinition } from "@glimmer/di";
 import defaultResolverConfiguration from "./default-resolver-configuration";
 import { precompile } from "./compiler";
 import Application, {
@@ -36,7 +35,7 @@ export interface AppBuilderOptions<T> {
   document?: SimpleDocument;
 }
 
-export interface ComponentFactory extends FactoryDefinition<unknown> {}
+export interface ComponentFactory {}
 
 export class TestApplication extends Application {
   rootElement: Element;
@@ -106,7 +105,7 @@ export class AppBuilder<T extends TestApplication> {
       this.options.resolverConfiguration || defaultResolverConfiguration;
     resolverConfiguration.app = resolverConfiguration.app || {
       name: this.rootName,
-      rootName: this.rootName
+      rootName: this.rootName,
     };
 
     let registry = new BasicModuleRegistry(this.modules);
@@ -152,7 +151,7 @@ export class AppBuilder<T extends TestApplication> {
       meta[locator.module] = {
         v: vmHandle,
         h: handle,
-        table: template.symbolTable
+        table: template.symbolTable,
       };
     });
 
@@ -176,8 +175,8 @@ export class AppBuilder<T extends TestApplication> {
       meta,
       heap: {
         table: heap.table,
-        handle: heap.handle
-      }
+        handle: heap.handle,
+      },
     };
 
     return new BytecodeLoader({ bytecode, data });
@@ -209,7 +208,7 @@ export class AppBuilder<T extends TestApplication> {
       loader,
       renderer,
       rootName: this.rootName,
-      document: this.options.document
+      document: this.options.document,
     });
 
     let rootElement = doc.createElement("div");

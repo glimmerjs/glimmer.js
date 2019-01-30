@@ -9,8 +9,10 @@
     "start": "ember serve",
     "test": "ember test && ember test --env production",
     "test:node": "bin/run-node-tests.js",
-    "problems": "tsc -p tsconfig.json --noEmit",
-    "tslint": "tslint --project tsconfig.json"
+    "test:ember": "yarn workspace @glimmer/component ember try:one",
+    "test:ember:node": "yarn workspace @glimmer/component test:node",
+    "tslint": "tslint --project tsconfig.json",
+    "problems": "tsc -p tsconfig.json --noEmit"
   },
   "workspaces": [
     "packages/@glimmer/*"
@@ -18,7 +20,7 @@
   "devDependencies": {
     "@types/qunit": "^2.0.31",
     "amd-name-resolver": "^1.0.0",
-    "babel-plugin-debug-macros": "^0.1.11",
+    "babel-plugin-debug-macros": "^0.2.0",
     "babel-plugin-strip-glimmer-utils": "^0.1.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "babel-plugin-transform-proto-to-assign": "^6.23.0",
