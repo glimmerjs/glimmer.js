@@ -71,6 +71,10 @@ export default class MUCompilerDelegate
     };
   }
 
+  relativePath(module: string): string {
+    return module.replace(/^\.\//, "");
+  }
+
   /**
    * Converts absolute module paths into paths relative to the project root.
    */
@@ -81,6 +85,12 @@ export default class MUCompilerDelegate
     return `./${relativePath}`;
   }
 
+  getSpecifier(locator: ModuleLocator): string {
+    const relativePath = this.relativePath(locator.module);
+
+    return this.project.pathMap[relativePath];
+  }
+
   /**
    * Annotates the template locator with the Module Unification specifier
    * string.
@@ -89,7 +99,7 @@ export default class MUCompilerDelegate
     module,
     name
   }: ModuleLocator): TemplateLocator<ModuleLocator> {
-    let relativePath = module.replace(/^\.\//, "");
+    let relativePath = this.relativePath(module);
 
     let meta;
     if (this._builtins[name]) {
@@ -118,16 +128,21 @@ export default class MUCompilerDelegate
   hasComponentInScope(name: string, referrer: ModuleLocator): boolean {
     debug("hasComponentInScope; name=%s; referrer=%o", name, referrer);
 
+    const referrerSpecifier = this.getSpecifier(referrer);
+
     return !!this.project.resolver.identify(
       `template:${name}`,
-      referrer.module
+      referrerSpecifier
     );
   }
 
   resolveComponent(name: string, referrer: ModuleLocator): ModuleLocator {
+
+    const referrerSpecifier = this.getSpecifier(referrer);
+
     let specifier = this.project.resolver.identify(
       `template:${name}`,
-      referrer.module
+      referrerSpecifier
     );
     return this.moduleLocatorFor(specifier);
   }
@@ -140,9 +155,12 @@ export default class MUCompilerDelegate
     if (helperName in this.builtins) {
       return true;
     }
+
+    const referrerSpecifier = this.getSpecifier(referrer);
+
     return !!this.project.resolver.identify(
       `helper:${helperName}`,
-      referrer.module
+      referrerSpecifier
     );
   }
 
@@ -151,9 +169,11 @@ export default class MUCompilerDelegate
       return this.builtins[helperName];
     }
 
+    const referrerSpecifier = this.getSpecifier(referrer);
+
     let specifier = this.project.resolver.identify(
       `helper:${helperName}`,
-      referrer.module
+      referrerSpecifier
     );
     let module = `./${this.project.pathForSpecifier(specifier)}`;
     return helperLocatorFor(module, "default");

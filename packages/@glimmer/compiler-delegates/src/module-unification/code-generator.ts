@@ -164,10 +164,10 @@ export default class MUCodeGenerator {
   }
 
   generateHeap(heap: SerializedHeap) {
-    assert(
-      (heap.table.length / 2) % 1 === 0,
-      "Heap table should be balanced and divisible by 2"
-    );
+    // assert(
+    //   (heap.table.length / 2) % 1 === 0,
+    //   "Heap table should be balanced and divisible by 2"
+    // );
     let serializedHeap = { table: heap.table, handle: heap.handle };
     return strip`
       const heap = ${inlineJSON(serializedHeap)};
