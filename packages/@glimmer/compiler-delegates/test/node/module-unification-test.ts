@@ -63,24 +63,24 @@ test("can generate the serialized constants pool ", assert => {
 
 test("can generate the heap table", assert => {
   let heap = {
-    table: [0, 650, 40, 700],
-    handle: 50,
-    buffer: new ArrayBuffer(1)
+    table: [0, 0, 0, 30, 0, 0, 121, 0, 0, 211, 8, 0, 367, 0, 0, 423, 0, 0],
+    handle: 18, // Handle must be divisble Size.ENTRY_SIZE
+    buffer: new ArrayBuffer(1704)
   };
   let serializedHeaptable = generator.generateHeap(heap as any);
 
   assert.equal(
     serializedHeaptable,
     `const heap =JSON.parse(${JSON.stringify(
-      JSON.stringify({ table: [0, 650, 40, 700], handle: 50 })
+      JSON.stringify({ table: [0, 0, 0, 30, 0, 0, 121, 0, 0, 211, 8, 0, 367, 0, 0, 423, 0, 0], handle: 18 })
     )});`
   );
 });
 
 test("heap table should be balanced", assert => {
   assert.throws(() => {
-    generator.generateHeap({ table: [0, 650, 40] } as any);
-  }, /Heap table should be balanced and divisible by 2/);
+    generator.generateHeap({ table: [0, 650, 40, 100] } as any);
+  }, /Heap table should be balanced and divisible by 3/);
 });
 
 test("can generate the specifier map", assert => {

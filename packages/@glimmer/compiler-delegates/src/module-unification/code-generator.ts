@@ -164,10 +164,10 @@ export default class MUCodeGenerator {
   }
 
   generateHeap(heap: SerializedHeap) {
-    // assert(
-    //   (heap.table.length / 2) % 1 === 0,
-    //   "Heap table should be balanced and divisible by 2"
-    // );
+    assert(
+      (heap.table.length / 3) % 1 === 0,
+      "Heap table should be balanced and divisible by 3" // Size is defined in @glimmer/program enum Size.ENTRY_SIZE
+    );
     let serializedHeap = { table: heap.table, handle: heap.handle };
     return strip`
       const heap = ${inlineJSON(serializedHeap)};
