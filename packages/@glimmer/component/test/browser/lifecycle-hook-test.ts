@@ -24,11 +24,11 @@ test('Lifecycle hook ordering', async function(assert) {
     }
   }
 
-  class Component1 extends HookLoggerComponent { name = 'component1'; };
-  class Component2 extends HookLoggerComponent { name = 'component2'; };
-  class Component3 extends HookLoggerComponent { name = 'component3'; };
-  class Component4 extends HookLoggerComponent { name = 'component4'; };
-  class Component5 extends HookLoggerComponent { name = 'component5'; };
+  class Component1 extends HookLoggerComponent { name = 'component1'; }
+  class Component2 extends HookLoggerComponent { name = 'component2'; }
+  class Component3 extends HookLoggerComponent { name = 'component3'; }
+  class Component4 extends HookLoggerComponent { name = 'component4'; }
+  class Component5 extends HookLoggerComponent { name = 'component5'; }
 
   let app = await buildApp()
     .template('Main', '<div><ComponentOne /></div>')

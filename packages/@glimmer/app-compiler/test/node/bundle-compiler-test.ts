@@ -14,6 +14,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('requires a mode or delegate', function (assert) {
     assert.throws(() => {
+      // tslint:disable-next-line:no-unused-expression
       new GlimmerBundleCompiler(input.path(), {});
     }, /Must pass a bundle compiler mode or pass a custom compiler delegate\./);
   });
