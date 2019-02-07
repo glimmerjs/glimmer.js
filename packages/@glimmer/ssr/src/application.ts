@@ -1,16 +1,15 @@
-import { BaseApplication, Loader, Renderer } from '@glimmer/application';
-import { ComponentManager } from '@glimmer/component';
-import { Resolver, Dict } from '@glimmer/di';
-import { Opaque } from '@glimmer/util';
-import { PathReference, ConstReference } from '@glimmer/reference';
+import { BaseApplication, Loader, Renderer } from "@glimmer/application";
+import { ComponentManager } from "@glimmer/component";
+import { Resolver, Dict } from "@glimmer/di";
+import { PathReference, ConstReference } from "@glimmer/reference";
 
-import { PassThrough } from 'stream';
-import createHTMLDocument from '@simple-dom/document';
-import HTMLSerializer from '@simple-dom/serializer';
-import voidMap from '@simple-dom/void-map';
+import { PassThrough } from "stream";
+import createHTMLDocument from "@simple-dom/document";
+import HTMLSerializer from "@simple-dom/serializer";
+import voidMap from "@simple-dom/void-map";
 
-import Environment from './environment';
-import StringBuilder from './string-builder';
+import EnvironmentImpl from "./environment";
+import StringBuilder from "./string-builder";
 
 export interface SSRApplicationOptions {
   rootName: string;
@@ -22,10 +21,12 @@ export interface SSRApplicationOptions {
 /**
  * Converts a POJO into a dictionary of references that can be passed as an argument to render a component.
  */
-function convertOpaqueToReferenceDict(data: Dict<Opaque>): Dict<PathReference<Opaque>> {
+function convertOpaqueToReferenceDict(
+  data: Dict<unknown>
+): Dict<PathReference<unknown>> {
   if (!data) {
     return {};
-  };
+  }
 
   return Object.keys(data).reduce((acc, key) => {
     acc[key] = new ConstReference(data[key]);
@@ -37,19 +38,22 @@ function convertOpaqueToReferenceDict(data: Dict<Opaque>): Dict<PathReference<Op
 export default class Application extends BaseApplication {
   protected serializer: HTMLSerializer;
 
-  constructor({rootName, resolver, loader, renderer}: SSRApplicationOptions) {
+  constructor({ rootName, resolver, loader, renderer }: SSRApplicationOptions) {
     super({
       rootName,
       resolver,
       loader,
       renderer,
-      environment: Environment
+      environment: EnvironmentImpl
     });
 
     this.serializer = new HTMLSerializer(voidMap);
     this.registerInitializer({
       initialize(registry) {
-        registry.register(`component-manager:/${rootName}/component-managers/main`, ComponentManager);
+        registry.register(
+          `component-manager:/${rootName}/component-managers/main`,
+          ComponentManager
+        );
       }
     });
 
@@ -57,7 +61,12 @@ export default class Application extends BaseApplication {
     this.initialize();
   }
 
-  static async renderToStream(componentName: string, data: Dict<Opaque>, stream: NodeJS.WritableStream, options: SSRApplicationOptions) {
+  static async renderToStream(
+    componentName: string,
+    data: Dict<unknown>,
+    stream: NodeJS.WritableStream,
+    options: SSRApplicationOptions
+  ) {
     const app = new Application(options);
     try {
       const env = app.lookup(`environment:/${app.rootName}/main/main`);
@@ -65,7 +74,13 @@ export default class Application extends BaseApplication {
 
       const builder = new StringBuilder({ element }).getBuilder(env);
 
-      const templateIterator = await app.loader.getComponentTemplateIterator(app, env, builder, componentName, convertOpaqueToReferenceDict(data));
+      const templateIterator = await app.loader.getComponentTemplateIterator(
+        app,
+        env,
+        builder,
+        componentName,
+        convertOpaqueToReferenceDict(data)
+      );
 
       env.begin();
       await app.renderer.render(templateIterator);
@@ -73,18 +88,22 @@ export default class Application extends BaseApplication {
       stream.write(app.serializer.serializeChildren(element));
       stream.end();
     } catch (err) {
-      stream.emit('error', err);
+      stream.emit("error", err);
     }
   }
 
-  static async renderToString(componentName: string, data: Dict<Opaque>, options: SSRApplicationOptions): Promise<string> {
+  static async renderToString(
+    componentName: string,
+    data: Dict<unknown>,
+    options: SSRApplicationOptions
+  ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
-      let html = '';
+      let html = "";
 
-      stream.on('data', (str) => html += str);
-      stream.on('end', () => resolve(html));
-      stream.on('error', (err) => reject(err));
+      stream.on("data", str => (html += str));
+      stream.on("end", () => resolve(html));
+      stream.on("error", err => reject(err));
 
       this.renderToStream(componentName, data, stream, options);
     });

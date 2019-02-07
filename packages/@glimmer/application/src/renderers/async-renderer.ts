@@ -1,5 +1,5 @@
-import { TemplateIterator, RenderResult } from "@glimmer/runtime";
 import { Renderer } from "../base-application";
+import { RenderResult, TemplateIterator } from "@glimmer/interfaces";
 
 interface Deadline {
   didTimeout: boolean;
@@ -58,7 +58,7 @@ export default class AsyncRenderer implements Renderer {
   }
 
   render(iterator: TemplateIterator): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let timeout = this.timeout;
 
       let tick = (deadline: Deadline) => {

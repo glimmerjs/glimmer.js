@@ -1,14 +1,13 @@
 import { UpdatableReference } from "@glimmer/component";
-import { VM, Arguments } from "@glimmer/runtime";
-import { Opaque } from '@glimmer/interfaces';
+import { VM, VMArguments } from "@glimmer/interfaces";
 
 /** @internal */
-export default function buildAction(vm: VM, _args: Arguments) {
+export default function buildAction(_args: VMArguments, vm: VM) {
   let componentRef = vm.getSelf();
   let args = _args.capture();
 
   let actionFunc = args.positional.at(0).value() as Function;
-  if (typeof actionFunc !== 'function') {
+  if (typeof actionFunc !== "function") {
     throwNoActionError(actionFunc, args.positional.at(0));
   }
 
@@ -26,25 +25,29 @@ export default function buildAction(vm: VM, _args: Arguments) {
   });
 }
 
-function throwNoActionError(actionFunc: any, actionFuncReference: Opaque) {
+function throwNoActionError(actionFunc: any, actionFuncReference: unknown) {
   let referenceInfo = debugInfoForReference(actionFuncReference);
-  throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`);
+  throw new Error(
+    `You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`
+  );
 }
 
 /** @internal */
 export function debugInfoForReference(reference: any): string {
-  let message = '';
+  let message = "";
   let parent;
   let property;
 
-  if (reference === null || reference === undefined) { return message; }
+  if (reference === null || reference === undefined) {
+    return message;
+  }
 
-  if ('parent' in reference && 'property' in reference) {
-    parent = reference['parent'].value();
-    property = reference['property'];
-  } else if ('_parentValue' in reference && '_propertyKey' in reference) {
-    parent = reference['_parentValue'];
-    property = reference['_propertyKey'];
+  if ("parent" in reference && "property" in reference) {
+    parent = reference["parent"].value();
+    property = reference["property"];
+  } else if ("_parentValue" in reference && "_propertyKey" in reference) {
+    parent = reference["_parentValue"];
+    property = reference["_propertyKey"];
   }
 
   if (property !== undefined) {
@@ -58,15 +61,15 @@ function debugName(obj: any) {
   let objType = typeof obj;
   if (obj === null || obj === undefined) {
     return objType;
-  } else if (objType === 'number' || objType === 'boolean') {
+  } else if (objType === "number" || objType === "boolean") {
     return obj.toString();
   } else {
-    if (obj['debugName']) {
-      return obj['debugName'];
+    if (obj["debugName"]) {
+      return obj["debugName"];
     }
     try {
       return JSON.stringify(obj);
-    } catch (e) { }
+    } catch (e) {}
     return obj.toString();
   }
 }

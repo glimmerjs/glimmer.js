@@ -11,4 +11,5 @@ export const CAPABILITIES: ComponentCapabilities = {
   elementHook: true,
   prepareArgs: false,
   updateHook: true,
+  wrapped: false
 };

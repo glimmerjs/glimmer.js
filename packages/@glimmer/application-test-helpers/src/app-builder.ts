@@ -1,20 +1,31 @@
+import Resolver, {
+  BasicModuleRegistry,
+  ResolverConfiguration
+} from "@glimmer/resolver";
+import { Dict, ModuleLocator, TemplateLocator } from "@glimmer/interfaces";
+import { FactoryDefinition } from "@glimmer/di";
+import defaultResolverConfiguration from "./default-resolver-configuration";
+import { precompile } from "./compiler";
+import Application, {
+  ApplicationConstructor,
+  BytecodeLoader,
+  DOMBuilder,
+  Loader,
+  RuntimeCompilerLoader,
+  SyncRenderer
+} from "@glimmer/application";
+import { ComponentManager, CAPABILITIES } from "@glimmer/component";
+import { assert } from "@glimmer/util";
 import {
-  Simple
-} from '@glimmer/interfaces';
-import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Opaque, Dict, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
-import { FactoryDefinition } from '@glimmer/di';
-import defaultResolverConfiguration from './default-resolver-configuration';
-import { precompile } from './compiler';
-import Application, { ApplicationConstructor, BytecodeLoader, DOMBuilder, Loader, RuntimeCompilerLoader, SyncRenderer } from '@glimmer/application';
-import { ComponentManager, CAPABILITIES } from '@glimmer/component';
-import { assert } from '@glimmer/util';
-import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
-import { buildAction, mainTemplate } from '@glimmer/application';
-import { CompilableProgram } from '@glimmer/opcode-compiler';
-import { Metadata } from '../../application/src/loaders/bytecode/loader';
+  BundleCompiler,
+  CompilerDelegate as ICompilerDelegate
+} from "@glimmer/bundle-compiler";
+import { buildAction, mainTemplate } from "@glimmer/application";
+import { compilable } from "@glimmer/opcode-compiler";
+import { Metadata } from "../../application/src/loaders/bytecode/loader";
+import { SimpleDocument } from "@simple-dom/interface";
 
-import didRender from './did-render';
+import didRender from "./did-render";
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -22,10 +33,10 @@ export interface AppBuilderOptions<T> {
   ApplicationClass?: ApplicationConstructor<T>;
   ComponentManager?: any; // TODO - typing
   resolverConfiguration?: ResolverConfiguration;
-  document?: Simple.Document;
+  document?: SimpleDocument;
 }
 
-export interface ComponentFactory extends FactoryDefinition<Opaque> {};
+export interface ComponentFactory extends FactoryDefinition<unknown> {}
 
 export class TestApplication extends Application {
   rootElement: Element;
@@ -35,36 +46,45 @@ export interface AppBuilderTemplateMeta {
   specifier: string;
 }
 
-function locatorFor(module: string, name: string): TemplateLocator<AppBuilderTemplateMeta> {
+function locatorFor(
+  module: string,
+  name: string
+): TemplateLocator<ModuleLocator> {
   return {
-    kind: 'template',
+    kind: "template",
     module,
     name,
     meta: {
-      specifier: module
+      module,
+      name
     }
   };
 }
 
 export class AppBuilder<T extends TestApplication> {
   rootName: string;
-  modules: Dict<Opaque> = {};
+  modules: Dict<unknown> = {};
   templates: Dict<string> = {};
   options: AppBuilderOptions<T>;
 
   constructor(name: string, options: AppBuilderOptions<T>) {
     this.rootName = name;
     this.options = options;
-    this.modules[`component-manager:/${this.rootName}/component-managers/main`] = this.options.ComponentManager;
-    this.template('Main', '<div />');
-    this.helper('action', buildAction);
+    this.modules[
+      `component-manager:/${this.rootName}/component-managers/main`
+    ] = this.options.ComponentManager;
+    this.template("Main", "<div />");
+    this.helper("action", buildAction);
   }
 
   template(name: string, template: string) {
-    assert(name.charAt(0) === name.charAt(0).toUpperCase(), 'template names must start with a capital letter');
+    assert(
+      name.charAt(0) === name.charAt(0).toUpperCase(),
+      "template names must start with a capital letter"
+    );
 
     let specifier = `template:/${this.rootName}/components/${name}`;
-    this.modules[specifier] = precompile(template, { meta: { specifier }});
+    this.modules[specifier] = precompile(template, { meta: { specifier } });
     this.templates[specifier] = template;
     return this;
   }
@@ -81,8 +101,9 @@ export class AppBuilder<T extends TestApplication> {
     return this;
   }
 
-  protected buildResolver() {
-    let resolverConfiguration = this.options.resolverConfiguration || defaultResolverConfiguration;
+  protected buildResolver(): Resolver {
+    let resolverConfiguration =
+      this.options.resolverConfiguration || defaultResolverConfiguration;
     resolverConfiguration.app = resolverConfiguration.app || {
       name: this.rootName,
       rootName: this.rootName
@@ -92,7 +113,7 @@ export class AppBuilder<T extends TestApplication> {
     return new Resolver(resolverConfiguration, registry);
   }
 
-  protected buildRuntimeCompilerLoader(resolver: Resolver) {
+  protected buildRuntimeCompilerLoader(resolver: Resolver): Loader {
     return new RuntimeCompilerLoader(resolver);
   }
 
@@ -100,31 +121,33 @@ export class AppBuilder<T extends TestApplication> {
     let delegate = new CompilerDelegate(resolver);
     let compiler = new BundleCompiler(delegate);
 
-    let mainLocator = locatorFor('template:mainTemplate', 'default');
-    mainLocator.meta.specifier = 'template:mainTemplate';
+    let mainLocator = locatorFor("template:mainTemplate", "default");
+    mainLocator.meta.module = "template:mainTemplate";
 
     let block = JSON.parse(mainTemplate.block);
-    let compilableTemplate = new CompilableProgram(compiler.compiler, {
+    let compilableTemplate = compilable({
       block,
-      referrer: mainLocator.meta,
-      asPartial: false
+      referrer: mainLocator.meta
     });
 
     compiler.addCompilableTemplate(mainLocator, compilableTemplate);
 
     for (let module in this.templates) {
-      compiler.add(locatorFor(module, 'default'), this.templates[module]);
+      compiler.addTemplateSource(
+        locatorFor(module, "default"),
+        this.templates[module]
+      );
     }
 
     let { heap, pool, table } = compiler.compile();
 
-    let resolverTable: Opaque[] = [];
+    let resolverTable: unknown[] = [];
 
     let meta: Dict<Metadata> = {};
 
-    table.vmHandleByModuleLocator.forEach((vmHandle , locator) => {
+    table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
       let handle = table.byModuleLocator.get(locator);
-      let template = compiler.compilableTemplates.get(locator);
+      let template = compiler.getTemplate(locator);
 
       meta[locator.module] = {
         v: vmHandle,
@@ -134,20 +157,19 @@ export class AppBuilder<T extends TestApplication> {
     });
 
     table.byHandle.forEach((locator, handle) => {
-      let module = locator.module.replace('template:/', 'component:/');
+      let module = locator.module.replace("template:/", "component:/");
       if (this.modules[module]) {
-        if (module.indexOf('helper:') === 0) {
+        if (module.indexOf("helper:") === 0) {
           resolverTable[handle] = [1, this.modules[module]];
         } else {
           resolverTable[handle] = this.modules[module];
         }
-
       }
     });
 
     let bytecode = heap.buffer;
     let data = {
-      prefix: '',
+      prefix: "",
       mainEntry: table.vmHandleByModuleLocator.get(mainLocator),
       pool,
       table: resolverTable,
@@ -166,17 +188,17 @@ export class AppBuilder<T extends TestApplication> {
     let loader: Loader;
 
     switch (this.options.loader) {
-      case 'runtime-compiler':
+      case "runtime-compiler":
         loader = this.buildRuntimeCompilerLoader(resolver);
         break;
-      case 'bytecode':
+      case "bytecode":
         loader = this.buildBytecodeLoader(resolver);
         break;
       default:
         throw new Error(`Unrecognized loader ${this.options.loader}`);
     }
 
-    let doc: Document = this.options.document as Document || document;
+    let doc: Document = (this.options.document as Document) || document;
     let element = doc.body;
     let builder = new DOMBuilder({ element });
     let renderer = new SyncRenderer();
@@ -190,9 +212,9 @@ export class AppBuilder<T extends TestApplication> {
       document: this.options.document
     });
 
-    let rootElement = doc.createElement('div');
+    let rootElement = doc.createElement("div");
     app.rootElement = rootElement;
-    app.renderComponent('Main', rootElement);
+    app.renderComponent("Main", rootElement);
     app.boot();
 
     await didRender(app);
@@ -201,54 +223,62 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
-class CompilerDelegate implements ICompilerDelegate<AppBuilderTemplateMeta> {
-  constructor(protected resolver: Resolver) {
+class CompilerDelegate implements ICompilerDelegate<ModuleLocator> {
+  constructor(protected resolver: Resolver) {}
+
+  hasComponentInScope(name: string, referrer: ModuleLocator): boolean {
+    return !!this.resolver.identify(`template:${name}`, referrer.module);
   }
 
-  hasComponentInScope(name: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`template:${name}`, referrer.specifier);
-  }
-
-  resolveComponent(name: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`template:${name}`, referrer.specifier);
-    return { module: resolved, name: 'default' };
+  resolveComponent(name: string, referrer: ModuleLocator): ModuleLocator {
+    let resolved = this.resolver.identify(`template:${name}`, referrer.module);
+    return { module: resolved, name: "default" };
   }
 
   getComponentCapabilities() {
     return CAPABILITIES;
   }
 
-  hasHelperInScope(helperName: string, referrer: AppBuilderTemplateMeta): boolean {
-    return !!this.resolver.identify(`helper:${helperName}`, referrer.specifier);
+  hasHelperInScope(helperName: string, referrer: ModuleLocator): boolean {
+    return !!this.resolver.identify(`helper:${helperName}`, referrer.module);
   }
 
-  resolveHelper(helperName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
-    let resolved = this.resolver.identify(`helper:${helperName}`, referrer.specifier);
-    return { module: resolved, name: 'default' };
+  resolveHelper(helperName: string, referrer: ModuleLocator): ModuleLocator {
+    let resolved = this.resolver.identify(
+      `helper:${helperName}`,
+      referrer.module
+    );
+    return { module: resolved, name: "default" };
   }
 
-  hasPartialInScope(partialName: string, referrer: AppBuilderTemplateMeta): boolean {
+  hasPartialInScope(partialName: string, referrer: ModuleLocator): boolean {
     throw new Error("Method not implemented.");
   }
 
-  resolvePartial(partialName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
+  resolvePartial(partialName: string, referrer: ModuleLocator): ModuleLocator {
     throw new Error("Method not implemented.");
   }
 
-  hasModifierInScope(modifierName: string, referrer: AppBuilderTemplateMeta): boolean {
+  hasModifierInScope(modifierName: string, referrer: ModuleLocator): boolean {
     throw new Error("Method not implemented.");
   }
 
-  resolveModifier(modifierName: string, referrer: AppBuilderTemplateMeta): ModuleLocator {
+  resolveModifier(
+    modifierName: string,
+    referrer: ModuleLocator
+  ): ModuleLocator {
     throw new Error("Method not implemented.");
   }
 }
 
-function buildApp<T extends TestApplication>(options: AppBuilderOptions<T> = {}): AppBuilder<T> {
-  options.appName = options.appName || 'test-app';
-  options.loader = options.loader || 'runtime-compiler';
+function buildApp<T extends TestApplication>(
+  options: AppBuilderOptions<T> = {}
+): AppBuilder<T> {
+  options.appName = options.appName || "test-app";
+  options.loader = options.loader || "runtime-compiler";
   options.ComponentManager = options.ComponentManager || ComponentManager;
-  options.ApplicationClass = options.ApplicationClass || TestApplication as ApplicationConstructor<T>;
+  options.ApplicationClass =
+    options.ApplicationClass || (TestApplication as ApplicationConstructor<T>);
 
   return new AppBuilder(options.appName, options);
 }

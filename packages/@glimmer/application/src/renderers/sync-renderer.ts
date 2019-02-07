@@ -1,5 +1,5 @@
-import { TemplateIterator, RenderResult } from '@glimmer/runtime';
-import { Renderer } from '../base-application';
+import { Renderer } from "../base-application";
+import { RenderResult, TemplateIterator } from "@glimmer/interfaces";
 
 /**
  * Performs a synchronous initial render of templates.
@@ -33,7 +33,7 @@ export default class SyncRenderer implements Renderer {
 
   rerender(): void {
     if (!this.result) {
-      throw new Error('Cannot re-render before initial render has completed');
+      throw new Error("Cannot re-render before initial render has completed");
     }
 
     this.result.rerender();

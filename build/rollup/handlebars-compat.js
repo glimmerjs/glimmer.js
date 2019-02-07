@@ -1,8 +1,8 @@
 module.exports = function() {
   return {
-    name: 'handlebars-resolver',
+    name: "handlebars-resolver",
     load(id) {
-      if (id.match(/node_modules\/handlebars\/lib\/handlebars.js/)) {
+      if (id.match(/node_modules[/\\]handlebars[/\\]lib[/\\]handlebars.js/)) {
         return `
           import { parse } from "./handlebars/compiler/base";
           export { parse as parse };
@@ -11,5 +11,5 @@ module.exports = function() {
 
       return null;
     }
-  }
-}
+  };
+};

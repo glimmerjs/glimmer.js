@@ -3,9 +3,7 @@
 const path = require('path');
 const merge = require('broccoli-merge-trees');
 const funnel = require('broccoli-funnel');
-const concat = require('broccoli-concat');
 const Rollup = require('broccoli-rollup');
-const TSLint = require('broccoli-tslinter');
 
 const nodeResolve = require('rollup-plugin-node-resolve');
 const monorepo = require('../rollup/monorepo-resolve');
@@ -43,7 +41,6 @@ function buildBrowserTests(tsTree, jsTree, packagesTree) {
 
   let browserTests = merge([
     includeTests(jsTree),
-    includeTSLintTests(tsTree),
     includeTestHarness()
   ]);
 
@@ -83,25 +80,6 @@ function includeTests(jsTree) {
         })
       ]
     }
-  });
-}
-
-function includeTSLintTests(tsTree) {
-  // The TSLint plugin passes through all files, so we need to filter out any
-  // non-TypeScript files.
-  tsTree = funnel(tsTree, {
-    include: ['**/*.ts'],
-    exclude: ['@glimmer/blueprint/files/**/*.ts'],
-    srcDir: 'packages'
-  });
-
-  let tslintConfig = __dirname + '/../../tslint.json';
-  let tslintTree = new TSLint(tsTree, {
-    configuration: tslintConfig
-  });
-
-  return concat(tslintTree, {
-    outputFile: 'assets/tslint.js'
   });
 }
 

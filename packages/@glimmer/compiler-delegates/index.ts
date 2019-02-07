@@ -1,5 +1,4 @@
 export {
-  default as AppCompilerDelegate,
   AppCompilerDelegateOptions,
   OutputFiles
 } from './src/app-compiler-delegate';

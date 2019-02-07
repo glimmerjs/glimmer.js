@@ -1,5 +1,6 @@
-import DOMBuilder from './dom-builder';
-import { rehydrationBuilder, Environment, ElementBuilder } from '@glimmer/runtime';
+import DOMBuilder from "./dom-builder";
+import { rehydrationBuilder } from "@glimmer/runtime";
+import { Environment, ElementBuilder } from "@glimmer/interfaces";
 
 /**
  * A {@link Builder} that re-uses existing DOM provided via server-side rendering.

@@ -1,14 +1,20 @@
-import { Cursor, clientBuilder, Environment, ElementBuilder } from '@glimmer/runtime';
-import { Option, Simple } from '@glimmer/interfaces';
-import { Builder } from '../base-application';
+import { clientBuilder } from "@glimmer/runtime";
+import {
+  Option,
+  Cursor,
+  Environment,
+  ElementBuilder
+} from "@glimmer/interfaces";
+import { Builder } from "../base-application";
+import { SimpleElement, SimpleNode } from "@simple-dom/interface";
 
 /**
  * Variant of Glimmer VM's Cursor interface that accepts either
  * native DOM or SimpleDOM types.
  */
 export interface DOMCursor {
-  element: Element | Simple.Element;
-  nextSibling?: Option<Node | Simple.Node>;
+  element: Element | SimpleElement;
+  nextSibling?: Option<Node | SimpleNode>;
 }
 
 /**

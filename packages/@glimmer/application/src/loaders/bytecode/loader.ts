@@ -1,12 +1,24 @@
-import { Heap, ConstantPool, RuntimeConstants, RuntimeProgram } from '@glimmer/program';
-import { Opaque, Dict } from '@glimmer/util';
-import { TemplateIterator, ElementBuilder, DynamicScope, renderMain, renderComponent, Environment, RenderComponentArgs } from '@glimmer/runtime';
+import {
+  ConstantPool,
+  Dict,
+  DynamicScope,
+  ProgramSymbolTable,
+  RuntimeProgram,
+  TemplateIterator,
+  ElementBuilder,
+  Environment,
+  AotRuntimeContext
+} from "@glimmer/interfaces";
+import { hydrateProgram } from "@glimmer/program";
+import { PathReference } from "@glimmer/reference";
+import {
+  renderAotComponent,
+  renderAotMain,
+  RenderComponentArgs
+} from "@glimmer/runtime";
 
-import BaseApplication, { Loader } from '../../base-application';
-
-import BytecodeResolver, { TemplateMeta } from './resolver';
-import { PathReference } from '@glimmer/reference';
-import { ProgramSymbolTable } from '@glimmer/interfaces';
+import BaseApplication, { Loader } from "../../base-application";
+import BytecodeResolver from "./resolver";
 
 export interface SerializedHeap {
   table: number[];
@@ -20,8 +32,6 @@ export interface Metadata {
   v?: number;
   /** Handle */
   h?: number;
-
-  table?: ProgramSymbolTable;
 }
 
 /**
@@ -35,7 +45,7 @@ export interface BytecodeData {
   heap: SerializedHeap;
   pool: ConstantPool;
   meta: Dict<Metadata>;
-  table: Opaque[];
+  table: unknown[];
 }
 
 export interface BytecodeLoaderOptions {
@@ -68,32 +78,55 @@ export default class BytecodeLoader implements Loader {
     this.bytecode = Promise.resolve(bytecode);
   }
 
-  private async getRuntimeProgram(app: BaseApplication): Promise<RuntimeProgram<TemplateMeta>> {
+  async getTemplateIterator(
+    app: BaseApplication,
+    env: Environment,
+    builder: ElementBuilder,
+    dynamicScope: DynamicScope,
+    self: PathReference<unknown>
+  ): Promise<TemplateIterator> {
+    const { mainEntry } = this.data;
+    const runtime = await this.getRuntime(app, env);
+
+    return renderAotMain(runtime, self, builder, mainEntry);
+  }
+
+  async getComponentTemplateIterator(
+    app: BaseApplication,
+    env: Environment,
+    builder: ElementBuilder,
+    componentName: string,
+    args: RenderComponentArgs
+  ): Promise<TemplateIterator> {
+    const runtime = await this.getRuntime(app, env);
+    return renderAotComponent(runtime, builder, 0, componentName, args);
+  }
+
+  async getRuntime(
+    app: BaseApplication,
+    env: Environment
+  ): Promise<AotRuntimeContext> {
+    const resolver = this.getResolver(app);
+    const program = await this.getRuntimeProgram(app);
+
+    return {
+      env,
+      program,
+      resolver
+    };
+  }
+
+  async getRuntimeProgram(app: BaseApplication): Promise<RuntimeProgram> {
     let data = this.data;
     let bytecode = await this.bytecode;
-    let { pool, heap: serializedHeap, table, meta, prefix } = data;
+    let { pool, heap: serializedHeap } = data;
+    let heap = { ...serializedHeap, buffer: bytecode };
 
-    let heap = new Heap({
-      table: serializedHeap.table,
-      handle: serializedHeap.handle,
-      buffer: bytecode
-    });
-
-    let resolver = new BytecodeResolver(app, table, meta, prefix);
-    let constants = new RuntimeConstants(resolver, pool);
-    let program = new RuntimeProgram(constants, heap);
-
-    return program;
+    return hydrateProgram({ heap, constants: pool });
   }
 
-  async getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, scope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
-    const program = await this.getRuntimeProgram(app);
-    const { mainEntry } = this.data;
-    return renderMain(program, env, self, scope, builder, mainEntry);
-  }
-
-  async getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: RenderComponentArgs): Promise<TemplateIterator> {
-    const program = await this.getRuntimeProgram(app);
-    return renderComponent(program, env, builder, 0, componentName, args);
+  private getResolver(app: BaseApplication): BytecodeResolver {
+    let { table, meta, prefix } = this.data;
+    return new BytecodeResolver(app, table, meta, prefix);
   }
 }

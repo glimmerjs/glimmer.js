@@ -1,35 +1,28 @@
+import { TagWrapper, RevisionTag } from "@glimmer/reference";
+
 import {
   Dict,
-  Opaque
-} from '@glimmer/util';
-
-import {
-  TagWrapper,
-  RevisionTag
-} from "@glimmer/reference";
-
-import {
-  Arguments,
+  VMArguments,
   CapturedArguments,
-  Helper as GlimmerHelper,
-  VM
-} from "@glimmer/runtime";
+  Helper as GlimmerHelper
+} from "@glimmer/interfaces";
 
-import {
-  CachedReference
-} from '@glimmer/component';
+import { CachedReference } from "@glimmer/component";
 
-export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => any;
+export type UserHelper = (
+  args: ReadonlyArray<unknown>,
+  named: Dict<unknown>
+) => any;
 
 export default function buildUserHelper(helperFunc: UserHelper): GlimmerHelper {
-  return (_vm: VM, args: Arguments) => new HelperReference(helperFunc, args);
+  return args => new HelperReference(helperFunc, args);
 }
 
-export class HelperReference extends CachedReference<Opaque> {
+export class HelperReference extends CachedReference<unknown> {
   public tag: TagWrapper<RevisionTag>;
   private args: CapturedArguments;
 
-  constructor(private helper: UserHelper, args: Arguments) {
+  constructor(private helper: UserHelper, args: VMArguments) {
     super();
 
     this.tag = args.tag;

@@ -7,24 +7,22 @@ import {
   setOwner,
   FactoryDefinition,
   RegistryWriter
-} from '@glimmer/di';
+} from "@glimmer/di";
 
-import { Opaque } from '@glimmer/interfaces';
+import { PathReference } from "@glimmer/reference";
 
-import { PathReference } from '@glimmer/reference';
+import { RenderComponentArgs } from "@glimmer/runtime";
 
+import { assert } from "@glimmer/util";
+
+import ApplicationRegistry from "./application-registry";
 import {
-  Environment as AbstractEnvironment,
+  DynamicScope,
   TemplateIterator,
   ElementBuilder,
-  DynamicScope,
-  RenderComponentArgs
-} from '@glimmer/runtime';
-
-import { assert } from '@glimmer/util';
-
-import ApplicationRegistry from './application-registry';
-import Environment from './environment';
+  Environment
+} from "@glimmer/interfaces";
+import { SimpleDocument } from "@simple-dom/interface";
 
 /**
  * Initializers run when an [Application] boots and allow extending the
@@ -50,7 +48,7 @@ export interface Builder {
   /**
    * Returns a concrete instance of an ElementBuilder for the given Environment.
    */
-  getBuilder(env: AbstractEnvironment): ElementBuilder;
+  getBuilder(env: Environment): ElementBuilder;
 }
 
 /**
@@ -64,12 +62,24 @@ export interface Loader {
   /**
    * Returns a template iterator for on the provided application state.
    */
-  getTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator>;
+  getTemplateIterator(
+    app: BaseApplication,
+    env: Environment,
+    builder: ElementBuilder,
+    dynamicScope: DynamicScope,
+    self: PathReference<unknown>
+  ): Promise<TemplateIterator>;
 
   /**
    * Returns a template iterator for the specified component with the specified arguments
    */
-  getComponentTemplateIterator(app: BaseApplication, env: Environment, builder: ElementBuilder, componentName: string, args: RenderComponentArgs): Promise<TemplateIterator>;
+  getComponentTemplateIterator(
+    app: BaseApplication,
+    env: Environment,
+    builder: ElementBuilder,
+    componentName: string,
+    args: RenderComponentArgs
+  ): Promise<TemplateIterator>;
 }
 
 /**
@@ -104,7 +114,7 @@ export interface Renderer {
 export interface BaseApplicationOptions {
   rootName: string;
   resolver: Resolver;
-  environment: FactoryDefinition<AbstractEnvironment>;
+  environment: FactoryDefinition<Environment>;
   loader: Loader;
   renderer: Renderer;
 }
@@ -119,28 +129,41 @@ export interface BaseApplicationOptions {
 export default abstract class BaseApplication implements Owner {
   public rootName: string;
   public resolver: Resolver;
+  readonly document: SimpleDocument;
 
   private _registry: Registry;
   private _container: Container;
   private _initializers: Initializer[] = [];
-  private _environment: FactoryDefinition<AbstractEnvironment>;
+  private _environment: FactoryDefinition<Environment>;
 
   protected loader: Loader;
   protected renderer: Renderer;
 
-  constructor({rootName, resolver, environment, loader, renderer}: BaseApplicationOptions) {
+  constructor({
+    rootName,
+    resolver,
+    environment,
+    loader,
+    renderer
+  }: BaseApplicationOptions) {
     this.resolver = resolver;
     this.rootName = rootName;
     this._environment = environment;
 
-    assert(loader, 'Must provide a Loader for preparing templates and other metadata required for a Glimmer Application.');
-    assert(renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
+    assert(
+      loader,
+      "Must provide a Loader for preparing templates and other metadata required for a Glimmer Application."
+    );
+    assert(
+      renderer,
+      "Must provide a Renderer to render the templates produced by the Loader."
+    );
 
     this.loader = loader;
     this.renderer = renderer;
   }
 
-    /** @internal */
+  /** @internal */
   initialize(): void {
     this.initRegistry();
     this.initContainer();
@@ -159,17 +182,28 @@ export default abstract class BaseApplication implements Owner {
    * @internal
    */
   protected initRegistry(): void {
-    let registry = this._registry = new Registry();
+    let registry = (this._registry = new Registry());
 
     // Create ApplicationRegistry as a proxy to the underlying registry
     // that will only be available during `initialize`.
     let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
 
-    registry.register(`environment:/${this.rootName}/main/main`, this._environment);
-    registry.registerOption('helper', 'instantiate', false);
-    registry.registerOption('template', 'instantiate', false);
-    registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
-    registry.registerInjection('component-manager', 'env', `environment:/${this.rootName}/main/main`);
+    registry.register(
+      `environment:/${this.rootName}/main/main`,
+      this._environment
+    );
+    registry.registerOption("helper", "instantiate", false);
+    registry.registerOption("template", "instantiate", false);
+    registry.registerInjection(
+      "environment",
+      "document",
+      `document:/${this.rootName}/main/main`
+    );
+    registry.registerInjection(
+      "component-manager",
+      "env",
+      `environment:/${this.rootName}/main/main`
+    );
 
     let initializers = this._initializers;
     for (let i = 0; i < initializers.length; i++) {

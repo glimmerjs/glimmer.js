@@ -1,25 +1,26 @@
-import {
-} from "@glimmer/opcode-compiler";
+import { ResolverDelegate, templateFactory } from "@glimmer/opcode-compiler";
 import {
   ComponentDefinition as IComponentDefinition,
-  CompileTimeLookup as ICompileTimeLookup,
   CompilableTemplate,
-  Opaque,
   ComponentCapabilities,
-  ProgramSymbolTable
+  ProgramSymbolTable,
+  ComponentManager,
+  WithJitStaticLayout,
+  ComponentInstanceState,
+  ComponentDefinitionState,
+  CompileTimeComponent,
+  SerializedTemplateWithLazyBlock
 } from "@glimmer/interfaces";
 import { Option, assert } from "@glimmer/util";
-import { WithStaticLayout, ComponentManager } from "@glimmer/runtime";
 
-import RuntimeResolver from "./resolver";
 import { Specifier } from "./loader";
+import ApplicationJitRuntimeResolver from "./resolver";
+import ComponentDefinitionImpl from "@glimmer/component/src/component-definition";
 
-type ComponentDefinition = IComponentDefinition<
-  ComponentManager<Opaque, Opaque>
->;
+type ComponentDefinition = IComponentDefinition<ComponentManager>;
 
-export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> {
-  constructor(private resolver: RuntimeResolver) {}
+export default class ResolverDelegateImpl implements ResolverDelegate {
+  constructor(private resolver: ApplicationJitRuntimeResolver) {}
 
   private getComponentDefinition(handle: number): ComponentDefinition {
     let spec = this.resolver.resolve<Option<ComponentDefinition>>(handle);
@@ -38,19 +39,11 @@ export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> 
   getLayout(handle: number): CompilableTemplate<ProgramSymbolTable> {
     let definition = this.getComponentDefinition(handle);
     let { manager } = definition;
-    let invocation = (manager as WithStaticLayout<
-      any,
-      any,
-      Specifier,
-      RuntimeResolver
-    >).getLayout(definition, this.resolver);
-
-    return {
-      compile() {
-        return invocation.handle;
-      },
-      symbolTable: invocation.symbolTable
-    };
+    return (manager as WithJitStaticLayout<
+      ComponentInstanceState,
+      ComponentDefinitionState,
+      ApplicationJitRuntimeResolver
+    >).getJitStaticLayout(definition, this.resolver);
   }
 
   lookupHelper(name: string, referrer: Specifier): Option<number> {
@@ -63,6 +56,25 @@ export default class CompileTimeLookup implements ICompileTimeLookup<Specifier> 
 
   lookupComponentDefinition(name: string, referrer: Specifier): Option<number> {
     return this.resolver.lookupComponentHandle(name, referrer);
+  }
+
+  lookupComponent(
+    name: string,
+    referrer: Specifier
+  ): Option<CompileTimeComponent> {
+    let component = this.lookupComponentDefinition(name, referrer);
+    let definition: ComponentDefinitionImpl = this.resolver.resolve(component);
+    let template: SerializedTemplateWithLazyBlock<
+      Specifier
+    > = this.resolver.resolve(definition.handle);
+
+    return {
+      handle: component,
+      capabilities: definition.manager.getCapabilities(definition.state),
+      compilable: templateFactory(template)
+        .create()
+        .asLayout()
+    };
   }
 
   lookupPartial(name: string, referrer: Specifier): Option<number> {

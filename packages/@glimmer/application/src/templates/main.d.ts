@@ -1,8 +1,5 @@
-declare const _default: {
-  block: string;
-  meta: {
-    specifier: string;
-  }
-};
+import { SerializedTemplateWithLazyBlock } from "@glimmer/interfaces";
+
+declare const _default: SerializedTemplateWithLazyBlock;
 
 export default _default;
