@@ -8,6 +8,6 @@ async function didRender(app: any): Promise<void> {
       resolve();
     }
   });
-};
+}
 
 export default didRender;

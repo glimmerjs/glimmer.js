@@ -19,4 +19,5 @@ install:
   - yarn install --non-interactive
 
 script:
+  - yarn tslint
   - yarn test
