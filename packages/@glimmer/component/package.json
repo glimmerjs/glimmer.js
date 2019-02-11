@@ -48,7 +48,7 @@
     "ember-compatibility-helpers": "^1.1.2"
   },
   "devDependencies": {
-    "@ember-decorators/babel-transforms": "^5.0.0",
+    "@ember-decorators/babel-transforms": "^5.1.3",
     "@ember/optional-features": "^0.6.1",
     "@glimmer/application-test-helpers": "^0.13.0",
     "@glimmer/compiler": "^0.39.1",
@@ -76,7 +76,7 @@
     "ember-cli-qunit": "^4.3.2",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.1.0",
-    "ember-decorators": "^5.1.2",
+    "ember-decorators": "^5.1.3",
     "ember-disable-prototype-extensions": "^1.1.2",
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.1.0",
