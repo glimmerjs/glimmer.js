@@ -23,7 +23,10 @@ module.exports = function buildPackages(es2017, matrix) {
   let es5 = transpileToES5(es2017);
   let targets = { es5, es2017 };
 
+  // We ignore the `@glimmer/blueprint` tree as it is ember-only, and is picked
+  // up later on in the build process.
   let packages = project.packages
+    .filter(pkg => pkg.name !== '@glimmer/blueprint')
     .map(buildPackage);
 
   packages = flatten(packages);
@@ -32,24 +35,10 @@ module.exports = function buildPackages(es2017, matrix) {
   return packages;
 
   function buildPackage(pkg) {
-    let pkgName = pkg.name;
-    let builds;
-
-    // The blueprint package is structured differently from other packages, so
-    // we just copy it over verbatim to the build output.
-    if (pkgName === '@glimmer/blueprint') {
-      builds = [funnel(`packages/${pkgName}`, {
-        destDir: `${pkgName}/`,
-        exclude: ['**/node_modules/**']
-      })];
-    } else {
-      builds = buildMatrix(pkgName, matrix);
-    }
-
     return [
-      writePackageJSON(pkgName),
-      writeLicense(`${pkgName}/LICENSE`),
-      ...builds
+      writePackageJSON(pkg.name),
+      writeLicense(`${pkg.name}/LICENSE`),
+      ...buildMatrix(pkg.name, matrix)
     ];
   }
 

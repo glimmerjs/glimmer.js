@@ -1,7 +1,6 @@
-import { Owner } from "@glimmer/di";
-import { Tag } from "@glimmer/reference";
+import { Owner } from '@glimmer/di';
+import { Tag } from '@glimmer/reference';
 import {
-  Bounds as VMBounds,
   ComponentManager as VMComponentManager,
   RuntimeResolver,
   ComponentCapabilities,
@@ -16,25 +15,26 @@ import {
   Destroyable,
   JitRuntimeResolver,
   AotRuntimeResolver,
-  CompilableProgram
-} from "@glimmer/interfaces";
+  CompilableProgram,
+} from '@glimmer/interfaces';
 import {
   VersionedPathReference,
   PathReference,
-  CONSTANT_TAG
-} from "@glimmer/reference";
-import { DEBUG } from "@glimmer/env";
+  CONSTANT_TAG,
+} from '@glimmer/reference';
+import { DEBUG } from '@glimmer/env';
 
-import Component from "./component";
-import Bounds from "./bounds";
-import { DefinitionState } from "./component-definition";
+import Component from './component';
+import { DefinitionState } from './component-definition';
 import {
   RootReference,
-  TemplateOnlyComponentDebugReference
-} from "./references";
-import ExtendedTemplateMeta from "./template-meta";
-import { SerializedTemplateWithLazyBlock } from "@glimmer/application/src/loaders/runtime-compiler/resolver";
-import { Specifier } from "@glimmer/application/src/loaders/runtime-compiler/loader";
+  TemplateOnlyComponentDebugReference,
+} from './references';
+import ExtendedTemplateMeta from './template-meta';
+import { SerializedTemplateWithLazyBlock } from '@glimmer/application/src/loaders/runtime-compiler/resolver';
+import { Specifier } from '@glimmer/application/src/loaders/runtime-compiler/loader';
+
+import { MAGIC_PROP, DESTROYING, DESTROYED } from '../addon/-private/component';
 
 export interface ConstructorOptions {
   env: EnvironmentWithOwner;
@@ -51,19 +51,16 @@ export class ComponentStateBucket {
     owner: Owner,
     env: EnvironmentWithOwner
   ) {
-    let componentFactory = definition.ComponentClass;
-    let name = definition.name;
-
+    let { ComponentClass, name } = definition;
     this.args = args;
 
-    let injections = {
-      debugName: name,
-      args: this.namedArgsSnapshot()
-    };
+    if (ComponentClass) {
+      if (ComponentClass.class !== undefined) {
+        ComponentClass = ComponentClass.class;
+      }
 
-    env.setOwner(injections, owner);
-    if (componentFactory) {
-      this.component = componentFactory.create(injections);
+      this.component = new ComponentClass(owner, this.namedArgsSnapshot());
+      this.component.debugName = name;
     }
   }
 
@@ -72,7 +69,16 @@ export class ComponentStateBucket {
   }
 
   namedArgsSnapshot(): Readonly<Dict<unknown>> {
-    return Object.freeze(this.args.named.value());
+    let snapshot = this.args.named.value();
+
+    if (DEBUG) {
+      Object.defineProperty(snapshot, MAGIC_PROP, {
+        enumerable: false,
+        value: true,
+      });
+    }
+
+    return Object.freeze(snapshot);
   }
 }
 
@@ -149,11 +155,11 @@ export default class ComponentManager
     if (handle && symbolTable) {
       return {
         handle,
-        symbolTable
+        symbolTable,
       };
     }
 
-    throw new Error("unimplemented getAotStaticLayout");
+    throw new Error('unimplemented getAotStaticLayout');
   }
 
   create(
@@ -196,25 +202,9 @@ export default class ComponentManager
 
   didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) {}
 
-  didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
-      return;
-    }
-    if (!bucket) {
-      return;
-    }
-    bucket.component.bounds = new Bounds(bounds);
-  }
+  didRenderLayout() {}
 
-  didCreate(bucket: ComponentStateBucket) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
-      return;
-    }
-    if (!bucket) {
-      return;
-    }
-    bucket.component.didInsertElement();
-  }
+  didCreate() {}
 
   getTag(bucket: ComponentStateBucket): Tag {
     if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
@@ -239,16 +229,7 @@ export default class ComponentManager
 
   didUpdateLayout() {}
 
-  didUpdate(bucket: ComponentStateBucket) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
-      return;
-    }
-    if (!bucket) {
-      return;
-    }
-
-    bucket.component.didUpdate();
-  }
+  didUpdate() {}
 
   getDestructor(bucket: ComponentStateBucket): Destroyable {
     if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
@@ -258,7 +239,13 @@ export default class ComponentManager
       return NOOP_DESTROYABLE;
     }
 
-    return bucket.component;
+    return {
+      destroy() {
+        bucket.component[DESTROYING] = true;
+        bucket.component.willDestroy();
+        bucket.component[DESTROYED] = true;
+      },
+    };
   }
 }
 

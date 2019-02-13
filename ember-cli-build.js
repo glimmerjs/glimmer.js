@@ -66,9 +66,22 @@ module.exports = function(_options) {
     ];
   }
 
+  // Include any Ember Addon files, without src (Glimmer files)
+  let emberTree = funnel('packages/', {
+    exclude: [
+      '**/node_modules',
+      '**/tmp',
+      '**/types',
+      '**/dist',
+      '**/src',
+      '**/test',
+      '*/*/index.ts'
+    ]
+  });
+
   // Third, build our module/ES combinations for each package, and their tests.
   let packagesTree = buildPackages(jsTree, matrix);
   let testsTree = buildTests(tsTree, jsTree, packagesTree);
 
-  return merge([packagesTree, testsTree]);
+  return merge([packagesTree, testsTree, emberTree], { overwrite: true });
 }

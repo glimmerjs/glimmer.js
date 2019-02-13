@@ -1,4 +1,4 @@
-import { dict } from "@glimmer/util";
+import { dict } from '@glimmer/util';
 import {
   PathReference,
   CONSTANT_TAG,
@@ -8,13 +8,13 @@ import {
   combine,
   isConst,
   Tag,
-  TagWrapper
-} from "@glimmer/reference";
+  TagWrapper,
+} from '@glimmer/reference';
 import {
   ConditionalReference as GlimmerConditionalReference,
-  PrimitiveReference
-} from "@glimmer/runtime";
-import { tagForProperty } from "./tracked";
+  PrimitiveReference,
+} from '@glimmer/runtime';
+import { tagForProperty } from '@glimmer/tracking';
 
 /**
  * The base PathReference.
@@ -121,11 +121,11 @@ export class NestedPropertyReference extends PropertyReference {
 
     _parentObjectTag.inner.update(tagForProperty(parentValue, _propertyKey));
 
-    if (typeof parentValue === "string" && _propertyKey === "length") {
+    if (typeof parentValue === 'string' && _propertyKey === 'length') {
       return parentValue.length;
     }
 
-    if (typeof parentValue === "object" && parentValue) {
+    if (typeof parentValue === 'object' && parentValue) {
       return parentValue[_propertyKey];
     } else {
       return undefined;
