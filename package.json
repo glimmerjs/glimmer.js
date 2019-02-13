@@ -1,6 +1,6 @@
 {
   "name": "glimmer.js",
-  "version": "0.13.0",
+  "version": "0.14.0-alpha.1",
   "private": true,
   "license": "MIT",
   "scripts": {
