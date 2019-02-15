@@ -24,7 +24,8 @@
     "@glimmer/reference": "^0.39.1",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/runtime": "^0.39.1",
-    "@glimmer/util": "^0.39.1"
+    "@glimmer/util": "^0.39.1",
+    "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^0.14.0-alpha.2",
@@ -32,7 +33,6 @@
     "@glimmer/component": "^0.14.0-alpha.2",
     "@glimmer/wire-format": "^0.39.1",
     "@simple-dom/document": "^1.4.0",
-    "@simple-dom/interface": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"
   }
