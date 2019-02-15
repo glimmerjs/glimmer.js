@@ -16,12 +16,14 @@ import {
   JitRuntimeResolver,
   AotRuntimeResolver,
   CompilableProgram,
+  Bounds as VMBounds,
 } from '@glimmer/interfaces';
 import { VersionedPathReference, PathReference, CONSTANT_TAG } from '@glimmer/reference';
 import { DEBUG } from '@glimmer/env';
 
 import Component from './component';
 import { DefinitionState } from './component-definition';
+import Bounds from './bounds';
 import { RootReference, TemplateOnlyComponentDebugReference } from './references';
 import ExtendedTemplateMeta from './template-meta';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/application/src/loaders/runtime-compiler/resolver';
@@ -186,9 +188,25 @@ export default class ComponentManager
 
   didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) {}
 
-  didRenderLayout() {}
+  didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
+    bucket.component.bounds = new Bounds(bounds);
+  }
 
-  didCreate() {}
+  didCreate(bucket: ComponentStateBucket) {
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
+    bucket.component.didInsertElement();
+  }
 
   getTag(bucket: ComponentStateBucket): Tag {
     if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
