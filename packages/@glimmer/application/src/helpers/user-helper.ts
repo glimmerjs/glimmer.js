@@ -11,7 +11,7 @@ export default function buildUserHelper(helperFunc: UserHelper): GlimmerHelper {
 }
 
 export class HelperReference extends CachedReference<unknown> {
-  public tag: TagWrapper<RevisionTag>;
+  public tag: TagWrapper<RevisionTag | null>;
   private args: CapturedArguments;
 
   constructor(private helper: UserHelper, args: VMArguments) {

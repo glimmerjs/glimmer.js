@@ -11,8 +11,8 @@ test('basic iteration of an array of primitives', function(assert) {
       return ['foo', 'bar'];
     },
   };
-  let keyFor = (_, i) => i;
-  let iterable = new Iterable(ref, keyFor);
+  let keyFor = (_: any, i: number) => i;
+  let iterable = new Iterable(ref, keyFor as any);
   let iterator = iterable.iterate();
 
   assert.deepEqual(iterator.next(), {

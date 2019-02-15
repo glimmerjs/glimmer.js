@@ -51,7 +51,7 @@ const DEFAULT_TIMEOUT = 250;
  */
 export default class AsyncRenderer implements Renderer {
   public timeout: number;
-  protected result: RenderResult;
+  protected result: RenderResult | null = null;
 
   constructor(options: AsyncRendererOptions = {}) {
     this.timeout = options.timeout || DEFAULT_TIMEOUT;
@@ -62,14 +62,14 @@ export default class AsyncRenderer implements Renderer {
       let timeout = this.timeout;
 
       let tick = (deadline: Deadline) => {
-        let iteratorResult: IteratorResult<RenderResult>;
+        let iteratorResult: IteratorResult<RenderResult | null>;
 
         do {
           iteratorResult = iterator.next();
         } while (!iteratorResult.done && deadline.timeRemaining() > 1);
 
         if (iteratorResult.done) {
-          this.result = iteratorResult.value;
+          this.result = iteratorResult.value!;
           return resolve();
         }
 

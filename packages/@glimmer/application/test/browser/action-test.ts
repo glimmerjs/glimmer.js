@@ -18,7 +18,7 @@ test('can curry arguments to actions', async function(assert) {
     @tracked
     name = 'world';
 
-    constructor(owner, args) {
+    constructor(owner: any, args: any) {
       super(owner, args);
       helloWorldComponent = this;
     }
@@ -41,20 +41,20 @@ test('can curry arguments to actions', async function(assert) {
   assert.strictEqual(root.innerText, 'Hello World');
 
   let h1 = root.querySelector('h1');
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
   assert.strictEqual(passedMsg2, 'world');
   assert.strictEqual(passedEvent, fakeEvent);
   passedEvent = null;
 
-  helloWorldComponent.name = 'cruel world';
+  helloWorldComponent!.name = 'cruel world';
   app.scheduleRerender();
 
   await didRender(app);
 
   h1 = root.querySelector('h1');
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
   assert.strictEqual(passedMsg2, 'cruel world');
@@ -73,7 +73,7 @@ test('actions can be passed and invoked with additional arguments', async functi
   class ParentComponent extends Component {
     name = 'world';
 
-    constructor(owner, args) {
+    constructor(owner: any, args: any) {
       super(owner, args);
       parentComponent = this;
     }
@@ -103,7 +103,7 @@ test('actions can be passed and invoked with additional arguments', async functi
   let root = app.rootElement as Element;
 
   let h1 = root.querySelector('.grandchild') as HTMLElement;
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);
 });

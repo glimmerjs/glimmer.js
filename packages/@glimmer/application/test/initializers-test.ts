@@ -20,6 +20,7 @@ test('instance initializers run at initialization', function(assert) {
     loader: new RuntimeCompilerLoader(resolver),
     builder: new DOMBuilder({ element }),
     renderer: new SyncRenderer(),
+    document: {} as any,
     resolver,
   });
   app.registerInitializer({

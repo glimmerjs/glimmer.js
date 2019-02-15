@@ -1,6 +1,6 @@
 import { Resolver } from '@glimmer/di';
 import { UpdatableReference } from '@glimmer/component';
-import { Option, assert } from '@glimmer/util';
+import { Option, assert, expect } from '@glimmer/util';
 import { DefaultDynamicScope } from '@glimmer/runtime';
 import { SimpleDocument } from '@simple-dom/interface';
 
@@ -18,7 +18,7 @@ export interface ApplicationOptions {
   loader: Loader;
   renderer: Renderer;
   rootName: string;
-  resolver?: Resolver;
+  resolver: Resolver;
   document?: SimpleDocument;
 }
 
@@ -52,7 +52,7 @@ const DEFAULT_DOCUMENT = typeof document === 'object' ? (document as SimpleDocum
  */
 export default class Application extends BaseApplication {
   public document: SimpleDocument;
-  public env: Environment;
+  public env: Environment | null = null;
 
   private _roots: AppRoot[] = [];
   private _rootsIndex = 0;
@@ -60,7 +60,7 @@ export default class Application extends BaseApplication {
   /** @hidden
    * The root Reference whose value provides the context of the main template.
    */
-  private _self: UpdatableReference<{ roots: AppRoot[] }>;
+  private _self: UpdatableReference<{ roots: AppRoot[] }> | null = null;
 
   protected _rendering = false;
   protected _rendered = false;
@@ -79,7 +79,7 @@ export default class Application extends BaseApplication {
     });
 
     assert(options.builder, 'Must provide a Builder that is responsible to building DOM.');
-    const document = (this.document = options.document || DEFAULT_DOCUMENT);
+    const document = (this.document = options.document || expect(DEFAULT_DOCUMENT, 'You must pass a document to the Application constructor in non-browser environments.'));
     this.builder = options.builder;
 
     this.registerInitializer({
@@ -149,7 +149,7 @@ export default class Application extends BaseApplication {
 
   /** @internal */
   protected async _render(): Promise<void> {
-    let { env } = this;
+    const env = expect(this.env, 'Unexpected missing environment during render');
 
     // Create the template context for the root `main` template, which just
     // contains the array of component roots. Any property references in that
@@ -195,7 +195,7 @@ export default class Application extends BaseApplication {
    * @internal
    */
   protected async _rerender() {
-    let { env } = this;
+    const env = expect(this.env, 'Unexpected missing environment during re-render');
 
     try {
       env.begin();

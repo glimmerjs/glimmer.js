@@ -138,11 +138,11 @@ class RenderComponentTest extends RenderTest {
 
     containerElement.appendChild(nextSibling);
 
-    let component;
+    let component: any;
 
     class HelloWorld extends Component {
       @tracked a = 'a';
-      constructor(owner, args) {
+      constructor(owner: any, args: any) {
         super(owner, args);
         component = this;
       }

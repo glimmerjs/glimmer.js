@@ -22,7 +22,7 @@ export interface SerializedHeap {
 }
 
 export interface Metadata {
-  [key: string]: number | ProgramSymbolTable;
+  [key: string]: number | ProgramSymbolTable | undefined;
 
   /** VM handle */
   v?: number;
