@@ -15,16 +15,25 @@ module('SSR Application tests', {
   async beforeEach() {
     let mainLocator = {
       module: './src/ui/components/My-Main/template.hbs',
-      name: 'default'
+      name: 'default',
     };
     let relativeProjectPath = 'packages/@glimmer/compiler-delegates/test/node/fixtures/mu';
 
     buildServer = new BuildServer(relativeProjectPath, mainLocator);
     let { projectPath } = buildServer;
 
-    buildServer.addTemplate(mainLocator, fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString());
-    buildServer.addTemplate({ module: './src/ui/components/User/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString());
-    buildServer.addTemplate({ module: './src/ui/components/Other/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/Other/template.hbs')).toString());
+    buildServer.addTemplate(
+      mainLocator,
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString()
+    );
+    buildServer.addTemplate(
+      { module: './src/ui/components/User/template.hbs', name: 'default' },
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString()
+    );
+    buildServer.addTemplate(
+      { module: './src/ui/components/Other/template.hbs', name: 'default' },
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/Other/template.hbs')).toString()
+    );
 
     buildServer.build();
 
@@ -32,38 +41,50 @@ module('SSR Application tests', {
     let loader = new BytecodeLoader({ bytecode, data });
     let renderer = new SyncRenderer();
     let registry = new BasicModuleRegistry({
-      "template:/mu/components/Other": true,
-      "template:/mu/components/User": true,
-      "template:/mu/components/My-Main": true
+      'template:/mu/components/Other': true,
+      'template:/mu/components/User': true,
+      'template:/mu/components/My-Main': true,
     });
 
     let config = {
       app: {
         rootName: 'mu',
-        name: 'mu'
-      }
+        name: 'mu',
+      },
     };
 
-    let resolver = new Resolver({...config, ...defaultResolverConfiguration}, registry);
+    let resolver = new Resolver({ ...config, ...defaultResolverConfiguration }, registry);
 
     ssrAppOpts = {
       rootName: 'mu',
       loader,
       renderer,
-      resolver
+      resolver,
     };
-  }
+  },
 });
 
-test('it renders component to string with specified arguments', async function (assert) {
-  const html = await SSRApplication.renderToString('User', {name: 'Chad', Other: 'Other'}, ssrAppOpts);
+test('it renders component to string with specified arguments', async function(assert) {
+  const html = await SSRApplication.renderToString(
+    'User',
+    { name: 'Chad', Other: 'Other' },
+    ssrAppOpts
+  );
   assert.equal(html.trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });
 
-test('it does not reuse the dom across different invocations', async function (assert) {
-  let html = await SSRApplication.renderToString('User', {name: 'Chad', Other: 'Other'}, ssrAppOpts);
+test('it does not reuse the dom across different invocations', async function(assert) {
+  let html = await SSRApplication.renderToString(
+    'User',
+    { name: 'Chad', Other: 'Other' },
+    ssrAppOpts
+  );
   assert.equal(html.trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
 
-  html = await SSRApplication.renderToString('User', {name: 'Chirag', Other: 'Other'}, ssrAppOpts);
+  html = await SSRApplication.renderToString(
+    'User',
+    { name: 'Chirag', Other: 'Other' },
+    ssrAppOpts
+  );
   assert.equal(html.trim(), '<div class="user">Chirag IF_STUB ID_STUB WAT_STUB</div>\nOther');
 });

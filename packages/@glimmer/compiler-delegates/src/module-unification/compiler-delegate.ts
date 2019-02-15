@@ -1,40 +1,33 @@
-import { BundleCompilationResult } from "@glimmer/bundle-compiler";
+import { BundleCompilationResult } from '@glimmer/bundle-compiler';
 import {
   SymbolTable,
   ComponentCapabilities,
   ModuleLocator,
-  TemplateLocator
-} from "@glimmer/interfaces";
-import { expect } from "@glimmer/util";
-import { relative } from "path";
-import Debug from "debug";
-import { Project } from "glimmer-analyzer";
-import { CAPABILITIES } from "@glimmer/component";
+  TemplateLocator,
+} from '@glimmer/interfaces';
+import { expect } from '@glimmer/util';
+import { relative } from 'path';
+import Debug from 'debug';
+import { Project } from 'glimmer-analyzer';
+import { CAPABILITIES } from '@glimmer/component';
 
-import {
-  AppCompilerDelegateOptions,
-  OutputFiles
-} from "../app-compiler-delegate";
-import { Builtins, HelperLocator } from "../builtins";
-import MUCodeGenerator from "./code-generator";
+import { AppCompilerDelegateOptions, OutputFiles } from '../app-compiler-delegate';
+import { Builtins, HelperLocator } from '../builtins';
+import MUCodeGenerator from './code-generator';
 import { AppCompilerDelegate } from '@glimmer/application';
 
-const debug = Debug("@glimmer/compiler-delegates:mu-delegate");
+const debug = Debug('@glimmer/compiler-delegates:mu-delegate');
 
 export interface TemplateMeta {
   specifier: string;
 }
 
-export default class MUCompilerDelegate
-  implements AppCompilerDelegate<ModuleLocator> {
+export default class MUCompilerDelegate implements AppCompilerDelegate<ModuleLocator> {
   public projectPath: string;
   public outputFiles: OutputFiles;
 
   protected project: Project;
-  protected specifiersToSymbolTable: Map<
-    ModuleLocator,
-    SymbolTable
-  > = new Map();
+  protected specifiersToSymbolTable: Map<ModuleLocator, SymbolTable> = new Map();
   protected builtins: Builtins;
   protected mainTemplateLocator: ModuleLocator;
 
@@ -42,37 +35,37 @@ export default class MUCompilerDelegate
     mainTemplateLocator,
     projectPath,
     outputFiles,
-    builtins = {}
+    builtins = {},
   }: AppCompilerDelegateOptions) {
-    debug("initialized MU compiler delegate; project=%s", projectPath);
+    debug('initialized MU compiler delegate; project=%s', projectPath);
     this.outputFiles = outputFiles;
     this.projectPath = projectPath;
     this.project = new Project(projectPath);
     this.mainTemplateLocator = mainTemplateLocator || {
-      module: "@glimmer/application",
-      name: "mainLayout"
+      module: '@glimmer/application',
+      name: 'mainLayout',
     };
 
     this.builtins = {
       ...this._builtins(),
-      ...builtins
+      ...builtins,
     };
   }
 
   protected _builtins() {
     let mainTemplate = this.templateLocatorFor({
-      module: "@glimmer/application",
-      name: "mainTemplate"
+      module: '@glimmer/application',
+      name: 'mainTemplate',
     });
     return {
       mainTemplate,
-      if: helperLocatorFor("@glimmer/application", "ifHelper"),
-      action: helperLocatorFor("@glimmer/application", "actionHelper", true)
+      if: helperLocatorFor('@glimmer/application', 'ifHelper'),
+      action: helperLocatorFor('@glimmer/application', 'actionHelper', true),
     };
   }
 
   relativePath(module: string): string {
-    return module.replace(/^\.\//, "");
+    return module.replace(/^\.\//, '');
   }
 
   /**
@@ -95,10 +88,7 @@ export default class MUCompilerDelegate
    * Annotates the template locator with the Module Unification specifier
    * string.
    */
-  templateLocatorFor({
-    module,
-    name
-  }: ModuleLocator): TemplateLocator<ModuleLocator> {
+  templateLocatorFor({ module, name }: ModuleLocator): TemplateLocator<ModuleLocator> {
     let relativePath = this.relativePath(module);
 
     let meta;
@@ -106,11 +96,11 @@ export default class MUCompilerDelegate
       meta = { specifier: name };
     } else {
       meta = {
-        specifier: this.project.specifierForPath(relativePath)
+        specifier: this.project.specifierForPath(relativePath),
       };
     }
 
-    return { kind: "template", module, name, meta };
+    return { kind: 'template', module, name, meta };
   }
 
   generateDataSegment(compilation: BundleCompilationResult): string {
@@ -126,24 +116,17 @@ export default class MUCompilerDelegate
   }
 
   hasComponentInScope(name: string, referrer: ModuleLocator): boolean {
-    debug("hasComponentInScope; name=%s; referrer=%o", name, referrer);
+    debug('hasComponentInScope; name=%s; referrer=%o', name, referrer);
 
     const referrerSpecifier = this.getSpecifier(referrer);
 
-    return !!this.project.resolver.identify(
-      `template:${name}`,
-      referrerSpecifier
-    );
+    return !!this.project.resolver.identify(`template:${name}`, referrerSpecifier);
   }
 
   resolveComponent(name: string, referrer: ModuleLocator): ModuleLocator {
-
     const referrerSpecifier = this.getSpecifier(referrer);
 
-    let specifier = this.project.resolver.identify(
-      `template:${name}`,
-      referrerSpecifier
-    );
+    let specifier = this.project.resolver.identify(`template:${name}`, referrerSpecifier);
     return this.moduleLocatorFor(specifier);
   }
 
@@ -158,10 +141,7 @@ export default class MUCompilerDelegate
 
     const referrerSpecifier = this.getSpecifier(referrer);
 
-    return !!this.project.resolver.identify(
-      `helper:${helperName}`,
-      referrerSpecifier
-    );
+    return !!this.project.resolver.identify(`helper:${helperName}`, referrerSpecifier);
   }
 
   resolveHelper(helperName: string, referrer: ModuleLocator) {
@@ -171,12 +151,9 @@ export default class MUCompilerDelegate
 
     const referrerSpecifier = this.getSpecifier(referrer);
 
-    let specifier = this.project.resolver.identify(
-      `helper:${helperName}`,
-      referrerSpecifier
-    );
+    let specifier = this.project.resolver.identify(`helper:${helperName}`, referrerSpecifier);
     let module = `./${this.project.pathForSpecifier(specifier)}`;
-    return helperLocatorFor(module, "default");
+    return helperLocatorFor(module, 'default');
   }
 
   protected moduleLocatorFor(specifier: string): ModuleLocator {
@@ -186,41 +163,31 @@ export default class MUCompilerDelegate
     );
     module = `./${module}`;
 
-    return { module, name: "default" };
+    return { module, name: 'default' };
   }
 
   hasModifierInScope(_modifierName: string, _referrer: ModuleLocator): boolean {
     return false;
   }
 
-  resolveModifier(
-    _modifierName: string,
-    _referrer: ModuleLocator
-  ): ModuleLocator {
-    throw new Error("Method not implemented.");
+  resolveModifier(_modifierName: string, _referrer: ModuleLocator): ModuleLocator {
+    throw new Error('Method not implemented.');
   }
   hasPartialInScope(_partialName: string, _referrer: ModuleLocator): boolean {
     return false;
   }
-  resolvePartial(
-    _partialName: string,
-    _referrer: ModuleLocator
-  ): ModuleLocator {
-    throw new Error("Method not implemented.");
+  resolvePartial(_partialName: string, _referrer: ModuleLocator): ModuleLocator {
+    throw new Error('Method not implemented.');
   }
 }
 
-function helperLocatorFor(
-  module: string,
-  name: string,
-  factory = false
-): HelperLocator {
+function helperLocatorFor(module: string, name: string, factory = false): HelperLocator {
   return {
-    kind: "helper",
+    kind: 'helper',
     module,
     name,
     meta: {
-      factory
-    }
+      factory,
+    },
   };
 }

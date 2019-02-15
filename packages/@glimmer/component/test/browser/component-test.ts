@@ -29,14 +29,8 @@ test('can be instantiated with an owner', async function(assert) {
 test('can yield named args to the block', async function(assert) {
   let app = await buildApp()
     .helper('hash', (params: any, named: string) => named)
-    .template(
-      'Main',
-      '<YieldsHash as |x|>I have {{x.number}} {{x.string}}</YieldsHash>'
-    )
-    .template(
-      'YieldsHash',
-      '<div>{{yield (hash string="bananas" number=5)}}</div>'
-    )
+    .template('Main', '<YieldsHash as |x|>I have {{x.number}} {{x.string}}</YieldsHash>')
+    .template('YieldsHash', '<div>{{yield (hash string="bananas" number=5)}}</div>')
     .boot();
 
   let root = app.rootElement as HTMLElement;

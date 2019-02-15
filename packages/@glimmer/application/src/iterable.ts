@@ -4,11 +4,11 @@ import {
   OpaqueIterable,
   AbstractIterable,
   IterationItem,
-  Tag
-} from "@glimmer/reference";
+  Tag,
+} from '@glimmer/reference';
 
-import { UpdatableReference } from "@glimmer/component";
-import { isDict } from "@glimmer/util";
+import { UpdatableReference } from '@glimmer/component';
+import { isDict } from '@glimmer/util';
 
 export type KeyFor<T> = (item: unknown, index: T) => unknown;
 
@@ -85,21 +85,18 @@ class EmptyIterator implements OpaqueIterator {
 const EMPTY_ITERATOR = new EmptyIterator();
 
 // TODO: Use built-in Glimmer VM iterables
-export function iterableFor(
-  ref: Reference<unknown>,
-  keyPath: string
-): OpaqueIterable {
+export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIterable {
   let keyFor: KeyFor<unknown>;
 
   if (!keyPath) {
-    throw new Error("Must specify a key for #each");
+    throw new Error('Must specify a key for #each');
   }
 
   switch (keyPath) {
-    case "@index":
+    case '@index':
       keyFor = (_, index: number) => String(index);
       break;
-    case "@primitive":
+    case '@primitive':
       keyFor = (item: unknown) => String(item);
       break;
     default:
@@ -136,9 +133,7 @@ export default class Iterable
     let iterable = ref.value() as any;
 
     if (Array.isArray(iterable)) {
-      return iterable.length > 0
-        ? new ArrayIterator(iterable, keyFor)
-        : EMPTY_ITERATOR;
+      return iterable.length > 0 ? new ArrayIterator(iterable, keyFor) : EMPTY_ITERATOR;
     } else if (iterable === undefined || iterable === null) {
       return EMPTY_ITERATOR;
     } else if (iterable.forEach !== undefined) {
@@ -146,10 +141,8 @@ export default class Iterable
       iterable.forEach(function(item: any) {
         array.push(item);
       });
-      return array.length > 0
-        ? new ArrayIterator(array, keyFor)
-        : EMPTY_ITERATOR;
-    } else if (typeof iterable === "object") {
+      return array.length > 0 ? new ArrayIterator(array, keyFor) : EMPTY_ITERATOR;
+    } else if (typeof iterable === 'object') {
       let keys = Object.keys(iterable);
       return keys.length > 0
         ? new ObjectKeysIterator(keys, keys.map(key => iterable[key]), keyFor)
@@ -159,9 +152,7 @@ export default class Iterable
     }
   }
 
-  valueReferenceFor(
-    item: IterationItem<unknown, unknown>
-  ): UpdatableReference<unknown> {
+  valueReferenceFor(item: IterationItem<unknown, unknown>): UpdatableReference<unknown> {
     return new UpdatableReference(item.value);
   }
 
@@ -172,9 +163,7 @@ export default class Iterable
     reference.update(item.value);
   }
 
-  memoReferenceFor(
-    item: IterationItem<unknown, unknown>
-  ): UpdatableReference<unknown> {
+  memoReferenceFor(item: IterationItem<unknown, unknown>): UpdatableReference<unknown> {
     return new UpdatableReference(item.memo);
   }
 

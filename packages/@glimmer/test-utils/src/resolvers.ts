@@ -6,6 +6,5 @@ export class BlankResolver implements Resolver {
       return specifier;
     }
   }
-  retrieve(specifier: string): any {
-  }
+  retrieve(specifier: string): any {}
 }

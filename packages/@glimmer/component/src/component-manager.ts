@@ -17,19 +17,12 @@ import {
   AotRuntimeResolver,
   CompilableProgram,
 } from '@glimmer/interfaces';
-import {
-  VersionedPathReference,
-  PathReference,
-  CONSTANT_TAG,
-} from '@glimmer/reference';
+import { VersionedPathReference, PathReference, CONSTANT_TAG } from '@glimmer/reference';
 import { DEBUG } from '@glimmer/env';
 
 import Component from './component';
 import { DefinitionState } from './component-definition';
-import {
-  RootReference,
-  TemplateOnlyComponentDebugReference,
-} from './references';
+import { RootReference, TemplateOnlyComponentDebugReference } from './references';
 import ExtendedTemplateMeta from './template-meta';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/application/src/loaders/runtime-compiler/resolver';
 import { Specifier } from '@glimmer/application/src/loaders/runtime-compiler/loader';
@@ -98,8 +91,7 @@ export class TemplateOnlyComponentDebugBucket {
   constructor(public definition: DefinitionState) {}
 }
 
-export interface CompilableRuntimeResolver
-  extends RuntimeResolver<ExtendedTemplateMeta> {
+export interface CompilableRuntimeResolver extends RuntimeResolver<ExtendedTemplateMeta> {
   compileTemplate(name: string, layout: Option<number>): Invocation;
 }
 
@@ -137,13 +129,10 @@ export default class ComponentManager
     return state.capabilities;
   }
 
-  getJitStaticLayout(
-    state: DefinitionState,
-    resolver: JitRuntimeResolver
-  ): CompilableProgram {
-    let template = (resolver.resolve(
-      state.handle
-    ) as unknown) as SerializedTemplateWithLazyBlock<Specifier>;
+  getJitStaticLayout(state: DefinitionState, resolver: JitRuntimeResolver): CompilableProgram {
+    let template = (resolver.resolve(state.handle) as unknown) as SerializedTemplateWithLazyBlock<
+      Specifier
+    >;
     let locator = template.meta;
     return resolver.compilable(locator).asLayout();
   }
@@ -181,12 +170,7 @@ export default class ComponentManager
     // skip this for template-only components, which are pure functions.
     if (definition.ComponentClass) {
       let owner = this.env.getOwner();
-      return new ComponentStateBucket(
-        definition,
-        args.capture(),
-        owner,
-        this.env
-      );
+      return new ComponentStateBucket(definition, args.capture(), owner, this.env);
     }
   }
 

@@ -20,12 +20,12 @@ test('instance initializers run at initialization', function(assert) {
     loader: new RuntimeCompilerLoader(resolver),
     builder: new DOMBuilder({ element }),
     renderer: new SyncRenderer(),
-    resolver
+    resolver,
   });
   app.registerInitializer({
     initialize(app) {
       app.register('component:/my-app/components/my-component', Component);
-    }
+    },
   });
 
   app.initialize();

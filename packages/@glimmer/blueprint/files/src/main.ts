@@ -14,7 +14,7 @@ export default class App extends Application {
       loader: new RuntimeCompilerLoader(resolver),
       renderer: new SyncRenderer(),
       resolver,
-      rootName: resolverConfiguration.app.rootName
+      rootName: resolverConfiguration.app.rootName,
     });
   }
 }

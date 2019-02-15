@@ -1,25 +1,16 @@
-import {
-  RenderComponentArgs,
-  CustomJitRuntime,
-  renderJitMain
-} from "@glimmer/runtime";
-import { Resolver } from "@glimmer/di";
-import { templateFactory, JitContext } from "@glimmer/opcode-compiler";
-import { PathReference } from "@glimmer/reference";
+import { RenderComponentArgs, CustomJitRuntime, renderJitMain } from '@glimmer/runtime';
+import { Resolver } from '@glimmer/di';
+import { templateFactory, JitContext } from '@glimmer/opcode-compiler';
+import { PathReference } from '@glimmer/reference';
 
-import Application from "../../application";
-import BaseApplication, { Loader } from "../../base-application";
-import mainTemplate from "../../templates/main";
-import { actionHelper, ifHelper } from "../../helpers";
+import Application from '../../application';
+import BaseApplication, { Loader } from '../../base-application';
+import mainTemplate from '../../templates/main';
+import { actionHelper, ifHelper } from '../../helpers';
 
-import RuntimeResolver from "./resolver";
-import {
-  Environment,
-  ElementBuilder,
-  DynamicScope,
-  TemplateIterator
-} from "@glimmer/interfaces";
-import ResolverDelegateImpl from "./compile-time-lookup";
+import RuntimeResolver from './resolver';
+import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
+import ResolverDelegateImpl from './compile-time-lookup';
 
 export interface Specifier {
   specifier: string;
@@ -46,9 +37,9 @@ export default class RuntimeCompilerLoader implements Loader {
   ): Promise<TemplateIterator> {
     let resolver = new RuntimeResolver(app);
 
-    resolver.registerTemplate("main", mainTemplate);
-    resolver.registerInternalHelper("action", actionHelper);
-    resolver.registerHelper("if", ifHelper);
+    resolver.registerTemplate('main', mainTemplate);
+    resolver.registerInternalHelper('action', actionHelper);
+    resolver.registerHelper('if', ifHelper);
 
     let context = JitContext(new ResolverDelegateImpl(resolver));
     let runtime = CustomJitRuntime(resolver, context, app.env);
@@ -74,6 +65,6 @@ export default class RuntimeCompilerLoader implements Loader {
     componentName: string,
     args: RenderComponentArgs
   ): Promise<TemplateIterator> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }

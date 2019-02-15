@@ -68,10 +68,7 @@ if (DEBUG) {
           // either, due to the overhead of installing setters for untracked
           // properties.
           this.firstName = 'Chad';
-          assert.ok(
-            true,
-            'firstName was mutated without throwing an exception'
-          );
+          assert.ok(true, 'firstName was mutated without throwing an exception');
           done();
         };
       }

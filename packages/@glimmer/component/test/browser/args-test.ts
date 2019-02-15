@@ -1,10 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked, setPropertyDidChange } from '@glimmer/tracking';
-import {
-  buildApp,
-  TestApplication,
-  didRender,
-} from '@glimmer/application-test-helpers';
+import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
 
 const { module, test } = QUnit;
 
@@ -232,11 +228,7 @@ test('Setting args should not schedule a rerender', async function(assert) {
       super.args = args;
 
       if (count++ === 1) {
-        assert.strictEqual(
-          app['_scheduled'],
-          false,
-          're-render has not been scheduled in update'
-        );
+        assert.strictEqual(app['_scheduled'], false, 're-render has not been scheduled in update');
         done();
       }
     }
@@ -244,10 +236,7 @@ test('Setting args should not schedule a rerender', async function(assert) {
 
   app = await buildApp()
     .template('Main', '<div><ParentComponent /></div>')
-    .template(
-      'ParentComponent',
-      '<div><ChildComponent @foo={{foo}}></ChildComponent></div>'
-    )
+    .template('ParentComponent', '<div><ChildComponent @foo={{foo}}></ChildComponent></div>')
     .component('ParentComponent', ParentComponent)
     .template('ChildComponent', '<div></div>')
     .component('ChildComponent', ChildComponent)

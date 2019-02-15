@@ -1,15 +1,10 @@
-export {
-  default,
-  ApplicationConstructor,
-  ApplicationOptions,
-  AppRoot
-} from './src/application';
+export { default, ApplicationConstructor, ApplicationOptions, AppRoot } from './src/application';
 export {
   default as BaseApplication,
   Initializer,
   Loader,
   Renderer,
-  Builder
+  Builder,
 } from './src/base-application';
 export { default as Environment, EnvironmentOptions } from './src/environment';
 export { default as ApplicationRegistry } from './src/application-registry';

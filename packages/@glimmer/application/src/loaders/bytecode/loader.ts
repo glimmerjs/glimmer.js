@@ -7,18 +7,14 @@ import {
   TemplateIterator,
   ElementBuilder,
   Environment,
-  AotRuntimeContext
-} from "@glimmer/interfaces";
-import { hydrateProgram } from "@glimmer/program";
-import { PathReference } from "@glimmer/reference";
-import {
-  renderAotComponent,
-  renderAotMain,
-  RenderComponentArgs
-} from "@glimmer/runtime";
+  AotRuntimeContext,
+} from '@glimmer/interfaces';
+import { hydrateProgram } from '@glimmer/program';
+import { PathReference } from '@glimmer/reference';
+import { renderAotComponent, renderAotMain, RenderComponentArgs } from '@glimmer/runtime';
 
-import BaseApplication, { Loader } from "../../base-application";
-import BytecodeResolver from "./resolver";
+import BaseApplication, { Loader } from '../../base-application';
+import BytecodeResolver from './resolver';
 
 export interface SerializedHeap {
   table: number[];
@@ -102,17 +98,14 @@ export default class BytecodeLoader implements Loader {
     return renderAotComponent(runtime, builder, 0, componentName, args);
   }
 
-  async getRuntime(
-    app: BaseApplication,
-    env: Environment
-  ): Promise<AotRuntimeContext> {
+  async getRuntime(app: BaseApplication, env: Environment): Promise<AotRuntimeContext> {
     const resolver = this.getResolver(app);
     const program = await this.getRuntimeProgram(app);
 
     return {
       env,
       program,
-      resolver
+      resolver,
     };
   }
 

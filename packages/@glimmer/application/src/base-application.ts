@@ -6,23 +6,18 @@ import {
   Resolver,
   setOwner,
   FactoryDefinition,
-  RegistryWriter
-} from "@glimmer/di";
+  RegistryWriter,
+} from '@glimmer/di';
 
-import { PathReference } from "@glimmer/reference";
+import { PathReference } from '@glimmer/reference';
 
-import { RenderComponentArgs } from "@glimmer/runtime";
+import { RenderComponentArgs } from '@glimmer/runtime';
 
-import { assert } from "@glimmer/util";
+import { assert } from '@glimmer/util';
 
-import ApplicationRegistry from "./application-registry";
-import {
-  DynamicScope,
-  TemplateIterator,
-  ElementBuilder,
-  Environment
-} from "@glimmer/interfaces";
-import { SimpleDocument } from "@simple-dom/interface";
+import ApplicationRegistry from './application-registry';
+import { DynamicScope, TemplateIterator, ElementBuilder, Environment } from '@glimmer/interfaces';
+import { SimpleDocument } from '@simple-dom/interface';
 
 /**
  * Initializers run when an [Application] boots and allow extending the
@@ -139,25 +134,16 @@ export default abstract class BaseApplication implements Owner {
   protected loader: Loader;
   protected renderer: Renderer;
 
-  constructor({
-    rootName,
-    resolver,
-    environment,
-    loader,
-    renderer
-  }: BaseApplicationOptions) {
+  constructor({ rootName, resolver, environment, loader, renderer }: BaseApplicationOptions) {
     this.resolver = resolver;
     this.rootName = rootName;
     this._environment = environment;
 
     assert(
       loader,
-      "Must provide a Loader for preparing templates and other metadata required for a Glimmer Application."
+      'Must provide a Loader for preparing templates and other metadata required for a Glimmer Application.'
     );
-    assert(
-      renderer,
-      "Must provide a Renderer to render the templates produced by the Loader."
-    );
+    assert(renderer, 'Must provide a Renderer to render the templates produced by the Loader.');
 
     this.loader = loader;
     this.renderer = renderer;
@@ -188,20 +174,13 @@ export default abstract class BaseApplication implements Owner {
     // that will only be available during `initialize`.
     let appRegistry = new ApplicationRegistry(this._registry, this.resolver);
 
-    registry.register(
-      `environment:/${this.rootName}/main/main`,
-      this._environment
-    );
-    registry.registerOption("helper", "instantiate", false);
-    registry.registerOption("template", "instantiate", false);
+    registry.register(`environment:/${this.rootName}/main/main`, this._environment);
+    registry.registerOption('helper', 'instantiate', false);
+    registry.registerOption('template', 'instantiate', false);
+    registry.registerInjection('environment', 'document', `document:/${this.rootName}/main/main`);
     registry.registerInjection(
-      "environment",
-      "document",
-      `document:/${this.rootName}/main/main`
-    );
-    registry.registerInjection(
-      "component-manager",
-      "env",
+      'component-manager',
+      'env',
       `environment:/${this.rootName}/main/main`
     );
 

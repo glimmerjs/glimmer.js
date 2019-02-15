@@ -1,4 +1,4 @@
-import { ComponentCapabilities, ModuleLocator, TemplateLocator } from "@glimmer/interfaces";
+import { ComponentCapabilities, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
 import { BundleCompilationResult, CompilerDelegate } from '@glimmer/bundle-compiler';
 
 /**
@@ -7,8 +7,7 @@ import { BundleCompilationResult, CompilerDelegate } from '@glimmer/bundle-compi
  * support compiling an entire Glimmer.js application into the final JavaScript
  * and bytecode output.
  */
-export interface AppCompilerDelegate<Meta>
-  extends CompilerDelegate<Meta> {
+export interface AppCompilerDelegate<Meta> extends CompilerDelegate<Meta> {
   /**
    * Allows the delegate to normalize a path to a module in the project. The
    * value returned from this hook is used as the `module` field in the
@@ -40,39 +39,39 @@ export interface AppCompilerDelegate<Meta>
 
 export class TestDelegate implements AppCompilerDelegate<any> {
   normalizePath(absolutePath: string): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   templateLocatorFor(moduleLocator: ModuleLocator): TemplateLocator<any> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   generateDataSegment(compilation: BundleCompilationResult): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   hasComponentInScope(componentName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   resolveComponent(componentName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   getComponentCapabilities(locator: any): ComponentCapabilities {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   hasHelperInScope(helperName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   resolveHelper(helperName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   hasModifierInScope(modifierName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   resolveModifier(modifierName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   hasPartialInScope(partialName: string, referrer: any): boolean {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   resolvePartial(partialName: string, referrer: any): ModuleLocator {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }

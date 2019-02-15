@@ -1,16 +1,13 @@
-import { Option } from "@glimmer/util";
-import {
-  ExternalModuleTable,
-  ModuleLocatorMap
-} from "@glimmer/bundle-compiler";
+import { Option } from '@glimmer/util';
+import { ExternalModuleTable, ModuleLocatorMap } from '@glimmer/bundle-compiler';
 import {
   ModuleLocator,
   ConstantPool,
   SerializedHeap,
-  SerializedTemplateBlock
-} from "@glimmer/interfaces";
+  SerializedTemplateBlock,
+} from '@glimmer/interfaces';
 
-import { Builtins } from "./builtins";
+import { Builtins } from './builtins';
 
 export interface OutputFiles {
   dataSegment: Option<string>;

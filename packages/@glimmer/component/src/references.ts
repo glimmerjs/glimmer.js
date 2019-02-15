@@ -53,10 +53,7 @@ export class RootReference extends ConstReference<object> {
     let ref = this.children[propertyKey];
 
     if (!ref) {
-      ref = this.children[propertyKey] = new RootPropertyReference(
-        this.inner,
-        propertyKey
-      );
+      ref = this.children[propertyKey] = new RootPropertyReference(this.inner, propertyKey);
     }
 
     return ref;
