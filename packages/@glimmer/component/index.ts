@@ -9,5 +9,6 @@ export {
 } from './src/references';
 export { default as TemplateMeta } from './src/template-meta';
 export { CAPABILITIES } from './src/capabilities';
+export { setPropertyDidChange } from './src/deprecations';
 
 export { tracked } from '@glimmer/tracking';
