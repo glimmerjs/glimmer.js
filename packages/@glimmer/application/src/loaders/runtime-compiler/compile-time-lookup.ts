@@ -1,4 +1,4 @@
-import { ResolverDelegate, templateFactory } from "@glimmer/opcode-compiler";
+import { ResolverDelegate, templateFactory } from '@glimmer/opcode-compiler';
 import {
   ComponentDefinition as IComponentDefinition,
   CompilableTemplate,
@@ -9,13 +9,13 @@ import {
   ComponentInstanceState,
   ComponentDefinitionState,
   CompileTimeComponent,
-  SerializedTemplateWithLazyBlock
-} from "@glimmer/interfaces";
-import { Option, assert } from "@glimmer/util";
+  SerializedTemplateWithLazyBlock,
+} from '@glimmer/interfaces';
+import { Option, assert } from '@glimmer/util';
 
-import { Specifier } from "./loader";
-import ApplicationJitRuntimeResolver from "./resolver";
-import ComponentDefinitionImpl from "@glimmer/component/src/component-definition";
+import { Specifier } from './loader';
+import ApplicationJitRuntimeResolver from './resolver';
+import ComponentDefinitionImpl from '@glimmer/component/src/component-definition';
 
 type ComponentDefinition = IComponentDefinition<ComponentManager>;
 
@@ -58,22 +58,19 @@ export default class ResolverDelegateImpl implements ResolverDelegate {
     return this.resolver.lookupComponentHandle(name, referrer);
   }
 
-  lookupComponent(
-    name: string,
-    referrer: Specifier
-  ): Option<CompileTimeComponent> {
+  lookupComponent(name: string, referrer: Specifier): Option<CompileTimeComponent> {
     let component = this.lookupComponentDefinition(name, referrer);
     let definition: ComponentDefinitionImpl = this.resolver.resolve(component);
-    let template: SerializedTemplateWithLazyBlock<
-      Specifier
-    > = this.resolver.resolve(definition.handle);
+    let template: SerializedTemplateWithLazyBlock<Specifier> = this.resolver.resolve(
+      definition.handle
+    );
 
     return {
       handle: component,
       capabilities: definition.manager.getCapabilities(definition.state),
       compilable: templateFactory(template)
         .create()
-        .asLayout()
+        .asLayout(),
     };
   }
 

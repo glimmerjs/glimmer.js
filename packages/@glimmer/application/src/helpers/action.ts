@@ -1,5 +1,5 @@
-import { UpdatableReference } from "@glimmer/component";
-import { VM, VMArguments } from "@glimmer/interfaces";
+import { UpdatableReference } from '@glimmer/component';
+import { VM, VMArguments } from '@glimmer/interfaces';
 
 /** @internal */
 export default function buildAction(_args: VMArguments, vm: VM) {
@@ -7,7 +7,7 @@ export default function buildAction(_args: VMArguments, vm: VM) {
   let args = _args.capture();
 
   let actionFunc = args.positional.at(0).value() as Function;
-  if (typeof actionFunc !== "function") {
+  if (typeof actionFunc !== 'function') {
     throwNoActionError(actionFunc, args.positional.at(0));
   }
 
@@ -34,7 +34,7 @@ function throwNoActionError(actionFunc: any, actionFuncReference: unknown) {
 
 /** @internal */
 export function debugInfoForReference(reference: any): string {
-  let message = "";
+  let message = '';
   let parent;
   let property;
 
@@ -42,12 +42,12 @@ export function debugInfoForReference(reference: any): string {
     return message;
   }
 
-  if ("parent" in reference && "property" in reference) {
-    parent = reference["parent"].value();
-    property = reference["property"];
-  } else if ("_parentValue" in reference && "_propertyKey" in reference) {
-    parent = reference["_parentValue"];
-    property = reference["_propertyKey"];
+  if ('parent' in reference && 'property' in reference) {
+    parent = reference['parent'].value();
+    property = reference['property'];
+  } else if ('_parentValue' in reference && '_propertyKey' in reference) {
+    parent = reference['_parentValue'];
+    property = reference['_propertyKey'];
   }
 
   if (property !== undefined) {
@@ -61,11 +61,11 @@ function debugName(obj: any) {
   let objType = typeof obj;
   if (obj === null || obj === undefined) {
     return objType;
-  } else if (objType === "number" || objType === "boolean") {
+  } else if (objType === 'number' || objType === 'boolean') {
     return obj.toString();
   } else {
-    if (obj["debugName"]) {
-      return obj["debugName"];
+    if (obj['debugName']) {
+      return obj['debugName'];
     }
     try {
       return JSON.stringify(obj);

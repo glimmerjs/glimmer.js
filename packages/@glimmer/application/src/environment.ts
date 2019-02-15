@@ -1,15 +1,15 @@
 import {
   DOMChanges,
   DOMTreeConstruction,
-  EnvironmentImpl as GlimmerEnvironmentImpl
-} from "@glimmer/runtime";
-import { Reference, OpaqueIterable } from "@glimmer/reference";
-import { getOwner, setOwner, Owner } from "@glimmer/di";
-import { SimpleDocument } from "@simple-dom/interface";
+  EnvironmentImpl as GlimmerEnvironmentImpl,
+} from '@glimmer/runtime';
+import { Reference, OpaqueIterable } from '@glimmer/reference';
+import { getOwner, setOwner, Owner } from '@glimmer/di';
+import { SimpleDocument } from '@simple-dom/interface';
 
-import { iterableFor } from "./iterable";
-import RuntimeResolver from "./loaders/runtime-compiler/loader";
-import { Environment } from "@glimmer/interfaces";
+import { iterableFor } from './iterable';
+import RuntimeResolver from './loaders/runtime-compiler/loader';
+import { Environment } from '@glimmer/interfaces';
 
 /** @internal */
 export interface EnvironmentOptions {
@@ -18,16 +18,14 @@ export interface EnvironmentOptions {
 }
 
 /** @internal */
-export default class EnvironmentImpl extends GlimmerEnvironmentImpl
-  implements Environment {
+export default class EnvironmentImpl extends GlimmerEnvironmentImpl implements Environment {
   private uselessAnchor: HTMLAnchorElement;
   public resolver: RuntimeResolver;
 
   static create(options: Partial<EnvironmentOptions> = {}) {
     options.document = options.document || self.document;
     options.appendOperations =
-      options.appendOperations ||
-      new DOMTreeConstruction(options.document as SimpleDocument);
+      options.appendOperations || new DOMTreeConstruction(options.document as SimpleDocument);
 
     return new EnvironmentImpl(options as EnvironmentOptions);
   }
@@ -35,14 +33,14 @@ export default class EnvironmentImpl extends GlimmerEnvironmentImpl
   constructor(options: EnvironmentOptions) {
     super({
       appendOperations: options.appendOperations,
-      updateOperations: new DOMChanges(options.document as SimpleDocument)
+      updateOperations: new DOMChanges(options.document as SimpleDocument),
     });
 
     setOwner(this, getOwner(options));
 
     // TODO - required for `protocolForURL` - seek alternative approach
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = options.document.createElement("a");
+    this.uselessAnchor = options.document.createElement('a');
   }
 
   protocolForURL(url: string): string {

@@ -5,14 +5,14 @@ import {
   ComponentManager,
   Helper,
   AotRuntimeResolver,
-  Invocation
-} from "@glimmer/interfaces";
-import { unreachable } from "@glimmer/util";
-import { Owner, Factory } from "@glimmer/di";
-import { CAPABILITIES } from "@glimmer/component";
-import Application from "../../application";
-import { HelperReference, UserHelper } from "../../helpers/user-helper";
-import { Metadata } from "./loader";
+  Invocation,
+} from '@glimmer/interfaces';
+import { unreachable } from '@glimmer/util';
+import { Owner, Factory } from '@glimmer/di';
+import { CAPABILITIES } from '@glimmer/component';
+import Application from '../../application';
+import { HelperReference, UserHelper } from '../../helpers/user-helper';
+import { Metadata } from './loader';
 
 function buildComponentDefinition(
   ComponentClass: Factory<unknown>,
@@ -26,8 +26,8 @@ function buildComponentDefinition(
       handle,
       symbolTable,
       ComponentClass,
-      capabilities: CAPABILITIES
-    }
+      capabilities: CAPABILITIES,
+    },
   };
 }
 
@@ -40,7 +40,7 @@ export interface TemplateMeta {
  */
 export const enum ModuleTypes {
   HELPER_FACTORY,
-  HELPER
+  HELPER,
 }
 
 export interface TemplateLocator {
@@ -52,8 +52,7 @@ export interface TemplateLocator {
  *
  * @internal
  */
-export default class BytecodeResolver
-  implements AotRuntimeResolver<TemplateMeta> {
+export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta> {
   constructor(
     protected owner: Owner,
     protected table: unknown[],
@@ -74,18 +73,12 @@ export default class BytecodeResolver
    * The resolver is responsible for returning a component definition containing
    * the VM handle and symbol table for the resolved component.
    */
-  lookupComponentDefinition(
-    name: string,
-    referrer: TemplateMeta
-  ): ComponentDefinition {
+  lookupComponentDefinition(name: string, referrer: TemplateMeta): ComponentDefinition {
     let owner = this.owner;
     let manager = this.managerFor();
     referrer = referrer || { specifier: null };
 
-    let templateSpecifier = owner.identify(
-      `template:${name}`,
-      referrer.specifier
-    );
+    let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
 
     if (!templateSpecifier) {
       throw new Error(
@@ -95,7 +88,7 @@ export default class BytecodeResolver
       );
     }
 
-    let trimmed = templateSpecifier.replace(this.prefix, "");
+    let trimmed = templateSpecifier.replace(this.prefix, '');
 
     if (!this.meta[trimmed]) {
       throw new Error(
@@ -121,7 +114,7 @@ export default class BytecodeResolver
     throw unreachable();
   }
 
-  managerFor(managerId = "main"): ComponentManager<unknown, unknown> {
+  managerFor(managerId = 'main'): ComponentManager<unknown, unknown> {
     let manager = this.managers[managerId];
 
     if (manager) {
@@ -129,9 +122,7 @@ export default class BytecodeResolver
     }
 
     let { rootName } = this.owner as Application;
-    manager = this.owner.lookup(
-      `component-manager:/${rootName}/component-managers/${managerId}`
-    );
+    manager = this.owner.lookup(`component-manager:/${rootName}/component-managers/${managerId}`);
 
     if (!manager) {
       throw new Error(`No component manager found for ID ${managerId}.`);
@@ -165,14 +156,10 @@ export default class BytecodeResolver
       }
     }
 
-    return (this.resolveComponentDefinition(value as Factory<
-      unknown
-    >) as any) as U;
+    return (this.resolveComponentDefinition(value as Factory<unknown>) as any) as U;
   }
 
-  resolveComponentDefinition(
-    ComponentClass: Factory<unknown>
-  ): ComponentDefinition {
+  resolveComponentDefinition(ComponentClass: Factory<unknown>): ComponentDefinition {
     let manager = this.managerFor();
     return buildComponentDefinition(ComponentClass, manager);
   }
@@ -182,6 +169,6 @@ export default class BytecodeResolver
   }
 
   getInvocation(locator: TemplateMeta): Invocation {
-    throw new Error("unimplemented getInvocation");
+    throw new Error('unimplemented getInvocation');
   }
 }

@@ -1,11 +1,7 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import {
-  tracked,
-  tagForProperty,
-  UntrackedPropertyError,
-} from '@glimmer/tracking';
+import { tracked, tagForProperty, UntrackedPropertyError } from '@glimmer/tracking';
 import { CONSTANT_TAG, DirtyableTag, Tag } from '@glimmer/reference';
 
 function unrelatedBump(tag: Tag, snapshot: number) {
@@ -72,10 +68,7 @@ if (DEBUG) {
     obj.firstName = 'Ricardo';
     obj.lastName = 'Mendes';
 
-    assert.ok(
-      true,
-      'did not throw an exception after mutating tracked properties'
-    );
+    assert.ok(true, 'did not throw an exception after mutating tracked properties');
   });
 }
 
@@ -103,17 +96,9 @@ test('can request a tag for a property', assert => {
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
 
   obj.firstName = 'Edsger';
-  assert.strictEqual(
-    tag.validate(snapshot),
-    false,
-    'tag is invalidated after property is set'
-  );
+  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
   snapshot = tag.value();
-  assert.strictEqual(
-    tag.validate(snapshot),
-    true,
-    'tag is valid on the second check'
-  );
+  assert.strictEqual(tag.validate(snapshot), true, 'tag is valid on the second check');
 
   unrelatedBump(tag, snapshot);
 });
@@ -217,17 +202,10 @@ test('can track a computed property', assert => {
   assert.ok(tag.validate(snapshot), 'tag should be valid to start');
 
   assert.strictEqual(obj.firstName, 'Tom2');
-  assert.ok(
-    tag.validate(snapshot),
-    'reading from property does not invalidate the tag'
-  );
+  assert.ok(tag.validate(snapshot), 'reading from property does not invalidate the tag');
 
   obj.firstName = 'Edsger';
-  assert.strictEqual(
-    tag.validate(snapshot),
-    false,
-    'tag is invalidated after property is set'
-  );
+  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
   snapshot = tag.value();
 
   unrelatedBump(tag, snapshot);
@@ -264,11 +242,7 @@ test('tracked computed properties are invalidated when their dependencies are in
   }
 
   let obj = new TrackedPerson();
-  assert.strictEqual(
-    obj.salutation,
-    'Hello, Tom Dale!',
-    `the saluation field is valid`
-  );
+  assert.strictEqual(obj.salutation, 'Hello, Tom Dale!', `the saluation field is valid`);
   assert.strictEqual(obj.fullName, 'Tom Dale', `the fullName field is valid`);
 
   let tag = tagForProperty(obj, 'salutation');
@@ -344,16 +318,8 @@ test('nested @tracked in multiple objects', assert => {
   }
 
   let obj = new TrackedContact(new TrackedPerson(), 'tom@example.com');
-  assert.strictEqual(
-    obj.contact,
-    'Tom Dale @ tom@example.com',
-    `the contact field is valid`
-  );
-  assert.strictEqual(
-    obj.person.fullName,
-    'Tom Dale',
-    `the fullName field is valid`
-  );
+  assert.strictEqual(obj.contact, 'Tom Dale @ tom@example.com', `the contact field is valid`);
+  assert.strictEqual(obj.person.fullName, 'Tom Dale', `the fullName field is valid`);
   let person = obj.person;
 
   let tag = tagForProperty(obj, 'contact');
@@ -437,11 +403,7 @@ if (DEBUG) {
       }
       return new DependentKeysAreCool();
     }
-    assert.throws(
-      createErrorProneClass,
-      /@tracked\(\)/,
-      'The correct error is thrown'
-    );
+    assert.throws(createErrorProneClass, /@tracked\(\)/, 'The correct error is thrown');
   });
 }
 

@@ -1,12 +1,12 @@
-import { Resolver } from "@glimmer/di";
-import { UpdatableReference } from "@glimmer/component";
-import { Option, assert } from "@glimmer/util";
-import { DefaultDynamicScope } from "@glimmer/runtime";
-import { SimpleDocument } from "@simple-dom/interface";
+import { Resolver } from '@glimmer/di';
+import { UpdatableReference } from '@glimmer/component';
+import { Option, assert } from '@glimmer/util';
+import { DefaultDynamicScope } from '@glimmer/runtime';
+import { SimpleDocument } from '@simple-dom/interface';
 
-import BaseApplication, { Builder, Loader, Renderer } from "./base-application";
-import { Environment } from "@glimmer/interfaces";
-import EnvironmentImpl from "./environment";
+import BaseApplication, { Builder, Loader, Renderer } from './base-application';
+import { Environment } from '@glimmer/interfaces';
+import EnvironmentImpl from './environment';
 
 /**
  * Options for configuring an instance of [Application].
@@ -43,8 +43,7 @@ export interface ApplicationConstructor<T = Application> {
 /** @internal */
 export type Notifier = [() => void, (err: Error) => void];
 
-const DEFAULT_DOCUMENT =
-  typeof document === "object" ? (document as SimpleDocument) : null;
+const DEFAULT_DOCUMENT = typeof document === 'object' ? (document as SimpleDocument) : null;
 
 /**
  * The central control point for starting and running Glimmer components.
@@ -76,21 +75,18 @@ export default class Application extends BaseApplication {
       resolver: options.resolver,
       environment: EnvironmentImpl,
       loader: options.loader,
-      renderer: options.renderer
+      renderer: options.renderer,
     });
 
-    assert(
-      options.builder,
-      "Must provide a Builder that is responsible to building DOM."
-    );
+    assert(options.builder, 'Must provide a Builder that is responsible to building DOM.');
     const document = (this.document = options.document || DEFAULT_DOCUMENT);
     this.builder = options.builder;
 
     this.registerInitializer({
       initialize(registry) {
         registry.register(`document:/${options.rootName}/main/main`, document);
-        registry.registerOption("document", "instantiate", false);
-      }
+        registry.registerOption('document', 'instantiate', false);
+      },
     });
   }
 
@@ -104,11 +100,7 @@ export default class Application extends BaseApplication {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(
-    component: string,
-    parent: Node,
-    nextSibling: Option<Node> = null
-  ): void {
+  renderComponent(component: string, parent: Node, nextSibling: Option<Node> = null): void {
     let { _roots: roots, _self: self } = this;
 
     roots.push({ id: this._rootsIndex++, component, parent, nextSibling });

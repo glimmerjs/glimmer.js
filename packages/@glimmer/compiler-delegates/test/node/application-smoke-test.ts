@@ -20,19 +20,28 @@ module('Application smoke tests', {
   beforeEach() {
     let mainLocator = {
       module: './src/ui/components/My-Main/template.hbs',
-      name: 'default'
+      name: 'default',
     };
     let relativeProjectPath = 'packages/@glimmer/compiler-delegates/test/node/fixtures/mu';
 
     buildServer = new BuildServer(relativeProjectPath, mainLocator);
     let { projectPath } = buildServer;
 
-    buildServer.addTemplate(mainLocator, fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString());
-    buildServer.addTemplate({ module: './src/ui/components/User/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString());
-    buildServer.addTemplate({ module: './src/ui/components/Other/template.hbs', name: 'default' }, fs.readFileSync(path.join(projectPath, 'src/ui/components/Other/template.hbs')).toString());
+    buildServer.addTemplate(
+      mainLocator,
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/My-Main/template.hbs')).toString()
+    );
+    buildServer.addTemplate(
+      { module: './src/ui/components/User/template.hbs', name: 'default' },
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/User/template.hbs')).toString()
+    );
+    buildServer.addTemplate(
+      { module: './src/ui/components/Other/template.hbs', name: 'default' },
+      fs.readFileSync(path.join(projectPath, 'src/ui/components/Other/template.hbs')).toString()
+    );
 
     buildServer.build();
-  }
+  },
 });
 
 test('Boots and renders an app', async function(assert) {
@@ -43,17 +52,17 @@ test('Boots and renders an app', async function(assert) {
   let renderer = new SyncRenderer();
   let serializer = new HTMLSerializer(voidMap);
   let registry = new BasicModuleRegistry({
-    "template:/mu/components/Other": true
+    'template:/mu/components/Other': true,
   });
 
   let config = {
     app: {
       rootName: 'mu',
-      name: 'mu'
-    }
+      name: 'mu',
+    },
   };
 
-  let resolver = new Resolver({...config, ...defaultResolverConfiguration}, registry);
+  let resolver = new Resolver({ ...config, ...defaultResolverConfiguration }, registry);
 
   let app = new Application({
     rootName: 'mu',
@@ -61,16 +70,22 @@ test('Boots and renders an app', async function(assert) {
     document: doc as any,
     builder,
     renderer,
-    resolver
+    resolver,
   });
 
   app.registerInitializer({
     initialize(registry) {
-      registry.register(`component-manager:/${app.rootName}/component-managers/main`, ComponentManager);
-    }
+      registry.register(
+        `component-manager:/${app.rootName}/component-managers/main`,
+        ComponentManager
+      );
+    },
   });
 
   await app.boot();
 
-  assert.equal(serializer.serializeChildren(doc.body as any).trim(), '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther');
+  assert.equal(
+    serializer.serializeChildren(doc.body as any).trim(),
+    '<div class="user">Chad IF_STUB ID_STUB WAT_STUB</div>\nOther'
+  );
 });

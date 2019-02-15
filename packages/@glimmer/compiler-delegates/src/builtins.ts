@@ -14,7 +14,10 @@ export interface Builtins<TemplateMeta = {}> {
   [key: string]: BuiltinLocator<TemplateMeta>;
 }
 
-export type BuiltinLocator<TemplateMeta> = TemplateLocator<TemplateMeta> | HelperLocator | ModuleLocator;
+export type BuiltinLocator<TemplateMeta> =
+  | TemplateLocator<TemplateMeta>
+  | HelperLocator
+  | ModuleLocator;
 
 /**
  * There are two ways helpers may be implemented in libraries:

@@ -3,8 +3,8 @@ import {
   ModuleLocator,
   Option,
   CompileTimeComponent,
-  Template
-} from "@glimmer/interfaces";
+  Template,
+} from '@glimmer/interfaces';
 
 interface ModuleResolverDelegate {
   helper(name: string, referrer: ModuleLocator): ModuleLocator;
@@ -40,8 +40,7 @@ export class Handles {
   }
 }
 
-export class JitResolverDelegate
-  implements CompileTimeResolverDelegate<ModuleLocator> {
+export class JitResolverDelegate implements CompileTimeResolverDelegate<ModuleLocator> {
   private handles = new Handles();
 
   constructor(private modules: ModuleResolverDelegate) {}
@@ -56,25 +55,22 @@ export class JitResolverDelegate
     return this.handles.getHandle(modifier);
   }
 
-  lookupComponent(
-    name: string,
-    referrer: ModuleLocator
-  ): Option<CompileTimeComponent> {
-    throw new Error("Unimplemented");
+  lookupComponent(name: string, referrer: ModuleLocator): Option<CompileTimeComponent> {
+    throw new Error('Unimplemented');
   }
 
   lookupPartial(_name: string, _referrer: ModuleLocator): Option<number> {
-    throw new Error("Partials not supported in Glimmer.js");
+    throw new Error('Partials not supported in Glimmer.js');
   }
 
   // `name` is a cache key.
   // TODO: The caller should cache
   compile(source: string, name: string): Template {
-    throw new Error("unimplemented");
+    throw new Error('unimplemented');
   }
 
   // For debugging
   resolve(handle: number): ModuleLocator {
-    throw new Error("unimplemented");
+    throw new Error('unimplemented');
   }
 }

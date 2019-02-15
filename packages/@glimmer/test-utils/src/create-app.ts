@@ -1,9 +1,5 @@
-import Application, {
-  RuntimeCompilerLoader,
-  DOMBuilder,
-  SyncRenderer
-} from "@glimmer/application";
-import { BlankResolver } from "./resolvers";
+import Application, { RuntimeCompilerLoader, DOMBuilder, SyncRenderer } from '@glimmer/application';
+import { BlankResolver } from './resolvers';
 
 export function createApp(options: Object) {
   let resolver = new BlankResolver();
@@ -13,11 +9,11 @@ export function createApp(options: Object) {
   return new Application(
     Object.assign(
       {
-        rootName: "app",
+        rootName: 'app',
         resolver,
         builder,
         loader,
-        renderer
+        renderer,
       },
       options
     )

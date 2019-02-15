@@ -1,4 +1,4 @@
-import { ComponentCapabilities } from "@glimmer/interfaces";
+import { ComponentCapabilities } from '@glimmer/interfaces';
 
 export const CAPABILITIES: ComponentCapabilities = {
   attributeHook: true,
@@ -11,5 +11,5 @@ export const CAPABILITIES: ComponentCapabilities = {
   elementHook: true,
   prepareArgs: false,
   updateHook: true,
-  wrapped: false
+  wrapped: false,
 };

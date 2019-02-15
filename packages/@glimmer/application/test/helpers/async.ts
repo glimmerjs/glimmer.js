@@ -28,7 +28,7 @@ Object.assign(QUnit.assert.constructor.prototype, {
       result,
       actual,
       expected,
-      message
+      message,
     });
-  }
+  },
 });

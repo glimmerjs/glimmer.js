@@ -1,11 +1,11 @@
-import ComponentManager from "./component-manager";
+import ComponentManager from './component-manager';
 import {
   ComponentCapabilities,
   ProgramSymbolTable,
-  ComponentDefinition
-} from "@glimmer/interfaces";
-import { ComponentFactory } from "./component";
-import { CAPABILITIES as capabilities } from "./capabilities";
+  ComponentDefinition,
+} from '@glimmer/interfaces';
+import { ComponentFactory } from './component';
+import { CAPABILITIES as capabilities } from './capabilities';
 
 export interface DefinitionState {
   /* Manager-related */
@@ -30,7 +30,7 @@ export default class ComponentDefinitionImpl implements ComponentDefinition {
       name,
       capabilities,
       ComponentClass,
-      handle
+      handle,
     };
   }
 

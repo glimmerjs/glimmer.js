@@ -27,19 +27,12 @@ test('can curry arguments to actions', async function(assert) {
       passedMsg1 = msg1;
       passedMsg2 = msg2;
       passedEvent = event;
-      assert.strictEqual(
-        this,
-        helloWorldComponent,
-        'function context is preserved'
-      );
+      assert.strictEqual(this, helloWorldComponent, 'function context is preserved');
     }
   }
 
   let app = await buildApp()
-    .template(
-      'HelloWorld',
-      '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>'
-    )
+    .template('HelloWorld', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
     .template('Main', '<div><HelloWorld /></div>')
     .component('HelloWorld', HelloWorld)
     .boot();
@@ -95,29 +88,16 @@ test('actions can be passed and invoked with additional arguments', async functi
       evt: Event
     ) {
       passed = [a1, a2, a3, a4, a5, a6, evt];
-      assert.strictEqual(
-        this,
-        parentComponent,
-        'function context is preserved'
-      );
+      assert.strictEqual(this, parentComponent, 'function context is preserved');
     }
   }
 
   let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
-    .template(
-      'Parent',
-      '<div><Child @userDidClick={{action userDidClick 1 2}} /></div>'
-    )
+    .template('Parent', '<div><Child @userDidClick={{action userDidClick 1 2}} /></div>')
     .component('Parent', ParentComponent)
-    .template(
-      'Child',
-      '<div><Grandchild @userDidClick={{action @userDidClick 3 4}} /></div>'
-    )
-    .template(
-      'Grandchild',
-      '<div class="grandchild" onclick={{action @userDidClick 5 6}}></div>'
-    )
+    .template('Child', '<div><Grandchild @userDidClick={{action @userDidClick 3 4}} /></div>')
+    .template('Grandchild', '<div class="grandchild" onclick={{action @userDidClick 5 6}}></div>')
     .boot();
 
   let root = app.rootElement as Element;
@@ -133,10 +113,7 @@ test('action helper invoked without a function raises an error', async function(
 
   let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
-    .template(
-      'Parent',
-      '<div><span onclick={{action doesntExist}}></span></div>'
-    )
+    .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
     .component('Parent', ParentComponent);
 
   try {

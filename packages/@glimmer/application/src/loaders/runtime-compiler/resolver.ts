@@ -1,4 +1,4 @@
-import { expect } from "@glimmer/util";
+import { expect } from '@glimmer/util';
 import {
   Option,
   Maybe,
@@ -8,25 +8,18 @@ import {
   ModifierManager,
   Invocation,
   Helper,
-  Template
-} from "@glimmer/interfaces";
-import { Owner } from "@glimmer/di";
-import {
-  ComponentDefinition,
-  ComponentManager,
-  ComponentFactory
-} from "@glimmer/component";
+  Template,
+} from '@glimmer/interfaces';
+import { Owner } from '@glimmer/di';
+import { ComponentDefinition, ComponentManager, ComponentFactory } from '@glimmer/component';
 
-import { TypedRegistry } from "./typed-registry";
-import Application from "../../application";
-import { HelperReference } from "../../helpers/user-helper";
-import { TemplateFactory, templateFactory } from "@glimmer/opcode-compiler";
-import { PrecompileOptions, precompile } from "@glimmer/compiler";
+import { TypedRegistry } from './typed-registry';
+import Application from '../../application';
+import { HelperReference } from '../../helpers/user-helper';
+import { TemplateFactory, templateFactory } from '@glimmer/opcode-compiler';
+import { PrecompileOptions, precompile } from '@glimmer/compiler';
 
-export type UserHelper = (
-  args: ReadonlyArray<unknown>,
-  named: Dict<unknown>
-) => unknown;
+export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => unknown;
 
 export interface Lookup {
   helper: GlimmerHelper;
@@ -59,8 +52,7 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
 }
 
 /** @public */
-export default class ApplicationJitRuntimeResolver
-  implements JitRuntimeResolver<Specifier> {
+export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver<Specifier> {
   handleLookup: TypedRegistry<unknown>[] = [];
 
   private cache = {
@@ -69,7 +61,7 @@ export default class ApplicationJitRuntimeResolver
     compiledTemplate: new TypedRegistry<Invocation>(),
     helper: new TypedRegistry<Helper>(),
     manager: new TypedRegistry<ComponentManager>(),
-    modifier: new TypedRegistry<ModifierManager<unknown, unknown>>()
+    modifier: new TypedRegistry<ModifierManager<unknown, unknown>>(),
   };
 
   constructor(private owner: Owner) {}
@@ -82,11 +74,7 @@ export default class ApplicationJitRuntimeResolver
     }
   }
 
-  get<K extends LookupType>(
-    type: K,
-    name: string,
-    referrer?: Specifier
-  ): Option<Lookup[K]> {
+  get<K extends LookupType>(type: K, name: string, referrer?: Specifier): Option<Lookup[K]> {
     if (this.cache[type].hasName(name)) {
       let handle = this.cache[type].getHandle(name);
       return this.cache[type].getByHandle(handle);
@@ -95,11 +83,7 @@ export default class ApplicationJitRuntimeResolver
     }
   }
 
-  register<K extends LookupType>(
-    type: K,
-    name: string,
-    value: Lookup[K]
-  ): number {
+  register<K extends LookupType>(type: K, name: string, value: Lookup[K]): number {
     let registry = this.cache[type];
     let handle = this.handleLookup.length;
     this.handleLookup.push(registry);
@@ -108,7 +92,7 @@ export default class ApplicationJitRuntimeResolver
   }
 
   lookupModifier(name: string, meta?: Specifier): Option<number> {
-    let handle = this.lookup("modifier", name);
+    let handle = this.lookup('modifier', name);
 
     if (handle === null) {
       throw new Error(`Modifier for ${name} not found.`);
@@ -123,18 +107,17 @@ export default class ApplicationJitRuntimeResolver
   }
 
   compilable(locator: Specifier): Template {
-    let serializedTemplate = this.get("template", locator.specifier);
+    let serializedTemplate = this.get('template', locator.specifier);
     return templateFactory(serializedTemplate).create();
   }
 
   registerHelper(name: string, helper: UserHelper) {
-    let glimmerHelper: GlimmerHelper = args =>
-      new HelperReference(helper, args);
-    return this.register("helper", name, glimmerHelper);
+    let glimmerHelper: GlimmerHelper = args => new HelperReference(helper, args);
+    return this.register('helper', name, glimmerHelper);
   }
 
   registerInternalHelper(name: string, helper: GlimmerHelper) {
-    this.register("helper", name, helper);
+    this.register('helper', name, helper);
   }
 
   registerComponent(
@@ -145,42 +128,35 @@ export default class ApplicationJitRuntimeResolver
   ): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
-    let definition = new ComponentDefinition(
-      name,
-      manager,
-      Component,
-      templateEntry.handle
-    );
+    let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
 
-    return this.register("component", name, definition);
+    return this.register('component', name, definition);
   }
 
   lookupComponent(name: string, referrer?: Specifier): ComponentDefinition {
     if (!this.cache.component.hasName(name)) {
       this.lookupComponentDefinition(name, referrer);
     }
-    return this.get("component", name, referrer);
+    return this.get('component', name, referrer);
   }
 
   lookupComponentHandle(name: string, referrer?: Specifier) {
     if (!this.cache.component.hasName(name)) {
       this.lookupComponentDefinition(name, referrer);
     }
-    return this.lookup("component", name, referrer);
+    return this.lookup('component', name, referrer);
   }
 
-  managerFor(managerId = "main"): ComponentManager {
+  managerFor(managerId = 'main'): ComponentManager {
     let manager: ComponentManager;
 
     if (!this.cache.manager.hasName(managerId)) {
       let { rootName } = this.owner as Application;
-      manager = this.owner.lookup(
-        `component-manager:/${rootName}/component-managers/${managerId}`
-      );
+      manager = this.owner.lookup(`component-manager:/${rootName}/component-managers/${managerId}`);
       if (!manager) {
         throw new Error(`No component manager found for ID ${managerId}.`);
       }
-      this.register("manager", managerId, manager);
+      this.register('manager', managerId, manager);
       return manager;
     } else {
       let handle = this.cache.manager.getHandle(managerId);
@@ -194,37 +170,29 @@ export default class ApplicationJitRuntimeResolver
   ): TemplateEntry {
     return {
       name: resolvedSpecifier,
-      handle: this.register("template", resolvedSpecifier, template),
-      meta: template.meta
+      handle: this.register('template', resolvedSpecifier, template),
+      meta: template.meta,
     };
   }
 
-  lookupComponentDefinition(
-    name: string,
-    meta: Specifier
-  ): ComponentDefinition {
+  lookupComponentDefinition(name: string, meta: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
       let specifier = expect(
         this.identifyComponent(name, meta),
         `Could not find the component '${name}'`
       );
-      let template = this.owner.lookup("template", specifier);
-      let componentSpecifier = this.owner.identify("component", specifier);
+      let template = this.owner.lookup('template', specifier);
+      let componentSpecifier = this.owner.identify('component', specifier);
       let componentFactory: ComponentFactory = null;
 
       if (componentSpecifier !== undefined) {
         componentFactory = this.owner.factoryFor(componentSpecifier);
       }
 
-      handle = this.registerComponent(
-        name,
-        specifier,
-        componentFactory,
-        template
-      );
+      handle = this.registerComponent(name, specifier, componentFactory, template);
     } else {
-      handle = this.lookup("component", name, meta);
+      handle = this.lookup('component', name, meta);
     }
 
     return this.resolve<ComponentDefinition>(handle);
@@ -245,11 +213,11 @@ export default class ApplicationJitRuntimeResolver
       return this.registerHelper(name, helper);
     }
 
-    return this.lookup("helper", name, meta);
+    return this.lookup('helper', name, meta);
   }
 
   lookupPartial(name: string, referrer?: Specifier): never {
-    throw new Error("Partials are not available in Glimmer applications.");
+    throw new Error('Partials are not available in Glimmer applications.');
   }
 
   resolve<T>(handle: number): T {
@@ -264,10 +232,7 @@ export default class ApplicationJitRuntimeResolver
 
     let specifier = owner.identify(relSpecifier, referrer);
 
-    if (
-      specifier === undefined &&
-      owner.identify(`component:${name}`, referrer)
-    ) {
+    if (specifier === undefined && owner.identify(`component:${name}`, referrer)) {
       throw new Error(
         `The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`
       );

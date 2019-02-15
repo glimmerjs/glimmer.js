@@ -1,20 +1,17 @@
-import { AppCompilerDelegate, mainTemplate } from "@glimmer/application";
-import {
-  BundleCompiler,
-  BundleCompilerOptions
-} from "@glimmer/bundle-compiler";
+import { AppCompilerDelegate, mainTemplate } from '@glimmer/application';
+import { BundleCompiler, BundleCompilerOptions } from '@glimmer/bundle-compiler';
 import {
   AppCompilerDelegateOptions,
   Builtins,
   MUCompilerDelegate,
-  OutputFiles
-} from "@glimmer/compiler-delegates";
-import { compilable } from "@glimmer/opcode-compiler";
-import Plugin from "broccoli-plugin";
-import { TempDir } from "broccoli-test-helper";
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { extname, join } from "path";
-import walkSync from "walk-sync";
+  OutputFiles,
+} from '@glimmer/compiler-delegates';
+import { compilable } from '@glimmer/opcode-compiler';
+import Plugin from 'broccoli-plugin';
+import { TempDir } from 'broccoli-test-helper';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { extname, join } from 'path';
+import walkSync from 'walk-sync';
 
 // https://github.com/joliss/node-walk-sync/blob/984a2d6adf9facc1531fb325852f475eb260781d/index.d.ts
 export class WalkSyncEntry {
@@ -27,7 +24,7 @@ export class WalkSyncEntry {
   isDirectory: Function;
 }
 
-export type CompilerMode = "module-unification";
+export type CompilerMode = 'module-unification';
 
 export interface AppCompilerDelegateConstructor {
   new (options: AppCompilerDelegateOptions): AppCompilerDelegate<{}>;
@@ -49,27 +46,22 @@ export default class GlimmerBundleCompiler extends Plugin {
 
   // TODO: Better handle generic TemplateMeta for compiler delegates
   private delegate: AppCompilerDelegate<any>;
-  constructor(
-    inputNode: TempDir | string,
-    options: GlimmerBundleCompilerOptions
-  ) {
+  constructor(inputNode: TempDir | string, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
 
   private defaultOptions(options: GlimmerBundleCompilerOptions) {
     if (!options.mode && !options.delegate) {
-      throw new Error(
-        "Must pass a bundle compiler mode or pass a custom compiler delegate."
-      );
+      throw new Error('Must pass a bundle compiler mode or pass a custom compiler delegate.');
     }
 
     return Object.assign(
       {
         outputFiles: {
-          heapFile: "templates.gbx",
-          dataSegment: "data-segment.js"
-        }
+          heapFile: 'templates.gbx',
+          dataSegment: 'data-segment.js',
+        },
       },
       options
     );
@@ -81,7 +73,7 @@ export default class GlimmerBundleCompiler extends Plugin {
   }
 
   _readFile(file: string) {
-    return readFileSync(join(this.inputPaths[0], file), "UTF-8");
+    return readFileSync(join(this.inputPaths[0], file), 'UTF-8');
   }
 
   createBundleCompiler() {
@@ -90,17 +82,17 @@ export default class GlimmerBundleCompiler extends Plugin {
     let { outputFiles, builtins } = options;
     let [projectPath] = this.inputPaths;
 
-    if (options.mode && options.mode === "module-unification") {
+    if (options.mode && options.mode === 'module-unification') {
       delegate = this.delegate = new MUCompilerDelegate({
         projectPath,
         outputFiles,
-        builtins
+        builtins,
       });
     } else if (options.delegate) {
       delegate = this.delegate = new options.delegate({
         projectPath,
         outputFiles,
-        builtins
+        builtins,
       });
     }
 
@@ -113,14 +105,14 @@ export default class GlimmerBundleCompiler extends Plugin {
     let { outputPath } = this;
 
     let locator = this.delegate.templateLocatorFor({
-      module: "@glimmer/application",
-      name: "mainLayout"
+      module: '@glimmer/application',
+      name: 'mainLayout',
     });
     let block = JSON.parse(mainTemplate.block);
     let compilableTemplate = compilable({
       block,
       referrer: locator.meta,
-      asPartial: false
+      asPartial: false,
     });
 
     this.compiler.addCompilableTemplate(locator, compilableTemplate);
@@ -133,11 +125,9 @@ export default class GlimmerBundleCompiler extends Plugin {
         mkdirSync(join(outputPath, relativePath));
       } else {
         let content = this._readFile(relativePath);
-        if (extname(relativePath) === ".hbs") {
-          let normalizedPath = this.delegate.normalizePath(
-            join(projectPath, relativePath)
-          );
-          let moduleLocator = { module: normalizedPath, name: "default" };
+        if (extname(relativePath) === '.hbs') {
+          let normalizedPath = this.delegate.normalizePath(join(projectPath, relativePath));
+          let moduleLocator = { module: normalizedPath, name: 'default' };
           let templateLocator = this.delegate.templateLocatorFor(moduleLocator);
           this.compiler.addTemplateSource(templateLocator, content);
         } else {
@@ -152,9 +142,6 @@ export default class GlimmerBundleCompiler extends Plugin {
     let { outputFiles } = this.options;
 
     writeFileSync(join(outputPath, outputFiles.dataSegment), dataSegment);
-    writeFileSync(
-      join(outputPath, outputFiles.heapFile),
-      new Buffer(compilation.heap.buffer)
-    );
+    writeFileSync(join(outputPath, outputFiles.heapFile), new Buffer(compilation.heap.buffer));
   }
 }

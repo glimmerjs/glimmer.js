@@ -1,10 +1,4 @@
-import {
-  Registry,
-  RegistryAccessor,
-  RegistrationOptions,
-  Injection,
-  Resolver
-} from '@glimmer/di';
+import { Registry, RegistryAccessor, RegistrationOptions, Injection, Resolver } from '@glimmer/di';
 
 function isTypeSpecifier(specifier: string) {
   return specifier.indexOf(':') === -1;

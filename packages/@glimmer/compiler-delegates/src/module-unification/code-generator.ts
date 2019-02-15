@@ -1,12 +1,12 @@
-import Debug from "debug";
-import { relative, extname, dirname, basename } from "path";
+import Debug from 'debug';
+import { relative, extname, dirname, basename } from 'path';
 
 import {
   BundleCompilationResult,
   ModuleLocatorMap,
-  ExternalModuleTable
-} from "@glimmer/bundle-compiler";
-import { assert, expect } from "@glimmer/util";
+  ExternalModuleTable,
+} from '@glimmer/bundle-compiler';
+import { assert, expect } from '@glimmer/util';
 import {
   CompilableTemplate,
   ProgramSymbolTable,
@@ -15,22 +15,20 @@ import {
   AnnotatedModuleLocator,
   Dict,
   SerializedHeap,
-  ConstantPool
-} from "@glimmer/interfaces";
-import { ModuleTypes } from "@glimmer/application";
-import { Project } from "glimmer-analyzer";
+  ConstantPool,
+} from '@glimmer/interfaces';
+import { ModuleTypes } from '@glimmer/application';
+import { Project } from 'glimmer-analyzer';
 
-import { OutputFiles } from "../app-compiler-delegate";
-import { TemplateMeta } from "./compiler-delegate";
-import { Builtins, HelperLocator } from "../builtins";
-import { Metadata } from "../../../application/src/loaders/bytecode/loader";
+import { OutputFiles } from '../app-compiler-delegate';
+import { TemplateMeta } from './compiler-delegate';
+import { Builtins, HelperLocator } from '../builtins';
+import { Metadata } from '../../../application/src/loaders/bytecode/loader';
 
-const debug = Debug("@glimmer/compiler-delegates:mu-codegen");
+const debug = Debug('@glimmer/compiler-delegates:mu-codegen');
 
 export type TemplateLocator = ITemplateLocator<TemplateMeta>;
-export type CompilableTemplates = ModuleLocatorMap<
-  CompilableTemplate<ProgramSymbolTable>
->;
+export type CompilableTemplates = ModuleLocatorMap<CompilableTemplate<ProgramSymbolTable>>;
 
 export default class MUCodeGenerator {
   constructor(
@@ -42,23 +40,17 @@ export default class MUCodeGenerator {
   ) {}
 
   generateDataSegment() {
-    debug("generating data segment");
+    debug('generating data segment');
     let { mainTemplateLocator } = this;
     let { heap, pool, table } = this.compilation;
 
     let externalModuleTable = this.generateExternalModuleTable(table);
     let constantPool = this.generateConstantPool(pool);
     let heapTable = this.generateHeap(heap);
-    let meta = this.generateTemplateMetadata(
-      table,
-      this.compilation.symbolTables
-    );
+    let meta = this.generateTemplateMetadata(table, this.compilation.symbolTables);
     let main = table.vmHandleByModuleLocator.get(mainTemplateLocator);
 
-    expect(
-      main,
-      `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`
-    );
+    expect(main, `Could not find handle for ${JSON.stringify(mainTemplateLocator)}.`);
 
     let source = strip`
       ${externalModuleTable}
@@ -67,7 +59,7 @@ export default class MUCodeGenerator {
       ${meta}
       const mainEntry = ${main.toString()};
       export default { table, heap, pool, meta, mainEntry, prefix };`;
-    debug("generated data segment; source=%s", source);
+    debug('generated data segment; source=%s', source);
 
     return source;
   }
@@ -81,16 +73,14 @@ export default class MUCodeGenerator {
 
     // Get the union of specifiers contained in the symbol tables and specifier
     // map.
-    let specifiers = Array.from(
-      new Set([...Object.keys(map), ...Object.keys(symbolTables)])
-    );
+    let specifiers = Array.from(new Set([...Object.keys(map), ...Object.keys(symbolTables)]));
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
     let meta: Dict<Metadata> = {};
 
     specifiers.forEach(specifier => {
-      let trimmed = specifier.replace(commonPrefix, "");
+      let trimmed = specifier.replace(commonPrefix, '');
 
       let [vmHandle, handle] = map[specifier] || [null, null];
       let table = symbolTables[specifier];
@@ -98,22 +88,20 @@ export default class MUCodeGenerator {
       meta[trimmed] = removeEmpty({
         v: vmHandle,
         h: handle,
-        table
+        table,
       });
     });
 
     return `${prefix} const meta = ${inlineJSON(meta)};`;
   }
 
-  generateSymbolTables(
-    compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>
-  ) {
+  generateSymbolTables(compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
     let symbolTables: Dict<ProgramSymbolTable> = {};
 
     compilerSymbolTables.forEach((symbolTable, locator) => {
       let specifier;
-      if (locator.name === "mainTemplate") {
-        specifier = "mainTemplate";
+      if (locator.name === 'mainTemplate') {
+        specifier = 'mainTemplate';
       } else {
         specifier = this.project.specifierForPath(relativePath(locator.module));
       }
@@ -151,9 +139,7 @@ export default class MUCodeGenerator {
     let map: Dict<number[]> = {};
 
     table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
-      let specifier = this.project.specifierForPath(
-        relativePath(locator.module)
-      );
+      let specifier = this.project.specifierForPath(relativePath(locator.module));
       if (specifier) {
         map[specifier] = [vmHandle];
         map[specifier].push(table.byModuleLocator.get(locator));
@@ -166,7 +152,7 @@ export default class MUCodeGenerator {
   generateHeap(heap: SerializedHeap) {
     assert(
       (heap.table.length / 3) % 1 === 0,
-      "Heap table should be balanced and divisible by 3" // Size is defined in @glimmer/program enum Size.ENTRY_SIZE
+      'Heap table should be balanced and divisible by 3' // Size is defined in @glimmer/program enum Size.ENTRY_SIZE
     );
     let serializedHeap = { table: heap.table, handle: heap.handle };
     return strip`
@@ -199,27 +185,25 @@ export default class MUCodeGenerator {
     return source;
 
     function replaceTemplatesWithComponents(locator: AnnotatedModuleLocator) {
-      let referrer = project.specifierForPath(
-        locator.module.replace(/^\.\//, "")
-      );
-      if (referrer && referrer.split(":")[0] === "template") {
-        let specifier = project.resolver.identify("component:", referrer);
+      let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
+      if (referrer && referrer.split(':')[0] === 'template') {
+        let specifier = project.resolver.identify('component:', referrer);
         if (!specifier) {
-          debug("no component for template; referrer=%s", referrer);
+          debug('no component for template; referrer=%s', referrer);
           return null;
         }
 
         let module = `./${project.pathForSpecifier(specifier)}`;
 
         debug(
-          "found corresponding component; path=%s; specifier=%s; referrer=%s;",
+          'found corresponding component; path=%s; specifier=%s; referrer=%s;',
           module,
           specifier,
           referrer
         );
 
-        return { module, name: "default" };
-      } else if (locator.kind === "template") {
+        return { module, name: 'default' };
+      } else if (locator.kind === 'template') {
         return null;
       }
 
@@ -239,16 +223,16 @@ export default class MUCodeGenerator {
 
       // Don't try to normalize imports from packages
       if (!module.match(/^(\.|\.\.)?\//)) {
-        debug("skipping module path normalization; path=%s", module);
+        debug('skipping module path normalization; path=%s', module);
         return locator;
       }
 
       let relativePath = relative(dataSegmentPath, module);
-      relativePath = relativePath.replace(extname(relativePath), "");
+      relativePath = relativePath.replace(extname(relativePath), '');
       relativePath = `./${relativePath}`;
 
       debug(
-        "normalizing module path; from=%s; to=%s; path=%s",
+        'normalizing module path; from=%s; to=%s; path=%s',
         module,
         dataSegmentPath,
         relativePath
@@ -260,7 +244,7 @@ export default class MUCodeGenerator {
 }
 
 function isHelperLocator(locator: ModuleLocator): locator is HelperLocator {
-  return (locator as HelperLocator).kind === "helper";
+  return (locator as HelperLocator).kind === 'helper';
 }
 
 function inlineJSON(data: any) {
@@ -278,28 +262,23 @@ function toSparseArray<T>(map: Map<number, T>): T[] {
 }
 
 function relativePath(path: string) {
-  return path.replace(/^\.\//, "");
+  return path.replace(/^\.\//, '');
 }
 
-function generateExternalModuleTable(
-  modules: ModuleLocator[],
-  builtins: Builtins
-) {
+function generateExternalModuleTable(modules: ModuleLocator[], builtins: Builtins) {
   let { imports, identifiers } = getImportStatements(modules);
   identifiers = identifiers.map((id, handle) => {
     let locator = modules[handle];
     if (locator && isHelperLocator(locator)) {
-      let type = locator.meta.factory
-        ? ModuleTypes.HELPER_FACTORY
-        : ModuleTypes.HELPER;
+      let type = locator.meta.factory ? ModuleTypes.HELPER_FACTORY : ModuleTypes.HELPER;
       return `[${type}, ${id}]`;
     }
     return id;
   });
 
   return `
-${imports.join("\n")}
-const table = [${identifiers.join(",")}];
+${imports.join('\n')}
+const table = [${identifiers.join(',')}];
 `;
 }
 
@@ -307,11 +286,11 @@ function strip(strings: TemplateStringsArray, ...args: string[]) {
   return strings
     .map((str: string, i: number) => {
       return `${str
-        .split("\n")
+        .split('\n')
         .map(s => s.trim())
-        .join("")}${args[i] ? args[i] : ""}`;
+        .join('')}${args[i] ? args[i] : ''}`;
     })
-    .join("");
+    .join('');
 }
 
 /**
@@ -326,7 +305,7 @@ export function getIdentifier(locator: ModuleLocator, handle: number) {
   let name = getMeaningfulName(locator);
   let identifier = name
     // replace any non-letter, non-number, non-underscore
-    .replace(/[\W]/g, "_");
+    .replace(/[\W]/g, '_');
 
   return `${identifier}_${handle.toString()}`;
 }
@@ -336,7 +315,7 @@ export function getIdentifier(locator: ModuleLocator, handle: number) {
  * for named exports, or the basename of the module path for default exports.
  */
 function getMeaningfulName(locator: ModuleLocator) {
-  return locator.name === "default" ? basename(locator.module) : locator.name;
+  return locator.name === 'default' ? basename(locator.module) : locator.name;
 }
 
 /**
@@ -348,10 +327,10 @@ function getMeaningfulName(locator: ModuleLocator) {
  *     getImportClause('MyClass', 'GlimmerMyClass') => '{ MyClass as GlimmerMyClass }'
  */
 export function getImportClause(name: string, id: string) {
-  if (name === "default") {
+  if (name === 'default') {
     return id;
   }
-  if (name === "id") {
+  if (name === 'id') {
     return `{ ${id} }`;
   }
   return `{ ${name} as ${id} }`;
@@ -391,7 +370,7 @@ export function getModuleSpecifier(modulePath: string) {
  *   ['UserProfile_0', 'DatePicker_1', 'translate_2']
  */
 export function getImportStatements(modules: ModuleLocator[]) {
-  let identifiers = new Array<string>(modules.length).fill("");
+  let identifiers = new Array<string>(modules.length).fill('');
 
   let imports = modules.map((locator, handle) => {
     // Null values indicate a module that has been assigned a handle but should
@@ -400,7 +379,7 @@ export function getImportStatements(modules: ModuleLocator[]) {
     // valid indices.
     if (!locator) {
       identifiers[handle] = `/* ${handle} */`;
-      return "";
+      return '';
     }
 
     let id = getIdentifier(locator, handle);

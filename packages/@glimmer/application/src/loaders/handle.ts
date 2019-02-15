@@ -1,4 +1,4 @@
-import { ModuleLocator } from "@glimmer/interfaces";
+import { ModuleLocator } from '@glimmer/interfaces';
 
 export class LocatorHandles {
   private byLocator: Map<string, Map<string, number>> = new Map();

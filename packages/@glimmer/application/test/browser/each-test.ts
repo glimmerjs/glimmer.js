@@ -12,7 +12,7 @@ function freeze<T>(array: T[]): ReadonlyArray<Readonly<T>> {
 class HelloWorld extends Component {
   numbers = [1, 2, 3];
   frozenNumbers = freeze(this.numbers);
-  strings = ["Toran", "Robert", "Jesper"];
+  strings = ['Toran', 'Robert', 'Jesper'];
   frozenStrings = freeze(this.strings);
   objects = this.strings.map(name => ({ name }));
   frozenObjects = freeze(this.objects);
@@ -25,7 +25,10 @@ class HelloWorld extends Component {
     let containerElement = document.createElement('div');
 
     let app = await buildApp()
-      .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`)
+      .template(
+        'HelloWorld',
+        `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      )
       .component('HelloWorld', HelloWorld)
       .boot();
 
@@ -44,7 +47,10 @@ class HelloWorld extends Component {
     let containerElement = document.createElement('div');
 
     let app = await buildApp()
-      .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`)
+      .template(
+        'HelloWorld',
+        `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      )
       .component('HelloWorld', HelloWorld)
       .boot();
 
@@ -52,7 +58,10 @@ class HelloWorld extends Component {
 
     await didRender(app);
 
-    assert.equal(containerElement.innerHTML, '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');
+    assert.equal(
+      containerElement.innerHTML,
+      '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>'
+    );
   });
 });
 
@@ -63,7 +72,10 @@ class HelloWorld extends Component {
     let containerElement = document.createElement('div');
 
     let app = await buildApp()
-      .template('HelloWorld', `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`)
+      .template(
+        'HelloWorld',
+        `<ul>{{#each ${kind} key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`
+      )
       .component('HelloWorld', HelloWorld)
       .boot();
 
@@ -71,6 +83,9 @@ class HelloWorld extends Component {
 
     await didRender(app);
 
-    assert.equal(containerElement.innerHTML, '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');
+    assert.equal(
+      containerElement.innerHTML,
+      '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>'
+    );
   });
 });

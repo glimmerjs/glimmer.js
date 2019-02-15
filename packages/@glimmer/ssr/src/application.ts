@@ -1,15 +1,15 @@
-import { BaseApplication, Loader, Renderer } from "@glimmer/application";
-import { ComponentManager } from "@glimmer/component";
-import { Resolver, Dict } from "@glimmer/di";
-import { PathReference, ConstReference } from "@glimmer/reference";
+import { BaseApplication, Loader, Renderer } from '@glimmer/application';
+import { ComponentManager } from '@glimmer/component';
+import { Resolver, Dict } from '@glimmer/di';
+import { PathReference, ConstReference } from '@glimmer/reference';
 
-import { PassThrough } from "stream";
-import createHTMLDocument from "@simple-dom/document";
-import HTMLSerializer from "@simple-dom/serializer";
-import voidMap from "@simple-dom/void-map";
+import { PassThrough } from 'stream';
+import createHTMLDocument from '@simple-dom/document';
+import HTMLSerializer from '@simple-dom/serializer';
+import voidMap from '@simple-dom/void-map';
 
-import EnvironmentImpl from "./environment";
-import StringBuilder from "./string-builder";
+import EnvironmentImpl from './environment';
+import StringBuilder from './string-builder';
 
 export interface SSRApplicationOptions {
   rootName: string;
@@ -21,9 +21,7 @@ export interface SSRApplicationOptions {
 /**
  * Converts a POJO into a dictionary of references that can be passed as an argument to render a component.
  */
-function convertOpaqueToReferenceDict(
-  data: Dict<unknown>
-): Dict<PathReference<unknown>> {
+function convertOpaqueToReferenceDict(data: Dict<unknown>): Dict<PathReference<unknown>> {
   if (!data) {
     return {};
   }
@@ -44,7 +42,7 @@ export default class Application extends BaseApplication {
       resolver,
       loader,
       renderer,
-      environment: EnvironmentImpl
+      environment: EnvironmentImpl,
     });
 
     this.serializer = new HTMLSerializer(voidMap);
@@ -54,7 +52,7 @@ export default class Application extends BaseApplication {
           `component-manager:/${rootName}/component-managers/main`,
           ComponentManager
         );
-      }
+      },
     });
 
     // Setup registry and DI
@@ -88,7 +86,7 @@ export default class Application extends BaseApplication {
       stream.write(app.serializer.serializeChildren(element));
       stream.end();
     } catch (err) {
-      stream.emit("error", err);
+      stream.emit('error', err);
     }
   }
 
@@ -99,11 +97,11 @@ export default class Application extends BaseApplication {
   ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
-      let html = "";
+      let html = '';
 
-      stream.on("data", str => (html += str));
-      stream.on("end", () => resolve(html));
-      stream.on("error", err => reject(err));
+      stream.on('data', str => (html += str));
+      stream.on('end', () => resolve(html));
+      stream.on('error', err => reject(err));
 
       this.renderToStream(componentName, data, stream, options);
     });

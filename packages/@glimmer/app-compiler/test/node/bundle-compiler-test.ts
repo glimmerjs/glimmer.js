@@ -4,7 +4,7 @@ import { createTempDir, buildOutput, TempDir, Tree } from 'broccoli-test-helper'
 const { module, test } = QUnit;
 
 module('Broccol Glimmer Bundle Compiler', function(hooks) {
-  let input:TempDir = null;
+  let input: TempDir = null;
 
   hooks.beforeEach(() => createTempDir().then(tempDir => (input = tempDir)));
 
@@ -12,7 +12,7 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     input.dispose();
   });
 
-  test('requires a mode or delegate', function (assert) {
+  test('requires a mode or delegate', function(assert) {
     assert.throws(() => {
       // tslint:disable-next-line:no-unused-expression
       new GlimmerBundleCompiler(input.path(), {});
@@ -21,78 +21,81 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('syncs forward all files', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
               'template.hbs': '<div>Hello</div>',
-              'component.ts': 'export default class A {}'
+              'component.ts': 'export default class A {}',
             },
 
             B: {
               'template.hbs': 'From B: <A @foo={{bar}} /> {{@bar}}',
-              'component.ts': 'export default class B {}'
+              'component.ts': 'export default class B {}',
             },
 
             C: {
               'template.hbs': 'From C',
-              'component.ts': 'export default class C {}'
+              'component.ts': 'export default class C {}',
             },
 
             D: {
               'template.hbs': '{{component C}}',
-              'component.ts': 'export default class D {}'
-            }
-          }
-        }
-      }
+              'component.ts': 'export default class D {}',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      mode: 'module-unification'
+      mode: 'module-unification',
     });
 
     let output = await buildOutput(compiler);
     let files: Tree = output.read();
 
-    assert.deepEqual(Object.keys(files).sort(), ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort());
+    assert.deepEqual(
+      Object.keys(files).sort(),
+      ['src', 'package.json', 'templates.gbx', 'data-segment.js'].sort()
+    );
     assert.deepEqual(Object.keys(files['src']).sort(), ['ui'].sort());
     assert.deepEqual(Object.keys(files['src']['ui']), ['components']);
 
-    Object.keys(files['src']['ui'].components).forEach((component) => {
+    Object.keys(files['src']['ui'].components).forEach(component => {
       assert.deepEqual(Object.keys(files['src']['ui'].components[component]), ['component.ts']);
     });
   });
 
   test('[MU] compiles the gbx and data segment', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
-              'template.hbs': '<div>Hello</div>'
+              'template.hbs': '<div>Hello</div>',
             },
 
             B: {
-              'template.hbs': 'From B: <A @foo={{bar}} /> {{@bar}}'
+              'template.hbs': 'From B: <A @foo={{bar}} /> {{@bar}}',
             },
 
             C: {
-              'template.hbs': 'Hello From C'
+              'template.hbs': 'Hello From C',
             },
 
             D: {
-              'template.hbs': '{{component C}}'
-            }
-          }
-        }
-      }
+              'template.hbs': '{{component C}}',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      mode: 'module-unification'
+      mode: 'module-unification',
     });
 
     let output = await buildOutput(compiler);
@@ -108,11 +111,11 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
         ui: {
           components: {
             C: {
-              'template.hbs': 'Goodbye From C'
-            }
-          }
-        }
-      }
+              'template.hbs': 'Goodbye From C',
+            },
+          },
+        },
+      },
     });
 
     await output.build();
@@ -123,38 +126,44 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(buffer, 'Buffer is aligned');
 
     let dataSegment = files['data-segment.js'] as string;
-    assert.ok(dataSegment.match(/Goodbye From C/), "string constants should contain updated template contents");
-    assert.ok(!(dataSegment.match(/Hello From C/)), "string constants should not contain old content");
+    assert.ok(
+      dataSegment.match(/Goodbye From C/),
+      'string constants should contain updated template contents'
+    );
+    assert.ok(
+      !dataSegment.match(/Hello From C/),
+      'string constants should not contain old content'
+    );
   });
 
   test('data segment has all segments', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
-              'template.hbs': '<div>Hello</div>'
+              'template.hbs': '<div>Hello</div>',
             },
 
             B: {
-              'template.hbs': 'From B: <A @foo={{bar}} /> {{@bar}}'
+              'template.hbs': 'From B: <A @foo={{bar}} /> {{@bar}}',
             },
 
             C: {
-              'template.hbs': 'From C'
+              'template.hbs': 'From C',
             },
 
             D: {
-              'template.hbs': '{{component C}}'
-            }
-          }
-        }
-      }
+              'template.hbs': '{{component C}}',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      mode: 'module-unification'
+      mode: 'module-unification',
     });
 
     let output = await buildOutput(compiler);
@@ -169,20 +178,20 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('can lookup builtins', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
-              'template.hbs': '<div>Hello {{if true "wat"}}</div>'
-            }
-          }
-        }
-      }
+              'template.hbs': '<div>Hello {{if true "wat"}}</div>',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
-      mode: 'module-unification'
+      mode: 'module-unification',
     });
 
     let output = await buildOutput(compiler);
@@ -193,24 +202,24 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('can write binary and data to different output paths', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
-              'template.hbs': '<div>Hello {{if true "wat"}}</div>'
-            }
-          }
-        }
-      }
+              'template.hbs': '<div>Hello {{if true "wat"}}</div>',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
       mode: 'module-unification',
       outputFiles: {
         dataSegment: 'stuff.js',
-        heapFile: 'templates.bin'
-      }
+        heapFile: 'templates.bin',
+      },
     });
 
     let output = await buildOutput(compiler);
@@ -221,28 +230,29 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
 
   test('can lookup custom builtins', async function(assert) {
     input.write({
-      'package.json': JSON.stringify({name: 'my-app'}),
+      'package.json': JSON.stringify({ name: 'my-app' }),
       src: {
         ui: {
           components: {
             A: {
-              'template.hbs': '<div>Hello {{css-blocks/state true "wat"}} {{if true "true"}} {{css-blocks/state true "huh"}}</div>'
+              'template.hbs':
+                '<div>Hello {{css-blocks/state true "wat"}} {{if true "true"}} {{css-blocks/state true "huh"}}</div>',
             },
             B: {
-              'template.hbs': '<A /><p class={{css-blocks/style-if true "wat"}}>Red</p>'
-            }
-          }
-        }
-      }
+              'template.hbs': '<A /><p class={{css-blocks/style-if true "wat"}}>Red</p>',
+            },
+          },
+        },
+      },
     });
 
     let compiler = new GlimmerBundleCompiler(input.path(), {
       builtins: {
         'css-blocks/style-if': { module: '@css-block/helpers/style-if', name: 'default' },
         'css-blocks/state': { module: '@css-block/helpers/state', name: 'default' },
-        'css-blocks/concat': { module: '@css-block/helpers/concat', name: 'default' }
+        'css-blocks/concat': { module: '@css-block/helpers/concat', name: 'default' },
       },
-      mode: 'module-unification'
+      mode: 'module-unification',
     });
 
     let output = await buildOutput(compiler);
@@ -253,5 +263,4 @@ module('Broccol Glimmer Bundle Compiler', function(hooks) {
     assert.ok(dataSegment.indexOf('@css-block/helpers/style-if') > -1);
     assert.ok(dataSegment.indexOf('@css-block/helpers/style-concat') === -1);
   });
-
 });

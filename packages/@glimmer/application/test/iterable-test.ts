@@ -9,7 +9,7 @@ test('basic iteration of an array of primitives', function(assert) {
     tag: {} as any,
     value() {
       return ['foo', 'bar'];
-    }
+    },
   };
   let keyFor = (_, i) => i;
   let iterable = new Iterable(ref, keyFor);
@@ -18,11 +18,11 @@ test('basic iteration of an array of primitives', function(assert) {
   assert.deepEqual(iterator.next(), {
     key: 0,
     value: 'foo',
-    memo: 0
+    memo: 0,
   });
   assert.deepEqual(iterator.next(), {
     key: 1,
     value: 'bar',
-    memo: 1
+    memo: 1,
   });
 });

@@ -6,11 +6,7 @@ import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
 
-import GlimmerComponent, {
-  DESTROYING,
-  DESTROYED,
-  MAGIC_PROP,
-} from './component';
+import GlimmerComponent, { DESTROYING, DESTROYED, MAGIC_PROP } from './component';
 
 export interface ComponentManagerArgs {
   named: object;
@@ -56,10 +52,7 @@ export default class GlimmerComponentManager {
     return instance as CreateComponentResult;
   }
 
-  updateComponent(
-    component: CreateComponentResult,
-    args: ComponentManagerArgs
-  ) {
+  updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
     set(component, 'args', args.named);
   }
 

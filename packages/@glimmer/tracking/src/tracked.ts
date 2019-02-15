@@ -1,14 +1,14 @@
-import { DEBUG } from "@glimmer/env";
+import { DEBUG } from '@glimmer/env';
 import {
   Tag,
   DirtyableTag,
   UpdatableTag,
   TagWrapper,
   combine,
-  CONSTANT_TAG
-} from "@glimmer/reference";
-import { dict } from "@glimmer/util";
-import { Option, Dict } from "@glimmer/interfaces";
+  CONSTANT_TAG,
+} from '@glimmer/reference';
+import { dict } from '@glimmer/util';
+import { Option, Dict } from '@glimmer/interfaces';
 
 /**
  * An object that that tracks @tracked properties that were consumed.
@@ -87,28 +87,24 @@ class Tracker {
  * ```
  */
 export function tracked(target: any, key: any): any;
-export function tracked(
-  target: any,
-  key: any,
-  descriptor: PropertyDescriptor
-): PropertyDescriptor;
+export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
 export function tracked(...args: any[]): any {
   let [target, key, descriptor] = args;
   if (DEBUG) {
-    if (typeof target === "string") {
+    if (typeof target === 'string') {
       throw new Error(
         `ERROR: You attempted to use @tracked with ${
-          args.length > 1 ? "arguments" : "an argument"
+          args.length > 1 ? 'arguments' : 'an argument'
         } ( @tracked(${args
           .map(d => `'${d}'`)
           .join(
-            ", "
-          )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${"`@tracked`"}.`
+            ', '
+          )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`
       );
     }
     if (target === undefined) {
       throw new Error(
-        "ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!"
+        'ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!'
       );
     }
   }
@@ -255,9 +251,7 @@ export default class Meta {
   constructor(parent: Meta) {
     this.tags = dict<Tag>();
     this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
-    this.trackedProperties = parent
-      ? Object.create(parent.trackedProperties)
-      : dict<boolean>();
+    this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
     this.trackedComputedProperties = parent
       ? Object.create(parent.trackedComputedProperties)
       : dict<boolean>();
@@ -301,9 +295,7 @@ export default class Meta {
       if (tag) {
         return tag;
       }
-      return (this.computedPropertyTags[key] = UpdatableTag.create(
-        CONSTANT_TAG
-      ));
+      return (this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG));
     } else {
       // The key is for a static property.
       tag = this.tags[key];
@@ -416,7 +408,7 @@ export function tagForProperty(
   key: string,
   throwError: UntrackedPropertyErrorThrower = defaultErrorThrower
 ): Tag {
-  if (typeof obj === "object" && obj) {
+  if (typeof obj === 'object' && obj) {
     if (DEBUG && !hasTag(obj, key)) {
       installDevModeErrorInterceptor(obj, key, throwError);
     }
