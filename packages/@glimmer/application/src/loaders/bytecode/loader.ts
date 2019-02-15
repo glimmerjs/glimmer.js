@@ -84,7 +84,7 @@ export default class BytecodeLoader implements Loader {
     const { mainEntry } = this.data;
     const runtime = await this.getRuntime(app, env);
 
-    return renderAotMain(runtime, self, builder, mainEntry);
+    return renderAotMain(runtime, self, builder, mainEntry, dynamicScope);
   }
 
   async getComponentTemplateIterator(
