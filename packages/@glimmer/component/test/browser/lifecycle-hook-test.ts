@@ -15,6 +15,10 @@ test('Lifecycle hook ordering', async function(assert) {
       super(owner, args);
       invocations.push([this.args.name, 'constructor']);
     }
+
+    didInsertElement() {
+      invocations.push([this.args.name, 'didInsertElement']);
+    }
   }
 
   class Component1 extends HookLoggerComponent {}
@@ -49,5 +53,51 @@ test('Lifecycle hook ordering', async function(assert) {
     ['component4', 'constructor'],
     ['component5', 'constructor'],
     ['component3', 'constructor'],
+    ['component4', 'didInsertElement'],
+    ['component5', 'didInsertElement'],
+    ['component2', 'didInsertElement'],
+    ['component3', 'didInsertElement'],
+    ['component1', 'didInsertElement'],
   ]);
 });
+
+test('element is set before didInsertElement', async function(assert) {
+  assert.expect(1);
+
+  class Element extends Component {
+    didInsertElement() {
+      assert.equal(this.element.tagName, 'H1');
+    }
+  }
+
+  await buildApp()
+    .component('Element', Element)
+    .template('Main', '<Element />')
+    .template('Element', trim(`
+      <h1>Chad Hietala - Greatest thinker of our generation</h1>
+     `)).boot();
+});
+
+test('fragment bounds are set before didInsertElement', async function(assert) {
+  assert.expect(2);
+
+  class Fragment extends Component {
+    didInsertElement() {
+      assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
+      assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
+    }
+  }
+
+  await buildApp()
+    .component('Fragment', Fragment)
+    .template('Main', '<Fragment />')
+    .template('Fragment', trim(`
+      Hello world!
+      <h1>Chad Hietala</h1>
+      <span>Greatest thinker of our generation</span>
+     `)).boot();
+});
+
+function trim(str: string) {
+  return str.trim();
+}
