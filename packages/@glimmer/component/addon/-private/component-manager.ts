@@ -53,7 +53,13 @@ export default class GlimmerComponentManager {
   }
 
   updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
-    set(component, 'args', args.named);
+    let argSnapshot = args.named;
+    
+    if (DEBUG) {
+      argSnapshot = Object.freeze(argSnapshot);
+    }
+    
+    set(component, 'args', argSnapshot);
   }
 
   destroyComponent(component: CreateComponentResult) {
