@@ -1,6 +1,5 @@
 import { DEBUG } from '@glimmer/env';
 import Ember from 'ember';
-import { set } from '@ember/object';
 import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
@@ -54,12 +53,12 @@ export default class GlimmerComponentManager {
 
   updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
     let argSnapshot = args.named;
-    
+
     if (DEBUG) {
       argSnapshot = Object.freeze(argSnapshot);
     }
-    
-    set(component, 'args', argSnapshot);
+
+    component.args = argSnapshot;
   }
 
   destroyComponent(component: CreateComponentResult) {

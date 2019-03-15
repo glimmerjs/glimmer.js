@@ -753,9 +753,9 @@
     to-fast-properties "^2.0.0"
 
 "@ember-decorators/babel-transforms@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/babel-transforms/-/babel-transforms-5.1.3.tgz#90bc10eb03c513e6fd21c818868a3c44eba55efc"
-  integrity sha512-wllrCE3PB0ic5rcbASXTbfqAP4OhgxeqeutcLScadiZHR+w4fFqYfeAVLm06H7fjOS2D6yqJywSgZE6C2mi/kA==
+  version "5.1.4"
+  resolved "https://registry.yarnpkg.com/@ember-decorators/babel-transforms/-/babel-transforms-5.1.4.tgz#e26e0480425e4b6e43be75e24ba85103a02d5459"
+  integrity sha512-uawhQ7fVAaeUgL13aOyvchW77i3Gu1T1lSNf7ZGTRj4SZKIVHPC0HyNTNShd/YIdnTLdBlch0ybCj/2/KJ0mMA==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.1.0"
     "@babel/plugin-proposal-decorators" "^7.1.2"
@@ -1085,7 +1085,7 @@
     "@types/jquery" "*"
     "@types/rsvp" "*"
 
-"@types/ember@*", "@types/ember@~3.0.26":
+"@types/ember@*":
   version "3.0.26"
   resolved "https://registry.yarnpkg.com/@types/ember/-/ember-3.0.26.tgz#54381f59c63e8860de9ea0c40defb519f117b0b3"
   integrity sha512-GsvXPrRHBYSq55ZHaXX7NpMvmJBe95Uy8wHAF+2KDIcEy2HbHps6QcnrRBgg/8MEEI71lFs28ZKrTY/YhwyQOw==
@@ -1106,6 +1106,30 @@
     "@types/ember__test" "*"
     "@types/ember__utils" "*"
     "@types/handlebars" "*"
+    "@types/htmlbars-inline-precompile" "*"
+    "@types/jquery" "*"
+    "@types/rsvp" "*"
+
+"@types/ember@~3.0.29":
+  version "3.0.29"
+  resolved "https://registry.yarnpkg.com/@types/ember/-/ember-3.0.29.tgz#a437a60a41f8df9cba52de267bfd0007566eae41"
+  integrity sha512-qW8quUN996GHQlNC4jnQlRcIeZUMW4lL8M16FMAbHEv3cEvY1aPX6GQc4TPt167eR1fAjykfB4cTG6OQFxGHXQ==
+  dependencies:
+    "@types/ember__application" "*"
+    "@types/ember__array" "*"
+    "@types/ember__component" "*"
+    "@types/ember__controller" "*"
+    "@types/ember__debug" "*"
+    "@types/ember__engine" "*"
+    "@types/ember__error" "*"
+    "@types/ember__object" "*"
+    "@types/ember__polyfills" "*"
+    "@types/ember__routing" "*"
+    "@types/ember__runloop" "*"
+    "@types/ember__service" "*"
+    "@types/ember__string" "*"
+    "@types/ember__test" "*"
+    "@types/ember__utils" "*"
     "@types/htmlbars-inline-precompile" "*"
     "@types/jquery" "*"
     "@types/rsvp" "*"

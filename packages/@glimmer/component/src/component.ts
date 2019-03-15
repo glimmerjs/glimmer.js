@@ -40,19 +40,19 @@ export default class Component extends GlimmerComponent<any> {
    * Legacy DOM access and lifecycle hooks. These will be deprecated in favor
    * of render modifiers once Glimmer.js supports an element modifier manager
    * API.
-  */
+   */
 
   /**
    * Called when the component has been inserted into the DOM.
    * Override this function to do any set up that requires an element in the document body.
    */
-  didInsertElement() { }
+  didInsertElement() {}
 
   /**
    * Called when the component has updated and rerendered itself.
    * Called only during a rerender, not during an initial render.
    */
-  didUpdate() { }
+  didUpdate() {}
 
   /**
    * Contains the first and last DOM nodes of a component's rendered template.
@@ -150,7 +150,10 @@ export default class Component extends GlimmerComponent<any> {
    */
   get element(): HTMLElement {
     let { bounds } = this;
-    assert(bounds && bounds.firstNode === bounds.lastNode, `The 'element' property can only be accessed on components that contain a single root element in their template. Try using 'bounds' instead to access the first and last nodes.`);
+    assert(
+      bounds && bounds.firstNode === bounds.lastNode,
+      `The 'element' property can only be accessed on components that contain a single root element in their template. Try using 'bounds' instead to access the first and last nodes.`
+    );
     return bounds.firstNode as HTMLElement;
   }
 }
