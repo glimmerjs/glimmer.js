@@ -7,7 +7,7 @@ import GlimmerComponentManager from './-private/component-manager';
 import _GlimmerComponent from './-private/component';
 
 class GlimmerComponent<T> extends _GlimmerComponent<T> {
-  get args() {
+  get args(): Readonly<T> {
     return get(this as any, '__args__');
   }
 

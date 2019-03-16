@@ -184,7 +184,7 @@ export default class GlimmerComponent<T = object> {
    * <p>Welcome, {{@firstName}} {{@lastName}}!</p>
    * ```
    */
-  args: T;
+  args: Readonly<T>;
 
   [DESTROYING] = false;
   [DESTROYED] = false;
