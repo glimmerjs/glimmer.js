@@ -1,5 +1,5 @@
 import { DEBUG } from '@glimmer/env';
-import { setOwner, Owner } from './owner';
+import { setOwner } from './owner';
 
 const DESTROYING = Symbol('destroying');
 const DESTROYED = Symbol('destroyed');
@@ -144,8 +144,11 @@ export default class GlimmerComponent<T = object> {
    * @param owner
    * @param args
    */
-  constructor(owner: Owner, args: T) {
-    if (DEBUG && !(owner !== null && typeof owner === 'object' && args[MAGIC_PROP] === true)) {
+  constructor(owner: unknown, args: T) {
+    if (
+      DEBUG &&
+      !(owner !== null && typeof owner === 'object' && (args as any)[MAGIC_PROP] === true)
+    ) {
       throw new Error(
         `You must pass both the owner and args to super() in your component: ${
           this.constructor.name
@@ -154,7 +157,7 @@ export default class GlimmerComponent<T = object> {
     }
 
     this.args = args;
-    setOwner(this, owner);
+    setOwner(this, owner as any);
   }
 
   /**
@@ -181,7 +184,7 @@ export default class GlimmerComponent<T = object> {
    * <p>Welcome, {{@firstName}} {{@lastName}}!</p>
    * ```
    */
-  args: T;
+  args: Readonly<T>;
 
   [DESTROYING] = false;
   [DESTROYED] = false;

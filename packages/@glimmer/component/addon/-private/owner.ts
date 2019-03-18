@@ -1,1 +1,1 @@
-export { setOwner, Owner } from '@glimmer/di';
+export { setOwner } from '@glimmer/di';
