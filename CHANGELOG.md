@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.14.0-alpha.4 (2019-03-18)
+
+#### :rocket: Enhancement
+* `@glimmer/component`
+  * [#178](https://github.com/glimmerjs/glimmer.js/pull/178) [BUGFIX] Freeze args when updating in DEBUG. ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#180](https://github.com/glimmerjs/glimmer.js/pull/180) [BUGFIX] Fixes args tracking in Glimmer component. ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([pzuraq](https://github.com/pzuraq))
+
 ## v0.13.0 (2018-11-05)
 
 #### :boom: Breaking Change
