@@ -9,7 +9,7 @@ export interface Bounds {
   lastNode: Node;
 }
 
-export default class Component extends GlimmerComponent<any> {
+export default class Component<T extends object = object> extends GlimmerComponent<T> {
   get args() {
     trackedGet(this, 'args');
     return this.__args__;
@@ -25,7 +25,7 @@ export default class Component extends GlimmerComponent<any> {
   /** @private
    * Slot on the component to save Arguments object passed to the `args` setter.
    */
-  private __args__: any;
+  private __args__: T;
 
   /**
    * Development-mode only name of the component, useful for debugging.
