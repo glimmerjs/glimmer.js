@@ -124,10 +124,10 @@ export interface BaseApplicationOptions {
 export default abstract class BaseApplication implements Owner {
   public rootName: string;
   public resolver: Resolver;
-  readonly document: SimpleDocument;
+  readonly document!: SimpleDocument;
 
-  private _registry: Registry;
-  private _container: Container;
+  private _registry!: Registry;
+  private _container!: Container;
   private _initializers: Initializer[] = [];
   private _environment: FactoryDefinition<Environment>;
 

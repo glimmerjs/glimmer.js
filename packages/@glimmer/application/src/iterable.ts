@@ -26,7 +26,7 @@ class ArrayIterator implements OpaqueIterator {
     return this.array.length === 0;
   }
 
-  next(): IterationItem<unknown, number> {
+  next(): IterationItem<unknown, number> | null {
     let { position, array, keyFor } = this;
 
     if (position >= array.length) return null;
@@ -57,7 +57,7 @@ class ObjectKeysIterator implements OpaqueIterator {
     return this.keys.length === 0;
   }
 
-  next(): IterationItem<unknown, string> {
+  next(): IterationItem<unknown, string> | null {
     let { position, keys, values, keyFor } = this;
 
     if (position >= keys.length) return null;
@@ -94,7 +94,7 @@ export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIte
 
   switch (keyPath) {
     case '@index':
-      keyFor = (_, index: number) => String(index);
+      keyFor = (_, index: unknown) => String(index);
       break;
     case '@primitive':
       keyFor = (item: unknown) => String(item);

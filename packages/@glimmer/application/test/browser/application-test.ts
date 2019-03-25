@@ -78,7 +78,7 @@ test('can be booted with bytecode loader', async function(assert) {
     },
     pool: result.pool,
     table: [],
-    mainEntry: result.table.vmHandleByModuleLocator.get(locator),
+    mainEntry: result.table.vmHandleByModuleLocator.get(locator)!,
     meta: {
       mainTemplate: {
         v: result.table.vmHandleByModuleLocator.get(locator),

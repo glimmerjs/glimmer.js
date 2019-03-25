@@ -18,7 +18,7 @@ import { RenderResult, TemplateIterator } from '@glimmer/interfaces';
  * @public
  */
 export default class SyncRenderer implements Renderer {
-  result: RenderResult;
+  result: RenderResult | null = null;
 
   render(iterator: TemplateIterator): void {
     // Iterate the template iterator, executing the compiled template program

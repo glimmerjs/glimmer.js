@@ -20,7 +20,7 @@ export interface EnvironmentOptions {
 /** @internal */
 export default class EnvironmentImpl extends GlimmerEnvironmentImpl implements Environment {
   private uselessAnchor: HTMLAnchorElement;
-  public resolver: RuntimeResolver;
+  public resolver!: RuntimeResolver;
 
   static create(options: Partial<EnvironmentOptions> = {}) {
     options.document = options.document || self.document;

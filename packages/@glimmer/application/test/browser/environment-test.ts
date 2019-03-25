@@ -123,7 +123,7 @@ test('custom elements are rendered', async function(assert) {
 
 test('components without a template raise an error', async function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'HelloWorld';
+    debugName = 'HelloWorld';
   }
 
   let app = await buildApp()
@@ -141,7 +141,7 @@ test('components without a template raise an error', async function(assert) {
 
 test('components with dasherized names raise an error', function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'hello-world';
+    debugName = 'hello-world';
   }
 
   assert.throws(() => {
