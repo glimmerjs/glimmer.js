@@ -8,7 +8,7 @@
 Add this package to your project with Yarn:
 
 ```bash
-yarn add @glimmer/tracking
+yarn add -D @glimmer/tracking
 ```
 
 Or alternatively with npm:
