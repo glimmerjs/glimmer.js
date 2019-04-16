@@ -32,7 +32,7 @@ export interface AppRoot {
   id: number;
   component: string;
   parent: Node;
-  nextSibling: Option<Node>;
+  insertBefore: Option<Node>;
 }
 
 /** @internal */
@@ -92,7 +92,7 @@ export default class Application extends BaseApplication {
 
   /**
    * Renders a component by name into the provided element, and optionally
-   * adjacent to the provided nextSibling element.
+   * inserted before the provided element.
    *
    * ## Examples
    *
@@ -100,10 +100,10 @@ export default class Application extends BaseApplication {
    * app.renderComponent('MyComponent', document.body, document.getElementById('my-footer'));
    * ```
    */
-  renderComponent(component: string, parent: Node, nextSibling: Option<Node> = null): void {
+  renderComponent(component: string, parent: Node, insertBefore: Option<Node> = null): void {
     let { _roots: roots, _self: self } = this;
 
-    roots.push({ id: this._rootsIndex++, component, parent, nextSibling });
+    roots.push({ id: this._rootsIndex++, component, parent, insertBefore });
 
     // If we've already rendered, need to invalidate the root reference and
     // schedule a re-render for the new component to appear in DOM.
