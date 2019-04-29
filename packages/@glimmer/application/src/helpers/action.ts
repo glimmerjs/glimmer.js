@@ -1,9 +1,8 @@
-import { UpdatableReference } from "@glimmer/component";
-import { VM, Arguments } from "@glimmer/runtime";
-import { Opaque } from '@glimmer/interfaces';
+import { UpdatableReference } from '@glimmer/component';
+import { VM, VMArguments } from '@glimmer/interfaces';
 
 /** @internal */
-export default function buildAction(vm: VM, _args: Arguments) {
+export default function buildAction(_args: VMArguments, vm: VM) {
   let componentRef = vm.getSelf();
   let args = _args.capture();
 
@@ -26,9 +25,11 @@ export default function buildAction(vm: VM, _args: Arguments) {
   });
 }
 
-function throwNoActionError(actionFunc: any, actionFuncReference: Opaque) {
+function throwNoActionError(actionFunc: any, actionFuncReference: unknown) {
   let referenceInfo = debugInfoForReference(actionFuncReference);
-  throw new Error(`You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`);
+  throw new Error(
+    `You tried to create an action with the {{action}} helper, but the first argument ${referenceInfo}was ${typeof actionFunc} instead of a function.`
+  );
 }
 
 /** @internal */
@@ -37,7 +38,9 @@ export function debugInfoForReference(reference: any): string {
   let parent;
   let property;
 
-  if (reference === null || reference === undefined) { return message; }
+  if (reference === null || reference === undefined) {
+    return message;
+  }
 
   if ('parent' in reference && 'property' in reference) {
     parent = reference['parent'].value();
@@ -66,7 +69,7 @@ function debugName(obj: any) {
     }
     try {
       return JSON.stringify(obj);
-    } catch (e) { }
+    } catch (e) {}
     return obj.toString();
   }
 }

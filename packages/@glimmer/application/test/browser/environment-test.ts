@@ -1,20 +1,23 @@
-import { DOMTreeConstruction } from '@glimmer/runtime';
 import { Environment } from '@glimmer/application';
 import Component from '@glimmer/component';
+import { DOMTreeConstruction } from '@glimmer/runtime';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
-import * as SimpleDOM from 'simple-dom';
-import { Simple } from '@glimmer/interfaces';
 import { DEBUG } from '@glimmer/env';
 
+import HTMLSerializer from '@simple-dom/serializer';
+import voidMap from '@simple-dom/void-map';
+import createHTMLDocument from '@simple-dom/document';
+import { SimpleDocument } from '@simple-dom/interface';
+
 const { module, test } = QUnit;
-const serializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
+const serializer = new HTMLSerializer(voidMap);
 
 module('[@glimmer/application] Environment');
 
 test('can be instantiated with new', function(assert) {
   let env = new Environment({
     document: self.document,
-    appendOperations: new DOMTreeConstruction(self.document)
+    appendOperations: new DOMTreeConstruction(self.document as SimpleDocument),
   });
   assert.ok(env, 'environment exists');
 });
@@ -30,10 +33,10 @@ test('can render a component', async function(assert) {
   }
 
   let app = await buildApp()
-  .component('Main', MainComponent)
-  .template('Main', '<div><HelloWorld @name={{salutation}} /></div>')
-  .template('HelloWorld', `<h1>Hello {{@name}}!</h1>`)
-  .boot();
+    .component('Main', MainComponent)
+    .template('Main', '<div><HelloWorld @name={{salutation}} /></div>')
+    .template('HelloWorld', `<h1>Hello {{@name}}!</h1>`)
+    .boot();
 
   let root = app.rootElement as HTMLElement;
 
@@ -120,7 +123,7 @@ test('custom elements are rendered', async function(assert) {
 
 test('components without a template raise an error', async function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'HelloWorld';
+    debugName = 'HelloWorld';
   }
 
   let app = await buildApp()
@@ -129,28 +132,30 @@ test('components without a template raise an error', async function(assert) {
   try {
     await app.boot();
   } catch (e) {
-    assert.equal(e.message, "The component 'HelloWorld' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.");
+    assert.equal(
+      e.message,
+      "The component 'HelloWorld' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory."
+    );
   }
 });
 
 test('components with dasherized names raise an error', function(assert) {
   class HelloWorldComponent extends Component {
-    debugName: 'hello-world';
+    debugName = 'hello-world';
   }
 
   assert.throws(() => {
     buildApp()
-    .template('hello-world', '<div><hello-world /></div>')
-    .component('hello-world', HelloWorldComponent);
-  }, Error("template names must start with a capital letter"));
+      .template('hello-world', '<div><hello-world /></div>')
+      .component('hello-world', HelloWorldComponent);
+  }, Error('template names must start with a capital letter'));
 });
 
 test('can render a custom helper', async function(assert) {
-  class MainComponent extends Component {
-  }
+  class MainComponent extends Component {}
 
   let app = await buildApp()
-    .helper('greeting', () => "Hello Glimmer!")
+    .helper('greeting', () => 'Hello Glimmer!')
     .template('Main', '<div>{{greeting}}</div>')
     .component('Main', MainComponent)
     .boot();
@@ -190,7 +195,7 @@ test('can render a custom helper that takes args', async function(assert) {
 test('renders a component using simple-dom', async function(assert) {
   assert.expect(1);
 
-  let customDocument: Simple.Document = new SimpleDOM.Document();
+  let customDocument = createHTMLDocument();
 
   let app = await buildApp({ document: customDocument })
     .template('Main', `<h1>Hello Glimmer!</h1>`)
@@ -210,7 +215,11 @@ if (DEBUG) {
         .template('Main', '<h1>Hello, {{name}}!</h1>')
         .boot();
     } catch (err) {
-      assert.ok(err.message.match("You tried to reference {{name}} from the Main template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@name}}?"));
+      assert.ok(
+        err.message.match(
+          "You tried to reference {{name}} from the Main template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@name}}?"
+        )
+      );
     }
   });
 } else {

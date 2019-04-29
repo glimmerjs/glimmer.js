@@ -1,20 +1,24 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import { tracked, tagForProperty, UntrackedPropertyError } from '@glimmer/component';
-import { CONSTANT_TAG, DirtyableTag, Tag } from "@glimmer/reference";
+import { tracked, tagForProperty, UntrackedPropertyError } from '@glimmer/tracking';
+import { CONSTANT_TAG, DirtyableTag, Tag } from '@glimmer/reference';
 
 function unrelatedBump(tag: Tag, snapshot: number) {
   let t = DirtyableTag.create();
   t.inner.dirty();
 
-  QUnit.assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid after an unrelated bump');
+  QUnit.assert.strictEqual(
+    tag.validate(snapshot),
+    true,
+    'tag is still valid after an unrelated bump'
+  );
 }
 
-module('[@glimmer/component] Tracked Properties');
+module('[@glimmer/tracking] Tracked Properties');
 
 if (DEBUG) {
-  test('requesting a tag for an untracked property should throw an exception if mutated in development mode', (assert) => {
+  test('requesting a tag for an untracked property should throw an exception if mutated in development mode', assert => {
     assert.expect(2);
 
     class UntrackedPerson {
@@ -22,8 +26,7 @@ if (DEBUG) {
       get lastName() {
         return 'Dale';
       }
-      set lastName(value) {
-      }
+      set lastName(value) {}
 
       toString() {
         return 'UntrackedPerson';
@@ -43,7 +46,7 @@ if (DEBUG) {
     }, /The property 'lastName' on UntrackedPerson was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator./);
   });
 } else {
-  test('requesting a tag for an untracked property should not throw an exception if mutated in production mode', (assert) => {
+  test('requesting a tag for an untracked property should not throw an exception if mutated in production mode', assert => {
     assert.expect(1);
 
     class UntrackedPerson {
@@ -51,8 +54,7 @@ if (DEBUG) {
       get lastName() {
         return 'Dale';
       }
-      set lastName(value) {
-      }
+      set lastName(value) {}
 
       toString() {
         return 'UntrackedPerson';
@@ -70,7 +72,7 @@ if (DEBUG) {
   });
 }
 
-test('tracked properties can be read and written to', (assert) => {
+test('tracked properties can be read and written to', assert => {
   class TrackedPerson {
     @tracked firstName = 'Tom';
   }
@@ -81,7 +83,7 @@ test('tracked properties can be read and written to', (assert) => {
   assert.strictEqual(obj.firstName, 'Edsger');
 });
 
-test('can request a tag for a property', (assert) => {
+test('can request a tag for a property', assert => {
   class TrackedPerson {
     @tracked firstName = 'Tom';
   }
@@ -101,7 +103,7 @@ test('can request a tag for a property', (assert) => {
   unrelatedBump(tag, snapshot);
 });
 
-test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
+test('can request a tag for non-objects and get a CONSTANT_TAG', assert => {
   let snapshot = CONSTANT_TAG.value();
 
   assert.ok(tagForProperty(null, 'foo').validate(snapshot));
@@ -116,7 +118,7 @@ test('can request a tag for non-objects and get a CONSTANT_TAG', (assert) => {
 
 test('can request a tag from a frozen POJO', assert => {
   let obj = Object.freeze({
-    firstName: 'Toran'
+    firstName: 'Toran',
   });
 
   assert.strictEqual(obj.firstName, 'Toran');
@@ -177,9 +179,9 @@ test('can request a tag from an instance of a frozen class', assert => {
   unrelatedBump(tag, snapshot);
 });
 
-test('can track a computed property', (assert) => {
+test('can track a computed property', assert => {
   let count = 0;
-  let firstName = "Tom";
+  let firstName = 'Tom';
 
   class TrackedPerson {
     @tracked get firstName() {
@@ -209,13 +211,17 @@ test('can track a computed property', (assert) => {
   unrelatedBump(tag, snapshot);
 
   assert.strictEqual(obj.firstName, 'Edsger3');
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalid, since reading always recomputes the tags');
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalid, since reading always recomputes the tags'
+  );
   snapshot = tag.value();
 
   unrelatedBump(tag, snapshot);
 });
 
-test('tracked computed properties are invalidated when their dependencies are invalidated', (assert) => {
+test('tracked computed properties are invalidated when their dependencies are invalidated', assert => {
   class TrackedPerson {
     @tracked get salutation() {
       return `Hello, ${this.fullName}!`;
@@ -245,7 +251,11 @@ test('tracked computed properties are invalidated when their dependencies are in
 
   obj.firstName = 'Edsger';
   obj.lastName = 'Dijkstra';
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after chained dependency is set');
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalidated after chained dependency is set'
+  );
   assert.strictEqual(obj.fullName, 'Edsger Dijkstra');
   assert.strictEqual(obj.salutation, 'Hello, Edsger Dijkstra!');
 
@@ -253,7 +263,11 @@ test('tracked computed properties are invalidated when their dependencies are in
   assert.strictEqual(tag.validate(snapshot), true);
 
   obj.fullName = 'Alan Kay';
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after chained dependency is set');
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalidated after chained dependency is set'
+  );
   assert.strictEqual(obj.fullName, 'Alan Kay');
   assert.strictEqual(obj.firstName, 'Alan');
   assert.strictEqual(obj.lastName, 'Kay');
@@ -265,7 +279,7 @@ test('tracked computed properties are invalidated when their dependencies are in
   unrelatedBump(tag, snapshot);
 });
 
-test('nested @tracked in multiple objects', (assert) => {
+test('nested @tracked in multiple objects', assert => {
   class TrackedPerson {
     @tracked get salutation() {
       return `Hello, ${this.fullName}!`;
@@ -314,7 +328,11 @@ test('nested @tracked in multiple objects', (assert) => {
 
   person.firstName = 'Edsger';
   person.lastName = 'Dijkstra';
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after nested dependency is set');
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalidated after nested dependency is set'
+  );
   assert.strictEqual(person.fullName, 'Edsger Dijkstra');
   assert.strictEqual(obj.contact, 'Edsger Dijkstra @ tom@example.com');
 
@@ -322,7 +340,11 @@ test('nested @tracked in multiple objects', (assert) => {
   assert.strictEqual(tag.validate(snapshot), true);
 
   person.fullName = 'Alan Kay';
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after chained dependency is set');
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalidated after chained dependency is set'
+  );
   assert.strictEqual(person.fullName, 'Alan Kay');
   assert.strictEqual(person.firstName, 'Alan');
   assert.strictEqual(person.lastName, 'Kay');
@@ -331,8 +353,12 @@ test('nested @tracked in multiple objects', (assert) => {
   snapshot = tag.value();
   assert.strictEqual(tag.validate(snapshot), true);
 
-  obj.email = "alan@example.com";
-  assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after chained dependency is set');
+  obj.email = 'alan@example.com';
+  assert.strictEqual(
+    tag.validate(snapshot),
+    false,
+    'tag is invalidated after chained dependency is set'
+  );
   assert.strictEqual(person.fullName, 'Alan Kay');
   assert.strictEqual(person.firstName, 'Alan');
   assert.strictEqual(person.lastName, 'Kay');
@@ -357,7 +383,11 @@ if (DEBUG) {
       }
       return new DependentKeysAreCool();
     }
-    assert.throws(createErrorProneClass, /@tracked\('firstName', 'lastName'\)/, 'the correct error is thrown');
+    assert.throws(
+      createErrorProneClass,
+      /@tracked\('firstName', 'lastName'\)/,
+      'the correct error is thrown'
+    );
   });
 
   test('Using @tracked as a decorator factory throws an error', function(assert) {
@@ -380,7 +410,7 @@ if (DEBUG) {
 module('[@glimmer/component] Tracked Property Warning in Development Mode');
 
 if (DEBUG) {
-  test('interceptor works correctly for own value descriptor', (assert) => {
+  test('interceptor works correctly for own value descriptor', assert => {
     let obj = { name: 'Martin' };
 
     tagForProperty(obj, 'name');
@@ -392,8 +422,10 @@ if (DEBUG) {
     }, UntrackedPropertyError.for(obj, 'name'));
   });
 
-  test('interceptor works correctly for inherited value descriptor', (assert) => {
-    class Person { name: string; }
+  test('interceptor works correctly for inherited value descriptor', assert => {
+    class Person {
+      name: string;
+    }
     Person.prototype.name = 'Martin';
 
     let obj = new Person();
@@ -407,11 +439,11 @@ if (DEBUG) {
     }, UntrackedPropertyError.for(obj, 'name'));
   });
 
-  test('interceptor works correctly for own getter descriptor', (assert) => {
+  test('interceptor works correctly for own getter descriptor', assert => {
     let obj = {
       get name() {
         return 'Martin';
-      }
+      },
     };
 
     tagForProperty(obj, 'name');
@@ -423,7 +455,7 @@ if (DEBUG) {
     }, UntrackedPropertyError.for(obj, 'name'));
   });
 
-  test('interceptor works correctly for inherited getter descriptor', (assert) => {
+  test('interceptor works correctly for inherited getter descriptor', assert => {
     class Person {
       get name() {
         return 'Martin';
@@ -441,8 +473,10 @@ if (DEBUG) {
     }, UntrackedPropertyError.for(obj, 'name'));
   });
 
-  test('interceptor works correctly for inherited non-configurable descriptor', (assert) => {
-    class Person { name: string; }
+  test('interceptor works correctly for inherited non-configurable descriptor', assert => {
+    class Person {
+      name: string;
+    }
     Person.prototype.name = 'Martin';
     Object.defineProperty(Person.prototype, 'name', { configurable: false });
 
@@ -458,7 +492,7 @@ if (DEBUG) {
   });
 }
 
-test('interceptor is not installed for own non-configurable descriptor', (assert) => {
+test('interceptor is not installed for own non-configurable descriptor', assert => {
   let obj = { name: 'Martin' };
   Object.defineProperty(obj, 'name', { configurable: false });
 
@@ -471,7 +505,7 @@ test('interceptor is not installed for own non-configurable descriptor', (assert
   assert.strictEqual(obj.name, 'Tom');
 });
 
-test('interceptor is not installed for array length [issue #34]', (assert) => {
+test('interceptor is not installed for array length [issue #34]', assert => {
   let array = [1, 2, 3];
 
   tagForProperty(array, 'length');

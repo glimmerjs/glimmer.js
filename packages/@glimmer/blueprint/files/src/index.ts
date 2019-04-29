@@ -1,4 +1,5 @@
-import { ComponentManager, setPropertyDidChange } from '@glimmer/component';
+import { ComponentManager } from '@glimmer/component';
+import { setPropertyDidChange } from '@glimmer/tracking';
 import App from './main';
 
 const app = new App();
@@ -10,8 +11,11 @@ setPropertyDidChange(() => {
 
 app.registerInitializer({
   initialize(registry) {
-    registry.register(`component-manager:/${app.rootName}/component-managers/main`, ComponentManager);
-  }
+    registry.register(
+      `component-manager:/${app.rootName}/component-managers/main`,
+      ComponentManager
+    );
+  },
 });
 
 app.renderComponent('<%= component %>', containerElement, null);

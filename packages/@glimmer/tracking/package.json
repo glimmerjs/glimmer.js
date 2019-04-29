@@ -1,0 +1,31 @@
+{
+  "name": "@glimmer/tracking",
+  "version": "0.14.0-alpha.4",
+  "description": "Glimmer property tracking library",
+  "contributors": [
+    "Dan Gebhardt <dan@cerebris.com>",
+    "Tom Dale <tom@tomdale.net>"
+  ],
+  "repository": "https://github.com/glimmerjs/glimmer.js",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/commonjs/es5/index.js",
+  "module": "dist/modules/es2017/index.js",
+  "types": "dist/types/index.d.ts",
+  "dependencies": {
+    "@glimmer/di": "^0.1.9",
+    "@glimmer/env": "^0.1.7",
+    "@glimmer/reference": "^0.40.1",
+    "@glimmer/runtime": "^0.40.1",
+    "@glimmer/util": "^0.40.1"
+  },
+  "devDependencies": {
+    "@glimmer/application-test-helpers": "^0.14.0-alpha.4",
+    "@glimmer/compiler": "^0.40.1",
+    "@glimmer/interfaces": "^0.40.1",
+    "@glimmer/resolver": "^0.3.0",
+    "@glimmer/wire-format": "^0.40.1"
+  }
+}

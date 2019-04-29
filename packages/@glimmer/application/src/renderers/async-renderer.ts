@@ -1,5 +1,5 @@
-import { TemplateIterator, RenderResult } from "@glimmer/runtime";
-import { Renderer } from "../application";
+import { Renderer } from '../base-application';
+import { RenderResult, TemplateIterator } from '@glimmer/interfaces';
 
 interface Deadline {
   didTimeout: boolean;
@@ -51,25 +51,25 @@ const DEFAULT_TIMEOUT = 250;
  */
 export default class AsyncRenderer implements Renderer {
   public timeout: number;
-  protected result: RenderResult;
+  protected result: RenderResult | null = null;
 
   constructor(options: AsyncRendererOptions = {}) {
     this.timeout = options.timeout || DEFAULT_TIMEOUT;
   }
 
   render(iterator: TemplateIterator): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let timeout = this.timeout;
 
       let tick = (deadline: Deadline) => {
-        let iteratorResult: IteratorResult<RenderResult>;
+        let iteratorResult: IteratorResult<RenderResult | null>;
 
         do {
           iteratorResult = iterator.next();
         } while (!iteratorResult.done && deadline.timeRemaining() > 1);
 
         if (iteratorResult.done) {
-          this.result = iteratorResult.value;
+          this.result = iteratorResult.value!;
           return resolve();
         }
 
@@ -82,7 +82,7 @@ export default class AsyncRenderer implements Renderer {
 
   rerender(): void {
     if (!this.result) {
-      throw new Error("Cannot re-render before initial render has completed");
+      throw new Error('Cannot re-render before initial render has completed');
     }
 
     this.result.rerender();

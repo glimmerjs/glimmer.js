@@ -1,22 +1,25 @@
+import { expect } from '@glimmer/util';
 import {
-  ModifierManager,
+  Option,
+  Maybe,
+  Dict,
+  JitRuntimeResolver,
   Helper as GlimmerHelper,
+  ModifierManager,
   Invocation,
   Helper,
-  VM,
-  Arguments
-} from '@glimmer/runtime';
-import { expect } from "@glimmer/util";
-import { Opaque, RuntimeResolver as IRuntimeResolver, Option, Maybe, Dict } from "@glimmer/interfaces";
-import { Owner } from "@glimmer/di";
-import { ComponentDefinition, ComponentManager, ComponentFactory } from "@glimmer/component";
+  Template,
+} from '@glimmer/interfaces';
+import { Owner } from '@glimmer/di';
+import { ComponentDefinition, ComponentManager, ComponentFactory } from '@glimmer/component';
 
-import { TypedRegistry } from "./typed-registry";
-import Application from "../../application";
+import { TypedRegistry } from './typed-registry';
+import Application from '../../application';
 import { HelperReference } from '../../helpers/user-helper';
-import { LazyCompiler, CompilableProgram } from '@glimmer/opcode-compiler';
+import { TemplateFactory, templateFactory } from '@glimmer/opcode-compiler';
+import { PrecompileOptions, precompile } from '@glimmer/compiler';
 
-export type UserHelper = (args: ReadonlyArray<Opaque>, named: Dict<Opaque>) => Opaque;
+export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => unknown;
 
 export interface Lookup {
   helper: GlimmerHelper;
@@ -32,7 +35,7 @@ export type LookupType = keyof Lookup;
 export interface Specifier {
   specifier: string;
   managerId?: string;
-};
+}
 
 export type TemplateEntry = {
   handle: number;
@@ -49,9 +52,8 @@ export interface SerializedTemplateWithLazyBlock<Specifier> {
 }
 
 /** @public */
-export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
-  handleLookup: TypedRegistry<Opaque>[] = [];
-  compiler: LazyCompiler<Specifier>;
+export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver<Specifier> {
+  handleLookup: TypedRegistry<unknown>[] = [];
 
   private cache = {
     component: new TypedRegistry<ComponentDefinition>(),
@@ -59,7 +61,7 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     compiledTemplate: new TypedRegistry<Invocation>(),
     helper: new TypedRegistry<Helper>(),
     manager: new TypedRegistry<ComponentManager>(),
-    modifier: new TypedRegistry<ModifierManager>()
+    modifier: new TypedRegistry<ModifierManager<unknown, unknown>>(),
   };
 
   constructor(private owner: Owner) {}
@@ -67,6 +69,15 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
   lookup(type: LookupType, name: string, referrer?: Specifier): Option<number> {
     if (this.cache[type].hasName(name)) {
       return this.cache[type].getHandle(name);
+    } else {
+      return null;
+    }
+  }
+
+  get<K extends LookupType>(type: K, name: string, referrer?: Specifier): Option<Lookup[K]> {
+    if (this.cache[type].hasName(name)) {
+      let handle = this.cache[type].getHandle(name);
+      return this.cache[type].getByHandle(handle);
     } else {
       return null;
     }
@@ -90,31 +101,18 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return handle;
   }
 
-  compileTemplate(name: string, layout: Option<number>): Invocation {
-    if (!this.cache.compiledTemplate.hasName(name)) {
-      let serializedTemplate = this.resolve<SerializedTemplateWithLazyBlock<Specifier>>(layout);
-      let block = JSON.parse(serializedTemplate.block);
-      let compilableTemplate = new CompilableProgram(this.compiler, {
-        block,
-        referrer: serializedTemplate.meta,
-        asPartial: false
-      });
+  compilableFrom(name: string, referrer?: Specifier): Template {
+    let specifier = this.owner.identify(`template:${name}`, referrer.specifier);
+    return this.compilable({ specifier });
+  }
 
-      let invocation = {
-        handle: compilableTemplate.compile(),
-        symbolTable: compilableTemplate.symbolTable
-      };
-
-      this.register('compiledTemplate', name, invocation);
-      return invocation;
-    }
-
-    let handle = this.lookup('compiledTemplate', name);
-    return this.resolve<Invocation>(handle);
+  compilable(locator: Specifier): Template {
+    let serializedTemplate = this.get('template', locator.specifier);
+    return templateFactory(serializedTemplate).create();
   }
 
   registerHelper(name: string, helper: UserHelper) {
-    let glimmerHelper = (_vm: VM, args: Arguments) => new HelperReference(helper, args);
+    let glimmerHelper: GlimmerHelper = args => new HelperReference(helper, args);
     return this.register('helper', name, glimmerHelper);
   }
 
@@ -122,12 +120,24 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     this.register('helper', name, helper);
   }
 
-  registerComponent(name: string, resolvedSpecifier: string, Component: ComponentFactory, template: SerializedTemplateWithLazyBlock<Specifier>): number {
+  registerComponent(
+    name: string,
+    resolvedSpecifier: string,
+    Component: ComponentFactory,
+    template: SerializedTemplateWithLazyBlock<Specifier>
+  ): number {
     let templateEntry = this.registerTemplate(resolvedSpecifier, template);
     let manager = this.managerFor(templateEntry.meta.managerId);
     let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
 
     return this.register('component', name, definition);
+  }
+
+  lookupComponent(name: string, referrer?: Specifier): ComponentDefinition {
+    if (!this.cache.component.hasName(name)) {
+      this.lookupComponentDefinition(name, referrer);
+    }
+    return this.get('component', name, referrer);
   }
 
   lookupComponentHandle(name: string, referrer?: Specifier) {
@@ -154,18 +164,24 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     }
   }
 
-  registerTemplate(resolvedSpecifier: string, template: SerializedTemplateWithLazyBlock<Specifier> ): TemplateEntry {
+  registerTemplate(
+    resolvedSpecifier: string,
+    template: SerializedTemplateWithLazyBlock<Specifier>
+  ): TemplateEntry {
     return {
       name: resolvedSpecifier,
       handle: this.register('template', resolvedSpecifier, template),
-      meta: template.meta
+      meta: template.meta,
     };
   }
 
   lookupComponentDefinition(name: string, meta: Specifier): ComponentDefinition {
     let handle: number;
     if (!this.cache.component.hasName(name)) {
-      let specifier = expect(this.identifyComponent(name, meta), `Could not find the component '${name}'`);
+      let specifier = expect(
+        this.identifyComponent(name, meta),
+        `Could not find the component '${name}'`
+      );
       let template = this.owner.lookup('template', specifier);
       let componentSpecifier = this.owner.identify('component', specifier);
       let componentFactory: ComponentFactory = null;
@@ -200,8 +216,8 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     return this.lookup('helper', name, meta);
   }
 
-  lookupPartial(name: string, meta?: Specifier): never {
-    throw new Error("Partials are not available in Glimmer applications.");
+  lookupPartial(name: string, referrer?: Specifier): never {
+    throw new Error('Partials are not available in Glimmer applications.');
   }
 
   resolve<T>(handle: number): T {
@@ -217,10 +233,21 @@ export default class RuntimeResolver implements IRuntimeResolver<Specifier> {
     let specifier = owner.identify(relSpecifier, referrer);
 
     if (specifier === undefined && owner.identify(`component:${name}`, referrer)) {
-      throw new Error(`The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`);
+      throw new Error(
+        `The component '${name}' is missing a template. All components must have a template. Make sure there is a template.hbs in the component directory.`
+      );
     }
 
     return specifier;
   }
+}
 
+export function createTemplate<Locator>(
+  templateSource: string,
+  options?: PrecompileOptions
+): TemplateFactory<Locator> {
+  let wrapper: SerializedTemplateWithLazyBlock<Locator> = JSON.parse(
+    precompile(templateSource, options)
+  );
+  return templateFactory<Locator>(wrapper);
 }

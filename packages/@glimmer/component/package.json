@@ -1,31 +1,101 @@
 {
   "name": "@glimmer/component",
-  "version": "0.13.0",
+  "version": "0.14.0-alpha.4",
   "description": "Glimmer component library",
-  "contributors": [
-    "Dan Gebhardt <dan@cerebris.com>",
-    "Tom Dale <tom@tomdale.net>"
+  "keywords": [
+    "ember-addon"
   ],
-  "repository": "https://github.com/glimmerjs/glimmer-component",
   "license": "MIT",
-  "files": [
-    "dist"
-  ],
   "main": "dist/commonjs/es5/index.js",
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
+  "contributors": [
+    "Dan Gebhardt <dan@cerebris.com>",
+    "Robert Jackson <me@rwjblue.com>",
+    "Tom Dale <tom@tomdale.net>"
+  ],
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "repository": "https://github.com/glimmerjs/glimmer.js",
+  "scripts": {
+    "build": "ember build",
+    "lint:js": "eslint .",
+    "start": "ember serve",
+    "test": "ember test",
+    "test:all": "ember try:each",
+    "test:node": "mocha test/mocha --recursive"
+  },
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/reference": "^0.34.7",
-    "@glimmer/runtime": "^0.34.7",
-    "@glimmer/util": "^0.34.7"
+    "@glimmer/reference": "^0.40.1",
+    "@glimmer/runtime": "^0.40.1",
+    "@glimmer/util": "^0.40.1",
+    "@glimmer/tracking": "^0.14.0-alpha.4",
+    "broccoli-file-creator": "^2.1.1",
+    "broccoli-merge-trees": "^3.0.2",
+    "ember-cli-babel": "^7.2.0",
+    "ember-cli-get-component-path-option": "^1.0.0",
+    "ember-cli-is-package-missing": "^1.0.0",
+    "ember-cli-normalize-entity-name": "^1.0.0",
+    "ember-cli-path-utils": "^1.0.0",
+    "ember-cli-string-utils": "^1.1.0",
+    "ember-cli-typescript": "^2.0.0-rc.1",
+    "ember-compatibility-helpers": "^1.1.2"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.13.0",
-    "@glimmer/compiler": "^0.34.7",
-    "@glimmer/interfaces": "^0.34.7",
+    "@ember-decorators/babel-transforms": "^5.1.3",
+    "@ember/optional-features": "^0.6.1",
+    "@glimmer/application-test-helpers": "^0.14.0-alpha.4",
+    "@glimmer/compiler": "^0.40.1",
+    "@glimmer/interfaces": "^0.40.1",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.34.7"
+    "@glimmer/wire-format": "^0.40.1",
+    "@types/ember": "~3.0.29",
+    "@types/ember-qunit": "~3.4.3",
+    "@types/ember-test-helpers": "~1.0.4",
+    "@types/ember-testing-helpers": "^0.0.3",
+    "@types/ember__test-helpers": "~0.7.6",
+    "@types/mocha": "^5.2.5",
+    "@types/qunit": "^2.5.3",
+    "@types/rsvp": "^4.0.2",
+    "babel-eslint": "^8.2.6",
+    "broccoli-asset-rev": "^2.7.0",
+    "broccoli-funnel": "^2.0.1",
+    "ember-ajax": "^3.0.0",
+    "ember-cli": "~3.4.0-beta.1",
+    "ember-cli-blueprint-test-helpers": "^0.19.1",
+    "ember-cli-dependency-checker": "^2.0.0",
+    "ember-cli-htmlbars": "^2.0.3",
+    "ember-cli-htmlbars-inline-precompile": "^1.0.3",
+    "ember-cli-inject-live-reload": "^1.4.1",
+    "ember-cli-qunit": "^4.3.2",
+    "ember-cli-sri": "^2.1.0",
+    "ember-cli-uglify": "^2.1.0",
+    "ember-decorators": "^5.1.3",
+    "ember-disable-prototype-extensions": "^1.1.2",
+    "ember-export-application-global": "^2.0.0",
+    "ember-load-initializers": "^1.1.0",
+    "ember-maybe-import-regenerator": "^0.1.6",
+    "ember-resolver": "^5.0.0",
+    "ember-source": "~3.4.0",
+    "ember-source-channel-url": "^1.0.1",
+    "ember-try": "^1.0.0-beta.3",
+    "eslint-plugin-ember": "^5.0.0",
+    "eslint-plugin-node": "^6.0.1",
+    "loader.js": "^4.2.3",
+    "mocha": "^5.0.0",
+    "qunit-dom": "^0.7.1",
+    "typescript": "^2.9.2"
+  },
+  "engines": {
+    "node": "6.* || 8.* || >= 10.*"
+  },
+  "ember-addon": {
+    "configPath": "tests/dummy/config",
+    "defaultBlueprint": "install-glimmer-component",
+    "main": "ember-addon-main.js"
   }
 }

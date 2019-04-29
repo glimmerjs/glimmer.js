@@ -1,5 +1,16 @@
-import { Cursor, clientBuilder, Environment, ElementBuilder } from "@glimmer/runtime";
-import { Builder } from "../application";
+import { clientBuilder } from '@glimmer/runtime';
+import { Option, Cursor, Environment, ElementBuilder } from '@glimmer/interfaces';
+import { Builder } from '../base-application';
+import { SimpleElement, SimpleNode } from '@simple-dom/interface';
+
+/**
+ * Variant of Glimmer VM's Cursor interface that accepts either
+ * native DOM or SimpleDOM types.
+ */
+export interface DOMCursor {
+  element: Element | SimpleElement;
+  nextSibling?: Option<Node | SimpleNode>;
+}
 
 /**
  * A {@link Builder} that creates DOM elements when templates render.
@@ -14,8 +25,8 @@ import { Builder } from "../application";
 export default class DOMBuilder implements Builder {
   protected cursor: Cursor;
 
-  constructor({ element, nextSibling = null }: Cursor) {
-    this.cursor = { element, nextSibling };
+  constructor({ element, nextSibling = null }: DOMCursor) {
+    this.cursor = { element, nextSibling } as Cursor;
   }
 
   getBuilder(env: Environment): ElementBuilder {

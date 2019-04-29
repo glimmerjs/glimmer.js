@@ -1,4 +1,6 @@
-export default {
+import { ResolverConfiguration } from '@glimmer/resolver';
+
+const CONFIG: ResolverConfiguration = {
   types: {
     application: { definitiveCollection: 'main' },
     component: { definitiveCollection: 'components' },
@@ -6,22 +8,24 @@ export default {
     renderer: { definitiveCollection: 'main' },
     template: { definitiveCollection: 'components' },
     util: { definitiveCollection: 'utils' },
-    'component-manager': { definitiveCollection: 'component-managers' }
+    'component-manager': { definitiveCollection: 'component-managers' },
   },
   collections: {
     main: {
-      types: ['application', 'renderer']
+      types: ['application', 'renderer'],
     },
     components: {
       group: 'ui',
       types: ['component', 'template', 'helper'],
-      defaultType: 'component'
+      defaultType: 'component',
     },
     'component-managers': {
-      types: ['component-manager']
+      types: ['component-manager'],
     },
     utils: {
-      unresolvable: true
-    }
-  }
+      unresolvable: true,
+    },
+  },
 };
+
+export default CONFIG;

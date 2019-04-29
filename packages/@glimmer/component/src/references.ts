@@ -1,6 +1,4 @@
-import {
-  dict, Opaque
-} from "@glimmer/util";
+import { dict } from '@glimmer/util';
 import {
   PathReference,
   CONSTANT_TAG,
@@ -10,13 +8,13 @@ import {
   combine,
   isConst,
   Tag,
-  TagWrapper
-} from "@glimmer/reference";
+  TagWrapper,
+} from '@glimmer/reference';
 import {
   ConditionalReference as GlimmerConditionalReference,
-  PrimitiveReference
-} from "@glimmer/runtime";
-import { tagForProperty } from "./tracked";
+  PrimitiveReference,
+} from '@glimmer/runtime';
+import { tagForProperty } from '@glimmer/tracking';
 
 /**
  * The base PathReference.
@@ -51,7 +49,7 @@ export abstract class CachedReference<T> extends ComponentPathReference<T> {
 export class RootReference extends ConstReference<object> {
   private children = dict<RootPropertyReference>();
 
-  get(propertyKey: string): RootPropertyReference{
+  get(propertyKey: string): RootPropertyReference {
     let ref = this.children[propertyKey];
 
     if (!ref) {
@@ -71,7 +69,7 @@ export abstract class PropertyReference extends CachedReference<any> {
     }
   }
 
-  get(key: string): PathReference<any>  {
+  get(key: string): PathReference<any> {
     return new NestedPropertyReference(this, key);
   }
 }
@@ -120,11 +118,11 @@ export class NestedPropertyReference extends PropertyReference {
 
     _parentObjectTag.inner.update(tagForProperty(parentValue, _propertyKey));
 
-    if (typeof parentValue === "string" && _propertyKey === "length") {
+    if (typeof parentValue === 'string' && _propertyKey === 'length') {
       return parentValue.length;
     }
 
-    if (typeof parentValue === "object" && parentValue) {
+    if (typeof parentValue === 'object' && parentValue) {
       return parentValue[_propertyKey];
     } else {
       return undefined;
@@ -164,7 +162,7 @@ export class ConditionalReference extends GlimmerConditionalReference {
       return PrimitiveReference.create(value);
     }
 
-    return new ConditionalReference(reference);
+    return new GlimmerConditionalReference(reference);
   }
 }
 
@@ -173,7 +171,11 @@ export class TemplateOnlyComponentDebugReference extends ConstReference<void> {
     super(undefined);
   }
 
-  get(propertyKey: string): PathReference<Opaque> {
-    throw new Error(`You tried to reference {{${propertyKey}}} from the ${this.name} template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`);
+  get(propertyKey: string): PathReference<unknown> {
+    throw new Error(
+      `You tried to reference {{${propertyKey}}} from the ${
+        this.name
+      } template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
+    );
   }
-};
+}

@@ -27,7 +27,9 @@ function shouldRun(testFunc: any): boolean {
   return true;
 }
 
-function isTestFunction(value: any): value is (this: RenderTest, assert: typeof QUnit.assert) => void {
+function isTestFunction(
+  value: any
+): value is (this: RenderTest, assert: typeof QUnit.assert) => void {
   return typeof value === 'function' && value.isTest;
 }
 
@@ -36,7 +38,7 @@ export class RenderTest {
 }
 
 function setTestingDescriptor(descriptor: PropertyDescriptor): void {
-  let testFunction:TestFunction = descriptor.value as TestFunction;
+  let testFunction: TestFunction = descriptor.value as TestFunction;
   descriptor.enumerable = true;
   testFunction['isTest'] = true;
 }

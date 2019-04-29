@@ -1,7 +1,7 @@
 import { BytecodeData } from '@glimmer/application';
 import { BundleCompiler } from '@glimmer/bundle-compiler';
 import { MUCompilerDelegate } from '@glimmer/compiler-delegates';
-import { Opaque, ModuleLocator } from '@glimmer/interfaces';
+import { ModuleLocator } from '@glimmer/interfaces';
 
 import rollup from 'rollup';
 import virtual from 'rollup-plugin-virtual';
@@ -13,7 +13,7 @@ import { sync as findup } from 'find-up';
 import * as os from 'os';
 
 export class BuildServer {
-  private compiler: BundleCompiler<Opaque>;
+  private compiler: BundleCompiler;
   private delegate: MUCompilerDelegate;
   public projectPath: string;
   private tmp: string;
@@ -24,20 +24,26 @@ export class BuildServer {
     this.delegate = new MUCompilerDelegate({
       projectPath: this.projectPath,
       builtins: {
-        'wat': { kind: 'helper', module: '@css-blocks', name: 'wat', meta: { factory: false } },
+        wat: {
+          kind: 'helper',
+          module: '@css-blocks',
+          name: 'wat',
+          meta: { factory: false },
+        },
       },
       mainTemplateLocator: customLocator,
       outputFiles: {
         dataSegment: 'data.js',
-        heapFile: 'templates.gbx'
-      }
+        heapFile: 'templates.gbx',
+      },
     });
     this.compiler = new BundleCompiler(this.delegate);
   }
 
   addTemplate(locator: ModuleLocator, content: string) {
     let { compiler } = this;
-    compiler.add(locator, content);
+
+    compiler.addTemplateSource(locator, content);
   }
 
   build() {
@@ -56,13 +62,13 @@ export class BuildServer {
         virtual({
           './src/ui/components/id/helper': 'export default function id() { return "ID_STUB"; }',
           '@css-blocks': 'export const wat = () => { return "WAT_STUB"; }',
-          '@glimmer/application': 'export const ifHelper = () => { return "IF_STUB" };'
-        })
-      ]
+          '@glimmer/application': 'export const ifHelper = () => { return "IF_STUB" };',
+        }),
+      ],
     });
     let { code } = await bundle.generate({ format: 'es' });
     let transformed = babel.transform(code, {
-      plugins: [transformCJS]
+      plugins: [transformCJS],
     });
 
     fs.writeFileSync(path.join(tmp, 'smoke-data.js'), transformed.code);
@@ -76,7 +82,7 @@ export class BuildServer {
     /* tslint:enable */
     return {
       data: code,
-      bytecode: this.bytecode
+      bytecode: this.bytecode,
     };
   }
 }

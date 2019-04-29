@@ -6,7 +6,7 @@
     "inlineSourceMap": true,
     "declaration": true,
     "outDir": "dist",
-    "baseUrl" : "packages",
+    "baseUrl": "packages",
     "rootDir": "packages",
     "importHelpers": true,
 
@@ -24,6 +24,8 @@
     "strictNullChecks": false,
     "allowUnreachableCode": false,
     "noImplicitReturns": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
 
     "newLine": "LF",
     "noEmit": true,
@@ -39,5 +41,6 @@
     "packages/@glimmer/*/index.ts",
     "packages/@glimmer/*/test/**/*.ts",
     "packages/rollup-plugin-typescript2/src/**/*.ts"
-  ]
+  ],
+  "exclude": ["node_modules", "packages/@glimmer/blueprint"]
 }

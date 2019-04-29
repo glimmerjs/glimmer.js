@@ -1,14 +1,17 @@
+import { AppCompilerDelegate, mainTemplate } from '@glimmer/application';
 import { BundleCompiler, BundleCompilerOptions } from '@glimmer/bundle-compiler';
-import { MUCompilerDelegate, AppCompilerDelegate, OutputFiles, Builtins } from '@glimmer/compiler-delegates';
+import {
+  AppCompilerDelegateOptions,
+  Builtins,
+  MUCompilerDelegate,
+  OutputFiles,
+} from '@glimmer/compiler-delegates';
+import { compilable } from '@glimmer/opcode-compiler';
 import Plugin from 'broccoli-plugin';
-import walkSync from 'walk-sync';
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, extname } from 'path';
-import { mainTemplate } from '@glimmer/application';
-import { CompilableProgram } from '@glimmer/opcode-compiler';
-import { Opaque } from '@glimmer/util';
-import { AppCompilerDelegateOptions } from '@glimmer/compiler-delegates';
 import { TempDir } from 'broccoli-test-helper';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { extname, join } from 'path';
+import walkSync from 'walk-sync';
 
 // https://github.com/joliss/node-walk-sync/blob/984a2d6adf9facc1531fb325852f475eb260781d/index.d.ts
 export class WalkSyncEntry {
@@ -24,7 +27,7 @@ export class WalkSyncEntry {
 export type CompilerMode = 'module-unification';
 
 export interface AppCompilerDelegateConstructor {
-  new(options: AppCompilerDelegateOptions): AppCompilerDelegate<{}>;
+  new (options: AppCompilerDelegateOptions): AppCompilerDelegate<{}>;
 }
 
 export interface GlimmerBundleCompilerOptions {
@@ -39,9 +42,11 @@ export default class GlimmerBundleCompiler extends Plugin {
   options: GlimmerBundleCompilerOptions;
   inputPaths: string[];
   outputPath: string;
-  compiler: BundleCompiler<Opaque>;
-  private delegate: AppCompilerDelegate<Opaque>;
-  constructor(inputNode: TempDir|string, options: GlimmerBundleCompilerOptions) {
+  compiler: BundleCompiler;
+
+  // TODO: Better handle generic TemplateMeta for compiler delegates
+  private delegate: AppCompilerDelegate<any>;
+  constructor(inputNode: TempDir | string, options: GlimmerBundleCompilerOptions) {
     super([inputNode], options);
     this.options = this.defaultOptions(options);
   }
@@ -51,12 +56,15 @@ export default class GlimmerBundleCompiler extends Plugin {
       throw new Error('Must pass a bundle compiler mode or pass a custom compiler delegate.');
     }
 
-    return Object.assign({
-      outputFiles: {
-        heapFile: 'templates.gbx',
-        dataSegment: 'data-segment.js'
-      }
-    }, options);
+    return Object.assign(
+      {
+        outputFiles: {
+          heapFile: 'templates.gbx',
+          dataSegment: 'data-segment.js',
+        },
+      },
+      options
+    );
   }
 
   listEntries(): WalkSyncEntry[] {
@@ -75,9 +83,17 @@ export default class GlimmerBundleCompiler extends Plugin {
     let [projectPath] = this.inputPaths;
 
     if (options.mode && options.mode === 'module-unification') {
-      delegate = this.delegate = new MUCompilerDelegate({ projectPath, outputFiles, builtins });
+      delegate = this.delegate = new MUCompilerDelegate({
+        projectPath,
+        outputFiles,
+        builtins,
+      });
     } else if (options.delegate) {
-      delegate = this.delegate = new options.delegate({ projectPath, outputFiles, builtins });
+      delegate = this.delegate = new options.delegate({
+        projectPath,
+        outputFiles,
+        builtins,
+      });
     }
 
     this.compiler = new BundleCompiler(delegate, options.bundleCompiler);
@@ -88,15 +104,18 @@ export default class GlimmerBundleCompiler extends Plugin {
 
     let { outputPath } = this;
 
-    let locator = this.delegate.templateLocatorFor({ module: '@glimmer/application', name: 'mainLayout' });
+    let locator = this.delegate.templateLocatorFor({
+      module: '@glimmer/application',
+      name: 'mainLayout',
+    });
     let block = JSON.parse(mainTemplate.block);
-    let compilable = new CompilableProgram(this.compiler.compiler, {
+    let compilableTemplate = compilable({
       block,
       referrer: locator.meta,
-      asPartial: false
+      asPartial: false,
     });
 
-    this.compiler.addCompilableTemplate(locator, compilable);
+    this.compiler.addCompilableTemplate(locator, compilableTemplate);
 
     let [projectPath] = this.inputPaths;
 
@@ -110,7 +129,7 @@ export default class GlimmerBundleCompiler extends Plugin {
           let normalizedPath = this.delegate.normalizePath(join(projectPath, relativePath));
           let moduleLocator = { module: normalizedPath, name: 'default' };
           let templateLocator = this.delegate.templateLocatorFor(moduleLocator);
-          this.compiler.add(templateLocator, content);
+          this.compiler.addTemplateSource(templateLocator, content);
         } else {
           writeFileSync(join(outputPath, relativePath), content);
         }

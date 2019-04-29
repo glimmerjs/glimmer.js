@@ -1,4 +1,5 @@
-import Component, { UntrackedPropertyError } from '@glimmer/component';
+import Component from '@glimmer/component';
+import { UntrackedPropertyError } from '@glimmer/tracking';
 import { buildApp } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
 
@@ -21,22 +22,23 @@ if (DEBUG) {
     assert.expect(1);
 
     let done = assert.async();
+    let update;
 
     class HelloWorldComponent extends Component {
       firstName: string;
 
-      constructor(options: any) {
-        super(options);
-      }
+      constructor(owner, args) {
+        super(owner, args);
 
-      didInsertElement() {
-        let error = UntrackedPropertyError.for(this, 'firstName');
+        update = () => {
+          let error = UntrackedPropertyError.for(this, 'firstName');
 
-        assert.throws(() => {
-          this.firstName = 'Chad';
-        }, error);
+          assert.throws(() => {
+            this.firstName = 'Chad';
+          }, error);
 
-        done();
+          done();
+        };
       }
     }
 
@@ -45,27 +47,30 @@ if (DEBUG) {
       .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
       .component('HelloWorld', HelloWorldComponent)
       .boot();
+
+    update();
   });
 } else {
   test('Mutating a tracked property should not throw an exception in production mode', async function(assert) {
     assert.expect(1);
 
     let done = assert.async();
+    let update;
 
     class HelloWorldComponent extends Component {
       firstName: string;
 
-      constructor(options: any) {
-        super(options);
-      }
+      constructor(owner, args) {
+        super(owner, args);
 
-      didInsertElement() {
-        // This won't update, but shouldn't throw an error in production mode,
-        // either, due to the overhead of installing setters for untracked
-        // properties.
-        this.firstName = 'Chad';
-        assert.ok(true, 'firstName was mutated without throwing an exception');
-        done();
+        update = () => {
+          // This won't update, but shouldn't throw an error in production mode,
+          // either, due to the overhead of installing setters for untracked
+          // properties.
+          this.firstName = 'Chad';
+          assert.ok(true, 'firstName was mutated without throwing an exception');
+          done();
+        };
       }
     }
 
@@ -74,5 +79,7 @@ if (DEBUG) {
       .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
       .component('HelloWorld', HelloWorldComponent)
       .boot();
+
+    update();
   });
 }

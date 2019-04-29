@@ -26,20 +26,26 @@ test('#identify - uses a resolver to convert a relative specifier to an absolute
   let resolver = new FakeResolver();
   let app = createApp({ rootName: 'app', resolver });
   let specifier = 'component:date-picker';
-  assert.equal(app.identify(specifier, 'component:/app/components/form-controls'), 'component:/app/components/date-picker', 'absolute specifier was returned');
+  assert.equal(
+    app.identify(specifier, 'component:/app/components/form-controls'),
+    'component:/app/components/date-picker',
+    'absolute specifier was returned'
+  );
 });
 
 test('#factoryFor - returns a registered factory', function(assert) {
   class DatePicker {
-    static create() { return { foo: 'bar' }; }
+    static create() {
+      return { foo: 'bar' };
+    }
   }
 
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('component:/app/components/date-picker', DatePicker);
-    }
+    },
   });
 
   app.initialize();
@@ -52,7 +58,9 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
   assert.expect(3);
 
   class DatePicker {
-    static create() { return { foo: 'bar' }; }
+    static create() {
+      return { foo: 'bar' };
+    }
   }
 
   class FakeResolver implements Resolver {
@@ -64,7 +72,11 @@ test('#factoryFor - will use a resolver to locate a factory', function(assert) {
       return 'component:/app/components/date-picker';
     }
     retrieve(specifier: string): any {
-      assert.equal(specifier, 'component:/app/components/date-picker', 'FakeResolver#identify was invoked');
+      assert.equal(
+        specifier,
+        'component:/app/components/date-picker',
+        'FakeResolver#identify was invoked'
+      );
       return DatePicker;
     }
   }
@@ -82,11 +94,15 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
   assert.expect(3);
 
   class Foo {
-    static create() { return { foo: 'bar' }; }
+    static create() {
+      return { foo: 'bar' };
+    }
   }
 
   class FooBar {
-    static create() { return { foo: 'bar' }; }
+    static create() {
+      return { foo: 'bar' };
+    }
   }
 
   class FakeResolver implements Resolver {
@@ -107,9 +123,9 @@ test('#factoryFor - will use a resolver to locate a factory, even if one is regi
 
   let app = createApp({ rootName: 'app', resolver });
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', Foo);
-    }
+    },
   });
 
   app.initialize();
@@ -133,9 +149,9 @@ test('#lookup - returns an instance created by the factory', function(assert) {
 
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', FooBar);
-    }
+    },
   });
 
   app.initialize();
@@ -158,9 +174,9 @@ test('#lookup - caches looked up instances by default', function(assert) {
 
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', FooBar);
-    }
+    },
   });
 
   app.initialize();
@@ -187,9 +203,9 @@ test('#lookup - will not cache lookups specified as non-singletons', function(as
 
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', FooBar, { singleton: false });
-    }
+    },
   });
 
   app.initialize();
@@ -208,9 +224,9 @@ test('#lookup - returns the factory when registrations specify instantiate: fals
 
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', factory, { instantiate: false });
-    }
+    },
   });
 
   app.initialize();
@@ -223,7 +239,9 @@ test('#lookup - uses the resolver to locate a registration', function(assert) {
   assert.expect(3);
 
   class Foo {
-    static create() { return { foo: 'bar' }; }
+    static create() {
+      return { foo: 'bar' };
+    }
   }
 
   class FakeResolver implements Resolver {
@@ -274,11 +292,11 @@ test('#lookup - injects references registered by name', function(assert) {
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', FooBar);
       app.register('router:/app/root/main', Router);
       app.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
-    }
+    },
   });
 
   app.initialize();
@@ -312,11 +330,11 @@ test('#lookup - injects references registered by type', function(assert) {
   let app = createApp({ rootName: 'app', resolver: new BlankResolver() });
 
   app.registerInitializer({
-    initialize(app) {
+    initialize(app: any) {
       app.register('foo:/app/foos/bar', FooBar);
       app.register('router:/app/root/main', Router);
       app.registerInjection('foo:/app/foos/bar', 'router', 'router:/app/root/main');
-    }
+    },
   });
 
   app.initialize();

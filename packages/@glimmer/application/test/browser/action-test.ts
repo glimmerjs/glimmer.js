@@ -1,4 +1,5 @@
-import Component, { tracked } from '@glimmer/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { buildApp, didRender } from '@glimmer/application-test-helpers';
 import { debugInfoForReference } from '@glimmer/application';
 
@@ -15,10 +16,10 @@ test('can curry arguments to actions', async function(assert) {
 
   class HelloWorld extends Component {
     @tracked
-    name = "world";
+    name = 'world';
 
-    constructor(injections: object) {
-      super(injections);
+    constructor(owner: any, args: any) {
+      super(owner, args);
       helloWorldComponent = this;
     }
 
@@ -40,20 +41,20 @@ test('can curry arguments to actions', async function(assert) {
   assert.strictEqual(root.innerText, 'Hello World');
 
   let h1 = root.querySelector('h1');
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
   assert.strictEqual(passedMsg2, 'world');
   assert.strictEqual(passedEvent, fakeEvent);
   passedEvent = null;
 
-  helloWorldComponent.name = "cruel world";
+  helloWorldComponent!.name = 'cruel world';
   app.scheduleRerender();
 
   await didRender(app);
 
   h1 = root.querySelector('h1');
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.strictEqual(passedMsg1, 'hello');
   assert.strictEqual(passedMsg2, 'cruel world');
@@ -64,20 +65,28 @@ test('actions can be passed and invoked with additional arguments', async functi
   assert.expect(2);
 
   let fakeEvent: any = {
-    type: 'click'
+    type: 'click',
   };
   let parentComponent: ParentComponent;
   let passed: any[] = [];
 
   class ParentComponent extends Component {
-    name = "world";
+    name = 'world';
 
-    constructor(injections: object) {
-      super(injections);
+    constructor(owner: any, args: any) {
+      super(owner, args);
       parentComponent = this;
     }
 
-    userDidClick(a1: number, a2: number, a3: number, a4: number, a5: number, a6: number, evt: Event) {
+    userDidClick(
+      a1: number,
+      a2: number,
+      a3: number,
+      a4: number,
+      a5: number,
+      a6: number,
+      evt: Event
+    ) {
       passed = [a1, a2, a3, a4, a5, a6, evt];
       assert.strictEqual(this, parentComponent, 'function context is preserved');
     }
@@ -94,15 +103,13 @@ test('actions can be passed and invoked with additional arguments', async functi
   let root = app.rootElement as Element;
 
   let h1 = root.querySelector('.grandchild') as HTMLElement;
-  h1.onclick(fakeEvent);
+  h1!.onclick!(fakeEvent);
 
   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);
 });
 
 test('action helper invoked without a function raises an error', async function(assert) {
-  class ParentComponent extends Component {
-    debugName = 'ParentComponent';
-  }
+  class ParentComponent extends Component {}
 
   let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
@@ -112,23 +119,28 @@ test('action helper invoked without a function raises an error', async function(
   try {
     await app.boot();
   } catch (e) {
-    assert.equal(e.message, "You tried to create an action with the \{\{action\}\} helper, but the first argument \('doesntExist' on ParentComponent\) was undefined instead of a function.");
+    assert.equal(
+      e.message,
+      "You tried to create an action with the {{action}} helper, but the first argument ('doesntExist' on Parent) was undefined instead of a function."
+    );
   }
 });
 
 test('debug name from references can be extracted', function(assert) {
   let refOne = {
     parent: {
-      value() { return { debugName: 'parent' }; }
+      value() {
+        return { debugName: 'parent' };
+      },
     },
-    property: 'name'
+    property: 'name',
   };
 
   let refTwo = {
     _parentValue: {
-      debugName: 'contact'
+      debugName: 'contact',
     },
-    _propertyKey: 'address'
+    _propertyKey: 'address',
   };
 
   assert.strictEqual(debugInfoForReference(null), '');

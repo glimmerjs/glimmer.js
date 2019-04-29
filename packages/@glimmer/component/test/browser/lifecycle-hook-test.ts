@@ -6,34 +6,37 @@ const { module, test } = QUnit;
 module('[@glimmer/component] Lifecycle Hooks');
 
 test('Lifecycle hook ordering', async function(assert) {
-  assert.expect(7);
+  assert.expect(1);
 
   let invocations: [string, string][] = [];
-  let didCallWillDestroy = false;
 
   abstract class HookLoggerComponent extends Component {
-    abstract name: string;
-
-    didInsertElement() {
-      invocations.push([this.name, 'didInsertElement']);
-      assert.ok(this.bounds.firstNode instanceof Element);
+    constructor(owner, args) {
+      super(owner, args);
+      invocations.push([this.args.name, 'constructor']);
     }
 
-    willDestroy() {
-      didCallWillDestroy = true;
+    didInsertElement() {
+      invocations.push([this.args.name, 'didInsertElement']);
     }
   }
 
-  class Component1 extends HookLoggerComponent { name = 'component1'; };
-  class Component2 extends HookLoggerComponent { name = 'component2'; };
-  class Component3 extends HookLoggerComponent { name = 'component3'; };
-  class Component4 extends HookLoggerComponent { name = 'component4'; };
-  class Component5 extends HookLoggerComponent { name = 'component5'; };
+  class Component1 extends HookLoggerComponent {}
+  class Component2 extends HookLoggerComponent {}
+  class Component3 extends HookLoggerComponent {}
+  class Component4 extends HookLoggerComponent {}
+  class Component5 extends HookLoggerComponent {}
 
-  let app = await buildApp()
-    .template('Main', '<div><ComponentOne /></div>')
-    .template('ComponentOne', '<div><ComponentTwo /><ComponentThree /></div>')
-    .template('ComponentTwo', '<div><ComponentFour /><ComponentFive /></div>')
+  await buildApp()
+    .template('Main', '<div><ComponentOne @name="component1"/></div>')
+    .template(
+      'ComponentOne',
+      '<div><ComponentTwo @name="component2"/><ComponentThree @name="component3"/></div>'
+    )
+    .template(
+      'ComponentTwo',
+      '<div><ComponentFour @name="component4"/><ComponentFive @name="component5"/></div>'
+    )
     .template('ComponentThree', '<div></div>')
     .template('ComponentFour', '<div></div>')
     .template('ComponentFive', '<div></div>')
@@ -45,17 +48,17 @@ test('Lifecycle hook ordering', async function(assert) {
     .boot();
 
   assert.deepEqual(invocations, [
+    ['component1', 'constructor'],
+    ['component2', 'constructor'],
+    ['component4', 'constructor'],
+    ['component5', 'constructor'],
+    ['component3', 'constructor'],
     ['component4', 'didInsertElement'],
     ['component5', 'didInsertElement'],
     ['component2', 'didInsertElement'],
     ['component3', 'didInsertElement'],
     ['component1', 'didInsertElement'],
   ]);
-
-  let component1 = app["_container"].lookup("component:/test-app/components/ComponentTwo");
-  component1.destroy();
-
-  assert.ok(didCallWillDestroy);
 });
 
 test('element is set before didInsertElement', async function(assert) {

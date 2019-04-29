@@ -1,5 +1,5 @@
-import { TemplateIterator, RenderResult } from '@glimmer/runtime';
-import { Renderer } from '../application';
+import { Renderer } from '../base-application';
+import { RenderResult, TemplateIterator } from '@glimmer/interfaces';
 
 /**
  * Performs a synchronous initial render of templates.
@@ -18,7 +18,7 @@ import { Renderer } from '../application';
  * @public
  */
 export default class SyncRenderer implements Renderer {
-  result: RenderResult;
+  result: RenderResult | null = null;
 
   render(iterator: TemplateIterator): void {
     // Iterate the template iterator, executing the compiled template program

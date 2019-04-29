@@ -1,28 +1,34 @@
-import Debug from "debug";
-import { relative, extname, dirname, basename } from "path";
+import Debug from 'debug';
+import { relative, extname, dirname, basename } from 'path';
 
 import {
   BundleCompilationResult,
   ModuleLocatorMap,
   ExternalModuleTable,
-} from "@glimmer/bundle-compiler";
-import { ConstantPool, SerializedHeap } from "@glimmer/program";
-import { Dict, assert, expect } from "@glimmer/util";
-import { CompilableTemplate, ProgramSymbolTable, ModuleLocator, TemplateLocator as ITemplateLocator } from "@glimmer/interfaces";
-import { ModuleTypes } from "@glimmer/application";
-import { Project } from "glimmer-analyzer";
+} from '@glimmer/bundle-compiler';
+import { assert, expect } from '@glimmer/util';
+import {
+  CompilableTemplate,
+  ProgramSymbolTable,
+  ModuleLocator,
+  TemplateLocator as ITemplateLocator,
+  AnnotatedModuleLocator,
+  Dict,
+  SerializedHeap,
+  ConstantPool,
+} from '@glimmer/interfaces';
+import { ModuleTypes } from '@glimmer/application';
+import { Project } from 'glimmer-analyzer';
 
-import { OutputFiles } from "../app-compiler-delegate";
-import { TemplateMeta } from "./compiler-delegate";
-import { Builtins, HelperLocator } from "../builtins";
+import { OutputFiles } from '../app-compiler-delegate';
+import { TemplateMeta } from './compiler-delegate';
+import { Builtins, HelperLocator } from '../builtins';
 import { Metadata } from '../../../application/src/loaders/bytecode/loader';
 
-const debug = Debug("@glimmer/compiler-delegates:mu-codegen");
+const debug = Debug('@glimmer/compiler-delegates:mu-codegen');
 
 export type TemplateLocator = ITemplateLocator<TemplateMeta>;
-export type CompilableTemplates = ModuleLocatorMap<
-  CompilableTemplate<ProgramSymbolTable>
->;
+export type CompilableTemplates = ModuleLocatorMap<CompilableTemplate<ProgramSymbolTable>>;
 
 export default class MUCodeGenerator {
   constructor(
@@ -34,7 +40,7 @@ export default class MUCodeGenerator {
   ) {}
 
   generateDataSegment() {
-    debug("generating data segment");
+    debug('generating data segment');
     let { mainTemplateLocator } = this;
     let { heap, pool, table } = this.compilation;
 
@@ -53,21 +59,21 @@ export default class MUCodeGenerator {
       ${meta}
       const mainEntry = ${main.toString()};
       export default { table, heap, pool, meta, mainEntry, prefix };`;
-    debug("generated data segment; source=%s", source);
+    debug('generated data segment; source=%s', source);
 
     return source;
   }
 
-  generateTemplateMetadata(table: ExternalModuleTable, compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>) {
+  generateTemplateMetadata(
+    table: ExternalModuleTable,
+    compilerSymbolTables: ModuleLocatorMap<ProgramSymbolTable>
+  ) {
     let symbolTables = this.generateSymbolTables(compilerSymbolTables);
     let map = this.generateSpecifierMap(table);
 
     // Get the union of specifiers contained in the symbol tables and specifier
     // map.
-    let specifiers = Array.from(new Set([
-      ...Object.keys(map),
-      ...Object.keys(symbolTables)
-    ]));
+    let specifiers = Array.from(new Set([...Object.keys(map), ...Object.keys(symbolTables)]));
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
@@ -82,7 +88,7 @@ export default class MUCodeGenerator {
       meta[trimmed] = removeEmpty({
         v: vmHandle,
         h: handle,
-        table
+        table,
       });
     });
 
@@ -144,7 +150,10 @@ export default class MUCodeGenerator {
   }
 
   generateHeap(heap: SerializedHeap) {
-    assert((heap.table.length / 2) % 1 === 0, 'Heap table should be balanced and divisible by 2');
+    assert(
+      (heap.table.length / 3) % 1 === 0,
+      'Heap table should be balanced and divisible by 3' // Size is defined in @glimmer/program enum Size.ENTRY_SIZE
+    );
     let serializedHeap = { table: heap.table, handle: heap.handle };
     return strip`
       const heap = ${inlineJSON(serializedHeap)};
@@ -175,25 +184,25 @@ export default class MUCodeGenerator {
 
     return source;
 
-    function replaceTemplatesWithComponents(locator: ModuleLocator) {
+    function replaceTemplatesWithComponents(locator: AnnotatedModuleLocator) {
       let referrer = project.specifierForPath(locator.module.replace(/^\.\//, ''));
       if (referrer && referrer.split(':')[0] === 'template') {
-        let specifier = project.resolver.identify("component:", referrer);
+        let specifier = project.resolver.identify('component:', referrer);
         if (!specifier) {
-          debug("no component for template; referrer=%s", referrer);
+          debug('no component for template; referrer=%s', referrer);
           return null;
         }
 
         let module = `./${project.pathForSpecifier(specifier)}`;
 
         debug(
-          "found corresponding component; path=%s; specifier=%s; referrer=%s;",
+          'found corresponding component; path=%s; specifier=%s; referrer=%s;',
           module,
           specifier,
           referrer
         );
 
-        return { module, name: "default" };
+        return { module, name: 'default' };
       } else if (locator.kind === 'template') {
         return null;
       }
@@ -206,35 +215,35 @@ export default class MUCodeGenerator {
     // and the data segment path is `compiled/data/table`, we want to generate a
     // path like `../../src/ui/components/User/component`.
     function normalizeModulePaths(locator: ModuleLocator) {
-      if (!locator) { return null; }
+      if (!locator) {
+        return null;
+      }
 
       let { module, name } = locator;
 
       // Don't try to normalize imports from packages
       if (!module.match(/^(\.|\.\.)?\//)) {
-        debug("skipping module path normalization; path=%s", module);
+        debug('skipping module path normalization; path=%s', module);
         return locator;
       }
 
       let relativePath = relative(dataSegmentPath, module);
-      relativePath = relativePath.replace(extname(relativePath), "");
+      relativePath = relativePath.replace(extname(relativePath), '');
       relativePath = `./${relativePath}`;
 
       debug(
-        "normalizing module path; from=%s; to=%s; path=%s",
+        'normalizing module path; from=%s; to=%s; path=%s',
         module,
         dataSegmentPath,
         relativePath
       );
 
-      return {...locator, module: relativePath, name };
+      return { ...locator, module: relativePath, name };
     }
   }
 }
 
-function isHelperLocator(
-  locator: ModuleLocator
-): locator is HelperLocator {
+function isHelperLocator(locator: ModuleLocator): locator is HelperLocator {
   return (locator as HelperLocator).kind === 'helper';
 }
 
@@ -256,10 +265,7 @@ function relativePath(path: string) {
   return path.replace(/^\.\//, '');
 }
 
-function generateExternalModuleTable(
-  modules: ModuleLocator[],
-  builtins: Builtins
-) {
+function generateExternalModuleTable(modules: ModuleLocator[], builtins: Builtins) {
   let { imports, identifiers } = getImportStatements(modules);
   identifiers = identifiers.map((id, handle) => {
     let locator = modules[handle];
@@ -271,37 +277,30 @@ function generateExternalModuleTable(
   });
 
   return `
-${imports.join("\n")}
-const table = [${identifiers.join(",")}];
+${imports.join('\n')}
+const table = [${identifiers.join(',')}];
 `;
 }
 
 function strip(strings: TemplateStringsArray, ...args: string[]) {
-  if (typeof strings === "object") {
-    return strings
-      .map((str: string, i: number) => {
-        return `${str
-          .split("\n")
-          .map(s => s.trim())
-          .join("")}${args[i] ? args[i] : ""}`;
-      })
-      .join("");
-  } else {
-    return strings[0]
-      .split("\n")
-      .map((s: string) => s.trim())
-      .join(" ");
-  }
+  return strings
+    .map((str: string, i: number) => {
+      return `${str
+        .split('\n')
+        .map(s => s.trim())
+        .join('')}${args[i] ? args[i] : ''}`;
+    })
+    .join('');
 }
 
 /**
-* Generates a valid JavaScript identifier for a module path. Can optionally take
-* a dictionary of already-seen identifiers to avoid naming collisions.
-*
-* @param {string} modulePath the module path
-* @param {object} seen an object containing already-seen identifiers as keys
-* @returns {string} identifier a valid JavaScript identifier
-*/
+ * Generates a valid JavaScript identifier for a module path. Can optionally take
+ * a dictionary of already-seen identifiers to avoid naming collisions.
+ *
+ * @param {string} modulePath the module path
+ * @param {object} seen an object containing already-seen identifiers as keys
+ * @returns {string} identifier a valid JavaScript identifier
+ */
 export function getIdentifier(locator: ModuleLocator, handle: number) {
   let name = getMeaningfulName(locator);
   let identifier = name
@@ -316,9 +315,7 @@ export function getIdentifier(locator: ModuleLocator, handle: number) {
  * for named exports, or the basename of the module path for default exports.
  */
 function getMeaningfulName(locator: ModuleLocator) {
-  return locator.name === 'default' ?
-    basename(locator.module) :
-    locator.name;
+  return locator.name === 'default' ? basename(locator.module) : locator.name;
 }
 
 /**
@@ -330,8 +327,12 @@ function getMeaningfulName(locator: ModuleLocator) {
  *     getImportClause('MyClass', 'GlimmerMyClass') => '{ MyClass as GlimmerMyClass }'
  */
 export function getImportClause(name: string, id: string) {
-  if (name === 'default') { return id; }
-  if (name === 'id') { return `{ ${id} }`; }
+  if (name === 'default') {
+    return id;
+  }
+  if (name === 'id') {
+    return `{ ${id} }`;
+  }
   return `{ ${name} as ${id} }`;
 }
 
@@ -341,7 +342,7 @@ export function getImportStatement(specifier: ModuleLocator, id: string) {
   let importClause = getImportClause(name, id);
   let moduleSpecifier = getModuleSpecifier(module);
 
-    return `import ${importClause} from ${moduleSpecifier};`;
+  return `import ${importClause} from ${moduleSpecifier};`;
 }
 
 export function getModuleSpecifier(modulePath: string) {

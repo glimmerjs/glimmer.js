@@ -1,20 +1,21 @@
-import { TemplateIterator, Environment, ElementBuilder, DynamicScope, renderMain } from '@glimmer/runtime';
+import { RenderComponentArgs, CustomJitRuntime, renderJitMain } from '@glimmer/runtime';
 import { Resolver } from '@glimmer/di';
-import { Macros, templateFactory, LazyCompiler } from '@glimmer/opcode-compiler';
-import { Opaque } from '@glimmer/interfaces';
+import { templateFactory, JitContext } from '@glimmer/opcode-compiler';
 import { PathReference } from '@glimmer/reference';
 
-import Application, { Loader } from '../../application';
+import Application from '../../application';
+import BaseApplication, { Loader } from '../../base-application';
 import mainTemplate from '../../templates/main';
 import { actionHelper, ifHelper } from '../../helpers';
 
 import RuntimeResolver from './resolver';
-import CompileTimeLookup from './compile-time-lookup';
+import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
+import ResolverDelegateImpl from './compile-time-lookup';
 
 export interface Specifier {
   specifier: string;
   managerId?: string;
-};
+}
 
 /**
  * The RuntimeCompilerLoader is used by Glimmer.js applications that perform the
@@ -25,31 +26,45 @@ export interface Specifier {
  * @public
  */
 export default class RuntimeCompilerLoader implements Loader {
-  constructor(public resolver: Resolver) {
-  }
+  constructor(public resolver: Resolver) {}
 
-  async getTemplateIterator(app: Application, env: Environment, builder: ElementBuilder, dynamicScope: DynamicScope, self: PathReference<Opaque>): Promise<TemplateIterator> {
+  async getTemplateIterator(
+    app: Application,
+    env: Environment,
+    builder: ElementBuilder,
+    dynamicScope: DynamicScope,
+    self: PathReference<unknown>
+  ): Promise<TemplateIterator> {
     let resolver = new RuntimeResolver(app);
-    let lookup = new CompileTimeLookup(resolver);
-    let macros = new Macros();
-    let compiler = new LazyCompiler<Specifier>(lookup, resolver, macros);
-    let program = compiler.program;
-
-    resolver.compiler = compiler;
 
     resolver.registerTemplate('main', mainTemplate);
     resolver.registerInternalHelper('action', actionHelper);
     resolver.registerHelper('if', ifHelper);
 
-    let mainLayout = templateFactory(mainTemplate).create(compiler);
+    let context = JitContext(new ResolverDelegateImpl(resolver));
+    let runtime = CustomJitRuntime(resolver, context, app.env);
 
-    return Promise.resolve(renderMain(
-      program,
-      env,
-      self,
-      dynamicScope,
-      builder,
-      mainLayout.asLayout().compile()
-    ));
+    let mainLayout = templateFactory(mainTemplate).create();
+
+    return Promise.resolve(
+      renderJitMain(
+        runtime,
+        context,
+        self,
+        builder,
+        mainLayout.asLayout().compile(context),
+        dynamicScope
+      )
+    );
+  }
+
+  getComponentTemplateIterator(
+    app: BaseApplication,
+    env: Environment,
+    builder: ElementBuilder,
+    componentName: string,
+    args: RenderComponentArgs
+  ): Promise<TemplateIterator> {
+    throw new Error('Method not implemented.');
   }
 }

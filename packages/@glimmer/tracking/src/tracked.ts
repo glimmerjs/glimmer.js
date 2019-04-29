@@ -1,6 +1,14 @@
-import { DEBUG } from "@glimmer/env";
-import { Tag, DirtyableTag, UpdatableTag, TagWrapper, combine, CONSTANT_TAG } from "@glimmer/reference";
-import { dict, Dict, Option } from "@glimmer/util";
+import { DEBUG } from '@glimmer/env';
+import {
+  Tag,
+  DirtyableTag,
+  UpdatableTag,
+  TagWrapper,
+  combine,
+  CONSTANT_TAG,
+} from '@glimmer/reference';
+import { dict } from '@glimmer/util';
+import { Option, Dict } from '@glimmer/interfaces';
 
 /**
  * An object that that tracks @tracked properties that were consumed.
@@ -33,7 +41,8 @@ class Tracker {
  * @example
  *
  * ```typescript
- * import Component, { tracked } from '@glimmer/component';
+ * import Component from '@glimmer/component';
+ * import { tracked } from '@glimmer/tracking';
  *
  * export default class MyComponent extends Component {
  *    @tracked
@@ -57,7 +66,8 @@ class Tracker {
  *
  *
  * ```typescript
- * import Component, { tracked } from '@glimmer/component';
+ * import Component from '@glimmer/component';
+ * import { tracked } from '@glimmer/tracking';
  *
  * const totalApples = 100;
  *
@@ -82,10 +92,20 @@ export function tracked(...args: any[]): any {
   let [target, key, descriptor] = args;
   if (DEBUG) {
     if (typeof target === 'string') {
-      throw new Error(`ERROR: You attempted to use @tracked with ${args.length > 1 ? 'arguments' : 'an argument'} ( @tracked(${args.map(d => `'${d}'`).join(', ')}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`);
+      throw new Error(
+        `ERROR: You attempted to use @tracked with ${
+          args.length > 1 ? 'arguments' : 'an argument'
+        } ( @tracked(${args
+          .map(d => `'${d}'`)
+          .join(
+            ', '
+          )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`
+      );
     }
     if (target === undefined) {
-      throw new Error('ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!');
+      throw new Error(
+        'ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!'
+      );
     }
   }
 
@@ -111,7 +131,11 @@ export function tracked(...args: any[]): any {
  */
 let CURRENT_TRACKER: Option<Tracker> = null;
 
-function descriptorForTrackedComputedProperty(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor {
+function descriptorForTrackedComputedProperty(
+  target: any,
+  key: any,
+  descriptor: PropertyDescriptor
+): PropertyDescriptor {
   let meta = metaFor(target);
   meta.trackedProperties[key] = true;
   meta.trackedComputedProperties[key] = true;
@@ -122,7 +146,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
   function getter(this: any) {
     // Swap the parent tracker for a new tracker
     let old = CURRENT_TRACKER;
-    let tracker = CURRENT_TRACKER = new Tracker();
+    let tracker = (CURRENT_TRACKER = new Tracker());
 
     // Call the getter
     let ret = get.call(this);
@@ -136,7 +160,9 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
     // Update the UpdatableTag for this property with the tag for all of the
     // consumed dependencies.
-    metaFor(this).updatableTagFor(key).inner.update(tag);
+    metaFor(this)
+      .updatableTagFor(key)
+      .inner.update(tag);
 
     return ret;
   }
@@ -145,7 +171,9 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     EPOCH.inner.dirty();
 
     // Mark the UpdatableTag for this property with the current tag.
-    metaFor(this).updatableTagFor(key).inner.update(DirtyableTag.create());
+    metaFor(this)
+      .updatableTagFor(key)
+      .inner.update(DirtyableTag.create());
     set.apply(this, arguments);
   }
 
@@ -153,7 +181,7 @@ function descriptorForTrackedComputedProperty(target: any, key: any, descriptor:
     enumerable: true,
     configurable: false,
     get: getter,
-    set: set ? setter : undefined
+    set: set ? setter : undefined,
   };
 }
 
@@ -191,10 +219,12 @@ function installTrackedProperty(target: any, key: Key) {
       EPOCH.inner.dirty();
 
       // Mark the UpdatableTag for this property with the current tag.
-      metaFor(this).updatableTagFor(key).inner.update(DirtyableTag.create());
+      metaFor(this)
+        .updatableTagFor(key)
+        .inner.update(DirtyableTag.create());
       this[shadowKey] = newValue;
       propertyDidChange();
-    }
+    },
   });
 }
 
@@ -222,7 +252,9 @@ export default class Meta {
     this.tags = dict<Tag>();
     this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
-    this.trackedComputedProperties = parent ? Object.create(parent.trackedComputedProperties) : dict<boolean>();
+    this.trackedComputedProperties = parent
+      ? Object.create(parent.trackedComputedProperties)
+      : dict<boolean>();
   }
 
   /**
@@ -236,13 +268,15 @@ export default class Meta {
    */
   tagFor(key: Key): Tag {
     let tag = this.tags[key];
-    if (tag) { return tag; }
-
-    if (this.trackedComputedProperties[key]) {
-      return this.tags[key] = this.updatableTagFor(key);
+    if (tag) {
+      return tag;
     }
 
-    return this.tags[key] = DirtyableTag.create();
+    if (this.trackedComputedProperties[key]) {
+      return (this.tags[key] = this.updatableTagFor(key));
+    }
+
+    return (this.tags[key] = DirtyableTag.create());
   }
 
   /**
@@ -250,7 +284,7 @@ export default class Meta {
    * static properties, this is the same UpdatableTag returned from `tagFor`.
    * For computed properties, it is the UpdatableTag used as one of the tags in
    * the tag combinator of the CP and its dependencies.
-  */
+   */
   updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
     let isComputed = this.trackedComputedProperties[key];
     let tag;
@@ -258,13 +292,17 @@ export default class Meta {
     if (isComputed) {
       // The key is for a computed property.
       tag = this.computedPropertyTags[key];
-      if (tag) { return tag; }
-      return this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG);
+      if (tag) {
+        return tag;
+      }
+      return (this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG));
     } else {
       // The key is for a static property.
       tag = this.tags[key];
-      if (tag) { return tag as TagWrapper<UpdatableTag>; }
-      return this.tags[key] = UpdatableTag.create(CONSTANT_TAG);
+      if (tag) {
+        return tag as TagWrapper<UpdatableTag>;
+      }
+      return (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
     }
   }
 }
@@ -276,7 +314,7 @@ export interface Interceptors {
 /**
  *  A shared WeakMap for tracking an object's Meta instance, so any metadata
  *  will be garbage collected automatically with the associated object.
-*/
+ */
 const META_MAP = new WeakMap();
 
 /**
@@ -287,7 +325,9 @@ const META_MAP = new WeakMap();
 export function metaFor(obj: any): Meta {
   // Return the Meta for this object if we already have it.
   let meta = META_MAP.get(obj);
-  if (meta) { return meta; }
+  if (meta) {
+    return meta;
+  }
 
   // Otherwise, we need to walk the object's prototype chain to until we find a
   // parent Meta to inherit from. If we reach the end of the chain and have not
@@ -310,7 +350,9 @@ function findPrototypeMeta(obj: Object): Meta | null {
 
   while (!meta) {
     proto = getPrototypeOf(proto);
-    if (!proto) { return meta; }
+    if (!proto) {
+      return meta;
+    }
     meta = META_MAP.get(proto);
   }
 
@@ -337,7 +379,11 @@ export function hasTag(obj: any, key: string): boolean {
 
 export class UntrackedPropertyError extends Error {
   static for(obj: any, key: string): UntrackedPropertyError {
-    return new UntrackedPropertyError(obj, key, `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`);
+    return new UntrackedPropertyError(
+      obj,
+      key,
+      `The property '${key}' on ${obj} was changed after being rendered. If you want to change a property used in a template after the component has rendered, mark the property as a tracked property with the @tracked decorator.`
+    );
   }
 
   constructor(public target: any, public key: string, message: string) {
@@ -357,8 +403,12 @@ function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
   throw UntrackedPropertyError.for(obj, key);
 }
 
-export function tagForProperty(obj: any, key: string, throwError: UntrackedPropertyErrorThrower = defaultErrorThrower): Tag {
-  if (typeof obj === "object" && obj) {
+export function tagForProperty(
+  obj: any,
+  key: string,
+  throwError: UntrackedPropertyErrorThrower = defaultErrorThrower
+): Tag {
+  if (typeof obj === 'object' && obj) {
     if (DEBUG && !hasTag(obj, key)) {
       installDevModeErrorInterceptor(obj, key, throwError);
     }
@@ -375,7 +425,11 @@ export function tagForProperty(obj: any, key: string, throwError: UntrackedPrope
  * tag is requested (i.e., it was used in a template) without being tracked. In
  * cases where the property is set, we raise an error.
  */
-function installDevModeErrorInterceptor(obj: object, key: string, throwError: UntrackedPropertyErrorThrower) {
+function installDevModeErrorInterceptor(
+  obj: object,
+  key: string,
+  throwError: UntrackedPropertyErrorThrower
+) {
   let target = obj;
   let descriptor: Option<PropertyDescriptor> = null;
 
@@ -385,7 +439,9 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
   let hasOwnDescriptor = true;
   while (target) {
     descriptor = Object.getOwnPropertyDescriptor(target, key);
-    if (descriptor) { break; }
+    if (descriptor) {
+      break;
+    }
     hasOwnDescriptor = false;
     target = Object.getPrototypeOf(target);
   }
@@ -410,14 +466,14 @@ function installDevModeErrorInterceptor(obj: object, key: string, throwError: Un
 
         set() {
           throwError(this, key);
-        }
+        },
       });
     }
   } else {
     Object.defineProperty(obj, key, {
       set() {
         throwError(this, key);
-      }
+      },
     });
   }
 }

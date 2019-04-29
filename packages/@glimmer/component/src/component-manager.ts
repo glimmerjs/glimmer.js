@@ -1,27 +1,38 @@
-import { Owner } from "@glimmer/di";
+import { Owner } from '@glimmer/di';
+import { Tag } from '@glimmer/reference';
 import {
-  Bounds as VMBounds,
-  ComponentManager as IComponentManager,
-  DynamicScope,
-  Environment,
-  Arguments,
+  ComponentManager as VMComponentManager,
+  RuntimeResolver,
+  ComponentCapabilities,
   CapturedArguments,
-  WithStaticLayout,
+  Dict,
+  Option,
   Invocation,
-} from "@glimmer/runtime";
-import { Dict, Destroyable, Opaque, Option } from "@glimmer/util";
-import { Tag } from "@glimmer/reference";
-import { RuntimeResolver, ComponentCapabilities, Recast, VMHandle } from "@glimmer/interfaces";
+  Environment,
+  VMArguments,
+  WithAotStaticLayout,
+  DynamicScope,
+  Destroyable,
+  JitRuntimeResolver,
+  AotRuntimeResolver,
+  CompilableProgram,
+  Bounds as VMBounds,
+} from '@glimmer/interfaces';
 import { VersionedPathReference, PathReference, CONSTANT_TAG } from '@glimmer/reference';
 import { DEBUG } from '@glimmer/env';
 
-import Component from "./component";
+import Component from './component';
+import { DefinitionState } from './component-definition';
 import Bounds from './bounds';
-import { DefinitionState } from "./component-definition";
-import { RootReference, TemplateOnlyComponentDebugReference } from "./references";
+import { RootReference, TemplateOnlyComponentDebugReference } from './references';
+import ExtendedTemplateMeta from './template-meta';
+import { SerializedTemplateWithLazyBlock } from '@glimmer/application/src/loaders/runtime-compiler/resolver';
+import { Specifier } from '@glimmer/application/src/loaders/runtime-compiler/loader';
+
+import { MAGIC_PROP, DESTROYING, DESTROYED } from '../addon/-private/component';
 
 export interface ConstructorOptions {
-  env: Environment;
+  env: EnvironmentWithOwner;
 }
 
 export class ComponentStateBucket {
@@ -29,20 +40,22 @@ export class ComponentStateBucket {
   public component: Component;
   private args: CapturedArguments;
 
-  constructor(definition: DefinitionState, args: CapturedArguments, owner: Owner, env: Environment) {
-    let componentFactory = definition.ComponentClass;
-    let name = definition.name;
-
+  constructor(
+    definition: DefinitionState,
+    args: CapturedArguments,
+    owner: Owner,
+    env: EnvironmentWithOwner
+  ) {
+    let { ComponentClass, name } = definition;
     this.args = args;
 
-    let injections = {
-      debugName: name,
-      args: this.namedArgsSnapshot()
-    };
+    if (ComponentClass) {
+      if (ComponentClass.class !== undefined) {
+        ComponentClass = ComponentClass.class;
+      }
 
-    env.setOwner(injections, owner);
-    if (componentFactory) {
-      this.component = componentFactory.create(injections);
+      this.component = new ComponentClass(owner, this.namedArgsSnapshot());
+      this.component.debugName = name;
     }
   }
 
@@ -50,8 +63,17 @@ export class ComponentStateBucket {
     return this.args.tag;
   }
 
-  namedArgsSnapshot(): Readonly<Dict<Opaque>> {
-    return Object.freeze(this.args.named.value());
+  namedArgsSnapshot(): Readonly<Dict<unknown>> {
+    let snapshot = this.args.named.value();
+
+    if (DEBUG) {
+      Object.defineProperty(snapshot, MAGIC_PROP, {
+        enumerable: false,
+        value: true,
+      });
+    }
+
+    return Object.freeze(snapshot);
   }
 }
 
@@ -68,16 +90,30 @@ const EMPTY_SELF = new RootReference(null);
  * that state.
  */
 export class TemplateOnlyComponentDebugBucket {
-  constructor(public definition: DefinitionState) {
-  }
+  constructor(public definition: DefinitionState) {}
 }
 
-export interface CompilableRuntimeResolver extends RuntimeResolver<Opaque> {
+export interface CompilableRuntimeResolver extends RuntimeResolver<ExtendedTemplateMeta> {
   compileTemplate(name: string, layout: Option<number>): Invocation;
 }
 
-export default class ComponentManager implements IComponentManager<ComponentStateBucket | TemplateOnlyComponentDebugBucket | void, DefinitionState>, WithStaticLayout<ComponentStateBucket | TemplateOnlyComponentDebugBucket | void, DefinitionState, Opaque, CompilableRuntimeResolver> {
-  private env: Environment;
+export interface EnvironmentWithOwner extends Environment {
+  getOwner(): Owner;
+  setOwner(obj: Object, owner: Owner): void;
+}
+
+export default class ComponentManager
+  implements
+    VMComponentManager<
+      ComponentStateBucket | TemplateOnlyComponentDebugBucket | void,
+      DefinitionState
+    >,
+    WithAotStaticLayout<
+      ComponentStateBucket | TemplateOnlyComponentDebugBucket | void,
+      DefinitionState,
+      AotRuntimeResolver
+    > {
+  private env: EnvironmentWithOwner;
 
   static create(options: ConstructorOptions): ComponentManager {
     return new ComponentManager(options);
@@ -87,7 +123,7 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     this.env = options.env;
   }
 
-  prepareArgs(state: DefinitionState, args: Arguments): null {
+  prepareArgs(state: DefinitionState, args: VMArguments): null {
     return null;
   }
 
@@ -95,18 +131,36 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return state.capabilities;
   }
 
-  getLayout({ name, handle, symbolTable }: DefinitionState, resolver: CompilableRuntimeResolver): Invocation {
+  getJitStaticLayout(state: DefinitionState, resolver: JitRuntimeResolver): CompilableProgram {
+    let template = (resolver.resolve(state.handle) as unknown) as SerializedTemplateWithLazyBlock<
+      Specifier
+    >;
+    let locator = template.meta;
+    return resolver.compilable(locator).asLayout();
+  }
+
+  getAotStaticLayout(
+    { name, handle, symbolTable }: DefinitionState,
+    resolver: AotRuntimeResolver
+  ): Invocation {
     if (handle && symbolTable) {
       return {
         handle,
-        symbolTable
+        symbolTable,
       };
     }
 
-    return resolver.compileTemplate(name, handle as Recast<VMHandle, number>);
+    throw new Error('unimplemented getAotStaticLayout');
   }
 
-  create(_env: Environment, definition: DefinitionState, args: Arguments, _dynamicScope: DynamicScope, _caller: VersionedPathReference<Opaque>, _hasDefaultBlock: boolean): TemplateOnlyComponentDebugBucket | ComponentStateBucket | void {
+  create(
+    _env: Environment,
+    definition: DefinitionState,
+    args: VMArguments,
+    _dynamicScope: DynamicScope,
+    _caller: VersionedPathReference<unknown>,
+    _hasDefaultBlock: boolean
+  ): TemplateOnlyComponentDebugBucket | ComponentStateBucket | void {
     // In development mode, if a component is template-only, save off state
     // needed for error messages. This will get stripped in production mode and
     // no bucket will be instantiated.
@@ -132,47 +186,68 @@ export default class ComponentManager implements IComponentManager<ComponentStat
     return EMPTY_SELF;
   }
 
-  didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) { }
+  didCreateElement(bucket: ComponentStateBucket, element: HTMLElement) {}
 
   didRenderLayout(bucket: ComponentStateBucket, bounds: VMBounds) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return; }
-    if (!bucket) { return; }
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
     bucket.component.bounds = new Bounds(bounds);
   }
 
   didCreate(bucket: ComponentStateBucket) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return; }
-    if (!bucket) { return; }
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
     bucket.component.didInsertElement();
   }
 
   getTag(bucket: ComponentStateBucket): Tag {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return CONSTANT_TAG; }
-    if (!bucket) { return CONSTANT_TAG; }
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return CONSTANT_TAG;
+    }
+    if (!bucket) {
+      return CONSTANT_TAG;
+    }
     return bucket.tag;
   }
 
   update(bucket: ComponentStateBucket, scope: DynamicScope) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return; }
-    if (!bucket) { return; }
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
 
     bucket.component.args = bucket.namedArgsSnapshot();
   }
 
   didUpdateLayout() {}
 
-  didUpdate(bucket: ComponentStateBucket) {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return; }
-    if (!bucket) { return; }
-
-    bucket.component.didUpdate();
-  }
+  didUpdate() {}
 
   getDestructor(bucket: ComponentStateBucket): Destroyable {
-    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) { return NOOP_DESTROYABLE; }
-    if (!bucket) { return NOOP_DESTROYABLE; }
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return NOOP_DESTROYABLE;
+    }
+    if (!bucket) {
+      return NOOP_DESTROYABLE;
+    }
 
-    return bucket.component;
+    return {
+      destroy() {
+        bucket.component[DESTROYING] = true;
+        bucket.component.willDestroy();
+        bucket.component[DESTROYED] = true;
+      },
+    };
   }
 }
 
