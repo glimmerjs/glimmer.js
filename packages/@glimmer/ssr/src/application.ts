@@ -2,6 +2,7 @@ import { BaseApplication, Loader, Renderer } from '@glimmer/application';
 import { ComponentManager } from '@glimmer/component';
 import { Resolver, Dict } from '@glimmer/di';
 import { PathReference, ConstReference } from '@glimmer/reference';
+import { DefaultDynamicScope } from '@glimmer/runtime';
 
 import { PassThrough } from 'stream';
 import createHTMLDocument from '@simple-dom/document';
@@ -63,7 +64,8 @@ export default class Application extends BaseApplication {
     componentName: string,
     data: Dict<unknown>,
     stream: NodeJS.WritableStream,
-    options: SSRApplicationOptions
+    options: SSRApplicationOptions,
+    dynamicScopeData?: Dict<unknown>,
   ) {
     const app = new Application(options);
     try {
@@ -77,7 +79,8 @@ export default class Application extends BaseApplication {
         env,
         builder,
         componentName,
-        convertOpaqueToReferenceDict(data)
+        convertOpaqueToReferenceDict(data),
+        new DefaultDynamicScope(convertOpaqueToReferenceDict(dynamicScopeData))
       );
 
       env.begin();
@@ -93,7 +96,8 @@ export default class Application extends BaseApplication {
   static async renderToString(
     componentName: string,
     data: Dict<unknown>,
-    options: SSRApplicationOptions
+    options: SSRApplicationOptions,
+    dynamicScopeData?: Dict<unknown>
   ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
@@ -103,7 +107,7 @@ export default class Application extends BaseApplication {
       stream.on('end', () => resolve(html));
       stream.on('error', err => reject(err));
 
-      this.renderToStream(componentName, data, stream, options);
+      this.renderToStream(componentName, data, stream, options, dynamicScopeData);
     });
   }
 }

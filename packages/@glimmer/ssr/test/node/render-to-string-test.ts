@@ -58,6 +58,16 @@ class RenderToStringTest extends RenderTest {
       assert.ok(err.toString().match(/Could not find (the )?component 'NonExistent'/));
     }
   }
+
+  @test async 'dynamic scope can be passed in'(assert: Assert) {
+    assert.expect(1);
+
+    let app = this.app
+      .template('HelloWorld', `<h1>Hello {{-get-dynamic-var "name"}} World</h1>`);
+
+    const html = await app.renderToString('HelloWorld', {}, {name: 'dynamicScope SSR'});
+    assert.equal(html, '<h1>Hello dynamicScope SSR World</h1>');
+  }
 }
 
 renderModule('[@glimmer/ssr] renderToString', RenderToStringTest);

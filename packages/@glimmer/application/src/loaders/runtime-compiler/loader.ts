@@ -55,7 +55,8 @@ export default class RuntimeCompilerLoader implements Loader {
     env: Environment,
     builder: ElementBuilder,
     componentName: string,
-    args: RenderComponentArgs
+    args: RenderComponentArgs,
+    dynamicScope: DynamicScope
   ): Promise<TemplateIterator> {
     let resolver = this.getResolver(app);
     let context = this.getContext(resolver);
@@ -68,7 +69,8 @@ export default class RuntimeCompilerLoader implements Loader {
         context,
         0,
         componentName,
-        args
+        args,
+        dynamicScope
      )
     );
   }

@@ -92,10 +92,11 @@ export default class BytecodeLoader implements Loader {
     env: Environment,
     builder: ElementBuilder,
     componentName: string,
-    args: RenderComponentArgs
+    args: RenderComponentArgs,
+    dynamicScope: DynamicScope
   ): Promise<TemplateIterator> {
     const runtime = await this.getRuntime(app, env);
-    return renderAotComponent(runtime, builder, 0, componentName, args);
+    return renderAotComponent(runtime, builder, 0, componentName, args, dynamicScope);
   }
 
   async getRuntime(app: BaseApplication, env: Environment): Promise<AotRuntimeContext> {

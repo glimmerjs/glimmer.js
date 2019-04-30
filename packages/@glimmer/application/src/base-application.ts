@@ -73,7 +73,8 @@ export interface Loader {
     env: Environment,
     builder: ElementBuilder,
     componentName: string,
-    args: RenderComponentArgs
+    args: RenderComponentArgs,
+    dynamicScope: DynamicScope
   ): Promise<TemplateIterator>;
 }
 
