@@ -18,6 +18,72 @@ class HelloWorld extends Component {
   frozenObjects = freeze(this.objects);
 }
 
+test('throw error if key for #each is not specified', async function(assert){
+  assert.expect(1);
+
+  let containerElement = document.createElement('div');
+
+  let app = await buildApp()
+    .template(
+      'HelloWorld',
+      `<ul>{{#each strings as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+    )
+    .component('HelloWorld', HelloWorld)
+    .boot();
+
+  app.renderComponent('HelloWorld', containerElement);
+
+  try {
+    await didRender(app);
+  } catch(e) {
+    assert.equal(e.toString(), 'Error: Must specify a key for #each'); 
+  }
+});
+
+test('throw error if key @identity used as key for #each', async function(assert){
+  assert.expect(1);
+
+  let containerElement = document.createElement('div');
+
+  let app = await buildApp()
+    .template(
+      'HelloWorld',
+      `<ul>{{#each strings key="@identity" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+    )
+    .component('HelloWorld', HelloWorld)
+    .boot();
+
+  app.renderComponent('HelloWorld', containerElement);
+
+  try {
+    await didRender(app);
+  } catch(e) {
+    assert.equal(e.toString(), 'Error: @identity key in #each loop supported only in Ember, use @primitive, @index or property path instead'); 
+  }
+});
+
+test('throw error if unknown special key used as key for #each', async function(assert){
+  assert.expect(1);
+
+  let containerElement = document.createElement('div');
+
+  let app = await buildApp()
+    .template(
+      'HelloWorld',
+      `<ul>{{#each strings key="@unknown" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+    )
+    .component('HelloWorld', HelloWorld)
+    .boot();
+
+  app.renderComponent('HelloWorld', containerElement);
+
+  try {
+    await didRender(app);
+  } catch(e) {
+    assert.equal(e.toString(), 'Error: Invalid key: @unknown, valid keys: @index, @primitive, path'); 
+  }
+});
+
 ['numbers', 'frozenNumbers'].forEach((kind: string) => {
   test(`renders number literals - ${kind}`, async function(assert) {
     assert.expect(1);
