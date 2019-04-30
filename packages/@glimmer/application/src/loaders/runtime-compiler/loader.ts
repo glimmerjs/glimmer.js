@@ -2,6 +2,7 @@ import { RenderComponentArgs, CustomJitRuntime, renderJitMain } from '@glimmer/r
 import { Resolver } from '@glimmer/di';
 import { templateFactory, JitContext } from '@glimmer/opcode-compiler';
 import { PathReference } from '@glimmer/reference';
+import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
 
 import Application from '../../application';
 import BaseApplication, { Loader } from '../../base-application';
@@ -9,8 +10,7 @@ import mainTemplate from '../../templates/main';
 import { actionHelper, ifHelper } from '../../helpers';
 
 import RuntimeResolver from './resolver';
-import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
-import ResolverDelegateImpl from './compile-time-lookup';
+import ResolverDelegateImpl from './resolver-delegate';
 
 export interface Specifier {
   specifier: string;
