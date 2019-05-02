@@ -36,7 +36,7 @@ test('throw error if key for #each is not specified', async function(assert){
   try {
     await didRender(app);
   } catch(e) {
-    assert.equal(e.toString(), 'Error: Must specify a key for #each'); 
+    assert.equal(e.toString(), 'Error: Must specify a key for #each');
   }
 });
 
@@ -58,7 +58,7 @@ test('throw error if key @identity used as key for #each', async function(assert
   try {
     await didRender(app);
   } catch(e) {
-    assert.equal(e.toString(), 'Error: @identity key in #each loop supported only in Ember, use @primitive, @index or property path instead'); 
+    assert.equal(e.toString(), 'Error: @identity key in #each loop supported only in Ember, use @primitive, @index or property path instead');
   }
 });
 
@@ -80,7 +80,7 @@ test('throw error if unknown special key used as key for #each', async function(
   try {
     await didRender(app);
   } catch(e) {
-    assert.equal(e.toString(), 'Error: Invalid key: @unknown, valid keys: @index, @primitive, path'); 
+    assert.equal(e.toString(), 'Error: Invalid key: @unknown, valid keys: @index, @primitive, path');
   }
 });
 
