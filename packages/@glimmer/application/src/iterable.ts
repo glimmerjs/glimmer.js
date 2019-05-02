@@ -91,6 +91,9 @@ export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIte
   if (!keyPath) {
     throw new Error('Must specify a key for #each');
   }
+  if (keyPath === '@identity') {
+    throw new Error('@identity key in #each loop supported only in Ember, use @primitive, @index or property path instead');
+  }
 
   switch (keyPath) {
     case '@index':
@@ -100,6 +103,9 @@ export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIte
       keyFor = (item: unknown) => String(item);
       break;
     default:
+      if (keyPath.charAt(0) === '@') {
+        throw new Error(`Invalid key: ${keyPath}, valid keys: @index, @primitive, path`);
+      }
       keyFor = (item: unknown) => (isDict(item) ? item[keyPath] : item);
       break;
   }
