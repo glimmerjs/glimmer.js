@@ -1,5 +1,4 @@
-import { RenderComponentArgs, CustomJitRuntime, renderJitMain } from '@glimmer/runtime';
-import { Resolver } from '@glimmer/di';
+import { RenderComponentArgs, CustomJitRuntime, renderJitMain, renderJitComponent, getDynamicVar } from '@glimmer/runtime';
 import { templateFactory, JitContext } from '@glimmer/opcode-compiler';
 import { PathReference } from '@glimmer/reference';
 import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
@@ -26,7 +25,22 @@ export interface Specifier {
  * @public
  */
 export default class RuntimeCompilerLoader implements Loader {
-  constructor(public resolver: Resolver) {}
+  constructor() {}
+
+  protected getResolver(app) {
+    let resolver = new RuntimeResolver(app);
+
+    resolver.registerTemplate('main', mainTemplate);
+    resolver.registerInternalHelper('action', actionHelper);
+    resolver.registerHelper('if', ifHelper);
+    resolver.registerInternalHelper('-get-dynamic-var', getDynamicVar);
+
+    return resolver;
+  }
+
+  protected getContext(resolver) {
+    return JitContext(new ResolverDelegateImpl(resolver));
+  }
 
   async getTemplateIterator(
     app: Application,
@@ -35,13 +49,8 @@ export default class RuntimeCompilerLoader implements Loader {
     dynamicScope: DynamicScope,
     self: PathReference<unknown>
   ): Promise<TemplateIterator> {
-    let resolver = new RuntimeResolver(app);
-
-    resolver.registerTemplate('main', mainTemplate);
-    resolver.registerInternalHelper('action', actionHelper);
-    resolver.registerHelper('if', ifHelper);
-
-    let context = JitContext(new ResolverDelegateImpl(resolver));
+    let resolver = this.getResolver(app);
+    let context = this.getContext(resolver);
     let runtime = CustomJitRuntime(resolver, context, app.env);
 
     let mainLayout = templateFactory(mainTemplate).create();
@@ -65,6 +74,19 @@ export default class RuntimeCompilerLoader implements Loader {
     componentName: string,
     args: RenderComponentArgs
   ): Promise<TemplateIterator> {
-    throw new Error('Method not implemented.');
+    let resolver = this.getResolver(app);
+    let context = this.getContext(resolver);
+    let runtime = CustomJitRuntime(resolver, context, env);
+
+    return Promise.resolve(
+      renderJitComponent(
+        runtime,
+        builder,
+        context,
+        0,
+        componentName,
+        args
+     )
+    );
   }
 }

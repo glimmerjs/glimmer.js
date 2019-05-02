@@ -11,6 +11,10 @@ test('Lifecycle hook ordering', async function(assert) {
   let invocations: [string, string][] = [];
 
   abstract class HookLoggerComponent extends Component {
+    args: {
+      name: string
+    };
+
     constructor(owner, args) {
       super(owner, args);
       invocations.push([this.args.name, 'constructor']);

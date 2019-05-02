@@ -225,7 +225,7 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
     return registry.getByHandle(handle) as T;
   }
 
-  private identifyComponent(name: string, meta: Specifier): Maybe<string> {
+  private identifyComponent(name: string, meta: Specifier = { specifier: null }): Maybe<string> {
     let owner: Owner = this.owner;
     let relSpecifier = `template:${name}`;
     let referrer: string = meta.specifier;

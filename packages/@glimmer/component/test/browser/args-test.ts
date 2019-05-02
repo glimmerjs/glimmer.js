@@ -99,6 +99,10 @@ test('Tracked properties that depend on `args` re-render correctly', async funct
   }
 
   class ChildComponent extends Component {
+    args: {
+      firstName: string
+    };
+
     constructor(owner, args) {
       super(owner, args);
     }
@@ -162,8 +166,8 @@ test('Properties that depend on `args` are properly updated when args are update
       super(owner, args);
     }
 
-    get args() {
-      return super.args;
+    get args(): {firstName: string, status: string} {
+      return super.args as {firstName: string, status: string};
     }
 
     set args(args) {

@@ -1,6 +1,6 @@
 export { default, ComponentFactory } from './src/component';
 export { default as ComponentDefinition } from './src/component-definition';
-export { default as ComponentManager } from './src/component-manager';
+export { default as ComponentManager, EnvironmentWithOwner } from './src/component-manager';
 export {
   RootReference,
   CachedReference,
