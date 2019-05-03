@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.14.0-alpha.5 (2019-05-03)
+
+#### :rocket: Enhancement
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/test-utils`
+  * [#193](https://github.com/glimmerjs/glimmer.js/pull/193) Add JIT mode support for renderComponent. ([@chiragpat](https://github.com/chiragpat))
+* `@glimmer/component`
+  * [#182](https://github.com/glimmerjs/glimmer.js/pull/182) Make component generic over args. ([@mike-north](https://github.com/mike-north))
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#185](https://github.com/glimmerjs/glimmer.js/pull/185) Bump glimmer-vm to 0.40.1. ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 6
+- Alex Kanunnikov ([lifeart](https://github.com/lifeart))
+- Chirag Patel ([chiragpat](https://github.com/chiragpat))
+- Jonathan ([rondale-sc](https://github.com/rondale-sc))
+- Julien Palmas ([bartocc](https://github.com/bartocc))
+- Mike North ([mike-north](https://github.com/mike-north))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.14.0-alpha.4 (2019-03-18)
 
 #### :rocket: Enhancement
