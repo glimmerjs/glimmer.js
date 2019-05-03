@@ -25,23 +25,6 @@ export interface Specifier {
  * @public
  */
 export default class RuntimeCompilerLoader implements Loader {
-  constructor() {}
-
-  protected getResolver(app) {
-    let resolver = new RuntimeResolver(app);
-
-    resolver.registerTemplate('main', mainTemplate);
-    resolver.registerInternalHelper('action', actionHelper);
-    resolver.registerHelper('if', ifHelper);
-    resolver.registerInternalHelper('-get-dynamic-var', getDynamicVar);
-
-    return resolver;
-  }
-
-  protected getContext(resolver) {
-    return JitContext(new ResolverDelegateImpl(resolver));
-  }
-
   async getTemplateIterator(
     app: Application,
     env: Environment,
@@ -89,4 +72,20 @@ export default class RuntimeCompilerLoader implements Loader {
      )
     );
   }
+
+  protected getResolver(app: BaseApplication) {
+    let resolver = new RuntimeResolver(app);
+
+    resolver.registerTemplate('main', mainTemplate);
+    resolver.registerInternalHelper('action', actionHelper);
+    resolver.registerHelper('if', ifHelper);
+    resolver.registerInternalHelper('-get-dynamic-var', getDynamicVar);
+
+    return resolver;
+  }
+
+  protected getContext(resolver: RuntimeResolver) {
+    return JitContext(new ResolverDelegateImpl(resolver));
+  }
+
 }
