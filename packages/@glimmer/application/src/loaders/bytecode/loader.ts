@@ -118,7 +118,7 @@ export default class BytecodeLoader implements Loader {
     return hydrateProgram({ heap, constants: pool });
   }
 
-  private getResolver(app: BaseApplication): BytecodeResolver {
+  protected getResolver(app: BaseApplication): BytecodeResolver {
     let { table, meta, prefix } = this.data;
     return new BytecodeResolver(app, table, meta, prefix);
   }

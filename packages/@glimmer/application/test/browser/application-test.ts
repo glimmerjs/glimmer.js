@@ -20,7 +20,7 @@ test('can be instantiated', function(assert) {
   let resolver = new BlankResolver();
   let app = new Application({
     rootName: 'app',
-    loader: new RuntimeCompilerLoader(resolver),
+    loader: new RuntimeCompilerLoader(),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
     resolver,
@@ -105,7 +105,7 @@ test('accepts options for rootName, resolver and document', function(assert) {
   const resolver = new BlankResolver();
   let app = new Application({
     rootName: 'app',
-    loader: new RuntimeCompilerLoader(resolver),
+    loader: new RuntimeCompilerLoader(),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
     resolver,
@@ -123,7 +123,7 @@ test('accepts options for rootName, resolver and document', function(assert) {
     rootName: 'app',
     resolver,
     document: customDocument,
-    loader: new RuntimeCompilerLoader(resolver),
+    loader: new RuntimeCompilerLoader(),
     renderer: new SyncRenderer(),
     builder: new DOMBuilder({ element: document.body }),
   });

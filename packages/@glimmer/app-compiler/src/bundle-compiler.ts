@@ -11,7 +11,7 @@ import Plugin from 'broccoli-plugin';
 import { TempDir } from 'broccoli-test-helper';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { extname, join } from 'path';
-import walkSync from 'walk-sync';
+import { entries as walkSyncEntries } from 'walk-sync';
 
 // https://github.com/joliss/node-walk-sync/blob/984a2d6adf9facc1531fb325852f475eb260781d/index.d.ts
 export class WalkSyncEntry {
@@ -69,7 +69,7 @@ export default class GlimmerBundleCompiler extends Plugin {
 
   listEntries(): WalkSyncEntry[] {
     let [srcPath] = this.inputPaths;
-    return walkSync.entries(srcPath);
+    return walkSyncEntries(srcPath);
   }
 
   _readFile(file: string) {

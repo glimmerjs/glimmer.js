@@ -9,6 +9,7 @@ import Application, {
   Loader,
   RuntimeCompilerLoader,
   SyncRenderer,
+  ModuleTypes
 } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
@@ -17,6 +18,7 @@ import { buildAction, mainTemplate } from '@glimmer/application';
 import { compilable } from '@glimmer/opcode-compiler';
 import { Metadata } from '../../application/src/loaders/bytecode/loader';
 import { SimpleDocument } from '@simple-dom/interface';
+import { SSRApplication } from '@glimmer/ssr';
 
 import didRender from './did-render';
 
@@ -37,6 +39,10 @@ export class TestApplication extends Application {
 
 export interface AppBuilderTemplateMeta {
   specifier: string;
+}
+
+interface HelperFunction extends Function {
+  isFactory?: boolean;
 }
 
 function locatorFor(module: string, name: string): TemplateLocator<ModuleLocator> {
@@ -64,7 +70,7 @@ export class AppBuilder<T extends TestApplication> {
       `component-manager:/${this.rootName}/component-managers/main`
     ] = this.options.ComponentManager;
     this.template('Main', '<div />');
-    this.helper('action', buildAction);
+    this.helper('action', buildAction, true);
   }
 
   template(name: string, template: string) {
@@ -85,8 +91,9 @@ export class AppBuilder<T extends TestApplication> {
     return this;
   }
 
-  helper(name: string, helperFunc: Function) {
+  helper(name: string, helperFunc: HelperFunction, isFactory = false) {
     let specifier = `helper:/${this.rootName}/components/${name}`;
+    helperFunc.isFactory = isFactory;
     this.modules[specifier] = helperFunc;
     return this;
   }
@@ -102,8 +109,8 @@ export class AppBuilder<T extends TestApplication> {
     return new Resolver(resolverConfiguration, registry);
   }
 
-  protected buildRuntimeCompilerLoader(resolver: Resolver): Loader {
-    return new RuntimeCompilerLoader(resolver);
+  protected buildRuntimeCompilerLoader(): Loader {
+    return new RuntimeCompilerLoader();
   }
 
   protected buildBytecodeLoader(resolver: Resolver) {
@@ -146,7 +153,8 @@ export class AppBuilder<T extends TestApplication> {
       let module = locator.module.replace('template:/', 'component:/');
       if (this.modules[module]) {
         if (module.indexOf('helper:') === 0) {
-          resolverTable[handle] = [1, this.modules[module]];
+          const moduleType = (this.modules[module] as HelperFunction).isFactory ? ModuleTypes.HELPER_FACTORY : ModuleTypes.HELPER;
+          resolverTable[handle] = [moduleType, this.modules[module]];
         } else {
           resolverTable[handle] = this.modules[module];
         }
@@ -169,20 +177,32 @@ export class AppBuilder<T extends TestApplication> {
     return new BytecodeLoader({ bytecode, data });
   }
 
-  async boot(): Promise<T> {
-    let resolver = this.buildResolver();
-    let loader: Loader;
-
+  protected buildLoader(resolver): Loader {
     switch (this.options.loader) {
       case 'runtime-compiler':
-        loader = this.buildRuntimeCompilerLoader(resolver);
-        break;
+        return this.buildRuntimeCompilerLoader();
       case 'bytecode':
-        loader = this.buildBytecodeLoader(resolver);
-        break;
+        return this.buildBytecodeLoader(resolver);
       default:
         throw new Error(`Unrecognized loader ${this.options.loader}`);
     }
+  }
+
+  renderToString(componentName: string, data: Dict<unknown>): Promise<string> {
+    const resolver = this.buildResolver();
+    let loader = this.buildLoader(resolver);
+
+    return SSRApplication.renderToString(componentName, data, {
+      rootName: this.rootName,
+      resolver,
+      loader,
+      renderer: new SyncRenderer()
+    });
+  }
+
+  async boot(): Promise<T> {
+    let resolver = this.buildResolver();
+    let loader: Loader = this.buildLoader(resolver);
 
     let doc: Document = (this.options.document as Document) || document;
     let element = doc.body;

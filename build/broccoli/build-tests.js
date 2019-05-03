@@ -6,6 +6,8 @@ const funnel = require('broccoli-funnel');
 const Rollup = require('broccoli-rollup');
 
 const nodeResolve = require('rollup-plugin-node-resolve');
+const nodeGlobals = require('rollup-plugin-node-globals');
+const nodeBuiltIns = require('rollup-plugin-node-builtins');
 const monorepo = require('../rollup/monorepo-resolve');
 const handlebarsCompat = require('../rollup/handlebars-compat');
 
@@ -77,7 +79,9 @@ function includeTests(jsTree) {
           customResolveOptions: {
             moduleDirectory: 'glimmer-node_modules'
           }
-        })
+        }),
+        nodeGlobals(),
+        nodeBuiltIns()
       ]
     }
   });
