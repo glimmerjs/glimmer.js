@@ -1,4 +1,4 @@
-import { BaseApplication, Loader, Renderer } from '@glimmer/application';
+import { BaseApplication, Loader, Renderer, INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
 import { ComponentManager } from '@glimmer/component';
 import { Resolver, Dict } from '@glimmer/di';
 import { PathReference, ConstReference } from '@glimmer/reference';
@@ -12,14 +12,12 @@ import voidMap from '@simple-dom/void-map';
 import EnvironmentImpl from './environment';
 import StringBuilder from './string-builder';
 
-export const SET_INTERNAL_DYNAMIC_SCOPE = Symbol('SET_INTERNAL_DYNAMIC_SCOPE');
-
 export interface SSRApplicationOptions {
   rootName: string;
   resolver: Resolver;
   loader: Loader;
   renderer: Renderer;
-  [SET_INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
+  [INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
 }
 
 /**
@@ -82,7 +80,7 @@ export default class Application extends BaseApplication {
         builder,
         componentName,
         convertOpaqueToReferenceDict(data),
-        new DefaultDynamicScope(convertOpaqueToReferenceDict(options[SET_INTERNAL_DYNAMIC_SCOPE]))
+        new DefaultDynamicScope(convertOpaqueToReferenceDict(options[INTERNAL_DYNAMIC_SCOPE]))
       );
 
       env.begin();

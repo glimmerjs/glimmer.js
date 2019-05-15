@@ -102,6 +102,12 @@ export interface Renderer {
 }
 
 /**
+ * This symbol can be used to opt in to an experimental unstable API.
+ * The API provides the ability to pass in an ambient dynamic scope when rendering a root component.
+ */
+export const INTERNAL_DYNAMIC_SCOPE = Symbol('INTERNAL_DYNAMIC_SCOPE');
+
+/**
  * Options needed for setting up a base Glimmer application with Dependency Injection.
  * Dependency Injection is at the core of any Glimmer application. Specifically it sets up the environment and what other parts of the application depend on it.
  *
