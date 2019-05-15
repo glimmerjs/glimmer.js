@@ -1,7 +1,8 @@
-import { BaseApplication, Loader, Renderer } from '@glimmer/application';
+import { BaseApplication, Loader, Renderer, INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
 import { ComponentManager } from '@glimmer/component';
 import { Resolver, Dict } from '@glimmer/di';
 import { PathReference, ConstReference } from '@glimmer/reference';
+import { DefaultDynamicScope } from '@glimmer/runtime';
 
 import { PassThrough } from 'stream';
 import createHTMLDocument from '@simple-dom/document';
@@ -16,6 +17,7 @@ export interface SSRApplicationOptions {
   resolver: Resolver;
   loader: Loader;
   renderer: Renderer;
+  [INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
 }
 
 /**
@@ -77,7 +79,8 @@ export default class Application extends BaseApplication {
         env,
         builder,
         componentName,
-        convertOpaqueToReferenceDict(data)
+        convertOpaqueToReferenceDict(data),
+        new DefaultDynamicScope(convertOpaqueToReferenceDict(options[INTERNAL_DYNAMIC_SCOPE]))
       );
 
       env.begin();

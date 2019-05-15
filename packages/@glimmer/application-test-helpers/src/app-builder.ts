@@ -9,7 +9,8 @@ import Application, {
   Loader,
   RuntimeCompilerLoader,
   SyncRenderer,
-  ModuleTypes
+  ModuleTypes,
+  INTERNAL_DYNAMIC_SCOPE
 } from '@glimmer/application';
 import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
@@ -188,7 +189,7 @@ export class AppBuilder<T extends TestApplication> {
     }
   }
 
-  renderToString(componentName: string, data: Dict<unknown>): Promise<string> {
+  renderToString(componentName: string, data: Dict<unknown>, options?: { [INTERNAL_DYNAMIC_SCOPE]: Dict<unknown> }): Promise<string> {
     const resolver = this.buildResolver();
     let loader = this.buildLoader(resolver);
 
@@ -196,7 +197,8 @@ export class AppBuilder<T extends TestApplication> {
       rootName: this.rootName,
       resolver,
       loader,
-      renderer: new SyncRenderer()
+      renderer: new SyncRenderer(),
+      ...options
     });
   }
 

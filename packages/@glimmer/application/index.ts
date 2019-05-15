@@ -5,6 +5,7 @@ export {
   Loader,
   Renderer,
   Builder,
+  INTERNAL_DYNAMIC_SCOPE
 } from './src/base-application';
 export { default as Environment, EnvironmentOptions } from './src/environment';
 export { default as ApplicationRegistry } from './src/application-registry';

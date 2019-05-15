@@ -73,7 +73,8 @@ export interface Loader {
     env: Environment,
     builder: ElementBuilder,
     componentName: string,
-    args: RenderComponentArgs
+    args: RenderComponentArgs,
+    dynamicScope: DynamicScope
   ): Promise<TemplateIterator>;
 }
 
@@ -99,6 +100,12 @@ export interface Renderer {
    */
   rerender(): void | Promise<void>;
 }
+
+/**
+ * This symbol can be used to opt in to an experimental unstable API.
+ * The API provides the ability to pass in an ambient dynamic scope when rendering a root component.
+ */
+export const INTERNAL_DYNAMIC_SCOPE = Symbol('INTERNAL_DYNAMIC_SCOPE');
 
 /**
  * Options needed for setting up a base Glimmer application with Dependency Injection.
