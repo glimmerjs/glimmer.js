@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.14.0-alpha.6 (2019-05-15)
+
+#### :rocket: Enhancement
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/ssr`
+  * [#191](https://github.com/glimmerjs/glimmer.js/pull/191) Adding support to pass in a dynamic scope into the ssr glimmer app. ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 1
+- Chirag Patel ([chiragpat](https://github.com/chiragpat))
+
 ## v0.14.0-alpha.5 (2019-05-03)
 
 #### :rocket: Enhancement
