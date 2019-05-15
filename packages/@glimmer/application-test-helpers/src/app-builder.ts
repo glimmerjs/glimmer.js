@@ -18,7 +18,7 @@ import { buildAction, mainTemplate } from '@glimmer/application';
 import { compilable } from '@glimmer/opcode-compiler';
 import { Metadata } from '../../application/src/loaders/bytecode/loader';
 import { SimpleDocument } from '@simple-dom/interface';
-import { SSRApplication } from '@glimmer/ssr';
+import { SSRApplication, SET_INTERNAL_DYNAMIC_SCOPE } from '@glimmer/ssr';
 
 import didRender from './did-render';
 import { getDynamicVar } from '@glimmer/runtime';
@@ -190,7 +190,7 @@ export class AppBuilder<T extends TestApplication> {
     }
   }
 
-  renderToString(componentName: string, data: Dict<unknown>, dynamicScopeData?: Dict<unknown>): Promise<string> {
+  renderToString(componentName: string, data: Dict<unknown>, options?: { [SET_INTERNAL_DYNAMIC_SCOPE]: Dict<unknown> }): Promise<string> {
     const resolver = this.buildResolver();
     let loader = this.buildLoader(resolver);
 
@@ -198,8 +198,9 @@ export class AppBuilder<T extends TestApplication> {
       rootName: this.rootName,
       resolver,
       loader,
-      renderer: new SyncRenderer()
-    }, dynamicScopeData);
+      renderer: new SyncRenderer(),
+      ...options
+    });
   }
 
   async boot(): Promise<T> {

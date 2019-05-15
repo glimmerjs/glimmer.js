@@ -12,11 +12,14 @@ import voidMap from '@simple-dom/void-map';
 import EnvironmentImpl from './environment';
 import StringBuilder from './string-builder';
 
+export const SET_INTERNAL_DYNAMIC_SCOPE = Symbol('SET_INTERNAL_DYNAMIC_SCOPE');
+
 export interface SSRApplicationOptions {
   rootName: string;
   resolver: Resolver;
   loader: Loader;
   renderer: Renderer;
+  [SET_INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
 }
 
 /**
@@ -64,8 +67,7 @@ export default class Application extends BaseApplication {
     componentName: string,
     data: Dict<unknown>,
     stream: NodeJS.WritableStream,
-    options: SSRApplicationOptions,
-    dynamicScopeData?: Dict<unknown>,
+    options: SSRApplicationOptions
   ) {
     const app = new Application(options);
     try {
@@ -80,7 +82,7 @@ export default class Application extends BaseApplication {
         builder,
         componentName,
         convertOpaqueToReferenceDict(data),
-        new DefaultDynamicScope(convertOpaqueToReferenceDict(dynamicScopeData))
+        new DefaultDynamicScope(convertOpaqueToReferenceDict(options[SET_INTERNAL_DYNAMIC_SCOPE]))
       );
 
       env.begin();
@@ -96,8 +98,7 @@ export default class Application extends BaseApplication {
   static async renderToString(
     componentName: string,
     data: Dict<unknown>,
-    options: SSRApplicationOptions,
-    dynamicScopeData?: Dict<unknown>
+    options: SSRApplicationOptions
   ): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const stream = new PassThrough();
@@ -107,7 +108,7 @@ export default class Application extends BaseApplication {
       stream.on('end', () => resolve(html));
       stream.on('error', err => reject(err));
 
-      this.renderToStream(componentName, data, stream, options, dynamicScopeData);
+      this.renderToStream(componentName, data, stream, options);
     });
   }
 }

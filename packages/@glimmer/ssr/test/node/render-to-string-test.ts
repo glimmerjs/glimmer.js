@@ -1,5 +1,6 @@
 import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
 import Component from '@glimmer/component';
+import { SET_INTERNAL_DYNAMIC_SCOPE } from '@glimmer/ssr';
 
 class RenderToStringTest extends RenderTest {
   @test async 'renders a component'(assert: Assert) {
@@ -65,7 +66,9 @@ class RenderToStringTest extends RenderTest {
     let app = this.app
       .template('HelloWorld', `<h1>Hello {{-get-dynamic-var "name"}} World</h1>`);
 
-    const html = await app.renderToString('HelloWorld', {}, {name: 'dynamicScope SSR'});
+    const html = await app.renderToString('HelloWorld', {}, {
+      [SET_INTERNAL_DYNAMIC_SCOPE]: {name: 'dynamicScope SSR'}
+    });
     assert.equal(html, '<h1>Hello dynamicScope SSR World</h1>');
   }
 }
