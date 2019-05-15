@@ -1,6 +1,7 @@
 import { test, RenderTest, renderModule } from '@glimmer/application-test-helpers';
 import Component from '@glimmer/component';
 import { INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
+import { getDynamicVar } from '@glimmer/runtime';
 
 class RenderToStringTest extends RenderTest {
   @test async 'renders a component'(assert: Assert) {
@@ -64,6 +65,7 @@ class RenderToStringTest extends RenderTest {
     assert.expect(1);
 
     let app = this.app
+      .helper('-get-dynamic-var', getDynamicVar, true)
       .template('HelloWorld', `<h1>Hello {{-get-dynamic-var "name"}} World</h1>`);
 
     const html = await app.renderToString('HelloWorld', {}, {

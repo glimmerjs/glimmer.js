@@ -22,7 +22,6 @@ import { SimpleDocument } from '@simple-dom/interface';
 import { SSRApplication } from '@glimmer/ssr';
 
 import didRender from './did-render';
-import { getDynamicVar } from '@glimmer/runtime';
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -72,7 +71,6 @@ export class AppBuilder<T extends TestApplication> {
       `component-manager:/${this.rootName}/component-managers/main`
     ] = this.options.ComponentManager;
     this.template('Main', '<div />');
-    this.helper('-get-dynamic-var', getDynamicVar, true);
     this.helper('action', buildAction, true);
   }
 
