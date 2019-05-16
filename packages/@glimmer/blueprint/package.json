@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/blueprint",
-  "version": "0.14.0-alpha.6",
+  "version": "0.14.0-alpha.7",
   "description": "Ember CLI blueprint for initializing a new Glimmer application.",
   "main": "index.js",
   "scripts": {
