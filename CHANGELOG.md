@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.14.0-alpha.7 (2019-05-16)
+
+* Re-release of v0.14.0-alpha.6 due to a problem with published artifacts.
+
 ## v0.14.0-alpha.6 (2019-05-15)
 
 #### :rocket: Enhancement
