@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { UntrackedPropertyError } from '@glimmer/tracking';
-import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
+import { buildApp, TestApplication } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
 import { tracked, setPropertyDidChange } from '@glimmer/tracking';
 const { module, test } = QUnit;
@@ -26,16 +26,14 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
 
   class Row {
     id = 0;
-    @tracked label;
-    constructor({id, label}) {
+    constructor({id}) {
       this.id = id;
-      this.label = label;
     }
   }
 
   function createRows(count) {
     return new Array(count).fill(null).map((_, index)=>{
-      return new Row({label: index, id: index});
+      return new Row({id: index});
     });
   }
 
@@ -91,16 +89,14 @@ test('colums swap not produce heavy rerender for keyed lists', async function(as
 
   class Row {
     id = 0;
-    @tracked label;
-    constructor({id, label}) {
+    constructor({id}) {
       this.id = id;
-      this.label = label;
     }
   }
 
   function createRows(count) {
     return new Array(count).fill(null).map((_, index)=>{
-      return new Row({label: index, id: index});
+      return new Row({id: index});
     });
   }
 
