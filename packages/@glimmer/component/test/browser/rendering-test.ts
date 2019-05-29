@@ -40,6 +40,7 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
   class RootComponent extends Component {
     observer = null;
     @tracked data = createRows(10);
+    __owner__: any;
     didInsertElement() {
       root = this;
       this.observer = new MutationObserver((mutations) => {
@@ -47,7 +48,7 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
         done();
       });
       const config = { attributes: true, childList: true, characterData: true };
-      this.observer.observe(document.querySelector('.non-keyed'), config);
+      this.observer.observe(this.__owner__.rootElement.querySelector('.non-keyed'), config);
     }
     swapRows() {
       const a = this.data[2];
@@ -76,7 +77,6 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
   setPropertyDidChange(function() {
     app.scheduleRerender();
   });
-
   root.swapRows();
 });
 
@@ -103,6 +103,7 @@ test('colums swap not produce heavy rerender for keyed lists', async function(as
   class RootComponent extends Component {
     observer = null;
     @tracked data = createRows(10);
+    __owner__: any;
     didInsertElement() {
       root = this;
       this.observer = new MutationObserver((mutations) => {
@@ -110,7 +111,7 @@ test('colums swap not produce heavy rerender for keyed lists', async function(as
         done();
       });
       const config = { attributes: true, childList: true, characterData: true };
-      this.observer.observe(document.querySelector('.keyed'), config);
+      this.observer.observe(this.__owner__.rootElement.querySelector('.keyed'), config);
     }
     swapRows() {
       const a = this.data[2];
