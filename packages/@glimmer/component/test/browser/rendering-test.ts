@@ -1,8 +1,8 @@
 import Component from '@glimmer/component';
 import { UntrackedPropertyError } from '@glimmer/tracking';
-import { buildApp } from '@glimmer/application-test-helpers';
+import { buildApp, TestApplication, didRender } from '@glimmer/application-test-helpers';
 import { DEBUG } from '@glimmer/env';
-
+import { tracked, setPropertyDidChange } from '@glimmer/tracking';
 const { module, test } = QUnit;
 
 module('[@glimmer/component] Rendering');
@@ -15,6 +15,136 @@ test('A component can be rendered in a template', async function(assert) {
     .boot();
 
   assert.equal(app.rootElement.textContent, 'Hello, Tom!');
+});
+
+test('colums swap not produce heavy rerender for non-keyed lists', async function(assert) {
+  let done = assert.async();
+  assert.expect(1);
+
+  let root: RootComponent;
+  let app: TestApplication;
+
+  class Row {
+    id = 0;
+    @tracked label;
+    constructor({id, label}) {
+      this.id = id;
+      this.label = label;
+    }
+  }
+
+  function createRows(count) {
+    return new Array(count).fill(null).map((_, index)=>{
+      return new Row({label: index, id: index});
+    });
+  }
+
+  class RootComponent extends Component {
+    observer = null;
+    @tracked data = createRows(10);
+    didInsertElement() {
+      root = this;
+      this.observer = new MutationObserver((mutations) => {
+        assert.equal(mutations.length, 2, 'we need only 2 dom mutations for this case');
+        done();
+      });
+      const config = { attributes: true, childList: true, characterData: true };
+      this.observer.observe(document.querySelector('.keyed'), config);
+    }
+    swapRows() {
+      const a = this.data[2];
+      const b = this.data[8];
+      this.data[8] = a;
+      this.data[2] = b;
+      this.data = this.data;
+    }
+  }
+
+  app = await buildApp()
+    .component('RootComponent', RootComponent)
+    .template('Main', '<div><RootComponent /></div>')
+    .template(
+      'RootComponent',
+      `
+      <ul>
+        {{#each this.data key="@index" as |row|}}
+          <li>{{row.id}}</li>
+        {{/each}}
+      </ul>
+      `
+    )
+    .boot();
+
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
+
+  root.swapRows();
+});
+
+test('colums swap not produce heavy rerender for keyed lists', async function(assert) {
+  let done = assert.async();
+  assert.expect(1);
+
+  let root: RootComponent;
+  let app: TestApplication;
+
+  class Row {
+    id = 0;
+    @tracked label;
+    constructor({id, label}) {
+      this.id = id;
+      this.label = label;
+    }
+  }
+
+  function createRows(count) {
+    return new Array(count).fill(null).map((_, index)=>{
+      return new Row({label: index, id: index});
+    });
+  }
+
+  class RootComponent extends Component {
+    observer = null;
+    @tracked data = createRows(10);
+    didInsertElement() {
+      root = this;
+      this.observer = new MutationObserver((mutations) => {
+        assert.equal(mutations.length, 2, 'we need only 2 dom mutations for this case');
+        done();
+      });
+      const config = { attributes: true, childList: true, characterData: true };
+      this.observer.observe(document.querySelector('.keyed'), config);
+    }
+    swapRows() {
+      const a = this.data[2];
+      const b = this.data[8];
+      this.data[8] = a;
+      this.data[2] = b;
+      this.data = this.data;
+    }
+  }
+
+  app = await buildApp()
+    .component('RootComponent', RootComponent)
+    .template('Main', '<div><RootComponent /></div>')
+    .template(
+      'RootComponent',
+      `
+      <ul>
+        {{#each this.data key="id" as |row|}}
+          <li>{{row.id}}</li>
+        {{/each}}
+      </ul>
+      `
+    )
+    .boot();
+
+  setPropertyDidChange(function() {
+    app.scheduleRerender();
+  });
+
+  root.swapRows();
 });
 
 if (DEBUG) {
