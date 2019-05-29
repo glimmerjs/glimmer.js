@@ -47,7 +47,7 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
         done();
       });
       const config = { attributes: true, childList: true, characterData: true };
-      this.observer.observe(document.querySelector('.keyed'), config);
+      this.observer.observe(document.querySelector('.non-keyed'), config);
     }
     swapRows() {
       const a = this.data[2];
@@ -64,7 +64,7 @@ test('colums swap not produce heavy rerender for non-keyed lists', async functio
     .template(
       'RootComponent',
       `
-      <ul>
+      <ul class="non-keyed">
         {{#each this.data key="@index" as |row|}}
           <li>{{row.id}}</li>
         {{/each}}
@@ -127,7 +127,7 @@ test('colums swap not produce heavy rerender for keyed lists', async function(as
     .template(
       'RootComponent',
       `
-      <ul>
+      <ul class="keyed">
         {{#each this.data key="id" as |row|}}
           <li>{{row.id}}</li>
         {{/each}}
