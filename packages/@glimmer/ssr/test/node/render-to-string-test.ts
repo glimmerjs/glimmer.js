@@ -13,6 +13,16 @@ class RenderToStringTest extends RenderTest {
     assert.equal(html, '<h1>Hello SSR World</h1>');
   }
 
+  @test async 'supports passing non-primitive component args'(assert: Assert) {
+    assert.expect(1);
+    let app = this.app
+      .template('HelloWorld', `<h1>Hello {{@data.name}} World</h1>`);
+
+    const data = { name: 'SSR' };
+    const html = await app.renderToString('HelloWorld', { data });
+    assert.equal(html, '<h1>Hello SSR World</h1>');
+  }
+
   @test async 'renders nested components'(assert: Assert) {
     assert.expect(1);
     let app = this.app

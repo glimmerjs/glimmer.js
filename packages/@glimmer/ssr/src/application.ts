@@ -1,7 +1,7 @@
 import { BaseApplication, Loader, Renderer, INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
 import { ComponentManager } from '@glimmer/component';
 import { Resolver, Dict } from '@glimmer/di';
-import { PathReference, ConstReference } from '@glimmer/reference';
+import { PathReference, RootReference } from '@glimmer/reference';
 import { DefaultDynamicScope } from '@glimmer/runtime';
 
 import { PassThrough } from 'stream';
@@ -29,7 +29,7 @@ function convertOpaqueToReferenceDict(data: Dict<unknown>): Dict<PathReference<u
   }
 
   return Object.keys(data).reduce((acc, key) => {
-    acc[key] = new ConstReference(data[key]);
+    acc[key] = new RootReference(data[key]);
     return acc;
   }, {});
 }
