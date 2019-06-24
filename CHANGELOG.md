@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.14.0-alpha.8 (2019-06-24)
+
+#### :bug: Bug Fix
+* `@glimmer/ssr`
+  * [#197](https://github.com/glimmerjs/glimmer.js/pull/197) Handle non-primitive values passed as args in SSR. ([@tomdale](https://github.com/tomdale))
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#198](https://github.com/glimmerjs/glimmer.js/pull/198) Upgrade Glimmer VM to v0.41.0. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 1
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.14.0-alpha.7 (2019-05-16)
 
 * Re-release of v0.14.0-alpha.6 due to a problem with published artifacts.
