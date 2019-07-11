@@ -17,6 +17,7 @@ export interface SSRApplicationOptions {
   resolver: Resolver;
   loader: Loader;
   renderer: Renderer;
+  serializer?: HTMLSerializer;
   [INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
 }
 
@@ -38,7 +39,7 @@ function convertOpaqueToReferenceDict(data: Dict<unknown>): Dict<PathReference<u
 export default class Application extends BaseApplication {
   protected serializer: HTMLSerializer;
 
-  constructor({ rootName, resolver, loader, renderer }: SSRApplicationOptions) {
+  constructor({ rootName, resolver, loader, renderer, serializer }: SSRApplicationOptions) {
     super({
       rootName,
       resolver,
@@ -47,7 +48,7 @@ export default class Application extends BaseApplication {
       environment: EnvironmentImpl,
     });
 
-    this.serializer = new HTMLSerializer(voidMap);
+    this.serializer = serializer || new HTMLSerializer(voidMap);
     this.registerInitializer({
       initialize(registry) {
         registry.register(

@@ -2,6 +2,8 @@ import { test, RenderTest, renderModule } from '@glimmer/application-test-helper
 import Component from '@glimmer/component';
 import { INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
 import { getDynamicVar } from '@glimmer/runtime';
+import HTMLSerializer from '@simple-dom/serializer';
+import voidMap from '@simple-dom/void-map';
 
 class RenderToStringTest extends RenderTest {
   @test async 'renders a component'(assert: Assert) {
@@ -82,6 +84,22 @@ class RenderToStringTest extends RenderTest {
       [INTERNAL_DYNAMIC_SCOPE]: {name: 'dynamicScope SSR'}
     });
     assert.equal(html, '<h1>Hello dynamicScope SSR World</h1>');
+  }
+
+  @test async 'renders a component with a custom serializer'(assert: Assert) {
+    class CustomSerializer extends HTMLSerializer {
+      text(text) {
+        return 'MockTest';
+      }
+    }
+    assert.expect(1);
+    let app = this.app
+      .template('HelloWorld', `<h1>Hello World</h1>`);
+
+    const html = await app.renderToString('HelloWorld', {}, {
+      serializer: new CustomSerializer(voidMap),
+    });
+    assert.equal(html, '<h1>MockTest</h1>');
   }
 }
 
