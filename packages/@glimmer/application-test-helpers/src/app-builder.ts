@@ -22,6 +22,8 @@ import { SimpleDocument } from '@simple-dom/interface';
 import { SSRApplication } from '@glimmer/ssr';
 
 import didRender from './did-render';
+import HTMLSerializer from '@simple-dom/serializer';
+import { Renderer } from '@glimmer/application/src/base-application';
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -44,6 +46,15 @@ export interface AppBuilderTemplateMeta {
 
 interface HelperFunction extends Function {
   isFactory?: boolean;
+}
+
+interface TestSSRApplicationOptions {
+  rootName?: string;
+  resolver?: Resolver;
+  loader?: Loader;
+  renderer?: Renderer;
+  serializer?: HTMLSerializer;
+  [INTERNAL_DYNAMIC_SCOPE]?: Dict<unknown>;
 }
 
 function locatorFor(module: string, name: string): TemplateLocator<ModuleLocator> {
@@ -189,7 +200,7 @@ export class AppBuilder<T extends TestApplication> {
     }
   }
 
-  renderToString(componentName: string, data: Dict<unknown>, options?: { [INTERNAL_DYNAMIC_SCOPE]: Dict<unknown> }): Promise<string> {
+  renderToString(componentName: string, data: Dict<unknown>, options?: TestSSRApplicationOptions): Promise<string> {
     const resolver = this.buildResolver();
     let loader = this.buildLoader(resolver);
 
