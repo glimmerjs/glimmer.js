@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.14.0-alpha.9 (2019-07-11)
+
+#### :rocket: Enhancement
+* `@glimmer/application-test-helpers`, `@glimmer/ssr`
+  * [#199](https://github.com/glimmerjs/glimmer.js/pull/199) Modify SSRApplication.renderToString to accept a custom Serializer. ([@SinS3i](https://github.com/SinS3i))
+
+#### Committers: 1
+- Kyle Blomquist ([SinS3i](https://github.com/SinS3i))
+
 ## v0.14.0-alpha.8 (2019-06-24)
 
 #### :bug: Bug Fix
