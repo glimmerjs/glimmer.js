@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
-import { action, computed } from '@ember-decorators/object';
-import { set } from '@ember/object';
+import { action, set, computed } from '@ember/object';
 
 export default class ConferenceSpeakers extends Component {
   current = 0;
@@ -13,7 +12,7 @@ export default class ConferenceSpeakers extends Component {
 
   @computed('current')
   get moreSpeakers() {
-    return (this.speakers.length - 1) > this.current;
+    return this.speakers.length - 1 > this.current;
   }
 
   @action
