@@ -116,6 +116,25 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('HELLO!');
   });
 
+  test('it can use args in computed property', async function(assert) {
+    assert.expect(2);
+
+    this.owner.register('component:under-test', class extends GlimmerComponent {
+      @computed('args.text')
+      get bar() {
+        return this.args.text.toUpperCase();
+      }
+    });
+    this.owner.register('template:components/under-test', hbs`<p>{{this.bar}}</p>`);
+
+    this.set('text', 'hello!');
+    await render(hbs`<UnderTest @text={{this.text}} />`);
+    assert.dom('p').hasText('HELLO!');
+
+    this.set('text', 'there!');
+    assert.dom('p').hasText('THERE!');
+  })
+
   test('it can use args in constructor', async function(assert) {
     this.owner.register(
       'component:under-test',
