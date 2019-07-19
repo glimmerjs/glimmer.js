@@ -6,8 +6,9 @@ import {
   TagWrapper,
   combine,
   CONSTANT_TAG,
+  bump
 } from '@glimmer/reference';
-import { dict } from '@glimmer/util';
+import { dict, assert } from '@glimmer/util';
 import { Option, Dict } from '@glimmer/interfaces';
 
 /**
@@ -109,10 +110,16 @@ export function tracked(...args: any[]): any {
     }
   }
 
-  if (descriptor) {
+  if (!descriptor) {
+    // In TypeScript's implementation, decorators on simple class fields do not
+    // receive a descriptor, so we define the property on the target directly.
+    Object.defineProperty(target, key, descriptorForField(target, key));
+  } else if (descriptor.get) {
+    // Decorator applied to a getter, e.g. `@tracked get firstName()`
     return descriptorForTrackedComputedProperty(target, key, descriptor);
   } else {
-    installTrackedProperty(target, key);
+    // Decorator applied to a class field, e.g. `@tracked firstName = "Chris"`
+    return descriptorForField(target, key, descriptor);
   }
 }
 
@@ -130,6 +137,56 @@ export function tracked(...args: any[]): any {
  * itself, including child tracked computed properties.
  */
 let CURRENT_TRACKER: Option<Tracker> = null;
+
+export type DecoratorPropertyDescriptor = PropertyDescriptor & { initializer?: any } | undefined;
+
+function descriptorForField(
+  target: object,
+  key: string,
+  desc?: DecoratorPropertyDescriptor
+): DecoratorPropertyDescriptor {
+  assert(
+    !desc || (!desc.value && !desc.get && !desc.set),
+    `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`,
+  );
+
+  const meta = metaFor(target);
+  meta.trackedProperties[key] = true;
+
+  const initializer = desc ? desc.initializer : undefined;
+  const values = new WeakMap();
+  const hasInitializer = typeof initializer === 'function';
+
+  return {
+    enumerable: true,
+    configurable: true,
+
+    get(): any {
+      trackedGet(this, key);
+
+      let value;
+
+      // If the field has never been initialized, we should initialize it
+      if (hasInitializer && !values.has(this)) {
+        value = initializer.call(this);
+        values.set(this, value);
+      } else {
+        value = values.get(this);
+      }
+
+      return value;
+    },
+
+    set(newValue: any): void {
+      (metaFor(this)
+        .tagFor(key)
+        .inner as any as DirtyableTag).dirty();
+
+      values.set(this, newValue);
+      propertyDidChange();
+    },
+  };
+}
 
 function descriptorForTrackedComputedProperty(
   target: any,
@@ -168,7 +225,7 @@ function descriptorForTrackedComputedProperty(
   }
 
   function setter(this: object) {
-    EPOCH.inner.dirty();
+    bump();
 
     // Mark the UpdatableTag for this property with the current tag.
     metaFor(this)
@@ -188,44 +245,7 @@ function descriptorForTrackedComputedProperty(
 export type Key = string;
 
 export function trackedGet(obj: Object, key: string) {
-  if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(obj).updatableTagFor(key));
-}
-
-/**
-  Installs a getter/setter for change tracking. The accessor
-  acts just like a normal property, but it triggers the `propertyDidChange`
-  hook when written to.
-
-  Values are saved on the object using a "shadow key," or a symbol based on the
-  tracked property name. Sets write the value to the shadow key, and gets read
-  from it.
- */
-function installTrackedProperty(target: any, key: Key) {
-  let shadowKey = Symbol(key);
-
-  let meta = metaFor(target);
-  meta.trackedProperties[key] = true;
-
-  Object.defineProperty(target, key, {
-    configurable: true,
-
-    get(): any {
-      trackedGet(this, key);
-      return this[shadowKey];
-    },
-
-    set(newValue: any) {
-      // Bump the global revision counter
-      EPOCH.inner.dirty();
-
-      // Mark the UpdatableTag for this property with the current tag.
-      metaFor(this)
-        .updatableTagFor(key)
-        .inner.update(DirtyableTag.create());
-      this[shadowKey] = newValue;
-      propertyDidChange();
-    },
-  });
+  if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(obj).tagFor(key));
 }
 
 /**
@@ -273,7 +293,7 @@ export default class Meta {
     }
 
     if (this.trackedComputedProperties[key]) {
-      return (this.tags[key] = this.updatableTagFor(key));
+      return (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
     }
 
     return (this.tags[key] = DirtyableTag.create());
@@ -286,24 +306,7 @@ export default class Meta {
    * the tag combinator of the CP and its dependencies.
    */
   updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
-    let isComputed = this.trackedComputedProperties[key];
-    let tag;
-
-    if (isComputed) {
-      // The key is for a computed property.
-      tag = this.computedPropertyTags[key];
-      if (tag) {
-        return tag;
-      }
-      return (this.computedPropertyTags[key] = UpdatableTag.create(CONSTANT_TAG));
-    } else {
-      // The key is for a static property.
-      tag = this.tags[key];
-      if (tag) {
-        return tag as TagWrapper<UpdatableTag>;
-      }
-      return (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
-    }
+    return this.tags[key] as TagWrapper<UpdatableTag> || (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
   }
 }
 
@@ -359,8 +362,6 @@ function findPrototypeMeta(obj: Object): Meta | null {
   return meta;
 }
 
-const EPOCH = DirtyableTag.create();
-
 let propertyDidChange = function() {};
 
 export function setPropertyDidChange(cb: () => void) {
@@ -368,13 +369,7 @@ export function setPropertyDidChange(cb: () => void) {
 }
 
 export function hasTag(obj: any, key: string): boolean {
-  let meta = META_MAP.get(obj);
-
-  if (!meta || !meta.trackedProperties[key]) {
-    return false;
-  }
-
-  return true;
+  return metaFor(obj).trackedProperties[key];
 }
 
 export class UntrackedPropertyError extends Error {
@@ -413,8 +408,7 @@ export function tagForProperty(
       installDevModeErrorInterceptor(obj, key, throwError);
     }
 
-    let meta = metaFor(obj);
-    return meta.tagFor(key);
+    return metaFor(obj).tagFor(key);
   } else {
     return CONSTANT_TAG;
   }
