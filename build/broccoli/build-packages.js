@@ -3,8 +3,6 @@
 const funnel = require('broccoli-funnel');
 const babel = require('broccoli-babel-transpiler');
 const merge = require('broccoli-merge-trees');
-const concat = require('broccoli-concat');
-const resolveModuleSource = require('amd-name-resolver').moduleResolve;
 
 const transpileToES5 = require('./transpile-to-es5');
 const writePackageJSON = require('./write-package-json');
@@ -46,8 +44,6 @@ module.exports = function buildPackages(es2017, matrix) {
     return matrix.map(([modules, target]) => {
       let source = targets[target];
       switch (modules) {
-        case 'amd':
-          return transpileAMD(pkgName, target, source);
         case 'commonjs':
           return transpileCommonJS(pkgName, target, source);
         case 'modules':
@@ -78,26 +74,6 @@ function copyTypes(pkg, source) {
     srcDir: pkg,
     include: ['**/*.d.ts'],
     destDir: `${pkg}/dist/types`
-  });
-}
-
-function transpileAMD(pkgName, esVersion, tree) {
-  let bundleName = pkgName.replace('/', '-').replace('@', '');
-  let pkgTree = funnel(tree, {
-    include: [`${pkgName}/**/*`],
-    exclude: ['**/*.d.ts']
-  });
-
-  let amd = babel(pkgTree, {
-    moduleId: true,
-    resolveModuleSource,
-    plugins: [['transform-es2015-modules-amd', { noInterop: true, strict: true }]]
-  });
-
-  return concat(amd, {
-   inputFiles: ['**/*'],
-   sourceMapConfig: { enabled: false },
-   outputFile: `/${pkgName}/dist/amd/${esVersion}/${bundleName}.js`
   });
 }
 

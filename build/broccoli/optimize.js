@@ -10,6 +10,8 @@ module.exports = function(jsTree) {
   let isProduction = process.env.EMBER_ENV === 'production';
 
   let plugins = [
+    ['@babel/plugin-proposal-decorators', { legacy: true }],
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
     [require.resolve('babel-plugin-debug-macros'), {
       debugTools: {
         isDebug: !isProduction,
