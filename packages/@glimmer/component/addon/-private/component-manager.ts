@@ -1,11 +1,12 @@
 import { DEBUG } from '@glimmer/env';
 import Ember from 'ember';
+import { set } from '@ember/object';
 import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
 
-import GlimmerComponent, { DESTROYING, DESTROYED, MAGIC_PROP } from './component';
+import GlimmerComponent, { DESTROYING, DESTROYED, ARGS_SET } from './component';
 
 export interface ComponentManagerArgs {
   named: object;
@@ -26,6 +27,7 @@ export default class GlimmerComponentManager {
     this.capabilities = capabilities('3.4', {
       destructor: true,
       asyncLifecycleCallbacks: true,
+      updateHook: false,
     });
   }
 
@@ -33,22 +35,11 @@ export default class GlimmerComponentManager {
     Klass: typeof GlimmerComponent,
     args: ComponentManagerArgs
   ): CreateComponentResult {
-    let instance;
-
-    let argSnapshot = args.named;
-
     if (DEBUG) {
-      argSnapshot = Object.assign({}, argSnapshot);
-      Object.defineProperty(argSnapshot, MAGIC_PROP, {
-        enumerable: false,
-        value: true,
-      });
-      argSnapshot = Object.freeze(argSnapshot);
+      ARGS_SET.add(args.named);
     }
 
-    instance = new Klass(getOwner(this), argSnapshot);
-
-    return instance as CreateComponentResult;
+    return new Klass(getOwner(this), args.named) as CreateComponentResult;
   }
 
   updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
@@ -58,7 +49,7 @@ export default class GlimmerComponentManager {
       argSnapshot = Object.freeze(argSnapshot);
     }
 
-    component.args = argSnapshot;
+    set(component, 'args', argSnapshot);
   }
 
   destroyComponent(component: CreateComponentResult) {

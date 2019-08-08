@@ -4,13 +4,13 @@ import { setOwner } from './owner';
 const DESTROYING = Symbol('destroying');
 const DESTROYED = Symbol('destroyed');
 
-let MAGIC_PROP: symbol;
+let ARGS_SET: WeakSet<any>;
 
 if (DEBUG) {
-  MAGIC_PROP = Symbol('magic-prop');
+  ARGS_SET = new WeakSet();
 }
 
-export { DESTROYING, DESTROYED, MAGIC_PROP };
+export { DESTROYING, DESTROYED, ARGS_SET };
 
 /**
  * The `Component` class defines an encapsulated UI element that is rendered to
@@ -145,10 +145,7 @@ export default class GlimmerComponent<T = object> {
    * @param args
    */
   constructor(owner: unknown, args: T) {
-    if (
-      DEBUG &&
-      !(owner !== null && typeof owner === 'object' && (args as any)[MAGIC_PROP] === true)
-    ) {
+    if (DEBUG && !(owner !== null && typeof owner === 'object' && ARGS_SET.has(args))) {
       throw new Error(
         `You must pass both the owner and args to super() in your component: ${
           this.constructor.name

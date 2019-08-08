@@ -29,7 +29,7 @@ import ExtendedTemplateMeta from './template-meta';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/application/src/loaders/runtime-compiler/resolver';
 import { Specifier } from '@glimmer/application/src/loaders/runtime-compiler/loader';
 
-import { MAGIC_PROP, DESTROYING, DESTROYED } from '../addon/-private/component';
+import { ARGS_SET, DESTROYING, DESTROYED } from '../addon/-private/component';
 
 export interface ConstructorOptions {
   env: EnvironmentWithOwner;
@@ -67,10 +67,7 @@ export class ComponentStateBucket {
     let snapshot = this.args.named.value();
 
     if (DEBUG) {
-      Object.defineProperty(snapshot, MAGIC_PROP, {
-        enumerable: false,
-        value: true,
-      });
+      ARGS_SET.add(snapshot);
     }
 
     return Object.freeze(snapshot);
