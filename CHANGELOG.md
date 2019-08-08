@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.14.0-alpha.10 (2019-08-08)
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#201](https://github.com/glimmerjs/glimmer.js/pull/201) Update the assignment of `this.args` to reflect the arg proxy. ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([pzuraq](https://github.com/pzuraq))
+
 ## v0.14.0-alpha.9 (2019-07-11)
 
 #### :rocket: Enhancement
