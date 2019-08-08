@@ -881,61 +881,6 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@ember-decorators/component@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/component/-/component-5.1.3.tgz#f78c78f8b67ec88bbd00002ef855afb0c8d87f66"
-  integrity sha512-5Ev1nfLoNHh6Mtegkz8+Y1icEseLYkH+VEkCyH6kc1Zax0VJDaUHvWncy8siHYl8kV6nKs23XeGKJKrnyOBpgA==
-  dependencies:
-    "@ember-decorators/utils" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-
-"@ember-decorators/controller@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/controller/-/controller-5.1.3.tgz#3fc6c8001716eed42bae468dbd3b5a6cb5160222"
-  integrity sha512-zjnm6xAkcsdDQV7rvLsGrzMbZ0eMkPsUBPDTuA3LDYScl89OBJGVivg8fdZNWAHkEtXb+qmyUDx6xGjTi2UChQ==
-  dependencies:
-    "@ember-decorators/utils" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-    ember-compatibility-helpers "^1.1.2"
-
-"@ember-decorators/data@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/data/-/data-5.1.3.tgz#a2bee8be053bb4a61c3666839d1d431cd37389c1"
-  integrity sha512-SWA35kJMbcjc1ffnEPhPyj56RogBFGQSpzbq8secLK7avGxLD8N5v8+Arx8SRCsKAS7PmnDmJlIBGynDq3CUBw==
-  dependencies:
-    "@ember-decorators/utils" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-    ember-compatibility-helpers "^1.1.2"
-
-"@ember-decorators/object@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/object/-/object-5.1.3.tgz#3b85eaf47d18ab3c9f271cc9c216cbdb62c8263d"
-  integrity sha512-qgrk/205p3c13QuM+I3INmK0TJE+5rFTZzM4VwsU03JlRzbnwNyxpDq01kfHBxGP+s7G3u9pHCOqFotNoskqWQ==
-  dependencies:
-    "@ember-decorators/utils" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-    ember-compatibility-helpers "^1.1.2"
-
-"@ember-decorators/service@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/service/-/service-5.1.3.tgz#4034277d0c428388d47b48886dea35bccebc9d09"
-  integrity sha512-STajLYjF+F07foeRj/AC5TnfB2w3Hk0Ne0+EkH43yLLPXqJS8D3DibB+Y1Jktnx1ttxVMYJC6JzDC1zr09qvtA==
-  dependencies:
-    "@ember-decorators/utils" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-    ember-compatibility-helpers "^1.1.2"
-
-"@ember-decorators/utils@^5.1.3":
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/utils/-/utils-5.1.3.tgz#c9ae884ce51943718a2ce9b5ed7abe6677645756"
-  integrity sha512-kYCxPL1yxN3iwKllI1wfbkxmcLxgZMbrLCat+JEPYEw4xJBzLRFzZO2qg+KAFDh7rG/WgS3L7Ji0THOj422/yw==
-  dependencies:
-    babel-plugin-debug-macros "^0.2.0"
-    ember-cli-babel "^7.1.3"
-    ember-cli-version-checker "^3.0.0"
-    ember-compatibility-helpers "^1.1.2"
-    semver "^5.6.0"
-
 "@ember/optional-features@^0.6.1":
   version "0.6.4"
   resolved "https://registry.yarnpkg.com/@ember/optional-features/-/optional-features-0.6.4.tgz#8199f853c1781234fcb1f05090cddd0b822bff69"
@@ -2753,7 +2698,7 @@ broccoli-babel-transpiler@^6.1.2:
     rsvp "^3.5.0"
     workerpool "^2.3.0"
 
-broccoli-babel-transpiler@^7.1.0, broccoli-babel-transpiler@^7.1.1:
+broccoli-babel-transpiler@^7.1.1:
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/broccoli-babel-transpiler/-/broccoli-babel-transpiler-7.1.2.tgz#fb5d6f8b9a805627ac3f2914ac9d86e82ca2413b"
   integrity sha512-rljx86xgZJ2BjWt+xCSVfvyt3ONpCdMMXzMpeeVpAGdBHj3bqQICdPHZDAbzn1vKY/LIPsJZftvdxql1jiLGzw==
@@ -4710,30 +4655,6 @@ ember-cli-babel@^7.1.2, ember-cli-babel@^7.7.3:
     ensure-posix-path "^1.0.2"
     semver "^5.5.0"
 
-ember-cli-babel@^7.1.3:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/ember-cli-babel/-/ember-cli-babel-7.4.1.tgz#9892f5883f5a6b1f0f86fb1331fc491338f372ad"
-  integrity sha512-h6qZKHyULm5SYhvjNOeXvLl3kHaBdh37g5QqTTiC/vMiWP/xnyNp2bMoq52qq+SLm/bE8+5UcVTKjrNl0+IqXA==
-  dependencies:
-    "@babel/core" "^7.0.0"
-    "@babel/plugin-transform-modules-amd" "^7.0.0"
-    "@babel/plugin-transform-runtime" "^7.2.0"
-    "@babel/polyfill" "^7.0.0"
-    "@babel/preset-env" "^7.0.0"
-    "@babel/runtime" "^7.2.0"
-    amd-name-resolver "^1.2.1"
-    babel-plugin-debug-macros "^0.2.0-beta.6"
-    babel-plugin-ember-modules-api-polyfill "^2.6.0"
-    babel-plugin-module-resolver "^3.1.1"
-    broccoli-babel-transpiler "^7.1.0"
-    broccoli-debug "^0.6.4"
-    broccoli-funnel "^2.0.1"
-    broccoli-source "^1.1.0"
-    clone "^2.1.2"
-    ember-cli-version-checker "^2.1.2"
-    ensure-posix-path "^1.0.2"
-    semver "^5.5.0"
-
 ember-cli-blueprint-test-helpers@^0.19.1:
   version "0.19.2"
   resolved "https://registry.yarnpkg.com/ember-cli-blueprint-test-helpers/-/ember-cli-blueprint-test-helpers-0.19.2.tgz#9e563cd81ab39931253ced0982c5d02475895401"
@@ -4949,14 +4870,6 @@ ember-cli-version-checker@^2.0.0, ember-cli-version-checker@^2.1.0, ember-cli-ve
   dependencies:
     resolve "^1.3.3"
     semver "^5.3.0"
-
-ember-cli-version-checker@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ember-cli-version-checker/-/ember-cli-version-checker-3.0.1.tgz#2d084d2b261374582c68edb658a7df3a10112749"
-  integrity sha512-hX2tGrFVt8PyaiWclZr8XFNUPSnA+Ax4bMifDIVVtYY8RQZG8LZf9AGyTj4XImkBBWBtgKyOeQ0ovg3kgos4JA==
-  dependencies:
-    resolve "^1.9.0"
-    semver "^5.6.0"
 
 ember-cli-version-checker@^3.1.3:
   version "3.1.3"
@@ -5181,19 +5094,6 @@ ember-decorators-polyfill@^1.0.6:
     ember-cli-babel "^7.1.2"
     ember-cli-version-checker "^3.1.3"
     ember-compatibility-helpers "^1.2.0"
-
-ember-decorators@^5.1.3:
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/ember-decorators/-/ember-decorators-5.1.3.tgz#dafcca32e7acaa68ddb88420f6cd8e78a9edc35a"
-  integrity sha512-Urmr8NBZNT4QifeHeh4T5j3R77LNcWcZAIJBQ87taHX5syPfXcm/9wyDS3FKwzZ4Odrt3xwNqJqu5iwRICsFSQ==
-  dependencies:
-    "@ember-decorators/component" "^5.1.3"
-    "@ember-decorators/controller" "^5.1.3"
-    "@ember-decorators/data" "^5.1.3"
-    "@ember-decorators/object" "^5.1.3"
-    "@ember-decorators/service" "^5.1.3"
-    ember-cli-babel "^7.1.3"
-    semver "^5.5.0"
 
 ember-disable-prototype-extensions@^1.1.2:
   version "1.1.3"
@@ -10470,7 +10370,7 @@ resolve@1.8.1:
   dependencies:
     path-parse "^1.0.5"
 
-resolve@^1.1.6, resolve@^1.10.0, resolve@^1.3.2, resolve@^1.3.3, resolve@^1.4.0, resolve@^1.5.0, resolve@^1.6.0, resolve@^1.7.1, resolve@^1.8.1, resolve@^1.9.0:
+resolve@^1.1.6, resolve@^1.10.0, resolve@^1.3.2, resolve@^1.3.3, resolve@^1.4.0, resolve@^1.5.0, resolve@^1.6.0, resolve@^1.7.1, resolve@^1.8.1:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.10.0.tgz#3bdaaeaf45cc07f375656dfd2e54ed0810b101ba"
   integrity sha512-3sUr9aq5OfSg2S9pNtPA9hL1FVEAjvfOC4leW0SNf/mpnaakz2a9femSd6LqAww2RaFctwyf1lCqnTHuF1rxDg==
