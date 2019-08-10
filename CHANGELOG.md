@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.14.0-alpha.11 (2019-08-10)
+
+#### :rocket: Enhancement
+* `@glimmer/tracking`
+  * [#202](https://github.com/glimmerjs/glimmer.js/pull/202) Add support for Babel legacy decorators. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 1
+
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.14.0-alpha.10 (2019-08-08)
 
 #### :bug: Bug Fix
