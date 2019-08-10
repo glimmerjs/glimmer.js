@@ -25,11 +25,19 @@ module.exports = function(_options) {
     exclude: ['**/node_modules/**']
   });
 
+  // We'll also grab any files that are authored in JavaScript directly
+  // (which includes things like some test files).
+  let jsTree = funnel('packages/', {
+    include: ['**/*.js'],
+    exclude: ['**/node_modules/**', '@glimmer/component/**']
+  });
+
   // Second, compile all of the TypeScript into ES2017 JavaScript. Because the
   // TypeScript compiler understands the project as a whole, it's faster to do
   // this once and use the transpiled JavaScript as the input to any further
-  // transformations.
-  let jsTree = typescript(tsTree);
+  // transformations. We then merge the transpiled JS back in with any files
+  // authored in JS originally.
+  jsTree = merge([jsTree, typescript(tsTree)]);
 
   // The TypeScript compiler doesn't emit `.d.ts` files, so we need to manually
   // merge them back into our JavaScript output.
@@ -52,7 +60,6 @@ module.exports = function(_options) {
 
   if (PRODUCTION) {
     matrix = [
-      ['amd', 'es5'],
       ['commonjs', 'es2017'],
       ['commonjs', 'es5'],
       ['modules', 'es2017'],

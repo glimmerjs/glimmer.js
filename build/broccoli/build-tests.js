@@ -67,7 +67,6 @@ function includeTests(jsTree) {
       entry: ['tests.js'],
       dest: 'assets/tests.js',
       plugins: [
-        monorepo(),
         handlebarsCompat(),
         nodeResolve({
           // Chad's broccoli-rollup plugin symlinks a node_modules directory at
@@ -80,6 +79,7 @@ function includeTests(jsTree) {
             moduleDirectory: 'glimmer-node_modules'
           }
         }),
+        monorepo(),
         nodeGlobals(),
         nodeBuiltIns()
       ]
