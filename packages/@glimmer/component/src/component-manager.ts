@@ -228,7 +228,15 @@ export default class ComponentManager
 
   didUpdateLayout() {}
 
-  didUpdate() {}
+  didUpdate(bucket: ComponentStateBucket) {
+    if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {
+      return;
+    }
+    if (!bucket) {
+      return;
+    }
+     bucket.component.didUpdate();
+  }
 
   getDestructor(bucket: ComponentStateBucket): Destroyable {
     if (DEBUG && bucket instanceof TemplateOnlyComponentDebugBucket) {

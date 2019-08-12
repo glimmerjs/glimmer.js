@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
-import { buildApp } from '@glimmer/application-test-helpers';
+import { buildApp, didRender } from '@glimmer/application-test-helpers';
+import { tracked, setPropertyDidChange } from '@glimmer/tracking';
 
 const { module, test } = QUnit;
 
@@ -9,6 +10,7 @@ test('Lifecycle hook ordering', async function(assert) {
   assert.expect(1);
 
   let invocations: [string, string][] = [];
+  let component1: Component1;
 
   abstract class HookLoggerComponent extends Component {
     args: {
@@ -23,19 +25,29 @@ test('Lifecycle hook ordering', async function(assert) {
     didInsertElement() {
       invocations.push([this.args.name, 'didInsertElement']);
     }
+
+    didUpdate() {
+      invocations.push([this.args.name, 'didUpdate']);
+    }
   }
 
-  class Component1 extends HookLoggerComponent {}
+  class Component1 extends HookLoggerComponent {
+    @tracked firstName = 'Chirag';
+    constructor(owner, args) {
+      super(owner, args);
+      component1 = this;
+    }
+  }
   class Component2 extends HookLoggerComponent {}
   class Component3 extends HookLoggerComponent {}
   class Component4 extends HookLoggerComponent {}
   class Component5 extends HookLoggerComponent {}
 
-  await buildApp()
+  const app = await buildApp()
     .template('Main', '<div><ComponentOne @name="component1"/></div>')
     .template(
       'ComponentOne',
-      '<div><ComponentTwo @name="component2"/><ComponentThree @name="component3"/></div>'
+      '<div><ComponentTwo @name="component2" @firstName={{this.firstName}} /><ComponentThree @name="component3"/></div>'
     )
     .template(
       'ComponentTwo',
@@ -51,6 +63,14 @@ test('Lifecycle hook ordering', async function(assert) {
     .component('ComponentFive', Component5)
     .boot();
 
+  setPropertyDidChange(() => {
+    app.scheduleRerender();
+  });
+
+  component1.firstName = 'Test';
+
+  await didRender(app);
+
   assert.deepEqual(invocations, [
     ['component1', 'constructor'],
     ['component2', 'constructor'],
@@ -62,6 +82,8 @@ test('Lifecycle hook ordering', async function(assert) {
     ['component2', 'didInsertElement'],
     ['component3', 'didInsertElement'],
     ['component1', 'didInsertElement'],
+    ['component2', 'didUpdate'],
+    ['component1', 'didUpdate'],
   ]);
 });
 
