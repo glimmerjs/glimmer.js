@@ -5,6 +5,7 @@ import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
+import { gte } from 'ember-compatibility-helpers';
 
 import GlimmerComponent, { DESTROYING, DESTROYED, ARGS_SET } from './component';
 
@@ -24,11 +25,18 @@ export default class GlimmerComponentManager {
   capabilities: any;
   constructor(owner: ApplicationInstance) {
     setOwner(this, owner);
-    this.capabilities = capabilities('3.4', {
-      destructor: true,
-      asyncLifecycleCallbacks: true,
-      updateHook: false,
-    });
+    if (gte('3.13.0-beta.1')) {
+      this.capabilities = capabilities('3.13', {
+        destructor: true,
+        asyncLifecycleCallbacks: true,
+        updateHook: false,
+      });
+    } else {
+      this.capabilities = capabilities('3.4', {
+        destructor: true,
+        asyncLifecycleCallbacks: true,
+      });
+    }
   }
 
   createComponent(
@@ -40,16 +48,6 @@ export default class GlimmerComponentManager {
     }
 
     return new Klass(getOwner(this), args.named) as CreateComponentResult;
-  }
-
-  updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
-    let argSnapshot = args.named;
-
-    if (DEBUG) {
-      argSnapshot = Object.freeze(argSnapshot);
-    }
-
-    set(component, 'args', argSnapshot);
   }
 
   destroyComponent(component: CreateComponentResult) {
@@ -84,4 +82,22 @@ export default class GlimmerComponentManager {
   getContext(component: CreateComponentResult) {
     return component;
   }
+}
+
+// In Ember 3.12 and earlier, the updateComponent hook was mandatory.
+// As of Ember 3.13, the `args` object is stable and each property of the
+// object participates in the autotrack stack on its own. This means we do not
+// need to set the `args` property on the component instance to invalidate
+// tracked getters that rely on `args`, and therefore don't require the `updateComponent`
+// hook at all.
+if (!gte('3.13.0-beta.1')) {
+  GlimmerComponentManager.prototype.updateComponent = function updateComponent(component: CreateComponentResult, args: ComponentManagerArgs) {
+      let argSnapshot = args.named;
+
+      if (DEBUG) {
+        argSnapshot = Object.freeze(argSnapshot);
+      }
+
+      set(component, 'args', argSnapshot);
+  };
 }
