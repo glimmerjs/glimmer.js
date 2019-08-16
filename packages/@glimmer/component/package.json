@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "0.14.0-alpha.11",
+  "version": "0.14.0-alpha.12",
   "description": "Glimmer component library",
   "keywords": [
     "ember-addon"
@@ -32,7 +32,7 @@
     "@glimmer/env": "^0.1.7",
     "@glimmer/reference": "^0.41.0",
     "@glimmer/runtime": "^0.41.0",
-    "@glimmer/tracking": "^0.14.0-alpha.11",
+    "@glimmer/tracking": "^0.14.0-alpha.12",
     "@glimmer/util": "^0.41.0",
     "broccoli-file-creator": "^2.1.1",
     "broccoli-merge-trees": "^3.0.2",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@ember/optional-features": "^0.6.1",
-    "@glimmer/application-test-helpers": "^0.14.0-alpha.11",
+    "@glimmer/application-test-helpers": "^0.14.0-alpha.12",
     "@glimmer/compiler": "^0.41.0",
     "@glimmer/interfaces": "^0.41.0",
     "@glimmer/resolver": "^0.3.0",
