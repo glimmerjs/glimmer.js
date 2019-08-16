@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.14.0-alpha.12 (2019-08-16)
+
+#### :rocket: Enhancement
+
+* `@glimmer/component`
+  * [#204](https://github.com/glimmerjs/glimmer.js/pull/204) Adding back didUpdate hook to glimmer.js component-manager. ([@chiragpat](https://github.com/chiragpat))
+    * This change also fixes compatibility with Ember 3.13 beta.
+
+#### Committers: 2
+- Chirag Patel ([chiragpat](https://github.com/chiragpat))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.14.0-alpha.11 (2019-08-10)
 
 #### :rocket: Enhancement
