@@ -25,7 +25,7 @@ class Tracker {
     let { tags } = this;
 
     if (tags.size === 0) return CONSTANT_TAG;
-    return combine([...tags]);
+    return combine(Array.from(tags));
   }
 }
 
