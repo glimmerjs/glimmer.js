@@ -1,14 +1,18 @@
 import { dict } from '@glimmer/util';
 import {
   PathReference,
-  CONSTANT_TAG,
   ConstReference,
   DirtyableTag,
   UpdatableTag,
   combine,
   isConst,
   Tag,
-  TagWrapper,
+  validate,
+  value,
+  createUpdatableTag,
+  update,
+  createTag,
+  dirty
 } from '@glimmer/reference';
 import {
   ConditionalReference as GlimmerConditionalReference,
@@ -37,9 +41,9 @@ export abstract class CachedReference<T> extends ComponentPathReference<T> {
   value() {
     let { tag, _lastRevision, _lastValue } = this;
 
-    if (!_lastRevision || !tag.validate(_lastRevision)) {
+    if (!_lastRevision || !validate(tag, _lastRevision)) {
       _lastValue = this._lastValue = this.compute();
-      this._lastRevision = tag.value();
+      this._lastRevision = value(tag);
     }
 
     return _lastValue;
@@ -95,14 +99,14 @@ export class RootPropertyReference extends PropertyReference {
 export class NestedPropertyReference extends PropertyReference {
   public tag: Tag;
   private _parentReference: PathReference<any>;
-  private _parentObjectTag: TagWrapper<UpdatableTag>;
+  private _parentObjectTag: UpdatableTag;
   private _propertyKey: string;
 
   constructor(parentReference: PathReference<any>, propertyKey: string) {
     super();
 
     let parentReferenceTag = parentReference.tag;
-    let parentObjectTag = UpdatableTag.create(CONSTANT_TAG);
+    let parentObjectTag = createUpdatableTag();
 
     this._parentReference = parentReference;
     this._parentObjectTag = parentObjectTag;
@@ -116,7 +120,7 @@ export class NestedPropertyReference extends PropertyReference {
 
     let parentValue = _parentReference.value();
 
-    _parentObjectTag.inner.update(tagForProperty(parentValue, _propertyKey));
+    update(_parentObjectTag, tagForProperty(parentValue, _propertyKey));
 
     if (typeof parentValue === 'string' && _propertyKey === 'length') {
       return parentValue.length;
@@ -131,13 +135,13 @@ export class NestedPropertyReference extends PropertyReference {
 }
 
 export class UpdatableReference<T> extends ComponentPathReference<T> {
-  public tag: TagWrapper<DirtyableTag>;
+  public tag: DirtyableTag;
   private _value: T;
 
   constructor(value: T) {
     super();
 
-    this.tag = DirtyableTag.create();
+    this.tag = createTag();
     this._value = value;
   }
 
@@ -149,7 +153,7 @@ export class UpdatableReference<T> extends ComponentPathReference<T> {
     let { _value } = this;
 
     if (value !== _value) {
-      this.tag.inner.dirty();
+      dirty(this.tag);
       this._value = value;
     }
   }
