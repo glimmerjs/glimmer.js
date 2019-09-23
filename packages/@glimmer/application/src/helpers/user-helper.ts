@@ -1,4 +1,4 @@
-import { TagWrapper, RevisionTag } from '@glimmer/reference';
+import { Tag } from '@glimmer/reference';
 
 import { Dict, VMArguments, CapturedArguments, Helper as GlimmerHelper } from '@glimmer/interfaces';
 
@@ -11,7 +11,7 @@ export default function buildUserHelper(helperFunc: UserHelper): GlimmerHelper {
 }
 
 export class HelperReference extends CachedReference<unknown> {
-  public tag: TagWrapper<RevisionTag | null>;
+  public tag: Tag;
   private args: CapturedArguments;
 
   constructor(private helper: UserHelper, args: VMArguments) {

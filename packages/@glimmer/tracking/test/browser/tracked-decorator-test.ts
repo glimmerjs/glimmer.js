@@ -6,6 +6,7 @@ import { tagForProperty, UntrackedPropertyError } from '@glimmer/tracking';
 import * as TSFixtures from './fixtures/typescript';
 import * as BabelFixtures from './fixtures/babel';
 import { assertValidAfterUnrelatedBump } from './helpers/tags';
+import { value, validate } from '@glimmer/reference';
 
 [['Babel', BabelFixtures], ['TypeScript', TSFixtures]].forEach(([compiler, F]) => {
   module(`[@glimmer/tracking] Tracked Property Decorators with ${compiler}`);
@@ -22,13 +23,13 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.firstName, 'Tom');
 
     let tag = tagForProperty(obj, 'firstName');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
 
     obj.firstName = 'Edsger';
-    assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true, 'tag is valid on the second check');
+    assert.strictEqual(validate(tag, snapshot), false, 'tag is invalidated after property is set');
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true, 'tag is valid on the second check');
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
@@ -40,17 +41,17 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
 
     // Explicitly annotated tracked properties
     let tag = tagForProperty(obj, 'firstName');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true, 'tag is still valid');
 
     // Non-tracked data properties
     tag = tagForProperty(obj, 'lastName');
-    snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+    snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true, 'tag is still valid');
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
@@ -61,10 +62,10 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.firstName, 'Toran');
 
     let tag = tagForProperty(obj, 'firstName');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true, 'tag is still valid');
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
@@ -75,25 +76,15 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.firstName, 'Tom1');
 
     let tag = tagForProperty(obj, 'firstName');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
 
     assert.strictEqual(obj.firstName, 'Tom2');
-    assert.ok(tag.validate(snapshot), 'reading from property does not invalidate the tag');
+    assert.ok(validate(tag, snapshot), 'reading from property does not invalidate the tag');
 
     obj.firstName = 'Edsger';
-    assert.strictEqual(tag.validate(snapshot), false, 'tag is invalidated after property is set');
-    snapshot = tag.value();
-
-    assertValidAfterUnrelatedBump(tag, snapshot);
-
-    assert.strictEqual(obj.firstName, 'Edsger3');
-    assert.strictEqual(
-      tag.validate(snapshot),
-      false,
-      'tag is invalid, since reading always recomputes the tags'
-    );
-    snapshot = tag.value();
+    assert.strictEqual(validate(tag, snapshot), false, 'tag is invalidated after property is set');
+    snapshot = value(tag);
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
@@ -104,25 +95,25 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.fullName, 'Tom Dale', `the fullName field is valid`);
 
     let tag = tagForProperty(obj, 'salutation');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
 
     obj.firstName = 'Edsger';
     obj.lastName = 'Dijkstra';
     assert.strictEqual(
-      tag.validate(snapshot),
+      validate(tag, snapshot),
       false,
       'tag is invalidated after chained dependency is set'
     );
     assert.strictEqual(obj.fullName, 'Edsger Dijkstra');
     assert.strictEqual(obj.salutation, 'Hello, Edsger Dijkstra!');
 
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true);
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true);
 
     obj.fullName = 'Alan Kay';
     assert.strictEqual(
-      tag.validate(snapshot),
+      validate(tag, snapshot),
       false,
       'tag is invalidated after chained dependency is set'
     );
@@ -131,8 +122,8 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.lastName, 'Kay');
     assert.strictEqual(obj.salutation, 'Hello, Alan Kay!');
 
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true);
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true);
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
@@ -144,25 +135,25 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     let person = obj.person;
 
     let tag = tagForProperty(obj, 'contact');
-    let snapshot = tag.value();
-    assert.ok(tag.validate(snapshot), 'tag should be valid to start');
+    let snapshot = value(tag);
+    assert.ok(validate(tag, snapshot), 'tag should be valid to start');
 
     person.firstName = 'Edsger';
     person.lastName = 'Dijkstra';
     assert.strictEqual(
-      tag.validate(snapshot),
+      validate(tag, snapshot),
       false,
       'tag is invalidated after nested dependency is set'
     );
     assert.strictEqual(person.fullName, 'Edsger Dijkstra');
     assert.strictEqual(obj.contact, 'Edsger Dijkstra @ tom@example.com');
 
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true);
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true);
 
     person.fullName = 'Alan Kay';
     assert.strictEqual(
-      tag.validate(snapshot),
+      validate(tag, snapshot),
       false,
       'tag is invalidated after chained dependency is set'
     );
@@ -171,12 +162,12 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(person.lastName, 'Kay');
     assert.strictEqual(obj.contact, 'Alan Kay @ tom@example.com');
 
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true);
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true);
 
     obj.email = 'alan@example.com';
     assert.strictEqual(
-      tag.validate(snapshot),
+      validate(tag, snapshot),
       false,
       'tag is invalidated after chained dependency is set'
     );
@@ -185,8 +176,8 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(person.lastName, 'Kay');
     assert.strictEqual(obj.contact, 'Alan Kay @ alan@example.com');
 
-    snapshot = tag.value();
-    assert.strictEqual(tag.validate(snapshot), true);
+    snapshot = value(tag);
+    assert.strictEqual(validate(tag, snapshot), true);
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });

@@ -2,7 +2,7 @@ const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
 import { tagForProperty, UntrackedPropertyError } from '@glimmer/tracking';
-import { CONSTANT_TAG } from '@glimmer/reference';
+import { CONSTANT_TAG, validate, value } from '@glimmer/reference';
 import { assertValidAfterUnrelatedBump } from './helpers/tags';
 
 module('[@glimmer/tracking] Tracked Property Warning in Development Mode');
@@ -171,16 +171,16 @@ test('interceptor is not installed for array length [issue #34]', assert => {
 });
 
 test('can request a tag for non-objects and get a CONSTANT_TAG', assert => {
-  let snapshot = CONSTANT_TAG.value();
+  let snapshot = value(CONSTANT_TAG);
 
-  assert.ok(tagForProperty(null, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(undefined, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(12345, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(0, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(true, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(false, 'foo').validate(snapshot));
-  assert.ok(tagForProperty(Symbol(), 'foo').validate(snapshot));
-  assert.ok(tagForProperty('hello world', 'foo').validate(snapshot));
+  assert.ok(validate(tagForProperty(null, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(undefined, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(12345, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(0, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(true, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(false, 'foo'), snapshot));
+  assert.ok(validate(tagForProperty(Symbol(), 'foo'), snapshot));
+  assert.ok(validate(tagForProperty('hello world', 'foo'), snapshot));
 });
 
 test('can request a tag from a frozen POJO', assert => {
@@ -191,10 +191,10 @@ test('can request a tag from a frozen POJO', assert => {
   assert.strictEqual(obj.firstName, 'Toran');
 
   let tag = tagForProperty(obj, 'firstName');
-  let snapshot = tag.value();
-  assert.ok(tag.validate(snapshot), 'tag should be valid to start');
-  snapshot = tag.value();
-  assert.strictEqual(tag.validate(snapshot), true, 'tag is still valid');
+  let snapshot = value(tag);
+  assert.ok(validate(tag, snapshot), 'tag should be valid to start');
+  snapshot = value(tag);
+  assert.strictEqual(validate(tag, snapshot), true, 'tag is still valid');
 
   assertValidAfterUnrelatedBump(tag, snapshot);
 });

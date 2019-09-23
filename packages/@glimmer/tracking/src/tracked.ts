@@ -3,10 +3,13 @@ import {
   Tag,
   DirtyableTag,
   UpdatableTag,
-  TagWrapper,
   combine,
   CONSTANT_TAG,
-  bump
+  bump,
+  dirty,
+  createTag,
+  createUpdatableTag,
+  update,
 } from '@glimmer/reference';
 import { dict, assert } from '@glimmer/util';
 import { Option, Dict } from '@glimmer/interfaces';
@@ -147,7 +150,7 @@ function descriptorForField(
 ): DecoratorPropertyDescriptor {
   assert(
     !desc || (!desc.value && !desc.get && !desc.set),
-    `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`,
+    `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
   );
 
   const meta = metaFor(target);
@@ -178,9 +181,7 @@ function descriptorForField(
     },
 
     set(newValue: any): void {
-      (metaFor(this)
-        .tagFor(key)
-        .inner as any as DirtyableTag).dirty();
+      dirty(metaFor(this).tagFor(key) as DirtyableTag);
 
       values.set(this, newValue);
       propertyDidChange();
@@ -217,20 +218,17 @@ function descriptorForTrackedComputedProperty(
     if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
     // Update the UpdatableTag for this property with the tag for all of the
     // consumed dependencies.
-    metaFor(this)
-      .updatableTagFor(key)
-      .inner.update(tag);
+    update(metaFor(this).updatableTagFor(key), tag);
 
     return ret;
   }
 
   function setter(this: object) {
-    bump();
+    let tag = createTag();
+    dirty(tag);
 
     // Mark the UpdatableTag for this property with the current tag.
-    metaFor(this)
-      .updatableTagFor(key)
-      .inner.update(DirtyableTag.create());
+    update(metaFor(this).updatableTagFor(key), tag);
     set.apply(this, arguments);
   }
 
@@ -264,13 +262,13 @@ export function trackedGet(obj: Object, key: string) {
  */
 export default class Meta {
   tags: Dict<Tag>;
-  computedPropertyTags: Dict<TagWrapper<UpdatableTag>>;
+  computedPropertyTags: Dict<UpdatableTag>;
   trackedProperties: Dict<boolean>;
   trackedComputedProperties: Dict<boolean>;
 
   constructor(parent: Meta) {
     this.tags = dict<Tag>();
-    this.computedPropertyTags = dict<TagWrapper<UpdatableTag>>();
+    this.computedPropertyTags = dict<UpdatableTag>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
     this.trackedComputedProperties = parent
       ? Object.create(parent.trackedComputedProperties)
@@ -293,10 +291,10 @@ export default class Meta {
     }
 
     if (this.trackedComputedProperties[key]) {
-      return (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
+      return (this.tags[key] = createUpdatableTag());
     }
 
-    return (this.tags[key] = DirtyableTag.create());
+    return (this.tags[key] = createTag());
   }
 
   /**
@@ -305,8 +303,8 @@ export default class Meta {
    * For computed properties, it is the UpdatableTag used as one of the tags in
    * the tag combinator of the CP and its dependencies.
    */
-  updatableTagFor(key: Key): TagWrapper<UpdatableTag> {
-    return this.tags[key] as TagWrapper<UpdatableTag> || (this.tags[key] = UpdatableTag.create(CONSTANT_TAG));
+  updatableTagFor(key: Key): UpdatableTag {
+    return (this.tags[key] as UpdatableTag) || (this.tags[key] = createUpdatableTag());
   }
 }
 

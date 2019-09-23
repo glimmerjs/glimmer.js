@@ -1,5 +1,5 @@
 import { metaFor, trackedGet } from '@glimmer/tracking';
-import { CURRENT_TAG } from '@glimmer/reference';
+import { CURRENT_TAG, update } from '@glimmer/reference';
 
 import GlimmerComponent from '../addon/-private/component';
 import { assert } from '@glimmer/util';
@@ -17,9 +17,9 @@ export default class Component<T extends object = object> extends GlimmerCompone
 
   set args(args) {
     this.__args__ = args;
-    metaFor(this)
-      .updatableTagFor('args')
-      .inner.update(CURRENT_TAG);
+    update(metaFor(this)
+      .updatableTagFor('args'),
+      CURRENT_TAG);
   }
 
   /** @private
