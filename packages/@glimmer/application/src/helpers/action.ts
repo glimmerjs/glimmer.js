@@ -1,5 +1,5 @@
-import { UpdatableReference } from '@glimmer/component';
 import { VM, VMArguments } from '@glimmer/interfaces';
+import { UpdatableReference } from '../references';
 
 /** @internal */
 export default function buildAction(_args: VMArguments, vm: VM) {

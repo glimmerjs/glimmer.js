@@ -1,7 +1,6 @@
 import Application, { BytecodeLoader, SyncRenderer } from '@glimmer/application';
 import { StringBuilder } from '@glimmer/ssr';
 import Resolver, { BasicModuleRegistry } from '@glimmer/resolver';
-import { ComponentManager } from '@glimmer/component';
 import { defaultResolverConfiguration } from '@glimmer/application-test-helpers';
 
 import createHTMLDocument from '@simple-dom/document';
@@ -71,15 +70,6 @@ test('Boots and renders an app', async function(assert) {
     builder,
     renderer,
     resolver,
-  });
-
-  app.registerInitializer({
-    initialize(registry) {
-      registry.register(
-        `component-manager:/${app.rootName}/component-managers/main`,
-        ComponentManager
-      );
-    },
   });
 
   await app.boot();

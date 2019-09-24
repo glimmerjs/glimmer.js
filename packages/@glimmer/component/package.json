@@ -30,8 +30,6 @@
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/reference": "^0.42.0",
-    "@glimmer/runtime": "^0.42.0",
     "@glimmer/tracking": "^0.14.0-alpha.13",
     "@glimmer/util": "^0.42.0",
     "broccoli-file-creator": "^2.1.1",

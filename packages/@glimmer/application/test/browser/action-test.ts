@@ -109,12 +109,12 @@ test('actions can be passed and invoked with additional arguments', async functi
 });
 
 test('action helper invoked without a function raises an error', async function(assert) {
-  class ParentComponent extends Component {}
+  class Parent extends Component {}
 
   let app = await buildApp()
     .template('Main', '<div><Parent /></div>')
     .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
-    .component('Parent', ParentComponent);
+    .component('Parent', Parent);
 
   try {
     await app.boot();

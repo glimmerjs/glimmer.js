@@ -14,7 +14,6 @@ let config = {
     "mode": "ci",
     "Chrome": [
       "--headless",
-      "--disable-gpu",
       "--remote-debugging-port=9222",
       "--no-sandbox"
     ]

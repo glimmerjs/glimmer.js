@@ -1,5 +1,4 @@
 import { Resolver } from '@glimmer/di';
-import { UpdatableReference } from '@glimmer/component';
 import { Option, assert, expect } from '@glimmer/util';
 import { DefaultDynamicScope } from '@glimmer/runtime';
 import { SimpleDocument } from '@simple-dom/interface';
@@ -7,6 +6,7 @@ import { SimpleDocument } from '@simple-dom/interface';
 import BaseApplication, { Builder, Loader, Renderer } from './base-application';
 import { Environment } from '@glimmer/interfaces';
 import EnvironmentImpl from './environment';
+import { UpdatableReference } from './references';
 
 /**
  * Options for configuring an instance of [Application].

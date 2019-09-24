@@ -51,7 +51,7 @@ test('Lifecycle hook ordering', async function(assert) {
     )
     .template(
       'ComponentTwo',
-      '<div><ComponentFour @name="component4"/><ComponentFive @name="component5"/></div>'
+      '<div>{{@firstName}}<ComponentFour @name="component4"/><ComponentFive @name="component5"/></div>'
     )
     .template('ComponentThree', '<div></div>')
     .template('ComponentFour', '<div></div>')

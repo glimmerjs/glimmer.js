@@ -9,7 +9,6 @@ import { SimpleDocument } from '@simple-dom/interface';
 
 import { iterableFor } from './iterable';
 import RuntimeResolver from './loaders/runtime-compiler/loader';
-import { EnvironmentWithOwner } from '@glimmer/component';
 
 /** @internal */
 export interface EnvironmentOptions {
@@ -18,7 +17,7 @@ export interface EnvironmentOptions {
 }
 
 /** @internal */
-export default class EnvironmentImpl extends GlimmerEnvironmentImpl implements EnvironmentWithOwner {
+export default class EnvironmentImpl extends GlimmerEnvironmentImpl {
   private uselessAnchor: HTMLAnchorElement;
   public resolver!: RuntimeResolver;
 

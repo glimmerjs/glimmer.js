@@ -1,38 +1,21 @@
-import { metaFor, trackedGet } from '@glimmer/tracking';
-import { dirty } from '@glimmer/reference';
-
-import GlimmerComponent from '../addon/-private/component';
 import { assert } from '@glimmer/util';
+import { setComponentManager } from '@glimmer/application';
+import BaseComponent from '../addon/-private/component';
+import GlimmerComponentManager from './component-manager';
 
 export interface Bounds {
   firstNode: Node;
   lastNode: Node;
 }
 
-export default class Component<T extends object = object> extends GlimmerComponent<T> {
-  get args() {
-    trackedGet(this, 'args');
-    return this.__args__;
-  }
-
-  set args(args) {
-    this.__args__ = args;
-    dirty(metaFor(this)
-      .tagFor('args'));
-  }
-
-  /** @private
-   * Slot on the component to save Arguments object passed to the `args` setter.
-   */
-  private __args__: T;
+export default class Component<Args extends {} = {}> extends BaseComponent<Args> {
+  args: Args;
 
   /**
    * Development-mode only name of the component, useful for debugging.
    */
-  debugName: string | null = null;
-
-  toString() {
-    return `${this.debugName} component`;
+  get debugName(): string {
+    return this.constructor.name;
   }
 
   /*
@@ -157,6 +140,6 @@ export default class Component<T extends object = object> extends GlimmerCompone
   }
 }
 
-export interface ComponentFactory {
-  create(injections: object): Component;
-}
+setComponentManager((owner: {}) => {
+  return new GlimmerComponentManager(owner);
+}, BaseComponent);

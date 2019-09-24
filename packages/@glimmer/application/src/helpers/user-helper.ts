@@ -1,7 +1,7 @@
 import { Tag } from '@glimmer/reference';
 
 import { Dict, VMArguments, CapturedArguments, Helper as GlimmerHelper } from '@glimmer/interfaces';
-import { PropertyReference } from '@glimmer/component';
+import { PropertyReference } from '../references';
 
 export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => any;
 
