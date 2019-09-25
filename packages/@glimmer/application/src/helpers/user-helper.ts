@@ -1,8 +1,7 @@
 import { Tag } from '@glimmer/reference';
 
 import { Dict, VMArguments, CapturedArguments, Helper as GlimmerHelper } from '@glimmer/interfaces';
-
-import { CachedReference } from '@glimmer/component';
+import { PropertyReference } from '@glimmer/component';
 
 export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => any;
 
@@ -10,8 +9,8 @@ export default function buildUserHelper(helperFunc: UserHelper): GlimmerHelper {
   return args => new HelperReference(helperFunc, args);
 }
 
-export class HelperReference extends CachedReference<unknown> {
-  public tag: Tag;
+export class HelperReference extends PropertyReference<unknown> {
+  tag: Tag;
   private args: CapturedArguments;
 
   constructor(private helper: UserHelper, args: VMArguments) {

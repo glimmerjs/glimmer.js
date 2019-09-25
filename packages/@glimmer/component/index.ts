@@ -3,7 +3,7 @@ export { default as ComponentDefinition } from './src/component-definition';
 export { default as ComponentManager, EnvironmentWithOwner } from './src/component-manager';
 export {
   RootReference,
-  CachedReference,
+  PropertyReference,
   UpdatableReference,
   ConditionalReference,
 } from './src/references';

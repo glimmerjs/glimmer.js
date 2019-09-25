@@ -19,10 +19,10 @@ Object.freeze(FrozenToran);
 export { FrozenToran };
 
 export class PersonWithCount {
-  _firstName = 'Tom';
+  @tracked _firstName = 'Tom';
   _count = 0;
 
-  @tracked get firstName() {
+  get firstName() {
     return this._firstName + this._count++;
   }
 
@@ -32,11 +32,11 @@ export class PersonWithCount {
 }
 
 export  class PersonWithSalutation {
-  @tracked get salutation() {
+  get salutation() {
     return `Hello, ${this.fullName}!`;
   }
 
-  @tracked get fullName() {
+  get fullName() {
     return `${this.firstName} ${this.lastName}`;
   }
 
@@ -59,17 +59,17 @@ export class Contact {
     this.email = email;
   }
 
-  @tracked get contact() {
+  get contact() {
     return `${this.person} @ ${this.email}`;
   }
 }
 
 export class PersonForContact {
-  @tracked get salutation() {
+  get salutation() {
     return `Hello, ${this.fullName}!`;
   }
 
-  @tracked get fullName() {
+  get fullName() {
     return `${this.firstName} ${this.lastName}`;
   }
 
@@ -85,6 +85,34 @@ export class PersonForContact {
 
   @tracked firstName = 'Tom';
   @tracked lastName = 'Dale';
+}
+
+export function createClassWithTrackedGetter() {
+  class PersonWithTrackedGetter {
+    @tracked firstName = 'Tom';
+    @tracked lastName;
+
+    @tracked get salutation() {
+      return `Hello, ${this.firstName} ${this.lastName}!`;
+    }
+  }
+
+  return new PersonWithTrackedGetter();
+}
+
+export function createClassWithTrackedSetter() {
+  class PersonWithTrackedSetter {
+    @tracked firstName = 'Tom';
+    @tracked lastName;
+
+    @tracked set fullName(fullName) {
+      let [firstName, lastName] = fullName.split(' ');
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+  }
+
+  return new PersonWithTrackedSetter();
 }
 
 export function createClassWithTrackedDependentKeys() {

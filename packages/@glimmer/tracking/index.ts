@@ -1,8 +1,10 @@
 export {
   tracked,
   setPropertyDidChange,
-  tagForProperty,
   metaFor,
   trackedGet,
+  trackProperty,
+  track,
+  consume,
   UntrackedPropertyError,
 } from './src/tracked';
