@@ -2,14 +2,10 @@ import { DEBUG } from '@glimmer/env';
 import {
   Tag,
   DirtyableTag,
-  UpdatableTag,
   combine,
   CONSTANT_TAG,
-  bump,
-  dirty,
   createTag,
-  createUpdatableTag,
-  update,
+  dirty,
 } from '@glimmer/reference';
 import { dict, assert } from '@glimmer/util';
 import { Option, Dict } from '@glimmer/interfaces';
@@ -59,11 +55,10 @@ class Tracker {
  *
  * @example Computed Properties
  *
- * In the case that you have a computed property that depends other
- * properties, tracked properties accessed within the computed property
- * will automatically be tracked for you. That means when any of those
- * dependent tracked properties is changed, a rerender of the component
- * will be scheduled.
+ * In the case that you have a getter that depends on other properties, tracked
+ * properties accessed within the getter will automatically be tracked for you.
+ * That means when any of those dependent tracked properties is changed, a
+ * rerender of the component will be scheduled.
  *
  * In the following example we have two properties,
  * `eatenApples`, and `remainingApples`.
@@ -79,7 +74,6 @@ class Tracker {
  *    @tracked
  *    eatenApples = 0
  *
- *    @tracked
  *    get remainingApples() {
  *      return totalApples - this.eatenApples;
  *    }
@@ -94,36 +88,43 @@ export function tracked(target: any, key: any): any;
 export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
 export function tracked(...args: any[]): any {
   let [target, key, descriptor] = args;
-  if (DEBUG) {
-    if (typeof target === 'string') {
-      throw new Error(
-        `ERROR: You attempted to use @tracked with ${
-          args.length > 1 ? 'arguments' : 'an argument'
-        } ( @tracked(${args
-          .map(d => `'${d}'`)
-          .join(
-            ', '
-          )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`
-      );
-    }
-    if (target === undefined) {
-      throw new Error(
-        'ERROR: You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!'
-      );
-    }
-  }
 
-  if (!descriptor) {
+  // Error on `@tracked()`, `@tracked(...args)`, and `@tracked get propName()`
+  if (DEBUG && typeof target === 'string') throwTrackedWithArgumentsError(args);
+  if (DEBUG && target === undefined) throwTrackedWithEmptyArgumentsError();
+  if (DEBUG && descriptor && descriptor.get) throwTrackedComputedPropertyError();
+
+  if (descriptor) {
+    return descriptorForField(target, key, descriptor);
+  } else {
     // In TypeScript's implementation, decorators on simple class fields do not
     // receive a descriptor, so we define the property on the target directly.
     Object.defineProperty(target, key, descriptorForField(target, key));
-  } else if (descriptor.get) {
-    // Decorator applied to a getter, e.g. `@tracked get firstName()`
-    return descriptorForTrackedComputedProperty(target, key, descriptor);
-  } else {
-    // Decorator applied to a class field, e.g. `@tracked firstName = "Chris"`
-    return descriptorForField(target, key, descriptor);
   }
+}
+
+function throwTrackedComputedPropertyError() {
+  throw new Error(
+    `The @tracked decorator does not need to be applied to getters. Properties implemented using a getter will recompute automatically when any tracked properties they access change.`
+  );
+}
+
+function throwTrackedWithArgumentsError(args: any[]) {
+  throw new Error(
+    `You attempted to use @tracked with ${
+      args.length > 1 ? 'arguments' : 'an argument'
+    } ( @tracked(${args
+      .map(d => `'${d}'`)
+      .join(
+        ', '
+      )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`
+  );
+}
+
+function throwTrackedWithEmptyArgumentsError() {
+  throw new Error(
+    'You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!'
+  );
 }
 
 /**
@@ -153,8 +154,7 @@ function descriptorForField(
     `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
   );
 
-  const meta = metaFor(target);
-  meta.trackedProperties[key] = true;
+  metaFor(target).trackedProperties[key] = true;
 
   const initializer = desc ? desc.initializer : undefined;
   const values = new WeakMap();
@@ -165,7 +165,7 @@ function descriptorForField(
     configurable: true,
 
     get(): any {
-      trackedGet(this, key);
+      consume(metaFor(this).tagFor(key));
 
       let value;
 
@@ -182,68 +182,44 @@ function descriptorForField(
 
     set(newValue: any): void {
       dirty(metaFor(this).tagFor(key) as DirtyableTag);
-
       values.set(this, newValue);
       propertyDidChange();
     },
   };
 }
 
-function descriptorForTrackedComputedProperty(
-  target: any,
-  key: any,
-  descriptor: PropertyDescriptor
-): PropertyDescriptor {
-  let meta = metaFor(target);
-  meta.trackedProperties[key] = true;
-  meta.trackedComputedProperties[key] = true;
+export function track(callback: () => void): Tag {
+  let parent = CURRENT_TRACKER;
+  let current = new Tracker();
 
-  let get = descriptor.get as Function;
-  let set = descriptor.set as Function;
+  CURRENT_TRACKER = current;
 
-  function getter(this: any) {
-    // Swap the parent tracker for a new tracker
-    let old = CURRENT_TRACKER;
-    let tracker = (CURRENT_TRACKER = new Tracker());
-
-    // Call the getter
-    let ret = get.call(this);
-
-    // Swap back the parent tracker
-    CURRENT_TRACKER = old;
-
-    // Combine the tags in the new tracker
-    let tag = tracker.combine();
-
-    if (CURRENT_TRACKER) CURRENT_TRACKER.add(tag);
-    // Update the UpdatableTag for this property with the tag for all of the
-    // consumed dependencies.
-    update(metaFor(this).updatableTagFor(key), tag);
-
-    return ret;
+  try {
+    callback();
+  } finally {
+    CURRENT_TRACKER = parent;
   }
 
-  function setter(this: object) {
-    let tag = createTag();
-    dirty(tag);
-
-    // Mark the UpdatableTag for this property with the current tag.
-    update(metaFor(this).updatableTagFor(key), tag);
-    set.apply(this, arguments);
-  }
-
-  return {
-    enumerable: true,
-    configurable: false,
-    get: getter,
-    set: set ? setter : undefined,
-  };
+  return current.combine();
 }
 
-export type Key = string;
+export function trackProperty<T = unknown>(obj: {}, key: string, throwError = defaultErrorThrower): [T, Tag] {
+  if (DEBUG && typeof obj === 'object') {
+    installDevModeErrorInterceptor(obj, key, throwError);
+  }
+  let value;
+  const tag = track(() => { value = obj[key]; });
+  return [value, tag];
+}
 
 export function trackedGet(obj: Object, key: string) {
   if (CURRENT_TRACKER) CURRENT_TRACKER.add(metaFor(obj).tagFor(key));
+}
+
+export function consume(tag: Tag) {
+  if (CURRENT_TRACKER !== null) {
+    CURRENT_TRACKER.add(tag);
+  }
 }
 
 /**
@@ -261,55 +237,23 @@ export function trackedGet(obj: Object, key: string) {
  *    computed property need to be recomputed?"
  */
 export default class Meta {
-  tags: Dict<Tag>;
-  computedPropertyTags: Dict<UpdatableTag>;
+  tags: Dict<DirtyableTag>;
   trackedProperties: Dict<boolean>;
-  trackedComputedProperties: Dict<boolean>;
 
   constructor(parent: Meta) {
-    this.tags = dict<Tag>();
-    this.computedPropertyTags = dict<UpdatableTag>();
+    this.tags = dict<DirtyableTag>();
     this.trackedProperties = parent ? Object.create(parent.trackedProperties) : dict<boolean>();
-    this.trackedComputedProperties = parent
-      ? Object.create(parent.trackedComputedProperties)
-      : dict<boolean>();
   }
 
   /**
    * The tag representing whether the given property should be recomputed. Used
    * by e.g. Glimmer VM to detect when a property should be re-rendered. Think
    * of this as the "public-facing" tag.
-   *
-   * For static tracked properties, this is a single UpdatableTag. For computed
-   * properties, it is a combinator of the property's UpdatableTag as well as
-   * all of its dependencies' tags.
    */
-  tagFor(key: Key): Tag {
+  tagFor(key: string): DirtyableTag {
     let tag = this.tags[key];
-    if (tag) {
-      return tag;
-    }
-
-    if (this.trackedComputedProperties[key]) {
-      return (this.tags[key] = createUpdatableTag());
-    }
-
-    return (this.tags[key] = createTag());
+    return tag === undefined ? (this.tags[key] = createTag()) : tag;
   }
-
-  /**
-   * The tag used internally to invalidate when a tracked property is set. For
-   * static properties, this is the same UpdatableTag returned from `tagFor`.
-   * For computed properties, it is the UpdatableTag used as one of the tags in
-   * the tag combinator of the CP and its dependencies.
-   */
-  updatableTagFor(key: Key): UpdatableTag {
-    return (this.tags[key] as UpdatableTag) || (this.tags[key] = createUpdatableTag());
-  }
-}
-
-export interface Interceptors {
-  [key: string]: boolean;
 }
 
 /**
@@ -396,22 +340,6 @@ function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
   throw UntrackedPropertyError.for(obj, key);
 }
 
-export function tagForProperty(
-  obj: any,
-  key: string,
-  throwError: UntrackedPropertyErrorThrower = defaultErrorThrower
-): Tag {
-  if (typeof obj === 'object' && obj) {
-    if (DEBUG && !hasTag(obj, key)) {
-      installDevModeErrorInterceptor(obj, key, throwError);
-    }
-
-    return metaFor(obj).tagFor(key);
-  } else {
-    return CONSTANT_TAG;
-  }
-}
-
 /**
  * In development mode only, we install an ad hoc setter on properties where a
  * tag is requested (i.e., it was used in a template) without being tracked. In
@@ -441,19 +369,15 @@ function installDevModeErrorInterceptor(
   // If possible, define a property descriptor that passes through the current
   // value on reads but throws an exception on writes.
   if (descriptor) {
-    let { get, value } = descriptor;
-
-    if (descriptor.configurable || !hasOwnDescriptor) {
+    // Only install the interceptor if it's a simple (non-getter) property and
+    // the existing property is able to be configured.
+    if (descriptor.hasOwnProperty('value') && (descriptor.configurable || !hasOwnDescriptor)) {
       Object.defineProperty(obj, key, {
         configurable: descriptor.configurable,
         enumerable: descriptor.enumerable,
 
         get() {
-          if (get) {
-            return get.call(this);
-          } else {
-            return value;
-          }
+          return descriptor.value;
         },
 
         set() {

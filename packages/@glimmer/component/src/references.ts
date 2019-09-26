@@ -7,9 +7,8 @@ import {
   combine,
   isConst,
   Tag,
-  validate,
-  value,
   createUpdatableTag,
+  CachedReference,
   update,
   createTag,
   dirty
@@ -18,11 +17,8 @@ import {
   ConditionalReference as GlimmerConditionalReference,
   PrimitiveReference,
 } from '@glimmer/runtime';
-import { tagForProperty } from '@glimmer/tracking';
+import { consume, trackProperty } from '@glimmer/tracking';
 
-/**
- * The base PathReference.
- */
 export abstract class ComponentPathReference<T> implements PathReference<T> {
   abstract value(): T;
   abstract get tag(): Tag;
@@ -32,28 +28,10 @@ export abstract class ComponentPathReference<T> implements PathReference<T> {
   }
 }
 
-export abstract class CachedReference<T> extends ComponentPathReference<T> {
-  private _lastRevision: number | null = null;
-  private _lastValue: any = null;
+export class RootReference<T extends object> extends ConstReference<T> {
+  private children = dict<RootPropertyReference<unknown>>();
 
-  abstract compute(): T;
-
-  value() {
-    let { tag, _lastRevision, _lastValue } = this;
-
-    if (!_lastRevision || !validate(tag, _lastRevision)) {
-      _lastValue = this._lastValue = this.compute();
-      this._lastRevision = value(tag);
-    }
-
-    return _lastValue;
-  }
-}
-
-export class RootReference extends ConstReference<object> {
-  private children = dict<RootPropertyReference>();
-
-  get(propertyKey: string): RootPropertyReference {
+  get(propertyKey: string): RootPropertyReference<unknown> {
     let ref = this.children[propertyKey];
 
     if (!ref) {
@@ -64,7 +42,7 @@ export class RootReference extends ConstReference<object> {
   }
 }
 
-export abstract class PropertyReference extends CachedReference<any> {
+export abstract class PropertyReference<T> extends CachedReference<T> {
   static create(parentReference: PathReference<any>, propertyKey: string) {
     if (isConst(parentReference)) {
       return new RootPropertyReference(parentReference.value(), propertyKey);
@@ -78,56 +56,53 @@ export abstract class PropertyReference extends CachedReference<any> {
   }
 }
 
-export class RootPropertyReference extends PropertyReference {
-  tag: Tag;
-  private _parentValue: object;
-  private _propertyKey: string;
+export class RootPropertyReference<T> extends PropertyReference<T> {
+  tag = createUpdatableTag();
 
-  constructor(parentValue: object, propertyKey: string) {
+  constructor(private _parentValue: object, private _propertyKey: string) {
     super();
-
-    this._parentValue = parentValue;
-    this._propertyKey = propertyKey;
-    this.tag = tagForProperty(parentValue, propertyKey);
   }
 
-  compute(): any {
-    return (this._parentValue as any)[this._propertyKey];
+  compute(): T {
+    const [value, tag] = trackProperty(this._parentValue, this._propertyKey);
+
+    consume(tag);
+    update(this.tag, tag);
+
+    return value;
   }
 }
 
-export class NestedPropertyReference extends PropertyReference {
+export class NestedPropertyReference<T> extends PropertyReference<T> {
   public tag: Tag;
-  private _parentReference: PathReference<any>;
-  private _parentObjectTag: UpdatableTag;
-  private _propertyKey: string;
+  private propertyTag: UpdatableTag;
 
-  constructor(parentReference: PathReference<any>, propertyKey: string) {
+  constructor(private parentReference: PathReference<any>, private propertyKey: string) {
     super();
 
     let parentReferenceTag = parentReference.tag;
-    let parentObjectTag = createUpdatableTag();
+    let propertyTag = (this.propertyTag = createUpdatableTag());
 
-    this._parentReference = parentReference;
-    this._parentObjectTag = parentObjectTag;
-    this._propertyKey = propertyKey;
-
-    this.tag = combine([parentReferenceTag, parentObjectTag]);
+    this.tag = combine([parentReferenceTag, propertyTag]);
   }
 
   compute() {
-    let { _parentReference, _parentObjectTag, _propertyKey } = this;
+    let { parentReference, propertyTag, propertyKey } = this;
 
-    let parentValue = _parentReference.value();
+    let parentValue = parentReference.value();
+    let parentValueType = typeof parentValue;
 
-    update(_parentObjectTag, tagForProperty(parentValue, _propertyKey));
-
-    if (typeof parentValue === 'string' && _propertyKey === 'length') {
-      return parentValue.length;
+    if (parentValueType === 'string' && propertyKey === 'length') {
+      return (parentValue as string).length;
     }
 
-    if (typeof parentValue === 'object' && parentValue) {
-      return parentValue[_propertyKey];
+    if ((parentValueType === 'object' && parentValue !== null) || parentValueType === 'function') {
+      const [value, tag] = trackProperty(parentValue, propertyKey);
+
+      consume(tag);
+      update(propertyTag, tag);
+
+      return value;
     } else {
       return undefined;
     }
@@ -145,11 +120,11 @@ export class UpdatableReference<T> extends ComponentPathReference<T> {
     this._value = value;
   }
 
-  value() {
+  value(): T {
     return this._value;
   }
 
-  update(value: T) {
+  update(value: T): void {
     let { _value } = this;
 
     if (value !== _value) {

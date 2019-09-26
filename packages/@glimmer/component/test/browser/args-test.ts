@@ -81,8 +81,7 @@ test('Args smoke test', async function(assert) {
 
   parent.firstName = 'Thomas';
 });
-
-test('Tracked properties that depend on `args` re-render correctly', async function(assert) {
+test('Getters that depend on `args` re-render correctly', async function(assert) {
   assert.expect(2);
 
   let parent: ParentComponent;
@@ -103,11 +102,7 @@ test('Tracked properties that depend on `args` re-render correctly', async funct
       firstName: string
     };
 
-    constructor(owner, args) {
-      super(owner, args);
-    }
-
-    @tracked get name() {
+    get name() {
       return `${this.args.firstName} Dale`;
     }
   }
