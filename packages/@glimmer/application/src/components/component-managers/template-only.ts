@@ -9,7 +9,6 @@ import {
   Invocation,
   Environment,
   WithAotStaticLayout,
-  Destroyable,
   JitRuntimeResolver,
   AotRuntimeResolver,
   CompilableProgram,
@@ -28,16 +27,16 @@ import {
 } from '../component-definition';
 
 export const CAPABILITIES: ComponentCapabilities = {
-  attributeHook: true,
-  createArgs: true,
+  attributeHook: false,
+  createArgs: false,
   createCaller: false,
   createInstance: true,
   dynamicLayout: false,
   dynamicScope: false,
-  dynamicTag: true,
-  elementHook: true,
+  dynamicTag: false,
+  elementHook: false,
   prepareArgs: false,
-  updateHook: true,
+  updateHook: false,
   wrapped: false,
 };
 
@@ -45,7 +44,6 @@ export class ComponentStateBucket {
   public name: string;
 
   constructor(public args: CapturedArguments) {
-    this.args = args;
   }
 }
 
@@ -129,18 +127,14 @@ export default class TemplateOnlyComponentManager
     return CONSTANT_TAG;
   }
 
-  didCreateElement() {}
   didRenderLayout() {}
   didCreate() {}
-  update() {}
   didUpdateLayout() {}
   didUpdate() {}
-  getDestructor(): Destroyable {
-    return NOOP_DESTROYABLE;
+  getDestructor() {
+    return null;
   }
 }
-
-const NOOP_DESTROYABLE = { destroy() {} };
 
 export interface TemplateOnlyComponentDefinitionState {
   name: string;
