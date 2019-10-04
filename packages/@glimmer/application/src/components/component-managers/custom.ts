@@ -68,11 +68,10 @@ export function hasAsyncLifecycleCallbacks<ComponentInstance>(
   return delegate.capabilities.asyncLifecycleCallbacks;
 }
 
-export interface ManagerDelegateWithUpdateHook<ComponentInstance>
+export interface ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance>
   extends ManagerDelegate<ComponentInstance> {
-    capabilities: Capabilities & { updateHook: true };
-    updateComponent(instance: ComponentInstance, args: Args): void;
-  }
+  didCreateComponent(instance: ComponentInstance): void;
+}
 
 export function hasUpdateHook<ComponentInstance>(
   delegate: ManagerDelegate<ComponentInstance>
@@ -80,9 +79,20 @@ export function hasUpdateHook<ComponentInstance>(
   return delegate.capabilities.updateHook;
 }
 
-export interface ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance>
+export interface ManagerDelegateWithUpdateHook<ComponentInstance>
   extends ManagerDelegate<ComponentInstance> {
-  didCreateComponent(instance: ComponentInstance): void;
+    updateComponent(instance: ComponentInstance, args: Args): void;
+  }
+
+export function hasAsyncUpdateHook<ComponentInstance>(
+  delegate: ManagerDelegate<ComponentInstance>
+): delegate is ManagerDelegateWithAsyncUpdateHook<ComponentInstance> {
+  return hasAsyncLifecycleCallbacks(delegate) && hasUpdateHook(delegate);
+}
+
+export interface ManagerDelegateWithAsyncUpdateHook<ComponentInstance>
+  extends ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance>,
+    ManagerDelegateWithUpdateHook<ComponentInstance> {
   didUpdateComponent(instance: ComponentInstance): void;
 }
 
@@ -242,7 +252,7 @@ export default class CustomComponentManager<ComponentInstance>
   }
 
   didUpdate({ delegate, component }: CustomComponentState<ComponentInstance>) {
-    if (hasAsyncLifecycleCallbacks(delegate)) {
+    if (hasAsyncUpdateHook(delegate)) {
       delegate.didUpdateComponent(component);
     }
   }
