@@ -10,8 +10,7 @@ export type ManagerFactory<ManagerDelegate> = (owner: Owner) => ManagerDelegate;
 
 export interface ManagerWrapper<ManagerDelegate> {
   factory: ManagerFactory<ManagerDelegate>;
-  internal: boolean;
-  type: 'component' | 'modifier';
+  type: 'component';
 }
 
 export function setManager<ManagerDelegate>(wrapper: ManagerWrapper<ManagerDelegate>, obj: {}) {
@@ -35,13 +34,13 @@ export function getManager<ManagerDelegate>(obj: object): Option<ManagerWrapper<
 }
 
 export function setComponentManager(factory: ManagerFactory<ManagerDelegate<unknown>>, obj: {}) {
-  return setManager({ factory, internal: false, type: 'component' }, obj);
+  return setManager({ factory, type: 'component' }, obj);
 }
 
 export function getComponentManager<T>(obj: any): undefined | ManagerFactory<ManagerDelegate<T>> {
   let wrapper = getManager<ManagerDelegate<T>>(obj);
 
-  if (wrapper && !wrapper.internal && wrapper.type === 'component') {
+  if (wrapper && wrapper.type === 'component') {
     return wrapper.factory;
   } else {
     return undefined;
