@@ -1,5 +1,5 @@
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Dict, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import { Dict, ModuleLocator, TemplateLocator, ComponentCapabilities } from '@glimmer/interfaces';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 import Application, {
@@ -236,7 +236,7 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
-const CAPABILITIES = {
+const CAPABILITIES: ComponentCapabilities = {
   createInstance: true,
   dynamicLayout: false,
   dynamicTag: false,
