@@ -7,7 +7,7 @@ const { module, test } = QUnit;
 module('[@glimmer/component] Lifecycle Hooks');
 
 test('Lifecycle hook ordering', async function(assert) {
-  assert.expect(1);
+  assert.expect(2);
 
   let invocations: [string, string][] = [];
   let component1: Component1;
@@ -29,10 +29,15 @@ test('Lifecycle hook ordering', async function(assert) {
     didUpdate() {
       invocations.push([this.args.name, 'didUpdate']);
     }
+
+    willDestroy() {
+      invocations.push([this.args.name, 'willDestroy']);
+    }
   }
 
   class Component1 extends HookLoggerComponent {
     @tracked firstName = 'Chirag';
+    @tracked showChildren = true;
     constructor(owner, args) {
       super(owner, args);
       component1 = this;
@@ -47,7 +52,7 @@ test('Lifecycle hook ordering', async function(assert) {
     .template('Main', '<div><ComponentOne @name="component1"/></div>')
     .template(
       'ComponentOne',
-      '<div><ComponentTwo @name="component2" @firstName={{this.firstName}} /><ComponentThree @name="component3"/></div>'
+      '<div>{{#if this.showChildren}}<ComponentTwo @name="component2" @firstName={{this.firstName}} /><ComponentThree @name="component3"/>{{/if}}</div>'
     )
     .template(
       'ComponentTwo',
@@ -84,6 +89,19 @@ test('Lifecycle hook ordering', async function(assert) {
     ['component1', 'didInsertElement'],
     ['component2', 'didUpdate'],
     ['component1', 'didUpdate'],
+  ]);
+
+  invocations = [];
+  component1.showChildren = false;
+
+  await didRender(app);
+
+  assert.deepEqual(invocations, [
+    ['component1', 'didUpdate'],
+    ['component2', 'willDestroy'],
+    ['component4', 'willDestroy'],
+    ['component5', 'willDestroy'],
+    ['component3', 'willDestroy'],
   ]);
 });
 

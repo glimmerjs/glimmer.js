@@ -7,7 +7,8 @@ import GlimmerComponent from './component';
 
 const CAPABILITIES = capabilities('3.13', {
   asyncLifecycleCallbacks: true,
-  updateHook: false,
+  updateHook: true,
+  destructor: true,
 });
 
 /**
