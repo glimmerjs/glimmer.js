@@ -31,6 +31,8 @@ export default class GlimmerComponentManager extends BaseComponentManager(
     component.didInsertElement();
   }
 
+  updateComponent() { }
+
   didUpdateComponent(component: GlimmerComponent) {
     component.didUpdate();
   }
