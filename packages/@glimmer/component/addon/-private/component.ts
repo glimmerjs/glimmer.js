@@ -135,7 +135,7 @@ export { DESTROYING, DESTROYED, ARGS_SET };
  * `args` property. For example, if `{{@firstName}}` is `Tom` in the template,
  * inside the component `this.args.firstName` would also be `Tom`.
  */
-export default class GlimmerComponent<T = object> {
+export default class BaseComponent<T = object> {
   /**
    * Constructs a new component and assigns itself the passed properties. You
    * should not construct new components yourself. Instead, Glimmer will

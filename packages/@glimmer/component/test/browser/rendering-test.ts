@@ -1,7 +1,4 @@
-import Component from '@glimmer/component';
-import { UntrackedPropertyError } from '@glimmer/tracking';
 import { buildApp } from '@glimmer/application-test-helpers';
-import { DEBUG } from '@glimmer/env';
 
 const { module, test } = QUnit;
 
@@ -16,70 +13,3 @@ test('A component can be rendered in a template', async function(assert) {
 
   assert.equal(app.rootElement.textContent, 'Hello, Tom!');
 });
-
-if (DEBUG) {
-  test('Mutating a tracked property throws an exception in development mode', async function(assert) {
-    assert.expect(1);
-
-    let done = assert.async();
-    let update;
-
-    class HelloWorldComponent extends Component {
-      firstName: string;
-
-      constructor(owner, args) {
-        super(owner, args);
-
-        update = () => {
-          let error = UntrackedPropertyError.for(this, 'firstName');
-
-          assert.throws(() => {
-            this.firstName = 'Chad';
-          }, error);
-
-          done();
-        };
-      }
-    }
-
-    await buildApp()
-      .template('Main', '<div><HelloWorld></HelloWorld></div>')
-      .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
-      .component('HelloWorld', HelloWorldComponent)
-      .boot();
-
-    update();
-  });
-} else {
-  test('Mutating a tracked property should not throw an exception in production mode', async function(assert) {
-    assert.expect(1);
-
-    let done = assert.async();
-    let update;
-
-    class HelloWorldComponent extends Component {
-      firstName: string;
-
-      constructor(owner, args) {
-        super(owner, args);
-
-        update = () => {
-          // This won't update, but shouldn't throw an error in production mode,
-          // either, due to the overhead of installing setters for untracked
-          // properties.
-          this.firstName = 'Chad';
-          assert.ok(true, 'firstName was mutated without throwing an exception');
-          done();
-        };
-      }
-    }
-
-    await buildApp()
-      .template('Main', '<div><HelloWorld></HelloWorld></div>')
-      .template('HelloWorld', '<h1>Hello, {{firstName}} {{lastName}}!</h1>')
-      .component('HelloWorld', HelloWorldComponent)
-      .boot();
-
-    update();
-  });
-}

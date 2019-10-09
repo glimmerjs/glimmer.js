@@ -113,7 +113,7 @@ test('can generate symbol tables', assert => {
   let serializedSymbolTables = generator.generateSymbolTables(symbolTables);
   assert.deepEqual(serializedSymbolTables, {
     'template:/my-project/components/x': { hasEval: 0, symbols: [] },
-  });
+  } as any);
 });
 
 test('can generate the external module table', assert => {

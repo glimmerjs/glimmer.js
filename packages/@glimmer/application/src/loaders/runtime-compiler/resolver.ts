@@ -1,6 +1,6 @@
-import { expect } from '@glimmer/util';
 import {
   Option,
+  ComponentDefinition,
   Maybe,
   Dict,
   JitRuntimeResolver,
@@ -9,15 +9,18 @@ import {
   Invocation,
   Helper,
   Template,
+  ComponentManager,
 } from '@glimmer/interfaces';
 import { Owner } from '@glimmer/di';
-import { ComponentDefinition, ComponentManager, ComponentFactory } from '@glimmer/component';
-
-import { TypedRegistry } from './typed-registry';
-import Application from '../../application';
-import { HelperReference } from '../../helpers/user-helper';
+import { expect } from '@glimmer/util';
 import { TemplateFactory, templateFactory } from '@glimmer/opcode-compiler';
 import { PrecompileOptions, precompile } from '@glimmer/compiler';
+
+import { TypedRegistry } from './typed-registry';
+import { HelperReference } from '../../helpers/user-helper';
+import { getManager } from '../../components/utils';
+import { CustomComponentDefinition, ManagerDelegate, ComponentFactory } from '../../components/component-managers/custom';
+import { TemplateOnlyComponentDefinition } from '../../components/component-managers/template-only';
 
 export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => unknown;
 
@@ -33,7 +36,7 @@ export interface Lookup {
 export type LookupType = keyof Lookup;
 
 export interface Specifier {
-  specifier: string;
+  specifier: Option<string>;
   managerId?: string;
 }
 
@@ -77,7 +80,7 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
   get<K extends LookupType>(type: K, name: string, referrer?: Specifier): Option<Lookup[K]> {
     if (this.cache[type].hasName(name)) {
       let handle = this.cache[type].getHandle(name);
-      return this.cache[type].getByHandle(handle);
+      return this.cache[type].getByHandle(handle!) as Lookup[K];
     } else {
       return null;
     }
@@ -101,11 +104,6 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
     return handle;
   }
 
-  compilableFrom(name: string, referrer?: Specifier): Template {
-    let specifier = this.owner.identify(`template:${name}`, referrer.specifier);
-    return this.compilable({ specifier });
-  }
-
   compilable(locator: Specifier): Template {
     let serializedTemplate = this.get('template', locator.specifier);
     return templateFactory(serializedTemplate).create();
@@ -123,12 +121,10 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
   registerComponent(
     name: string,
     resolvedSpecifier: string,
-    Component: ComponentFactory,
+    componentFactory: Option<ComponentFactory>,
     template: SerializedTemplateWithLazyBlock<Specifier>
   ): number {
-    let templateEntry = this.registerTemplate(resolvedSpecifier, template);
-    let manager = this.managerFor(templateEntry.meta.managerId);
-    let definition = new ComponentDefinition(name, manager, Component, templateEntry.handle);
+    const definition = createJitComponentDefinition(name, template, componentFactory, this.owner);
 
     return this.register('component', name, definition);
   }
@@ -145,23 +141,6 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
       this.lookupComponentDefinition(name, referrer);
     }
     return this.lookup('component', name, referrer);
-  }
-
-  managerFor(managerId = 'main'): ComponentManager {
-    let manager: ComponentManager;
-
-    if (!this.cache.manager.hasName(managerId)) {
-      let { rootName } = this.owner as Application;
-      manager = this.owner.lookup(`component-manager:/${rootName}/component-managers/${managerId}`);
-      if (!manager) {
-        throw new Error(`No component manager found for ID ${managerId}.`);
-      }
-      this.register('manager', managerId, manager);
-      return manager;
-    } else {
-      let handle = this.cache.manager.getHandle(managerId);
-      return this.cache.manager.getByHandle(handle);
-    }
   }
 
   registerTemplate(
@@ -182,9 +161,10 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
         this.identifyComponent(name, meta),
         `Could not find the component '${name}'`
       );
+
       let template = this.owner.lookup('template', specifier);
       let componentSpecifier = this.owner.identify('component', specifier);
-      let componentFactory: ComponentFactory = null;
+      let componentFactory: Option<ComponentFactory> = null;
 
       if (componentSpecifier !== undefined) {
         componentFactory = this.owner.factoryFor(componentSpecifier);
@@ -192,13 +172,13 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
 
       handle = this.registerComponent(name, specifier, componentFactory, template);
     } else {
-      handle = this.lookup('component', name, meta);
+      handle = this.lookup('component', name, meta)!;
     }
 
     return this.resolve<ComponentDefinition>(handle);
   }
 
-  lookupHelper(name: string, meta?: Specifier): Option<number> {
+  lookupHelper(name: string, meta: Specifier): Option<number> {
     if (!this.cache.helper.hasName(name)) {
       let owner: Owner = this.owner;
       let relSpecifier = `helper:${name}`;
@@ -228,7 +208,7 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
   private identifyComponent(name: string, meta: Specifier = { specifier: null }): Maybe<string> {
     let owner: Owner = this.owner;
     let relSpecifier = `template:${name}`;
-    let referrer: string = meta.specifier;
+    let referrer = meta.specifier || undefined;
 
     let specifier = owner.identify(relSpecifier, referrer);
 
@@ -240,6 +220,28 @@ export default class ApplicationJitRuntimeResolver implements JitRuntimeResolver
 
     return specifier;
   }
+}
+
+export function createJitComponentDefinition(
+  name: string,
+  serializedTemplate: SerializedTemplateWithLazyBlock<unknown>,
+  componentFactory: ComponentFactory,
+  owner?: Owner
+): ComponentDefinition {
+  const template = templateFactory(serializedTemplate).create();
+
+  if (!componentFactory) {
+    return new TemplateOnlyComponentDefinition(name, template);
+  }
+
+  const ComponentClass = componentFactory.class;
+  const { factory } = getManager(ComponentClass);
+  return new CustomComponentDefinition(
+    name,
+    componentFactory,
+    factory(owner) as ManagerDelegate<unknown>,
+    template
+  );
 }
 
 export function createTemplate<Locator>(

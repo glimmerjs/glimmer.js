@@ -9,12 +9,11 @@ import { expect } from '@glimmer/util';
 import { relative } from 'path';
 import Debug from 'debug';
 import { Project } from 'glimmer-analyzer';
-import { CAPABILITIES } from '@glimmer/component';
 
 import { AppCompilerDelegateOptions, OutputFiles } from '../app-compiler-delegate';
 import { Builtins, HelperLocator } from '../builtins';
 import MUCodeGenerator from './code-generator';
-import { AppCompilerDelegate } from '@glimmer/application';
+import { AppCompilerDelegate, CUSTOM_COMPONENT_CAPABILITIES } from '@glimmer/application';
 
 const debug = Debug('@glimmer/compiler-delegates:mu-delegate');
 
@@ -131,7 +130,7 @@ export default class MUCompilerDelegate implements AppCompilerDelegate<ModuleLoc
   }
 
   getComponentCapabilities(): ComponentCapabilities {
-    return CAPABILITIES;
+    return CUSTOM_COMPONENT_CAPABILITIES;
   }
 
   hasHelperInScope(helperName: string, referrer: ModuleLocator) {

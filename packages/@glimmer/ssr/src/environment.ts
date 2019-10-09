@@ -3,7 +3,6 @@ import { NodeDOMTreeConstruction } from '@glimmer/node';
 import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { Reference, OpaqueIterable } from '@glimmer/reference';
 import { EnvironmentImpl as GlimmerEnvironmentImpl } from '@glimmer/runtime';
-import { EnvironmentWithOwner } from '@glimmer/component';
 
 import createHTMLDocument from '@simple-dom/document';
 import { parse } from 'url';
@@ -11,7 +10,7 @@ import { parse } from 'url';
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work on the server side.
  */
-export default class EnvironmentImpl extends GlimmerEnvironmentImpl implements EnvironmentWithOwner {
+export default class EnvironmentImpl extends GlimmerEnvironmentImpl {
   static create(): EnvironmentImpl {
     return new EnvironmentImpl({
       // Note: This is not the actual document being rendered to. This is simply used for creating elements, attributes etc.

@@ -1,5 +1,4 @@
 import { BaseApplication, Loader, Renderer, INTERNAL_DYNAMIC_SCOPE } from '@glimmer/application';
-import { ComponentManager } from '@glimmer/component';
 import { Resolver, Dict } from '@glimmer/di';
 import { PathReference, RootReference } from '@glimmer/reference';
 import { DefaultDynamicScope } from '@glimmer/runtime';
@@ -49,14 +48,6 @@ export default class Application extends BaseApplication {
     });
 
     this.serializer = serializer || new HTMLSerializer(voidMap);
-    this.registerInitializer({
-      initialize(registry) {
-        registry.register(
-          `component-manager:/${rootName}/component-managers/main`,
-          ComponentManager
-        );
-      },
-    });
 
     // Setup registry and DI
     this.initialize();

@@ -6,9 +6,8 @@ import {
   IterationItem,
   Tag,
 } from '@glimmer/reference';
-
-import { UpdatableReference } from '@glimmer/component';
 import { isDict } from '@glimmer/util';
+import { UpdatableReference } from './references';
 
 export type KeyFor<T> = (item: unknown, index: T) => unknown;
 

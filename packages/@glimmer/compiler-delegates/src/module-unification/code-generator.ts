@@ -17,13 +17,12 @@ import {
   SerializedHeap,
   ConstantPool,
 } from '@glimmer/interfaces';
-import { ModuleTypes } from '@glimmer/application';
+import { ModuleTypes, BytecodeMetadata } from '@glimmer/application';
 import { Project } from 'glimmer-analyzer';
 
 import { OutputFiles } from '../app-compiler-delegate';
 import { TemplateMeta } from './compiler-delegate';
 import { Builtins, HelperLocator } from '../builtins';
-import { Metadata } from '../../../application/src/loaders/bytecode/loader';
 
 const debug = Debug('@glimmer/compiler-delegates:mu-codegen');
 
@@ -77,7 +76,7 @@ export default class MUCodeGenerator {
 
     let commonPrefix = this.commonPrefix(specifiers);
     let prefix = `const prefix = "${commonPrefix}";`;
-    let meta: Dict<Metadata> = {};
+    let meta: Dict<BytecodeMetadata> = {};
 
     specifiers.forEach(specifier => {
       let trimmed = specifier.replace(commonPrefix, '');
@@ -88,8 +87,8 @@ export default class MUCodeGenerator {
       meta[trimmed] = removeEmpty({
         v: vmHandle,
         h: handle,
-        table,
-      });
+        sT: table
+      }) as BytecodeMetadata;
     });
 
     return `${prefix} const meta = ${inlineJSON(meta)};`;
@@ -394,8 +393,8 @@ export function getImportStatements(modules: ModuleLocator[]) {
 /**
  * To keep file size down, we can eliminate null and undefined values.
  */
-function removeEmpty(obj: Metadata): Metadata {
-  let trimmed: Metadata = {};
+function removeEmpty(obj: {}): {} {
+  let trimmed = {};
 
   for (let key in obj) {
     if (obj[key] !== undefined) {

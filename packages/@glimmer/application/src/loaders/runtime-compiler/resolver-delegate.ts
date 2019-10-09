@@ -1,10 +1,8 @@
 import { ResolverDelegate, templateFactory } from '@glimmer/opcode-compiler';
 import {
-  ComponentDefinition as IComponentDefinition,
   CompilableTemplate,
   ComponentCapabilities,
   ProgramSymbolTable,
-  ComponentManager,
   WithJitStaticLayout,
   ComponentInstanceState,
   ComponentDefinitionState,
@@ -15,9 +13,10 @@ import { Option, assert } from '@glimmer/util';
 
 import { Specifier } from './loader';
 import ApplicationJitRuntimeResolver from './resolver';
-import ComponentDefinitionImpl from '@glimmer/component/src/component-definition';
-
-type ComponentDefinition = IComponentDefinition<ComponentManager>;
+import {
+  ComponentDefinition,
+  isAotComponentDefinition,
+} from '../../components/component-definition';
 
 export default class ResolverDelegateImpl implements ResolverDelegate {
   constructor(private resolver: ApplicationJitRuntimeResolver) {}
@@ -59,18 +58,23 @@ export default class ResolverDelegateImpl implements ResolverDelegate {
   }
 
   lookupComponent(name: string, referrer: Specifier): Option<CompileTimeComponent> {
-    let component = this.lookupComponentDefinition(name, referrer);
-    let definition: ComponentDefinitionImpl = this.resolver.resolve(component);
-    let template: SerializedTemplateWithLazyBlock<Specifier> = this.resolver.resolve(
-      definition.handle
-    );
+    const component = this.lookupComponentDefinition(name, referrer);
+    const definition: ComponentDefinition = this.resolver.resolve(component);
+
+    let template;
+
+    if (isAotComponentDefinition(definition)) {
+      template = templateFactory(
+        this.resolver.resolve<SerializedTemplateWithLazyBlock<Specifier>>(definition.handle)
+      ).create();
+    } else {
+      template = definition.template;
+    }
 
     return {
       handle: component,
       capabilities: definition.manager.getCapabilities(definition.state),
-      compilable: templateFactory(template)
-        .create()
-        .asLayout(),
+      compilable: template.asLayout(),
     };
   }
 

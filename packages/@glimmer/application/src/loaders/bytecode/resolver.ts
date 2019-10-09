@@ -9,27 +9,11 @@ import {
 } from '@glimmer/interfaces';
 import { unreachable } from '@glimmer/util';
 import { Owner, Factory } from '@glimmer/di';
-import { CAPABILITIES } from '@glimmer/component';
-import Application from '../../application';
+import { CustomComponentDefinition, ManagerDelegate, ComponentFactory } from '../../components/component-managers/custom';
 import { HelperReference, UserHelper } from '../../helpers/user-helper';
-import { Metadata } from './loader';
-
-function buildComponentDefinition(
-  ComponentClass: Factory<unknown>,
-  manager: ComponentManager<unknown, unknown>,
-  handle?: number,
-  symbolTable?: ProgramSymbolTable
-) {
-  return {
-    manager,
-    state: {
-      handle,
-      symbolTable,
-      ComponentClass,
-      capabilities: CAPABILITIES,
-    },
-  };
-}
+import { BytecodeMetadata } from './loader';
+import { getManager } from '../../components/utils';
+import { TemplateOnlyComponentDefinition, TEMPLATE_ONLY_MANAGER } from '../../components/component-managers/template-only';
 
 export interface TemplateMeta {
   specifier: string;
@@ -56,7 +40,7 @@ export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta
   constructor(
     protected owner: Owner,
     protected table: unknown[],
-    protected meta: Dict<Metadata>,
+    protected meta: Dict<BytecodeMetadata>,
     private prefix: string
   ) {}
 
@@ -75,7 +59,6 @@ export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta
    */
   lookupComponentDefinition(name: string, referrer: TemplateMeta): ComponentDefinition {
     let owner = this.owner;
-    let manager = this.managerFor();
     referrer = referrer || { specifier: null };
 
     let templateSpecifier = owner.identify(`template:${name}`, referrer.specifier);
@@ -98,38 +81,24 @@ export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta
       );
     }
 
-    let { v: vmHandle, h: handle, table: symbolTable } = this.meta[trimmed];
+    const { v: vmHandle, h: handle, sT: symbolTable } = this.meta[trimmed];
+    const ComponentClass = this.table[handle];
 
-    let ComponentClass = (this.table[handle] as Factory<unknown>) || null;
+    const componentFactory = ComponentClass && {
+      class: ComponentClass as {}
+    };
 
-    return buildComponentDefinition(
-      ComponentClass,
-      manager,
+    return createAotComponentDefinition(
+      componentFactory,
       vmHandle,
-      symbolTable as ProgramSymbolTable
+      owner,
+      symbolTable as ProgramSymbolTable,
+      name
     );
   }
 
   lookupPartial(name: string, referrer: TemplateMeta): number {
     throw unreachable();
-  }
-
-  managerFor(managerId = 'main'): ComponentManager<unknown, unknown> {
-    let manager = this.managers[managerId];
-
-    if (manager) {
-      return manager;
-    }
-
-    let { rootName } = this.owner as Application;
-    manager = this.owner.lookup(`component-manager:/${rootName}/component-managers/${managerId}`);
-
-    if (!manager) {
-      throw new Error(`No component manager found for ID ${managerId}.`);
-    }
-    this.managers[managerId] = manager;
-
-    return manager;
   }
 
   /**
@@ -156,12 +125,24 @@ export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta
       }
     }
 
-    return (this.resolveComponentDefinition(value as Factory<unknown>) as any) as U;
+    // let { v: vmHandle, sT: symbolTable, C: ComponentClass } = this.meta[value as string];
+
+    const componentFactory = value && { class: value as {} };
+
+    return createAotComponentDefinition(
+      componentFactory
+    ) as unknown as U;
   }
 
   resolveComponentDefinition(ComponentClass: Factory<unknown>): ComponentDefinition {
-    let manager = this.managerFor();
-    return buildComponentDefinition(ComponentClass, manager);
+    if (!ComponentClass) {
+      let definition = {
+        manager: TEMPLATE_ONLY_MANAGER,
+        state: { definition: null }
+      };
+      definition.state.definition = definition;
+      return definition;
+    }
   }
 
   resolveHelperFactory(helper: UserHelper): Helper {
@@ -171,4 +152,27 @@ export default class BytecodeResolver implements AotRuntimeResolver<TemplateMeta
   getInvocation(locator: TemplateMeta): Invocation {
     throw new Error('unimplemented getInvocation');
   }
+}
+
+export function createAotComponentDefinition(
+  componentFactory: ComponentFactory,
+  handle?: number,
+  owner?: Owner,
+  symbolTable?: ProgramSymbolTable,
+  name?: string
+): ComponentDefinition {
+  if (!componentFactory) {
+    return new TemplateOnlyComponentDefinition(name, handle, symbolTable);
+  }
+
+  const ComponentClass = componentFactory.class;
+  const { factory } = getManager(ComponentClass);
+
+  return new CustomComponentDefinition(
+    name,
+    componentFactory,
+    factory(owner) as ManagerDelegate<unknown>,
+    handle,
+    symbolTable
+  );
 }

@@ -2,12 +2,12 @@ import {
   ConstantPool,
   Dict,
   DynamicScope,
-  ProgramSymbolTable,
   RuntimeProgram,
   TemplateIterator,
   ElementBuilder,
   Environment,
   AotRuntimeContext,
+  ProgramSymbolTable
 } from '@glimmer/interfaces';
 import { hydrateProgram } from '@glimmer/program';
 import { PathReference } from '@glimmer/reference';
@@ -21,13 +21,15 @@ export interface SerializedHeap {
   handle: number;
 }
 
-export interface Metadata {
-  [key: string]: number | ProgramSymbolTable | undefined;
-
+export interface BytecodeMetadata {
+  /** Template symbol table */
+  sT: ProgramSymbolTable;
   /** VM handle */
   v?: number;
   /** Handle */
   h?: number;
+  /** Component class */
+  C?: unknown;
 }
 
 /**
@@ -40,7 +42,7 @@ export interface BytecodeData {
   mainEntry: number;
   heap: SerializedHeap;
   pool: ConstantPool;
-  meta: Dict<Metadata>;
+  meta: Dict<BytecodeMetadata>;
   table: unknown[];
 }
 

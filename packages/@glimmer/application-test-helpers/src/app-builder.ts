@@ -1,5 +1,5 @@
 import Resolver, { BasicModuleRegistry, ResolverConfiguration } from '@glimmer/resolver';
-import { Dict, ModuleLocator, TemplateLocator } from '@glimmer/interfaces';
+import { Dict, ModuleLocator, TemplateLocator, ComponentCapabilities } from '@glimmer/interfaces';
 import defaultResolverConfiguration from './default-resolver-configuration';
 import { precompile } from './compiler';
 import Application, {
@@ -12,18 +12,15 @@ import Application, {
   ModuleTypes,
   INTERNAL_DYNAMIC_SCOPE
 } from '@glimmer/application';
-import { ComponentManager, CAPABILITIES } from '@glimmer/component';
 import { assert } from '@glimmer/util';
 import { BundleCompiler, CompilerDelegate as ICompilerDelegate } from '@glimmer/bundle-compiler';
-import { buildAction, mainTemplate } from '@glimmer/application';
+import { buildAction, mainTemplate, Renderer, BytecodeMetadata } from '@glimmer/application';
 import { compilable } from '@glimmer/opcode-compiler';
-import { Metadata } from '../../application/src/loaders/bytecode/loader';
 import { SimpleDocument } from '@simple-dom/interface';
+import HTMLSerializer from '@simple-dom/serializer';
 import { SSRApplication } from '@glimmer/ssr';
 
 import didRender from './did-render';
-import HTMLSerializer from '@simple-dom/serializer';
-import { Renderer } from '@glimmer/application/src/base-application';
 
 export interface AppBuilderOptions<T> {
   appName?: string;
@@ -78,9 +75,6 @@ export class AppBuilder<T extends TestApplication> {
   constructor(name: string, options: AppBuilderOptions<T>) {
     this.rootName = name;
     this.options = options;
-    this.modules[
-      `component-manager:/${this.rootName}/component-managers/main`
-    ] = this.options.ComponentManager;
     this.template('Main', '<div />');
     this.helper('action', buildAction, true);
   }
@@ -148,7 +142,7 @@ export class AppBuilder<T extends TestApplication> {
 
     let resolverTable: unknown[] = [];
 
-    let meta: Dict<Metadata> = {};
+    let meta: Dict<BytecodeMetadata> = {};
 
     table.vmHandleByModuleLocator.forEach((vmHandle, locator) => {
       let handle = table.byModuleLocator.get(locator);
@@ -157,7 +151,7 @@ export class AppBuilder<T extends TestApplication> {
       meta[locator.module] = {
         v: vmHandle,
         h: handle,
-        table: template.symbolTable,
+        sT: template.symbolTable,
       };
     });
 
@@ -242,6 +236,20 @@ export class AppBuilder<T extends TestApplication> {
   }
 }
 
+const CAPABILITIES: ComponentCapabilities = {
+  createInstance: true,
+  dynamicLayout: false,
+  dynamicTag: false,
+  wrapped: false,
+  prepareArgs: false,
+  createArgs: true,
+  attributeHook: false,
+  elementHook: false,
+  updateHook: true,
+  createCaller: false,
+  dynamicScope: true,
+};
+
 class CompilerDelegate implements ICompilerDelegate<ModuleLocator> {
   constructor(protected resolver: Resolver) {}
 
@@ -287,7 +295,6 @@ class CompilerDelegate implements ICompilerDelegate<ModuleLocator> {
 function buildApp<T extends TestApplication>(options: AppBuilderOptions<T> = {}): AppBuilder<T> {
   options.appName = options.appName || 'test-app';
   options.loader = options.loader || 'runtime-compiler';
-  options.ComponentManager = options.ComponentManager || ComponentManager;
   options.ApplicationClass =
     options.ApplicationClass || (TestApplication as ApplicationConstructor<T>);
 
