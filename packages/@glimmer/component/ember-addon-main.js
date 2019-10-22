@@ -25,7 +25,6 @@ module.exports = {
       '-private/owner.ts',
       `
         export { setOwner } from '@ember/application';
-        export type Owner = any;
       `
     );
 
