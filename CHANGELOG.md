@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.0.0-beta.1 (2019-10-23)
+
+#### :boom: Breaking Change
+* `@glimmer/application`, `@glimmer/component`, `@glimmer/tracking`
+  * [#213](https://github.com/glimmerjs/glimmer.js/pull/213) Remove need for @tracked on getters. ([@tomdale](https://github.com/tomdale))
+
+#### :rocket: Enhancement
+* `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/blueprint`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#214](https://github.com/glimmerjs/glimmer.js/pull/214) Implement Ember-compatible Custom Component Manager API. ([@tomdale](https://github.com/tomdale))
+* `@glimmer/application`, `@glimmer/component`, `@glimmer/tracking`
+  * [#213](https://github.com/glimmerjs/glimmer.js/pull/213) Remove need for @tracked on getters. ([@tomdale](https://github.com/tomdale))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#217](https://github.com/glimmerjs/glimmer.js/pull/217) Moves @glimmer/tracking to devDependencies. ([@pzuraq](https://github.com/pzuraq))
+
+#### :house: Internal
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#212](https://github.com/glimmerjs/glimmer.js/pull/212) Update Glimmer VM to v0.42.0. ([@tomdale](https://github.com/tomdale))
+
+#### Committers: 2
+- Chris Garrett ([pzuraq](https://github.com/pzuraq))
+- Tom Dale ([tomdale](https://github.com/tomdale))
+
 ## v0.14.0-alpha.12 (2019-08-16)
 
 #### :rocket: Enhancement
