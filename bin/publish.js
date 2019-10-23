@@ -190,7 +190,7 @@ async function confirmPublish() {
       });
     } catch (e) {
       // the token is outdated, we need another one
-      if (e.message.includes('E401')) {
+      if (e.message.includes('E401') || e.message.includes('EOTP')) {
         otp = await getOTPToken();
 
         publishPackage(distTag, otp, package.absolutePath);
