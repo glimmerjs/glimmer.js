@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/tracking",
-  "version": "0.14.0-alpha.13",
+  "version": "1.0.0-beta.1",
   "description": "Glimmer property tracking library",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -22,7 +22,7 @@
     "@glimmer/util": "^0.42.0"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^0.14.0-alpha.13",
+    "@glimmer/application-test-helpers": "^1.0.0-beta.1",
     "@glimmer/compiler": "^0.42.0",
     "@glimmer/interfaces": "^0.42.0",
     "@glimmer/resolver": "^0.3.0",
