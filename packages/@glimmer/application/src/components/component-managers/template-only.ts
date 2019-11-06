@@ -13,6 +13,7 @@ import {
   AotRuntimeResolver,
   CompilableProgram,
   Template,
+  TemplateOk,
   WithJitStaticLayout,
   ProgramSymbolTable,
 } from '@glimmer/interfaces';
@@ -25,6 +26,7 @@ import {
   AotComponentDefinition,
   JitComponentDefinition,
 } from '../component-definition';
+import { unwrapTemplate } from '@glimmer/opcode-compiler';
 
 export const CAPABILITIES: ComponentCapabilities = {
   attributeHook: false,
@@ -149,14 +151,14 @@ export class TemplateOnlyComponentDefinition
   public manager = TEMPLATE_ONLY_MANAGER;
   public handle: number;
   public symbolTable: ProgramSymbolTable;
-  public template: Template;
+  public template: TemplateOk;
 
-  constructor(name: string, templateOrHandle: Template | number, symbolTable?: ProgramSymbolTable) {
+  constructor(name?: string, templateOrHandle?: Template | number, symbolTable?: ProgramSymbolTable) {
     if (typeof templateOrHandle === 'number') {
       this.handle = templateOrHandle;
       this.symbolTable = symbolTable;
-    } else {
-      this.template = templateOrHandle;
+    } else if (templateOrHandle !== undefined) {
+      this.template = unwrapTemplate(templateOrHandle);
     }
 
     this.state = {

@@ -13,6 +13,7 @@ import {
   JitRuntimeResolver,
   WithJitStaticLayout,
   Template,
+  TemplateOk,
   Environment,
   Invocation,
   CompilableProgram,
@@ -24,6 +25,7 @@ import { Capabilities } from '../capabilities';
 import { RootReference } from '../../references';
 import Bounds from '../bounds';
 import { JitComponentDefinition, AotComponentDefinition } from '../component-definition';
+import { unwrapTemplate } from '@glimmer/opcode-compiler';
 
 export const CAPABILITIES: ComponentCapabilities = {
   createInstance: true,
@@ -345,7 +347,7 @@ export class CustomComponentDefinition<ComponentInstance> implements AotComponen
   public manager = CUSTOM_COMPONENT_MANAGER as CustomComponentManager<ComponentInstance>;
   public handle: number;
   public symbolTable: ProgramSymbolTable;
-  public template: Template;
+  public template: TemplateOk;
 
   constructor(
     name: string,
@@ -358,7 +360,7 @@ export class CustomComponentDefinition<ComponentInstance> implements AotComponen
       this.handle = templateOrHandle;
       this.symbolTable = symbolTable;
     } else {
-      this.template = templateOrHandle;
+      this.template = unwrapTemplate(templateOrHandle);
     }
 
     this.state = {

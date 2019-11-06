@@ -30,7 +30,7 @@
     "ember-template-lint": "^1.0.0-beta.6",
     "ember-cli-uglify": "^2.0.0-beta.1",
     "qunitjs": "^2.3.3",
-    "typescript": "~3.2.1"
+    "typescript": "~3.5.3"
   },
   "engines": {
     "node": ">= 4.0"

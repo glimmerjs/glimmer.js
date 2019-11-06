@@ -30,7 +30,7 @@
   "dependencies": {
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/util": "^0.42.0",
+    "@glimmer/util": "^0.43.0",
     "broccoli-file-creator": "^2.1.1",
     "broccoli-merge-trees": "^3.0.2",
     "ember-cli-babel": "^7.7.3",
@@ -39,17 +39,17 @@
     "ember-cli-normalize-entity-name": "^1.0.0",
     "ember-cli-path-utils": "^1.0.0",
     "ember-cli-string-utils": "^1.1.0",
-    "ember-cli-typescript": "^2.0.0-rc.1",
+    "ember-cli-typescript": "3.0.0",
     "ember-compatibility-helpers": "^1.1.2"
   },
   "devDependencies": {
     "@ember/optional-features": "^0.6.1",
     "@glimmer/application-test-helpers": "^1.0.0-beta.1",
-    "@glimmer/compiler": "^0.42.0",
-    "@glimmer/interfaces": "^0.42.0",
+    "@glimmer/compiler": "^0.43.0",
+    "@glimmer/interfaces": "^0.43.0",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/tracking": "^1.0.0-beta.1",
-    "@glimmer/wire-format": "^0.42.0",
+    "@glimmer/wire-format": "^0.43.0",
     "@types/ember": "~3.0.29",
     "@types/ember-qunit": "~3.4.3",
     "@types/ember-test-helpers": "~1.0.4",
@@ -85,7 +85,7 @@
     "loader.js": "^4.2.3",
     "mocha": "^5.0.0",
     "qunit-dom": "^0.7.1",
-    "typescript": "^2.9.2"
+    "typescript": "~3.5.3"
   },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"

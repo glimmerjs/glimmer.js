@@ -1,5 +1,5 @@
 import { RenderComponentArgs, CustomJitRuntime, renderJitMain, renderJitComponent, getDynamicVar } from '@glimmer/runtime';
-import { templateFactory, JitContext } from '@glimmer/opcode-compiler';
+import { templateFactory, JitContext, unwrapTemplate, unwrapHandle } from '@glimmer/opcode-compiler';
 import { PathReference } from '@glimmer/reference';
 import { Environment, ElementBuilder, DynamicScope, TemplateIterator } from '@glimmer/interfaces';
 
@@ -36,7 +36,8 @@ export default class RuntimeCompilerLoader implements Loader {
     let context = this.getContext(resolver);
     let runtime = CustomJitRuntime(resolver, context, app.env);
 
-    let mainLayout = templateFactory(mainTemplate).create();
+    let mainLayout = unwrapTemplate(templateFactory(mainTemplate).create());
+    let handle = unwrapHandle(mainLayout.asLayout().compile(context));
 
     return Promise.resolve(
       renderJitMain(
@@ -44,7 +45,7 @@ export default class RuntimeCompilerLoader implements Loader {
         context,
         self,
         builder,
-        mainLayout.asLayout().compile(context),
+        handle,
         dynamicScope
       )
     );
