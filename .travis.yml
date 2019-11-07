@@ -33,6 +33,11 @@ jobs:
       script: yarn test
     - name: Lint
       script: yarn tslint
+    - name: Type Lint
+      script:
+        - yarn build
+        - yarn dtslint --installAll
+        - yarn test:types
 
     - stage: Ember Tests
       name: Node
