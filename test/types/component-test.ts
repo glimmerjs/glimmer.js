@@ -40,7 +40,9 @@ hasExactKeys<{
   isDestroyed: unknown,
   willDestroy: unknown,
 
-  // These are not public API, but technically part of the shape
+  // These are not public API, but technically exist as keys on the class, so
+  // we have to include them to type check correctly. These can be removed or
+  // changed without a major version bump.
   [DESTROYED]: unknown,
   [DESTROYING]: unknown,
 }>()(component);
