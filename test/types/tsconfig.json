@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    // Compilation Configuration
+    "target": "es2017",
+    "lib": ["es6", "dom"],
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "importHelpers": true,
+
+    // Environment Configuration
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+
+    // Enhance Strictness
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
+    // Enabling these breaks @glimmer/application, fix and reenable this
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noUnusedParameters": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "allowUnreachableCode": false,
+    "noImplicitReturns": false,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+
+    "newLine": "LF",
+    "noEmit": true,
+
+    "paths": {
+      "@glimmer/*": ["../../dist/@glimmer/*"]
+    }
+  }
+}
