@@ -19,7 +19,8 @@ import {
   CompilableProgram,
   Bounds as VMBounds,
 } from '@glimmer/interfaces';
-import { PathReference, Tag, isConst, createTag } from '@glimmer/reference';
+import { PathReference } from '@glimmer/reference';
+import { Tag, isConst, createTag } from '@glimmer/validator';
 
 import { Capabilities } from '../capabilities';
 import { RootReference } from '../../references';

@@ -4,9 +4,9 @@ import {
   OpaqueIterable,
   AbstractIterable,
   IterationItem,
-  Tag,
 } from '@glimmer/reference';
 import { isDict } from '@glimmer/util';
+import { Tag } from '@glimmer/validator';
 import { UpdatableReference } from './references';
 
 export type KeyFor<T> = (item: unknown, index: T) => unknown;

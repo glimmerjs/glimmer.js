@@ -1,4 +1,4 @@
-import { Tag } from '@glimmer/reference';
+import { Tag } from '@glimmer/validator';
 
 import { Dict, VMArguments, CapturedArguments, Helper as GlimmerHelper } from '@glimmer/interfaces';
 import { PropertyReference } from '../references';

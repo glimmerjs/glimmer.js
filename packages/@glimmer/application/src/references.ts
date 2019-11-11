@@ -2,17 +2,19 @@ import { dict } from '@glimmer/util';
 import {
   PathReference,
   ConstReference,
+  CachedReference,
+} from '@glimmer/reference';
+import {
   DirtyableTag,
   UpdatableTag,
   combine,
   isConst,
   Tag,
   createUpdatableTag,
-  CachedReference,
   update,
   createTag,
-  dirty
-} from '@glimmer/reference';
+  dirty,
+} from '@glimmer/validator';
 import {
   ConditionalReference as GlimmerConditionalReference,
   PrimitiveReference,

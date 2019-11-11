@@ -6,7 +6,7 @@ import {
   CONSTANT_TAG,
   createTag,
   dirty,
-} from '@glimmer/reference';
+} from '@glimmer/validator';
 import { dict, assert } from '@glimmer/util';
 import { Option, Dict } from '@glimmer/interfaces';
 

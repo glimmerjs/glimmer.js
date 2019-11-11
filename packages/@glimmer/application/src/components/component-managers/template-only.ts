@@ -1,5 +1,4 @@
 import { Owner } from '@glimmer/di';
-import { Tag } from '@glimmer/reference';
 import {
   ComponentManager as VMComponentManager,
   RuntimeResolver,
@@ -17,7 +16,8 @@ import {
   WithJitStaticLayout,
   ProgramSymbolTable,
 } from '@glimmer/interfaces';
-import { PathReference, CONSTANT_TAG } from '@glimmer/reference';
+import { PathReference } from '@glimmer/reference';
+import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { DEBUG } from '@glimmer/env';
 
 import { RootReference, TemplateOnlyComponentDebugReference } from '../../references';
