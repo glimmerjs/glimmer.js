@@ -1,9 +1,9 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import { trackProperty, UntrackedPropertyError } from '@glimmer/tracking';
+import { trackProperty, UntrackedPropertyError } from '@glimmer/application';
 
-module('[@glimmer/tracking] Tracked Property Warning in Development Mode');
+module('[@glimmer/application] Tracked Property Warning in Development Mode');
 
 if (DEBUG) {
   test('tracking an untracked property should throw an exception if mutated in development mode', assert => {

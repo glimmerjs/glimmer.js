@@ -1,5 +1,4 @@
 import { DEBUG } from '@glimmer/env';
-import { consume } from '@glimmer/tracking';
 import { Owner } from '@glimmer/di';
 import { assert } from '@glimmer/util';
 import {
@@ -20,7 +19,7 @@ import {
   Bounds as VMBounds,
 } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
-import { Tag, isConst, createTag } from '@glimmer/validator';
+import { Tag, isConst, createTag, consume } from '@glimmer/validator';
 
 import { Capabilities } from '../capabilities';
 import { RootReference } from '../../references';

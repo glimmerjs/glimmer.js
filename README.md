@@ -58,6 +58,7 @@ The following packages are committed to maintaining stable Typescript types in
 addition to their JavaScript API:
 
 * `@glimmer/component`
+* `@glimmer/tracking`
 
 Any changes to their types, _including_ changes caused by upgrading the
 Typescript compiler, are covered under SemVer for these packages (e.g. breaking

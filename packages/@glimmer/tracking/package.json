@@ -15,10 +15,7 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/runtime": "^0.44.0",
-    "@glimmer/util": "^0.44.0",
     "@glimmer/validator": "^0.44.0"
   },
   "devDependencies": {
