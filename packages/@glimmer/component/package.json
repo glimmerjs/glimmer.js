@@ -24,8 +24,7 @@
     "lint:js": "eslint .",
     "start": "ember serve",
     "test": "ember test",
-    "test:all": "ember try:each",
-    "test:node": "mocha test/mocha --recursive"
+    "test:all": "ember try:each"
   },
   "dependencies": {
     "@glimmer/di": "^0.1.9",
@@ -55,7 +54,6 @@
     "@types/ember-test-helpers": "~1.0.4",
     "@types/ember-testing-helpers": "^0.0.3",
     "@types/ember__test-helpers": "~0.7.6",
-    "@types/mocha": "^5.2.5",
     "@types/qunit": "^2.5.3",
     "@types/rsvp": "^4.0.2",
     "babel-eslint": "^8.2.6",
@@ -83,7 +81,6 @@
     "eslint-plugin-ember": "^5.0.0",
     "eslint-plugin-node": "^6.0.1",
     "loader.js": "^4.2.3",
-    "mocha": "^5.0.0",
     "qunit-dom": "^0.7.1",
     "typescript": "~3.5.3"
   },
