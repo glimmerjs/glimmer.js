@@ -1,4 +1,4 @@
-import { bump, Tag, validate } from '@glimmer/reference';
+import { bump, Tag, validate } from '@glimmer/validator';
 
 export function assertValidAfterUnrelatedBump(tag: Tag, snapshot: number) {
   bump();

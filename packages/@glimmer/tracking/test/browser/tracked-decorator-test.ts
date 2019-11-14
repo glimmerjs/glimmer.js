@@ -2,8 +2,7 @@
 const { module, test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
-import { value, validate } from '@glimmer/reference';
-import { track } from '@glimmer/tracking';
+import { track, value, validate } from '@glimmer/validator';
 
 import * as TSFixtures from './fixtures/typescript';
 import * as BabelFixtures from './fixtures/babel';

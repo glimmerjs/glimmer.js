@@ -22,7 +22,13 @@ export { default as buildAction, debugInfoForReference } from './src/helpers/act
 export { default as mainTemplate } from './src/templates/main';
 export { setComponentManager } from './src/components/utils';
 export { Capabilities, capabilities } from './src/components/capabilities';
-export { UpdatableReference, RootReference, TemplateOnlyComponentDebugReference } from './src/references';
+export {
+  UpdatableReference,
+  RootReference,
+  TemplateOnlyComponentDebugReference,
+  trackProperty,
+  UntrackedPropertyError,
+} from './src/references';
 export { default as Bounds } from './src/components/bounds';
 export { CAPABILITIES as CUSTOM_COMPONENT_CAPABILITIES, ComponentFactory } from './src/components/component-managers/custom';
 export * from './src/helpers';
