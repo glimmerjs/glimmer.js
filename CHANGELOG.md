@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.0.0-beta.2 (2019-11-15)
+
+#### :rocket: Enhancement
+* `@glimmer/component`
+  * [#224](https://github.com/glimmerjs/glimmer.js/pull/224) [REFACTOR] Removes deprecations and adds usage error messages. ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#223](https://github.com/glimmerjs/glimmer.js/pull/223) Update to Glimmer VM 0.44.0 and migrate tracked implementation to leverage `@glimmer/validator`. ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#225](https://github.com/glimmerjs/glimmer.js/pull/225) Removes blueprints from `@glimmer/component`. ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([pzuraq](https://github.com/pzuraq))
+
 ## v1.0.0-beta.1 (2019-10-23)
 
 #### :boom: Breaking Change
