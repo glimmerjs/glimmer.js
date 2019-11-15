@@ -7,18 +7,10 @@ const Component = gc.default;
 
 hasExactKeys<{
   default: unknown,
-  setPropertyDidChange: unknown,
-  tracked: unknown,
 }>()(gc);
 
 // $ExpectType typeof Component
 gc.default;
-
-// $ExpectType () => void
-gc.setPropertyDidChange;
-
-// $ExpectType () => void
-gc.tracked;
 
 type Args = {
   foo: number;
