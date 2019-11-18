@@ -10,7 +10,7 @@ import BaseComponentManager, {
   CustomComponentCapabilities,
 } from './base-component-manager';
 
-import GlimmerComponent, { DESTROYING, DESTROYED } from './component';
+import GlimmerComponent, { setDestroyed, setDestroying } from './component';
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
@@ -31,14 +31,14 @@ const CAPABILITIES = gte('3.13.0-beta.1')
  */
 class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
   destroyComponent(component: GlimmerComponent) {
-    if (component[DESTROYING]) {
+    if (component.isDestroying) {
       return;
     }
 
     let meta = Ember.meta(component);
 
     meta.setSourceDestroying();
-    component[DESTROYING] = true;
+    setDestroying(component);
 
     schedule('actions', component, component.willDestroy);
     schedule('destroy', this, scheduledDestroyComponent, component, meta);
@@ -53,7 +53,7 @@ function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta)
   Ember.destroy(component);
 
   meta.setSourceDestroyed();
-  component[DESTROYED] = true;
+  setDestroyed(component);
 }
 
 interface EmberGlimmerComponentManager {

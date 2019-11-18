@@ -2,7 +2,7 @@ import { capabilities, Bounds } from '@glimmer/application';
 import { setOwner, getOwner } from '@glimmer/di';
 
 import BaseComponentManager from '../addon/-private/base-component-manager';
-import { DESTROYING, DESTROYED } from '../addon/-private/component';
+import { setDestroying, setDestroyed } from '../addon/-private/component';
 import GlimmerComponent from './component';
 
 const CAPABILITIES = capabilities('3.13', {
@@ -23,9 +23,9 @@ export default class GlimmerComponentManager extends BaseComponentManager(
   CAPABILITIES
 ) {
   destroyComponent(component: GlimmerComponent) {
-    component[DESTROYING] = true;
+    setDestroying(component);
     component.willDestroy();
-    component[DESTROYED] = true;
+    setDestroyed(component);
   }
 
   didCreateComponent(component: GlimmerComponent) {
