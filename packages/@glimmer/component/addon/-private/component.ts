@@ -4,10 +4,10 @@ import { setOwner } from './owner';
 const DESTROYING = Symbol('destroying');
 const DESTROYED = Symbol('destroyed');
 
-let ARGS_SET: WeakSet<any>;
+let ARGS_SET: WeakMap<any, boolean>;
 
 if (DEBUG) {
-  ARGS_SET = new WeakSet();
+  ARGS_SET = new WeakMap();
 }
 
 export { DESTROYING, DESTROYED, ARGS_SET };

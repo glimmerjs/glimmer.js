@@ -47,7 +47,7 @@ export default function BaseComponentManager<GlimmerComponent extends BaseCompon
       args: ComponentManagerArgs
     ): GlimmerComponent {
       if (DEBUG) {
-        ARGS_SET.add(args.named);
+        ARGS_SET.set(args.named, true);
       }
 
       return new ComponentClass(getOwner(this), args.named);
