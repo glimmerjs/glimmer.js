@@ -1,6 +1,4 @@
 import * as gc from '@glimmer/component';
-import { DESTROYED, DESTROYING } from '@glimmer/component/dist/types/addon/-private/component';
-
 import { hasExactKeys } from './utils';
 
 const Component = gc.default;
@@ -31,12 +29,6 @@ hasExactKeys<{
   isDestroying: unknown,
   isDestroyed: unknown,
   willDestroy: unknown,
-
-  // These are not public API, but technically exist as keys on the class, so
-  // we have to include them to type check correctly. These can be removed or
-  // changed without a major version bump.
-  [DESTROYED]: unknown,
-  [DESTROYING]: unknown,
 }>()(component);
 
 // $ExpectType Args
