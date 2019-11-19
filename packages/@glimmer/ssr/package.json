@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/ssr",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Server-side rendering for Glimmer Applications",
   "repository": "https://github.com/glimmerjs/glimmer.js",
   "license": "MIT",
@@ -11,8 +11,8 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/application": "^1.0.0-beta.2",
-    "@glimmer/component": "^1.0.0-beta.2",
+    "@glimmer/application": "^1.0.0-beta.3",
+    "@glimmer/component": "^1.0.0-beta.3",
     "@glimmer/di": "^0.1.9",
     "@glimmer/node": "^0.44.0",
     "@glimmer/reference": "^0.44.0",
