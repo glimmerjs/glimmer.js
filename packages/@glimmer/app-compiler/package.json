@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/app-compiler",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0",
   "description": "Broccoli tooling for Glimmer-VM based applications",
   "repository": "https://github.com/glimmerjs/glimmer.js",
   "license": "MIT",
@@ -11,8 +11,8 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/application": "^1.0.0-beta.3",
-    "@glimmer/compiler-delegates": "^1.0.0-beta.3",
+    "@glimmer/application": "^1.0.0",
+    "@glimmer/compiler-delegates": "^1.0.0",
     "@glimmer/bundle-compiler": "^0.44.0",
     "@glimmer/interfaces": "^0.44.0",
     "@glimmer/opcode-compiler": "^0.44.0",
