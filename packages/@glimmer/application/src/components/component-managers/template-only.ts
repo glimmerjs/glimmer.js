@@ -1,4 +1,3 @@
-import { Owner } from '@glimmer/di';
 import {
   ComponentManager as VMComponentManager,
   RuntimeResolver,
@@ -72,11 +71,6 @@ export interface ExtendedTemplateMeta {
 
 export interface CompilableRuntimeResolver extends RuntimeResolver<ExtendedTemplateMeta> {
   compileTemplate(name: string, layout: Option<number>): Invocation;
-}
-
-export interface EnvironmentWithOwner extends Environment {
-  getOwner(): Owner;
-  setOwner(obj: Object, owner: Owner): void;
 }
 
 export default class TemplateOnlyComponentManager

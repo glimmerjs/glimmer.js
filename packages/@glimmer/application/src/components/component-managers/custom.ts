@@ -1,5 +1,4 @@
 import { DEBUG } from '@glimmer/env';
-import { Owner } from '@glimmer/di';
 import { assert } from '@glimmer/util';
 import {
   ComponentManager as VMComponentManager,
@@ -17,6 +16,7 @@ import {
   Invocation,
   CompilableProgram,
   Bounds as VMBounds,
+  DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
@@ -129,11 +129,6 @@ export interface Factory<T, C extends object = object> {
   create(props?: { [prop: string]: any }): T;
 }
 
-export interface EnvironmentWithOwner extends Environment {
-  getOwner(): Owner;
-  setOwner(obj: Object, owner: Owner): void;
-}
-
 /**
   The CustomComponentManager allows addons to provide custom component
   implementations that integrate seamlessly into Ember. This is accomplished
@@ -171,9 +166,10 @@ export default class CustomComponentManager<ComponentInstance>
       JitRuntimeResolver
     > {
   create(
-    _env: EnvironmentWithOwner,
+    _env: Environment,
     definition: CustomComponentDefinitionState<ComponentInstance>,
-    args: VMArguments
+    args: VMArguments,
+    _dynamicScope: DynamicScope,
   ): CustomComponentState<ComponentInstance> {
     const { delegate } = definition;
     const capturedArgs = args.capture();
