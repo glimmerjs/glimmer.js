@@ -19,20 +19,4 @@ module.exports = {
 
     this._super.included.apply(this, arguments);
   },
-
-  treeForAddon(tree) {
-    let ownerOverride = writeFile(
-      '-private/owner.ts',
-      `
-        export { setOwner } from '@ember/application';
-      `
-    );
-
-    return this._super.treeForAddon.call(
-      this,
-      new MergeTrees([tree, ownerOverride], {
-        overwrite: true,
-      })
-    );
-  },
 };

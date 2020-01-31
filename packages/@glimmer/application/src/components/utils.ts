@@ -1,6 +1,6 @@
 import { Owner } from '@glimmer/di';
 import { Option } from '@glimmer/interfaces';
-import { ManagerDelegate } from './component-managers/custom';
+import { ComponentManager } from './component-managers/custom';
 
 const MANAGERS: WeakMap<object, ManagerWrapper<unknown>> = new WeakMap();
 
@@ -33,12 +33,12 @@ export function getManager<ManagerDelegate>(obj: object): Option<ManagerWrapper<
   return null;
 }
 
-export function setComponentManager(factory: ManagerFactory<ManagerDelegate<unknown>>, obj: {}) {
+export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, obj: {}) {
   return setManager({ factory, type: 'component' }, obj);
 }
 
-export function getComponentManager<T>(obj: any): undefined | ManagerFactory<ManagerDelegate<T>> {
-  let wrapper = getManager<ManagerDelegate<T>>(obj);
+export function getComponentManager<T>(obj: any): undefined | ManagerFactory<ComponentManager<T>> {
+  let wrapper = getManager<ComponentManager<T>>(obj);
 
   if (wrapper && wrapper.type === 'component') {
     return wrapper.factory;

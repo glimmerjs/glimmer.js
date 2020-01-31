@@ -18,10 +18,10 @@
     "noUnusedLocals": true,
     "noImplicitThis": true,
     // Enabling these breaks @glimmer/application, fix and reenable this
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": false,
-    "noUnusedParameters": false,
-    "strictNullChecks": false,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
     "allowUnreachableCode": false,
     "noImplicitReturns": false,
     "skipLibCheck": true,

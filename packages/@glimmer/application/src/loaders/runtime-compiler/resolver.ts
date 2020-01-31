@@ -18,11 +18,7 @@ import { templateFactory } from '@glimmer/opcode-compiler';
 import { TypedRegistry } from './typed-registry';
 import { HelperReference } from '../../helpers/user-helper';
 import { getManager } from '../../components/utils';
-import {
-  CustomComponentDefinition,
-  ManagerDelegate,
-  ComponentFactory,
-} from '../../components/component-managers/custom';
+import { CustomComponentDefinition, ComponentManager, ComponentFactory } from '../../components/component-managers/custom';
 import { TemplateOnlyComponentDefinition } from '../../components/component-managers/template-only';
 
 export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => unknown;
@@ -242,7 +238,7 @@ export function createJitComponentDefinition(
   return new CustomComponentDefinition(
     name,
     componentFactory,
-    factory(owner) as ManagerDelegate<unknown>,
+    factory(owner) as ComponentManager<unknown>,
     template
   );
 }

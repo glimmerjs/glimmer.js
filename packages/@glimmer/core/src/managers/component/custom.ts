@@ -2,10 +2,9 @@ import { DEBUG } from '@glimmer/env';
 import { assert } from '@glimmer/util';
 import {
   ComponentManager as VMComponentManager,
-  ComponentCapabilities,
+  ComponentCapabilities as VMComponentCapabilities,
   Dict,
   Option,
-  ProgramSymbolTable,
   VMArguments,
   CapturedArguments,
   JitRuntimeResolver,
@@ -13,21 +12,18 @@ import {
   Template,
   TemplateOk,
   Environment,
-  Invocation,
   CompilableProgram,
-  Bounds as VMBounds,
   DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
+import { setScope, PUBLIC_DYNAMIC_SCOPE_KEY } from '../../scope';
 
-import { Capabilities } from '../capabilities';
-import { RootReference } from '../../references';
-import Bounds from '../bounds';
-import { JitComponentDefinition, AotComponentDefinition } from '../component-definition';
+import { RootReference } from '@glimmer/application';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
+import GlimmerComponent from '@glimmer/component';
 
-export const CAPABILITIES: ComponentCapabilities = {
+export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
   dynamicLayout: false,
   dynamicTag: false,
@@ -36,10 +32,12 @@ export const CAPABILITIES: ComponentCapabilities = {
   createArgs: true,
   attributeHook: false,
   elementHook: false,
-  updateHook: true,
+  updateHook: false,
   createCaller: false,
   dynamicScope: true,
 };
+
+///////////
 
 export interface Capabilities {
   asyncLifecycleCallbacks: boolean;
@@ -47,10 +45,36 @@ export interface Capabilities {
   updateHook: boolean;
 }
 
+export type OptionalCapabilities = Partial<Capabilities>;
+
+export type ManagerAPIVersion = '3.4' | '3.13';
+
+export function capabilities(
+  managerAPI: ManagerAPIVersion,
+  options: OptionalCapabilities = {}
+): Capabilities {
+  assert(
+    managerAPI === '3.4' || managerAPI === '3.13',
+    'Invalid component manager compatibility specified'
+  );
+
+  let updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
+
+  return {
+    asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
+    destructor: Boolean(options.destructor),
+    updateHook,
+  };
+}
+
+///////////
+
 export interface Args {
   named: Dict<unknown>;
   positional: unknown[];
 }
+
+///////////
 
 /**
  * This is the public facing component manager. Named `ComponentManager` so the
@@ -61,55 +85,49 @@ export interface ComponentManager<ComponentInstance> {
   capabilities: Capabilities;
   createComponent(factory: unknown, args: Args): ComponentInstance;
   getContext(instance: ComponentInstance): unknown;
-
-  __glimmer__didRenderLayout?(instance: ComponentInstance, bounds: Bounds): void;
-}
-
-function hasDidRenderLayout<ComponentInstance>(delegate: ComponentManager<ComponentInstance>) {
-  return typeof delegate.__glimmer__didRenderLayout === 'function';
 }
 
 export function hasAsyncLifecycleCallbacks<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
-): delegate is ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance> {
+): delegate is ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance> {
   return delegate.capabilities.asyncLifecycleCallbacks;
 }
 
-export interface ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance>
+export interface ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance>
   extends ComponentManager<ComponentInstance> {
   didCreateComponent(instance: ComponentInstance): void;
 }
 
 export function hasUpdateHook<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
-): delegate is ManagerDelegateWithUpdateHook<ComponentInstance> {
+): delegate is ComponentManagerWithUpdateHook<ComponentInstance> {
   return delegate.capabilities.updateHook;
 }
 
-export interface ManagerDelegateWithUpdateHook<ComponentInstance>
+export interface ComponentManagerWithUpdateHook<ComponentInstance>
   extends ComponentManager<ComponentInstance> {
     updateComponent(instance: ComponentInstance, args: Args): void;
   }
 
 export function hasAsyncUpdateHook<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
-): delegate is ManagerDelegateWithAsyncUpdateHook<ComponentInstance> {
+): delegate is ComponentManagerWithAsyncUpdateHook<ComponentInstance> {
   return hasAsyncLifecycleCallbacks(delegate) && hasUpdateHook(delegate);
 }
 
-export interface ManagerDelegateWithAsyncUpdateHook<ComponentInstance>
-  extends ManagerDelegateWithAsyncLifecycleCallbacks<ComponentInstance>,
-    ManagerDelegateWithUpdateHook<ComponentInstance> {
+export interface ComponentManagerWithAsyncUpdateHook<ComponentInstance>
+  extends ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance>,
+    ComponentManagerWithUpdateHook<ComponentInstance> {
   didUpdateComponent(instance: ComponentInstance): void;
 }
 
 export function hasDestructors<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
-): delegate is ManagerDelegateWithDestructors<ComponentInstance> {
+): delegate is ComponentManagerWithDestructors<ComponentInstance> {
   return delegate.capabilities.destructor;
 }
 
-export interface ManagerDelegateWithDestructors<ComponentInstance>
+export interface ComponentManagerWithDestructors<ComponentInstance>
   extends ComponentManager<ComponentInstance> {
   destroyComponent(instance: ComponentInstance): void;
 }
@@ -120,7 +138,7 @@ export interface ComponentArguments {
 }
 
 export interface TemplateMeta {
-
+  scope: () => Dict<unknown>;
 }
 
 export interface Destroyable {
@@ -133,6 +151,8 @@ export interface Factory<T, C extends object = object> {
   normalizedName?: string;
   create(props?: { [prop: string]: any }): T;
 }
+
+///////////
 
 /**
   The CustomComponentManager allows addons to provide custom component
@@ -174,7 +194,7 @@ export default class CustomComponentManager<ComponentInstance>
     _env: Environment,
     definition: CustomComponentDefinitionState<ComponentInstance>,
     args: VMArguments,
-    _dynamicScope: DynamicScope,
+    dynamicScope: DynamicScope,
   ): CustomComponentState<ComponentInstance> {
     const { delegate } = definition;
     const capturedArgs = args.capture();
@@ -234,6 +254,14 @@ export default class CustomComponentManager<ComponentInstance>
 
     const component = delegate.createComponent(definition.ComponentClass.class, value);
 
+    const publicScope = dynamicScope.get(PUBLIC_DYNAMIC_SCOPE_KEY);
+
+    // Currently, we only want to allow access to scope on our own components,
+    // not via custom component managers
+    if (component instanceof GlimmerComponent && publicScope !== undefined) {
+      setScope(component, publicScope.value() as Dict<unknown>);
+    }
+
     return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);
   }
 
@@ -278,8 +306,8 @@ export default class CustomComponentManager<ComponentInstance>
 
   getCapabilities({
     delegate,
-  }: CustomComponentDefinitionState<ComponentInstance>): ComponentCapabilities {
-    return Object.assign({}, CAPABILITIES, {
+  }: CustomComponentDefinitionState<ComponentInstance>): VMComponentCapabilities {
+    return Object.assign({}, VM_CAPABILITIES, {
       updateHook: delegate.capabilities.updateHook,
     });
   }
@@ -293,26 +321,15 @@ export default class CustomComponentManager<ComponentInstance>
     }
   }
 
-  didRenderLayout({ delegate, component }: CustomComponentState<ComponentInstance>, bounds: VMBounds) {
-    if (hasDidRenderLayout(delegate)) {
-      delegate.__glimmer__didRenderLayout(component, new Bounds(bounds));
-    }
-  }
-
+  didRenderLayout() {}
   didUpdateLayout() {}
 
   getJitStaticLayout({ definition }: CustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
     return definition.template.asLayout();
   }
-
-  getAotStaticLayout({ definition }: CustomComponentDefinitionState<ComponentInstance>): Invocation {
-    const { handle, symbolTable } = definition;
-    return {
-      handle,
-      symbolTable
-    };
-  }
 }
+
+///////////
 
 /**
  * Stores internal state about a component instance after it's been created.
@@ -322,7 +339,7 @@ export class CustomComponentState<ComponentInstance> {
     public delegate: ComponentManager<ComponentInstance>,
     public component: ComponentInstance,
     public args: CapturedArguments,
-    public namedArgsProxy?: {}
+    public namedArgsProxy: {}
   ) {}
 
   destroy() {
@@ -341,28 +358,20 @@ export interface CustomComponentDefinitionState<ComponentInstance> {
   definition: CustomComponentDefinition<ComponentInstance>;
 }
 
-const CUSTOM_COMPONENT_MANAGER = new CustomComponentManager();
+export const CUSTOM_COMPONENT_MANAGER = new CustomComponentManager();
 
-export class CustomComponentDefinition<ComponentInstance> implements AotComponentDefinition, JitComponentDefinition {
+export class CustomComponentDefinition<ComponentInstance> {
   public state: CustomComponentDefinitionState<ComponentInstance>;
   public manager = CUSTOM_COMPONENT_MANAGER as CustomComponentManager<ComponentInstance>;
-  public handle: number;
-  public symbolTable: ProgramSymbolTable;
   public template: TemplateOk;
 
   constructor(
     name: string,
     ComponentClass: ComponentFactory,
     delegate: ComponentManager<ComponentInstance>,
-    templateOrHandle: Template | number,
-    symbolTable?: ProgramSymbolTable
+    template: Template
   ) {
-    if (typeof templateOrHandle === 'number') {
-      this.handle = templateOrHandle;
-      this.symbolTable = symbolTable;
-    } else {
-      this.template = unwrapTemplate(templateOrHandle);
-    }
+    this.template = unwrapTemplate(template);
 
     this.state = {
       name,

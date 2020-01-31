@@ -238,17 +238,3 @@ export class ConditionalReference extends GlimmerConditionalReference {
     return new GlimmerConditionalReference(reference);
   }
 }
-
-export class TemplateOnlyComponentDebugReference extends ConstReference<void> {
-  constructor(protected name: string) {
-    super(undefined);
-  }
-
-  get(propertyKey: string): PathReference<unknown> {
-    throw new Error(
-      `You tried to reference {{${propertyKey}}} from the ${
-        this.name
-      } template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
-    );
-  }
-}

@@ -1,13 +1,12 @@
 import { DEBUG } from '@glimmer/env';
-import { setOwner } from './owner';
 
-const DESTROYING = new WeakMap<BaseComponent<unknown>, boolean>();
-const DESTROYED = new WeakMap<BaseComponent<unknown>, boolean>();
+const DESTROYING = new WeakMap<GlimmerComponent<unknown>, boolean>();
+const DESTROYED = new WeakMap<GlimmerComponent<unknown>, boolean>();
 
-export function setDestroying(component: BaseComponent<unknown>) {
+export function setDestroying(component: GlimmerComponent<unknown>) {
   DESTROYING.set(component, true);
 }
-export function setDestroyed(component: BaseComponent<unknown>) {
+export function setDestroyed(component: GlimmerComponent<unknown>) {
   DESTROYED.set(component, true);
 }
 
@@ -140,7 +139,7 @@ if (DEBUG) {
  * `args` property. For example, if `{{@firstName}}` is `Tom` in the template,
  * inside the component `this.args.firstName` would also be `Tom`.
  */
-export default class BaseComponent<T = object> {
+export default class GlimmerComponent<T = object> {
   /**
    * Constructs a new component and assigns itself the passed properties. You
    * should not construct new components yourself. Instead, Glimmer will
@@ -159,7 +158,6 @@ export default class BaseComponent<T = object> {
     }
 
     this.args = args;
-    setOwner(this, owner as any);
 
     DESTROYING.set(this, false);
     DESTROYED.set(this, false);

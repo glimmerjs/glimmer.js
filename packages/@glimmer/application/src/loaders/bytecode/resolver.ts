@@ -9,7 +9,7 @@ import {
 } from '@glimmer/interfaces';
 import { unreachable } from '@glimmer/util';
 import { Owner, Factory } from '@glimmer/di';
-import { CustomComponentDefinition, ManagerDelegate, ComponentFactory } from '../../components/component-managers/custom';
+import { CustomComponentDefinition, ComponentManager, ComponentFactory } from '../../components/component-managers/custom';
 import { HelperReference, UserHelper } from '../../helpers/user-helper';
 import { BytecodeMetadata } from './loader';
 import { getManager } from '../../components/utils';
@@ -171,7 +171,7 @@ export function createAotComponentDefinition(
   return new CustomComponentDefinition(
     name,
     componentFactory,
-    factory(owner) as ManagerDelegate<unknown>,
+    factory(owner) as ComponentManager<unknown>,
     handle,
     symbolTable
   );

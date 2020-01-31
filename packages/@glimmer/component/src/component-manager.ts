@@ -1,5 +1,4 @@
-import { capabilities, Bounds } from '@glimmer/application';
-import { setOwner, getOwner } from '@glimmer/di';
+import { capabilities } from '@glimmer/core';
 
 import BaseComponentManager from '../addon/-private/base-component-manager';
 import { setDestroying, setDestroyed } from '../addon/-private/component';
@@ -18,27 +17,13 @@ const CAPABILITIES = capabilities('3.13', {
  * 2. Invoke legacy component lifecycle hooks (didInsertElement and didUpdate)
  */
 export default class GlimmerComponentManager extends BaseComponentManager(
-  setOwner,
-  getOwner,
+  () => null,
+  () => null,
   CAPABILITIES
 ) {
   destroyComponent(component: GlimmerComponent) {
     setDestroying(component);
     component.willDestroy();
     setDestroyed(component);
-  }
-
-  didCreateComponent(component: GlimmerComponent) {
-    component.didInsertElement();
-  }
-
-  updateComponent() { }
-
-  didUpdateComponent(component: GlimmerComponent) {
-    component.didUpdate();
-  }
-
-  __glimmer__didRenderLayout(component: GlimmerComponent, bounds: Bounds) {
-    component.bounds = bounds;
   }
 }
