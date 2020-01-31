@@ -1,10 +1,10 @@
-import { template } from '@glimmer/core';
-template({
+import { createTemplate } from '@glimmer/core';
+createTemplate({
   "id": "2cUE8DNl",
   "block": "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
   "meta": {}
 });
-template({
+createTemplate({
   "id": "2cUE8DNl",
   "block": "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
   "meta": {}

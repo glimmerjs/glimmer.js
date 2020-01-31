@@ -1,13 +1,13 @@
-import { template } from '@glimmer/core';
+import { createTemplate } from '@glimmer/core';
 import Component from './component';
-template({
+createTemplate({
   Component
 }, {
   "id": "2cUE8DNl",
   "block": "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
   "meta": {}
 });
-template({
+createTemplate({
   Component
 }, {
   "id": "2cUE8DNl",

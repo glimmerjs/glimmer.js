@@ -1,3 +1,3 @@
-import { template } from '@glimmer/core';
+import { createTemplate } from '@glimmer/core';
 
-template('{{bad}}<h1>Hello world</h1>');
+createTemplate('{{bad}}<h1>Hello world</h1>');

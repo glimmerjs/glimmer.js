@@ -1,6 +1,6 @@
-import { template } from '@glimmer/core';
+import { createTemplate } from '@glimmer/core';
 import Component from './component';
 
-template({ Component }, `<Component/>`);
+createTemplate({ Component }, `<Component/>`);
 
-template({ Component }, '<Component/>');
+createTemplate({ Component }, '<Component/>');

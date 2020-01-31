@@ -14,7 +14,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
         const importedName = path.node.imported.name;
         const localName = path.node.local.name;
 
-        if (importedName === 'template') {
+        if (importedName === 'createTemplate') {
           state.templateImportId = localName;
         }
       },
@@ -25,7 +25,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
         }
 
         if (path.node.arguments.length === 0 || path.node.arguments.length > 2) {
-          throw new Error('`template()` must receive exactly one or two arguments');
+          throw new Error('`createTemplate()` must receive exactly one or two arguments');
         }
 
         let templatePath = path.node.arguments.length === 1
@@ -39,7 +39,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
 
           if (type === 'TemplateLiteral') {
             if (templatePath.node.quasis.length > 1 || templatePath.node.expressions.length > 0) {
-              throw new Error('template strings passed to the `template()` function may not have any dynamic segments');
+              throw new Error('template strings passed to the `createTemplate()` function may not have any dynamic segments');
             }
 
             templateString = templatePath.node.quasis[0].value.raw;
@@ -52,7 +52,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
 
           templatePath.replaceWith(parsed.program.body[0].expression);
         } else {
-          throw new Error('template() must receive a template string');
+          throw new Error('createTemplate() must receive a template string');
         }
       }
     }
