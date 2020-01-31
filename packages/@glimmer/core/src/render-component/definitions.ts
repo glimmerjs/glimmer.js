@@ -1,19 +1,29 @@
-import { ComponentDefinition, Helper as GlimmerHelper, ModifierManager, Template } from '@glimmer/interfaces';
+import {
+  ComponentDefinition,
+  Helper as GlimmerHelper,
+  ModifierManager,
+  TemplateOk,
+} from '@glimmer/interfaces';
 import { templateFactory } from '@glimmer/opcode-compiler';
 
-import { getComponentManager } from '../managers';
-import { CustomComponentDefinition, TemplateMeta, CUSTOM_COMPONENT_MANAGER } from '../managers/component/custom';
 import { getComponentTemplate } from '../template';
-import { ComponentFactory } from '../managers/component/custom';
+import { getComponentManager } from '../managers';
+import {
+  ComponentFactory,
+  CustomComponentDefinition,
+  TemplateMeta,
+} from '../managers/component/custom';
+import {
+  TemplateOnlyComponentDefinition,
+  TemplateOnlyComponent,
+} from '../managers/component/template-only';
 
 // Create a global context that we use as the "owner" for our managers
 const CONTEXT = {};
 
-export interface ComponentDefinitionWithMeta extends ComponentDefinition {
-  meta: {
-    handle: number,
-    template: Template<TemplateMeta>
-  }
+export interface ComponentDefinitionWithHandle extends ComponentDefinition {
+  handle: number;
+  template: TemplateOk<TemplateMeta>;
 }
 
 interface HelperDefinition {
@@ -28,13 +38,15 @@ export interface Modifier {
   manager: ModifierManager;
 }
 
-const COMPONENT_DEFINITIONS = new WeakMap<ComponentFactory, ComponentDefinitionWithMeta>();
+///////////
+
+const COMPONENT_DEFINITIONS = new WeakMap<ComponentFactory, ComponentDefinitionWithHandle>();
 const HELPER_DEFINITIONS = new WeakMap<GlimmerHelper, HelperDefinition>();
 const MODIFIER_HANDLES = new WeakMap<Modifier, number>();
 
 export function definitionForComponent(
   ComponentClass: ComponentFactory
-): ComponentDefinitionWithMeta {
+): ComponentDefinitionWithHandle {
   return COMPONENT_DEFINITIONS.get(ComponentClass) || createComponentDefinition(ComponentClass);
 }
 
@@ -55,25 +67,31 @@ export function handleForModifier(modifier: Modifier) {
   return handle;
 }
 
-function createComponentDefinition(ComponentClass: ComponentFactory): ComponentDefinitionWithMeta {
-  const delegate = getComponentManager(CONTEXT, ComponentClass)!;
+///////////
+
+function createComponentDefinition(
+  ComponentClass: ComponentFactory | TemplateOnlyComponent
+): ComponentDefinitionWithHandle {
   const serializedTemplate = getComponentTemplate(ComponentClass);
+  const template = templateFactory<TemplateMeta>(serializedTemplate!).create();
 
-  let template = templateFactory<TemplateMeta>(serializedTemplate!).create();
+  let definition, delegate;
 
-  const definition = {
-    state: new CustomComponentDefinition(
-      'component',
+  if (ComponentClass instanceof TemplateOnlyComponent) {
+    // TODO: We probably need a better way to get a name for the template,
+    // currently it'll just be `template-only-component` which is not great
+    // for debugging
+    definition = new TemplateOnlyComponentDefinition(HANDLE++, 'template-only-component', template);
+  } else {
+    delegate = getComponentManager(CONTEXT, ComponentClass)!;
+
+    definition = new CustomComponentDefinition(
+      HANDLE++,
       { class: ComponentClass },
       delegate,
-      template,
-    ).state,
-    manager: CUSTOM_COMPONENT_MANAGER,
-    meta: {
-      handle: HANDLE++,
-      template,
-    }
-  };
+      template
+    );
+  }
 
   COMPONENT_DEFINITIONS.set(ComponentClass, definition);
 

@@ -352,7 +352,6 @@ export class CustomComponentState<ComponentInstance> {
 }
 
 export interface CustomComponentDefinitionState<ComponentInstance> {
-  name: string;
   delegate: ComponentManager<ComponentInstance>;
   ComponentClass: ComponentFactory;
   definition: CustomComponentDefinition<ComponentInstance>;
@@ -363,18 +362,19 @@ export const CUSTOM_COMPONENT_MANAGER = new CustomComponentManager();
 export class CustomComponentDefinition<ComponentInstance> {
   public state: CustomComponentDefinitionState<ComponentInstance>;
   public manager = CUSTOM_COMPONENT_MANAGER as CustomComponentManager<ComponentInstance>;
-  public template: TemplateOk;
+  public template: TemplateOk<TemplateMeta>;
+  public handle: number;
 
   constructor(
-    name: string,
+    handle: number,
     ComponentClass: ComponentFactory,
     delegate: ComponentManager<ComponentInstance>,
-    template: Template
+    template: Template<TemplateMeta>
   ) {
+    this.handle = handle;
     this.template = unwrapTemplate(template);
 
     this.state = {
-      name,
       ComponentClass,
       delegate,
       definition: this

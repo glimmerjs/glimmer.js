@@ -1,10 +1,7 @@
 import {
   ComponentManager as VMComponentManager,
-  RuntimeResolver,
   ComponentCapabilities,
   CapturedArguments,
-  Option,
-  Invocation,
   Environment,
   JitRuntimeResolver,
   CompilableProgram,
@@ -16,8 +13,9 @@ import { PathReference, ConstReference } from '@glimmer/reference';
 import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { DEBUG } from '@glimmer/env';
 
-import { RootReference } from '@glimmer/application';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
+import { RootReference } from '../../references';
+import { TemplateMeta } from './custom';
 
 export const CAPABILITIES: ComponentCapabilities = {
   attributeHook: false,
@@ -59,7 +57,7 @@ if (DEBUG) {
         } template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
       );
     }
-  }
+  };
 }
 
 /**
@@ -132,9 +130,11 @@ export const TEMPLATE_ONLY_MANAGER = new TemplateOnlyComponentManager();
 export class TemplateOnlyComponentDefinition {
   public state: TemplateOnlyComponentDefinitionState;
   public manager = TEMPLATE_ONLY_MANAGER;
-  public template: TemplateOk;
+  public template: TemplateOk<TemplateMeta>;
+  public handle: number;
 
-  constructor(name: string, template: Template) {
+  constructor(handle: number, name: string, template: Template<TemplateMeta>) {
+    this.handle = handle;
     this.template = unwrapTemplate(template);
 
     this.state = {
@@ -142,4 +142,12 @@ export class TemplateOnlyComponentDefinition {
       definition: this,
     };
   }
+}
+
+export class TemplateOnlyComponent {}
+
+// TODO: We end up creating an extra object here mainly to be the weakmap key
+// for setComponentTemplate. It might be possible to optimize.
+export function templateOnlyComponent(): TemplateOnlyComponent {
+  return new TemplateOnlyComponent();
 }

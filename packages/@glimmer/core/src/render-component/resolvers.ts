@@ -37,7 +37,7 @@ export class RuntimeResolver implements RuntimeResolverDelegate {
 // string, can't receive a handle. We should make that optional somehow.
   registerRoot(factory: ComponentFactory) {
     let definition = definitionForComponent(factory);
-    let { handle } = definition.meta;
+    let { handle } = definition;
 
     this.registry[handle] = definition;
 
@@ -104,9 +104,7 @@ export class CompileTimeResolver implements ResolverDelegate {
     const ComponentClass = scope[name] as ComponentFactory;
 
     const definition = definitionForComponent(ComponentClass);
-
-    const { state, meta, manager } = definition;
-    const { template, handle } = meta;
+    const { state, manager, template, handle } = definition;
 
     this.inner.registry[handle] = definition;
 
