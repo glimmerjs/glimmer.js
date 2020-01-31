@@ -1,11 +1,15 @@
-import { iterableFor } from '@glimmer/application';
+import { iterableFor } from '@glimmer/core';
 import { NodeDOMTreeConstruction } from '@glimmer/node';
-import { getOwner, setOwner, Owner } from '@glimmer/di';
 import { Reference, OpaqueIterable } from '@glimmer/reference';
 import { EnvironmentImpl as GlimmerEnvironmentImpl } from '@glimmer/runtime';
 
 import createHTMLDocument from '@simple-dom/document';
+import { SimpleDocument } from '@simple-dom/interface';
 import { parse } from 'url';
+
+interface EnvironmentOptions {
+  document: SimpleDocument;
+}
 
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work on the server side.
@@ -19,28 +23,25 @@ export default class EnvironmentImpl extends GlimmerEnvironmentImpl {
     });
   }
 
-  constructor(options) {
+  constructor(options: EnvironmentOptions) {
     super({
       appendOperations: new NodeDOMTreeConstruction(options.document),
-      updateOperations: undefined, // SSR does not have updateOperations
+      updateOperations: undefined!, // SSR does not have updateOperations
     });
-
-    setOwner(this, getOwner(options));
   }
 
   protocolForURL(url: string): string {
     const urlObject = parse(url);
-    return urlObject && urlObject.protocol;
+    return (urlObject && urlObject.protocol) || 'https';
   }
 
   iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIterable {
     return iterableFor(ref, keyPath);
   }
 
-  getOwner(): Owner {
-    return getOwner(this);
+  getOwner(): any {
+    return null;
   }
-  setOwner(obj: Object, owner: Owner): void {
-    setOwner(obj, owner);
-  }
+
+  setOwner(): void {}
 }

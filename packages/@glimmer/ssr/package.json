@@ -11,7 +11,7 @@
   "module": "dist/modules/es2017/index.js",
   "types": "dist/types/index.d.ts",
   "dependencies": {
-    "@glimmer/application": "^1.0.0",
+    "@glimmer/core": "^1.0.0",
     "@glimmer/component": "^1.0.0",
     "@glimmer/di": "^0.1.9",
     "@glimmer/node": "^0.44.0",

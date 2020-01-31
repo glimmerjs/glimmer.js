@@ -1,20 +1,21 @@
 import { setPropertyDidChange } from '@glimmer/tracking';
-import { Environment } from '@glimmer/application';
 import {
   clientBuilder,
   renderJitComponent,
   CustomJitRuntime,
   DefaultDynamicScope,
 } from '@glimmer/runtime';
-import { Cursor as GlimmerCursor, RenderResult, Dict } from '@glimmer/interfaces';
+import { Cursor as GlimmerCursor, RenderResult, Dict, Environment } from '@glimmer/interfaces';
 import { JitContext } from '@glimmer/opcode-compiler';
 
+import EnvironmentImpl from '../environment';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
 import { RootReference, PathReference } from '@glimmer/reference';
 import { ComponentFactory } from '../managers/component/custom';
 
 import { PUBLIC_DYNAMIC_SCOPE_KEY } from '../scope';
+import { SimpleElement } from '@simple-dom/interface';
 
 export interface RenderComponentOptions {
   element: Element;
@@ -51,7 +52,7 @@ async function renderComponent(
   const options: RenderComponentOptions =
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
   const { element, scope, args } = options;
-  const iterator = getTemplateIterator(ComponentClass, element, args, scope);
+  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args, scope);
   const result = iterator.sync();
   results.push(result);
 }
@@ -94,7 +95,7 @@ function revalidate() {
 const resolver = new RuntimeResolver();
 const context = JitContext(new CompileTimeResolver(resolver));
 
-export function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
+function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
   if (!dict) {
     return {};
   }
@@ -108,13 +109,13 @@ export function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
   );
 }
 
-function getTemplateIterator(
+export function getTemplateIterator(
   ComponentClass: ComponentFactory,
-  element: Element,
+  element: Element | SimpleElement,
+  env: Environment,
   componentArgs?: Dict<unknown>,
-  scope?: Dict<unknown>
+  scope?: Dict<unknown>,
 ) {
-  const env = Environment.create();
   const runtime = CustomJitRuntime(resolver, context, env);
   const builder = clientBuilder(runtime.env, {
     element,

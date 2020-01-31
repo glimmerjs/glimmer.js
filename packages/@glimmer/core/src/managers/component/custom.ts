@@ -236,7 +236,7 @@ export default class CustomComponentManager<ComponentInstance>
       handler.set = function(_target, prop) {
         assert(
           false,
-          `You attempted to set ${definition.ComponentClass.class}#${String(
+          `You attempted to set ${definition.ComponentClass}#${String(
             prop
           )} on a components arguments. Component arguments are immutable and cannot be updated directly, they always represent the values that are passed to your component. If you want to set default values, you should use a getter instead`
         );
@@ -252,7 +252,7 @@ export default class CustomComponentManager<ComponentInstance>
       positional: capturedArgs.positional.value(),
     };
 
-    const component = delegate.createComponent(definition.ComponentClass.class, value);
+    const component = delegate.createComponent(definition.ComponentClass, value);
 
     const publicScope = dynamicScope.get(PUBLIC_DYNAMIC_SCOPE_KEY);
 
@@ -382,6 +382,4 @@ export class CustomComponentDefinition<ComponentInstance> {
   }
 }
 
-export interface ComponentFactory<C = {}> {
-  class: C;
-}
+export interface ComponentFactory {}
