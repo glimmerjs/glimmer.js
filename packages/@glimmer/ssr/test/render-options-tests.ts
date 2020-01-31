@@ -1,6 +1,6 @@
-import Component from '@glimmerx/component';
-import { setComponentTemplate } from '@glimmerx/core';
-import { compileTemplate } from '@glimmerx/core/tests/utils';
+import Component from '@glimmer/component';
+import { setComponentTemplate } from '@glimmer/core';
+import { compileTemplate } from '@glimmer/core/tests/utils';
 import HTMLSerializer from '@simple-dom/serializer';
 import voidMap from '@simple-dom/void-map';
 import { SerializableNode } from '@simple-dom/interface';

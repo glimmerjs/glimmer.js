@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/core",
-  "version": "0.1.10",
+  "version": "1.0.0",
   "description": "Core rendering functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
