@@ -12,8 +12,6 @@
   "types": "dist/types/index.d.ts",
   "dependencies": {
     "@glimmer/core": "^1.0.0",
-    "@glimmer/component": "^1.0.0",
-    "@glimmer/di": "^0.1.9",
     "@glimmer/node": "^0.44.0",
     "@glimmer/reference": "^0.44.0",
     "@glimmer/runtime": "^0.44.0",
@@ -21,5 +19,8 @@
     "@simple-dom/document": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"
+  },
+  "devDependencies": {
+    "@glimmer/component": "^1.0.0"
   }
 }
