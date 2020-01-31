@@ -17,3 +17,7 @@ export {
 } from './src/managers/component/custom';
 
 export { setComponentTemplate } from './src/template';
+
+export { PUBLIC_DYNAMIC_SCOPE_KEY } from './src/scope';
+
+export * from './src/references';
