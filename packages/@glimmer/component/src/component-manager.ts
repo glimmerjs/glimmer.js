@@ -1,12 +1,10 @@
 import { capabilities } from '@glimmer/core';
+import { SHOULD_SET_SCOPE } from '@glimmer/core/src/managers/component/custom';
 
 import BaseComponentManager from '../addon/-private/base-component-manager';
-import { setDestroying, setDestroyed } from '../addon/-private/component';
-import GlimmerComponent from './component';
+import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
 
 const CAPABILITIES = capabilities('3.13', {
-  asyncLifecycleCallbacks: true,
-  updateHook: true,
   destructor: true,
 });
 
@@ -21,6 +19,8 @@ export default class GlimmerComponentManager extends BaseComponentManager(
   () => null,
   CAPABILITIES
 ) {
+  [SHOULD_SET_SCOPE] = true;
+
   destroyComponent(component: GlimmerComponent) {
     setDestroying(component);
     component.willDestroy();

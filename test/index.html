@@ -2,51 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Glimmer Test Suite</title>
-  <link rel="stylesheet" href="assets/qunit.css">
+  <meta name="viewport" content="width=device-width">
+  <title>QUnit Example</title>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css">
 </head>
 <body>
-  <script>
-    if (typeof console === "undefined") {
-      console = {
-        log: function(){},
-        warn: function(){},
-        error: function(){},
-        group: function(){},
-        groupEnd: function(){},
-      }
-    }
-  </script>
-
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="assets/qunit.js"></script>
-  <script src="/testem.js"></script>
-  <script src="assets/tslint.js"></script>
-  <script src="assets/tests.js"></script>
-
-  <script>
-    function getPackagesToTest() {
-      if (QUnit.urlParams.packages) {
-        return QUnit.urlParams.packages.split(',');
-      }
-    }
-
-    // Recursively merge all the dependencies for this configuration of
-    // packages to ensure that we only inject each dependency once.
-    // Testing dependencies are only injected for the packages being tested.
-    var packagesToTest = getPackagesToTest();
-  </script>
-
-  <script>
-    QUnit.config.urlConfig.push({
-      id: "glimmer_logging",
-      label: "Enable Glimmer Logging",
-      tooltip: "Enable Glimmer Logging"
-    });
-
-    var testMatch;
-    var notslint = QUnit.urlParams.notslint;
-  </script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script src="../tests.bundle.js"></script>
 </body>
 </html>

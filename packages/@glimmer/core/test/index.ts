@@ -1,12 +1,10 @@
 import './modifier-tests';
 import renderTests from './render-tests';
-import { renderComponent, RenderComponentOptions } from '..';
-import { Constructor } from '../src/interfaces';
-import Component from '@glimmerx/component';
+import { renderComponent, RenderComponentOptions, ComponentFactory } from '..';
 
 renderTests(
-  '@glimmerx/core',
-  async (component: Constructor<Component>, options?: RenderComponentOptions) => {
+  '@glimmer/core',
+  async (component: ComponentFactory, options?: RenderComponentOptions) => {
     const element = document.getElementById('qunit-fixture')!;
     element.innerHTML = '';
 

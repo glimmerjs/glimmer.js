@@ -19,9 +19,9 @@ import { PathReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
 import { setScope, PUBLIC_DYNAMIC_SCOPE_KEY } from '../../scope';
 
-import { RootReference } from '@glimmer/application';
+import { RootReference } from '../../references';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
-import GlimmerComponent from '@glimmer/component';
+import { Capabilities } from './capabilities';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
@@ -39,42 +39,12 @@ export const VM_CAPABILITIES: VMComponentCapabilities = {
 
 ///////////
 
-export interface Capabilities {
-  asyncLifecycleCallbacks: boolean;
-  destructor: boolean;
-  updateHook: boolean;
-}
-
-export type OptionalCapabilities = Partial<Capabilities>;
-
-export type ManagerAPIVersion = '3.4' | '3.13';
-
-export function capabilities(
-  managerAPI: ManagerAPIVersion,
-  options: OptionalCapabilities = {}
-): Capabilities {
-  assert(
-    managerAPI === '3.4' || managerAPI === '3.13',
-    'Invalid component manager compatibility specified'
-  );
-
-  let updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
-
-  return {
-    asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
-    destructor: Boolean(options.destructor),
-    updateHook,
-  };
-}
-
-///////////
+export const SHOULD_SET_SCOPE = Symbol('SHOULD_SET_SCOPE');
 
 export interface Args {
   named: Dict<unknown>;
   positional: unknown[];
 }
-
-///////////
 
 /**
  * This is the public facing component manager. Named `ComponentManager` so the
@@ -258,8 +228,8 @@ export default class CustomComponentManager<ComponentInstance>
 
     // Currently, we only want to allow access to scope on our own components,
     // not via custom component managers
-    if (component instanceof GlimmerComponent && publicScope !== undefined) {
-      setScope(component, publicScope.value() as Dict<unknown>);
+    if ((delegate as any)[SHOULD_SET_SCOPE] === true && publicScope !== undefined) {
+      setScope(component as any, publicScope.value() as Dict<unknown>);
     }
 
     return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);

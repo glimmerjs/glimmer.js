@@ -20,7 +20,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
       },
 
       CallExpression(path, state) {
-        if (path.node.callee.name !== state.templateImportId) {
+        if (!state.templateImportId || path.node.callee.name !== state.templateImportId) {
           return;
         }
 

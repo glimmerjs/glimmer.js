@@ -1,7 +1,8 @@
 const { module, test } = QUnit;
 
-import { on, action } from '@glimmerx/modifier';
-import Component, { tracked } from '@glimmerx/component';
+import { on, action } from '@glimmer/modifier';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 import { renderComponent, setComponentTemplate, didRender } from '..';
 import { compileTemplate } from './utils';
 

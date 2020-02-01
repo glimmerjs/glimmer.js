@@ -4,10 +4,22 @@ import { TemplateMeta } from './managers/component/custom';
 const TEMPLATE_MAP = new WeakMap<object, SerializedTemplateWithLazyBlock<TemplateMeta>>();
 
 export function createTemplate(
-  scope: Dict<unknown>,
-  block: SerializedTemplateWithLazyBlock<TemplateMeta>
+  templateScopeOrTemplate: Dict<unknown> | string,
+  template?: string
 ): SerializedTemplateWithLazyBlock<TemplateMeta> {
-  block.meta.scope = () => scope;
+  let block;
+
+  if (template === undefined) {
+    // Babel transform does this type conversion
+    block = (templateScopeOrTemplate as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
+
+    block.meta.scope = () => ({});
+  } else {
+    // Babel transform does this type conversion
+    block = (template as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
+
+    block.meta.scope = () => templateScopeOrTemplate as Dict<unknown>;
+  }
 
   return block;
 }

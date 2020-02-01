@@ -87,7 +87,7 @@ function createComponentDefinition(
 
     definition = new CustomComponentDefinition(
       HANDLE++,
-      { class: ComponentClass },
+      ComponentClass,
       delegate,
       template
     );

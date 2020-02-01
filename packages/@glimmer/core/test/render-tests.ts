@@ -1,18 +1,17 @@
-import Component, { tracked } from '@glimmerx/component';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
 
-import { Constructor } from '..';
-import { setComponentTemplate } from '..';
+import { ComponentFactory, setComponentTemplate, getScope } from '..';
 
 import { compileTemplate } from './utils';
-import { helper } from '@glimmerx/helper';
-import { service } from '@glimmerx/service';
-import { on, action } from '@glimmerx/modifier';
+import { helper } from '@glimmer/helper';
+import { on, action } from '@glimmer/modifier';
 
 const { module, test } = QUnit;
 
 export default function renderTests(
   moduleName: string,
-  render: (component: Constructor<Component>, options?: any) => Promise<string>
+  render: (component: ComponentFactory, options?: any) => Promise<string>
 ) {
   module(`${moduleName} rendering`, () => {
     test('it renders a component', async assert => {
@@ -107,16 +106,15 @@ export default function renderTests(
       }
 
       class MyComponent extends Component {
-        @service locale: LocaleService;
         get myLocale() {
-          return this.locale.currentLocale;
+          return (getScope(this)!.locale as LocaleService).currentLocale;
         }
       }
 
       setComponentTemplate(MyComponent, compileTemplate('<h1>{{this.myLocale}}</h1>'));
 
       const html = await render(MyComponent, {
-        services: {
+        scope: {
           locale: new LocaleService(),
         },
       });
@@ -142,7 +140,7 @@ export default function renderTests(
       );
 
       const html = await render(MyComponent, {
-        services: {
+        scope: {
           locale: new LocaleService(),
         },
       });

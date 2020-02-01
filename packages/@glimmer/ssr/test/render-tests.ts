@@ -1,4 +1,4 @@
-import renderTests from '@glimmer/core/tests/render-tests';
+import renderTests from '@glimmer/core/test/render-tests';
 import { ComponentFactory } from '@glimmer/core';
 import { renderToString, RenderOptions } from '..';
 
