@@ -13,13 +13,16 @@ import {
 } from '@glimmer/interfaces';
 import { Owner } from '@glimmer/di';
 import { expect } from '@glimmer/util';
-import { TemplateFactory, templateFactory } from '@glimmer/opcode-compiler';
-import { PrecompileOptions, precompile } from '@glimmer/compiler';
+import { templateFactory } from '@glimmer/opcode-compiler';
 
 import { TypedRegistry } from './typed-registry';
 import { HelperReference } from '../../helpers/user-helper';
 import { getManager } from '../../components/utils';
-import { CustomComponentDefinition, ManagerDelegate, ComponentFactory } from '../../components/component-managers/custom';
+import {
+  CustomComponentDefinition,
+  ManagerDelegate,
+  ComponentFactory,
+} from '../../components/component-managers/custom';
 import { TemplateOnlyComponentDefinition } from '../../components/component-managers/template-only';
 
 export type UserHelper = (args: ReadonlyArray<unknown>, named: Dict<unknown>) => unknown;
@@ -242,14 +245,4 @@ export function createJitComponentDefinition(
     factory(owner) as ManagerDelegate<unknown>,
     template
   );
-}
-
-export function createTemplate<Locator>(
-  templateSource: string,
-  options?: PrecompileOptions
-): TemplateFactory<Locator> {
-  let wrapper: SerializedTemplateWithLazyBlock<Locator> = JSON.parse(
-    precompile(templateSource, options)
-  );
-  return templateFactory<Locator>(wrapper);
 }

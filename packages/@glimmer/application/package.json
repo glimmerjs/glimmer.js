@@ -15,7 +15,6 @@
     "dist"
   ],
   "dependencies": {
-    "@glimmer/compiler": "^0.44.0",
     "@glimmer/component": "^1.0.0",
     "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
