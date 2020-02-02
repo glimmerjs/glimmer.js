@@ -9,13 +9,14 @@
     "changelog": "lerna-changelog",
     "start:old": "ember serve",
     "test:old": "ember test && ember test --env production",
-    "test:node": "bin/run-node-tests.js",
+    "test:old:node": "bin/run-node-tests.js",
     "test:ember": "yarn workspace @glimmer/component ember try:one",
     "test:types": "dtslint test/types",
     "tslint": "tslint --project tsconfig.json",
     "problems": "tsc -p tsconfig.json --noEmit",
     "start": "webpack-dev-server",
-    "test": "yarn lint && testem ci && yarn test:node",
+    "test": "yarn lint && testem ci && yarn test:babel-plugins",
+    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
     "test:watch": "testem"
   },
   "workspaces": [

@@ -1,0 +1,1 @@
+import './tracked-decorator-test';

@@ -4,8 +4,8 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 module.exports = {
   entry: {
     app: './packages/example-apps/basic/index.ts',
-    tests: './packages/@glimmer/core/test/index.ts',
-    nodeTests: './packages/@glimmer/ssr/test/index.ts',
+    tests: './test/index.ts',
+    nodeTests: './test/node.ts',
   },
   mode: 'development',
   externals: {
@@ -14,7 +14,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /(\.ts|\.js)$/,
         include: [path.resolve(__dirname, 'packages/@glimmer')],
         use: {
           loader: 'babel-loader',

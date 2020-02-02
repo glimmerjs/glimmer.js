@@ -5,6 +5,7 @@ import { DEBUG } from '@glimmer/env';
 import { track, value, validate } from '@glimmer/validator';
 
 import * as TSFixtures from './fixtures/typescript';
+// @ts-ignore
 import * as BabelFixtures from './fixtures/babel';
 import { assertValidAfterUnrelatedBump } from './helpers/tags';
 

@@ -37,10 +37,9 @@
   "include": [
     // Because of the circular dependency, we have to avoid specifying globs
     // that include node_modules.
-    "packages/@glimmer/*/src/**/*.ts",
     "packages/@glimmer/*/index.ts",
-    "packages/@glimmer/*/test/**/*.ts",
-    "packages/rollup-plugin-typescript2/src/**/*.ts"
+    "packages/@glimmer/*/src/**/*.ts",
+    "packages/@glimmer/*/test/**/*.ts"
   ],
   "exclude": ["node_modules", "packages/@glimmer/blueprint"]
 }
