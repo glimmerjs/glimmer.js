@@ -1,2 +1,2 @@
-import './interactive-tests';
-import './non-interactive-tests';
+import './interactive';
+import './non-interactive';

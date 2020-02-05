@@ -90,7 +90,7 @@ export class CompileTimeResolver implements ResolverDelegate {
     const scope = referrer.scope();
     const modifier = scope[name] as Modifier;
 
-    if (!modifier) {
+    if (modifier === undefined) {
       throw new Error(`Cannot find modifier ${name} in scope`);
     }
 
@@ -102,6 +102,10 @@ export class CompileTimeResolver implements ResolverDelegate {
   lookupComponent(name: string, referrer: TemplateMeta): Option<CompileTimeComponent> {
     const scope = referrer.scope();
     const ComponentClass = scope[name] as ComponentFactory;
+
+    if (ComponentClass === undefined) {
+      throw new Error(`Cannot find component ${name} in scope`);
+    }
 
     const definition = definitionForComponent(ComponentClass);
     const { state, manager, template, handle } = definition;

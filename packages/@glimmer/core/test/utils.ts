@@ -1,6 +1,7 @@
-import { renderComponent, ComponentFactory, RenderComponentOptions, didRender } from '..';
+import { renderComponent, ComponentFactory, RenderComponentOptions, didRender, templateOnlyComponent, setComponentTemplate } from '..';
 import { renderToString } from '@glimmer/ssr';
-import { Dict } from '@glimmer/interfaces';
+import { Dict, SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
+import { TemplateMeta } from '../src/managers/component/custom';
 
 export const module = QUnit.module;
 export const test = QUnit.test;
@@ -8,19 +9,27 @@ export const test = QUnit.test;
 const IS_INTERACTIVE = typeof document !== 'undefined';
 
 export async function render(
-  component: ComponentFactory,
+  component: ComponentFactory | SerializedTemplateWithLazyBlock<TemplateMeta>,
   options?: Element | {
     element?: Element;
     args?: Dict<unknown>;
     scope?: Dict<unknown>;
   }
 ): Promise<string> {
+  if ('id' in component && 'block' in component && 'meta' in component) {
+    let template = component;
+
+    component = templateOnlyComponent();
+
+    setComponentTemplate(component, template);
+  }
+
   if (IS_INTERACTIVE) {
     const element = document.getElementById('qunit-fixture')!;
     element.innerHTML = '';
 
     if (options) {
-      if (!(options instanceof Element)) {
+      if (!(options instanceof Element) && !(options.element instanceof Element)) {
         options.element = element;
       }
 
@@ -41,4 +50,6 @@ export async function settled() {
   }
 
   await didRender();
+
+  return document.getElementById('qunit-fixture')!.innerHTML;
 }
