@@ -1,10 +1,9 @@
-const { module, test } = QUnit;
+import { module, test, render, settled } from '../utils';
 
 import { on, action } from '@glimmer/modifier';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { renderComponent, setComponentTemplate, didRender } from '..';
-import { compileTemplate } from './utils';
+import { setComponentTemplate, createTemplate } from '@glimmer/core';
 
 module('Modifier Tests', () => {
   test('Supports the on modifier', async assert => {
@@ -19,15 +18,15 @@ module('Modifier Tests', () => {
 
     setComponentTemplate(
       MyComponent,
-      compileTemplate(
-        `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`,
-        () => ({ on })
+      createTemplate(
+        { on },
+        `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
       )
     );
 
     const element = document.getElementById('qunit-fixture')!;
 
-    await renderComponent(MyComponent, element);
+    await render(MyComponent, element);
     assert.strictEqual(
       element.innerHTML,
       `<button>Count: 0</button>`,
@@ -37,7 +36,7 @@ module('Modifier Tests', () => {
     const button = element.querySelector('button')!;
     button.click();
 
-    await didRender();
+    await settled();
     assert.strictEqual(
       element.innerHTML,
       `<button>Count: 1</button>`,

@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
-import { setComponentTemplate } from '@glimmer/core';
-import { compileTemplate } from '@glimmer/core/test/utils';
+import { setComponentTemplate, createTemplate } from '@glimmer/core';
 import HTMLSerializer from '@simple-dom/serializer';
 import voidMap from '@simple-dom/void-map';
 import { SerializableNode } from '@simple-dom/interface';
@@ -18,7 +17,7 @@ QUnit.module('@glimmer/ssr rendering', () => {
 
     const options: RenderOptions = { serializer: new CustomHTMLSerializer(voidMap) };
 
-    setComponentTemplate(MyComponent, compileTemplate(`<h1>Hello World</h1>`));
+    setComponentTemplate(MyComponent, createTemplate(`<h1>Hello World</h1>`));
 
     const output = await renderToString(MyComponent, options);
 

@@ -1,4 +1,3 @@
-import { Option } from '@glimmer/interfaces';
 import { ComponentManager } from './component/custom';
 import { ModifierManager } from './modifier';
 
@@ -30,7 +29,7 @@ export function setManager(wrapper: ManagerWrapper, obj: {}) {
   return obj;
 }
 
-function getManager(obj: object): Option<ManagerWrapper> {
+function getManager(obj: object): ManagerWrapper | undefined {
   let pointer = obj;
   while (pointer !== undefined && pointer !== null) {
     let manager = MANAGERS.get(pointer);
@@ -42,7 +41,7 @@ function getManager(obj: object): Option<ManagerWrapper> {
     pointer = getPrototypeOf(pointer);
   }
 
-  return null;
+  return undefined;
 }
 
 function getManagerInstanceForOwner<D extends ManagerDelegate>(owner: object, factory: ManagerFactory<D>): D  {
@@ -73,7 +72,7 @@ export function setModifierManager(factory: ManagerFactory<ModifierManager<unkno
 export function getModifierManager(owner: object, obj: any): ModifierManager<unknown> | undefined {
   let wrapper = getManager(obj);
 
-  if (wrapper !== null && wrapper.type === 'modifier') {
+  if (wrapper !== undefined && wrapper.type === 'modifier') {
     return getManagerInstanceForOwner(owner, wrapper.factory);
   }
 }
@@ -85,7 +84,7 @@ export function setComponentManager(factory: ManagerFactory<ComponentManager<unk
 export function getComponentManager(owner: object, obj: object): ComponentManager<unknown> | undefined {
   let wrapper = getManager(obj);
 
-  if (wrapper !== null && wrapper.type === 'component') {
+  if (wrapper !== undefined && wrapper.type === 'component') {
     return getManagerInstanceForOwner(owner, wrapper.factory);
   }
 }

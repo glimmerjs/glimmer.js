@@ -20,6 +20,8 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             plugins: [
+              '@glimmer/babel-plugin-glimmer-env',
+              '@glimmer/babel-plugin-strict-template-precompile',
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               '@babel/plugin-proposal-class-properties',
             ],

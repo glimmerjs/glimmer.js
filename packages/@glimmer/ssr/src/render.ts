@@ -12,7 +12,7 @@ import EnvironmentImpl from './environment';
 export interface RenderOptions {
   args?: Dict<unknown>;
   serializer?: HTMLSerializer;
-  services?: Dict<unknown>;
+  scope?: Dict<unknown>;
 }
 
 const defaultSerializer = new HTMLSerializer(voidMap);
@@ -39,7 +39,7 @@ export function renderToStream(
   options: RenderOptions = {}
 ) {
   const element = createHTMLDocument().body;
-  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), options.args, options.services);
+  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), options.args, options.scope);
   iterator.sync();
 
   const serializer = options.serializer || defaultSerializer;

@@ -148,8 +148,8 @@ export default class GlimmerComponent<T = object> {
    * @param owner
    * @param args
    */
-  constructor(owner: unknown, args: T) {
-    if (DEBUG && !(owner !== null && typeof owner === 'object' && ARGS_SET.has(args))) {
+  constructor(_owner: unknown, args: T) {
+    if (DEBUG && !ARGS_SET.has(args)) {
       throw new Error(
         `You must pass both the owner and args to super() in your component: ${
           this.constructor.name

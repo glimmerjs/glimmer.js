@@ -1,6 +1,7 @@
 const { module, test } = QUnit;
 
-import { setComponentTemplate, getComponentTemplate } from '..';
+import { setComponentTemplate } from '../..';
+import { getComponentTemplate } from '../../src/template';
 
 module('component templates', () => {
   test('setting and getting', assert => {
@@ -21,41 +22,41 @@ module('component templates', () => {
     assert.strictEqual(
       getComponentTemplate(A),
       templateA,
-      'class A returns explicitly associated manager'
+      'class A returns explicitly associated template'
     );
 
     assert.strictEqual(
       getComponentTemplate(AA),
       templateA,
-      'class AA returns inherited manager from parent'
+      'class AA returns inherited template from parent'
     );
 
     assert.strictEqual(
       getComponentTemplate(AB),
       templateA,
-      'class AA returns inherited manager from parent'
+      'class AA returns inherited template from parent'
     );
 
     assert.strictEqual(
       getComponentTemplate(AAA),
       templateA,
-      'class AAA returns inherited manager from grandparent'
+      'class AAA returns inherited template from grandparent'
     );
 
     assert.strictEqual(
       getComponentTemplate(AAB),
       templateAAB,
-      'class AAA returns explicitly associated manager'
+      'class AAA returns explicitly associated template'
     );
 
     assert.strictEqual(
       getComponentTemplate(AAB),
       templateAAB,
-      'class AAA returns explicitly associated manager'
+      'class AAA returns explicitly associated template'
     );
 
-    assert.strictEqual(getComponentTemplate(B), null, 'class B returns null manager');
+    assert.strictEqual(getComponentTemplate(B), undefined, 'class B returns undefined template');
 
-    assert.strictEqual(getComponentTemplate(BA), null, 'class BA returns null manager');
+    assert.strictEqual(getComponentTemplate(BA), undefined, 'class BA returns undefined template');
   });
 });

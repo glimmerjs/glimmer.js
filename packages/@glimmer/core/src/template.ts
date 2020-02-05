@@ -2,6 +2,7 @@ import { SerializedTemplateWithLazyBlock, Dict } from '@glimmer/interfaces';
 import { TemplateMeta } from './managers/component/custom';
 
 const TEMPLATE_MAP = new WeakMap<object, SerializedTemplateWithLazyBlock<TemplateMeta>>();
+const getPrototypeOf = Object.getPrototypeOf;
 
 export function createTemplate(
   templateScopeOrTemplate: Dict<unknown> | string,
@@ -33,5 +34,17 @@ export function setComponentTemplate<T extends object>(
 }
 
 export function getComponentTemplate<T extends object>(ComponentClass: T) {
-  return TEMPLATE_MAP.get(ComponentClass);
+  let pointer = ComponentClass;
+
+  while (pointer !== undefined && pointer !== null) {
+    let manager = TEMPLATE_MAP.get(pointer);
+
+    if (manager !== undefined) {
+      return manager;
+    }
+
+    pointer = getPrototypeOf(pointer);
+  }
+
+  return undefined;
 }
