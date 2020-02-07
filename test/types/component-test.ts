@@ -7,7 +7,7 @@ hasExactKeys<{
   default: unknown;
 }>()(gc);
 
-// $ExpectType typeof Component
+// $ExpectType typeof GlimmerComponent
 gc.default;
 
 type Args = {
@@ -18,36 +18,13 @@ const component = new Component<Args>({}, { foo: 123 });
 
 hasExactKeys<{
   args: unknown;
-  bounds: {
-    firstNode: unknown;
-    lastNode: unknown;
-  };
-  debugName: unknown;
-  didInsertElement: unknown;
-  didUpdate: unknown;
-  element: unknown;
   isDestroying: unknown;
   isDestroyed: unknown;
   willDestroy: unknown;
 }>()(component);
 
-// $ExpectType Args
+// $ExpectType Readonly<Args>
 component.args;
-
-// $ExpectType Bounds
-component.bounds;
-
-// $ExpectType string
-component.debugName;
-
-// $ExpectType () => void
-component.didInsertElement;
-
-// $ExpectType () => void
-component.didUpdate;
-
-// $ExpectType HTMLElement
-component.element;
 
 // $ExpectType boolean
 component.isDestroying;

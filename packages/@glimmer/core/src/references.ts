@@ -163,7 +163,8 @@ export class RootPropertyReference<T> extends PropertyReference<T> {
     consume(tag);
     update(this.tag, tag);
 
-    return value;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return value as any;
   }
 }
 
@@ -180,8 +181,8 @@ export class NestedPropertyReference<T> extends PropertyReference<T> {
     this.tag = combine([parentReferenceTag, propertyTag]);
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  compute() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  compute(): any {
     const { parentReference, propertyTag, propertyKey } = this;
 
     const parentValue = parentReference.value();
