@@ -90,7 +90,7 @@ export class PersonForContact {
 export function createClassWithTrackedGetter(): any {
   class PersonWithTrackedGetter {
     @tracked firstName = 'Tom';
-    @tracked lastName;
+    @tracked lastName: any;
 
     @tracked get salutation() {
       return `Hello, ${this.firstName} ${this.lastName}!`;
@@ -103,8 +103,9 @@ export function createClassWithTrackedGetter(): any {
 export function createClassWithTrackedSetter(): any {
   class PersonWithTrackedSetter {
     @tracked firstName = 'Tom';
-    @tracked lastName;
+    @tracked lastName: any;
 
+    // @ts-ignore
     @tracked set fullName(fullName) {
       let [firstName, lastName] = fullName.split(' ');
       this.firstName = firstName;
@@ -117,6 +118,7 @@ export function createClassWithTrackedSetter(): any {
 
 export function createClassWithTrackedDependentKeys(): any {
   class DependentKeysAreCool {
+    // @ts-ignore
     @tracked('firstName', 'lastName') fullName() {
       return `${this.firstName} ${this.lastName}`;
     }

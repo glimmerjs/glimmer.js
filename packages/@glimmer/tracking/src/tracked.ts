@@ -117,7 +117,7 @@ function descriptorForField<T extends object, K extends keyof T>(
   _target: T,
   key: K,
   desc?: DecoratorPropertyDescriptor
-): DecoratorPropertyDescriptor {
+): PropertyDescriptor {
   if (DEBUG && desc && (desc.value || desc.get || desc.set)) {
     throw new Error(`You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`);
   }
