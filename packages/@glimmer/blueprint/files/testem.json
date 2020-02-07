@@ -1,5 +1,30 @@
 {
-  "test_page": "tests/index.html",
-  "disable_watching": true,
-  "launch_in_ci": ["Firefox", "Chrome"]
+  "framework": "qunit",
+  "test_page": "dist/tests/index.html",
+  "routes": {
+    "/tests.bundle.js": "dist/tests.bundle.js",
+    "/public": "dist/public",
+    "/images": "dist/images"
+  },
+  "on_start": {
+    "command": "webpack",
+    "wait_for_text": "Built at:"
+  },
+  "watch_files": [
+    "dist/tests.bundle.js"
+  ],
+  "browser_args": {
+    "mode": "ci",
+    "Chrome": [
+      "--headless",
+      "--remote-debugging-port=9222"
+    ]
+  },
+  "launch_in_ci": [
+    "Chrome",
+    "Firefox"
+  ],
+  "launch_in_dev": [
+    "Chrome"
+  ]
 }

@@ -6,11 +6,6 @@ const classify = require('ember-cli-string-utils').classify;
 module.exports = {
   description: 'Ember CLI blueprint for initializing a new Glimmer application',
 
-  // filesToRemove: [
-  //   'app/styles/.gitkeep',
-  //   'app/templates/.gitkeep',
-  // ],
-
   locals(options) {
     let name = dasherize(options.entity.name);
     let component = classify(name);

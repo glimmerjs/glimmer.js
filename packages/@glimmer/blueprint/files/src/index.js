@@ -1,6 +1,6 @@
 import { renderComponent } from '@glimmer/core';
-import Main from './main';
+import App from './App';
 
 const containerElement = document.getElementById('app');
 
-renderComponent(Main, containerElement);
+renderComponent(App, containerElement);
