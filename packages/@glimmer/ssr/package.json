@@ -7,9 +7,8 @@
   "files": [
     "dist"
   ],
-  "main": "dist/commonjs/es5/index.js",
-  "module": "dist/modules/es2017/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
   "dependencies": {
     "@glimmer/core": "^1.0.0",
     "@glimmer/node": "^0.44.0",

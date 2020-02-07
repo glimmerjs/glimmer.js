@@ -28,7 +28,6 @@
     "skipDefaultLibCheck": true,
 
     "newLine": "LF",
-    "noEmit": true,
 
     "paths": {
       "*": ["*/src", "*"]

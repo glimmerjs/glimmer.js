@@ -6,9 +6,8 @@
     "ember-addon"
   ],
   "license": "MIT",
-  "main": "dist/commonjs/es5/index.js",
-  "module": "dist/modules/es2017/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
     "Robert Jackson <me@rwjblue.com>",

@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ember build --env production",
+    "build": "bin/build.js",
     "changelog": "lerna-changelog",
     "start:old": "ember serve",
     "test:old": "ember test && ember test --env production",
