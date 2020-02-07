@@ -17,7 +17,7 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
         invocations.push([this.args.name, 'constructor']);
       }
 
-      willDestroy() {
+      willDestroy(): void {
         invocations.push([this.args.name, 'willDestroy']);
       }
     }
@@ -49,7 +49,8 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
       )
     );
 
-    setComponentTemplate(Component2,
+    setComponentTemplate(
+      Component2,
       createTemplate(
         { Component4, Component5 },
         `
@@ -60,7 +61,7 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
       )
     );
 
-    let emptyTemplate = createTemplate('');
+    const emptyTemplate = createTemplate('');
 
     setComponentTemplate(Component3, emptyTemplate);
     setComponentTemplate(Component4, emptyTemplate);
@@ -90,4 +91,3 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
     ]);
   });
 });
-

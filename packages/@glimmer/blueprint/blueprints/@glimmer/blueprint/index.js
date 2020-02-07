@@ -1,4 +1,5 @@
 'use strict';
+
 const path = require('path');
 const MainBlueprint = require('../../../index');
 
@@ -22,5 +23,5 @@ module.exports = Object.assign({}, MainBlueprint, {
 
     this.path = path.join(__dirname, '..', '..', '..');
     this.name = '@glimmer/blueprint';
-  }
+  },
 });

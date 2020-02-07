@@ -1,6 +1,6 @@
 import { bump, Tag, validate } from '@glimmer/validator';
 
-export function assertValidAfterUnrelatedBump(tag: Tag, snapshot: number) {
+export function assertValidAfterUnrelatedBump(tag: Tag, snapshot: number): void {
   bump();
 
   QUnit.assert.strictEqual(

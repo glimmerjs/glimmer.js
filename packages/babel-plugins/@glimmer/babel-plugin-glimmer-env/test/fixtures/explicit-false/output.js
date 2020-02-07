@@ -1,5 +1,6 @@
-if (false
-/* DEBUG */
+if (
+  false
+  /* DEBUG */
 ) {
   console.log('foo');
 }

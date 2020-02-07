@@ -11,7 +11,7 @@ module('Modifier Tests', () => {
       @tracked count = 0;
 
       @action
-      incrementCounter() {
+      incrementCounter(): void {
         this.count++;
       }
     }

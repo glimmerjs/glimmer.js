@@ -21,7 +21,7 @@ module('[@glimmer/component] Component Arguments', () => {
     }
 
     class ChildComponent extends Component<{ firstName: string }> {
-      get name() {
+      get name(): string {
         return `${this.args.firstName} Dale`;
       }
     }

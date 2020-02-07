@@ -4,7 +4,7 @@ import { hasExactKeys } from './utils';
 const Component = gc.default;
 
 hasExactKeys<{
-  default: unknown,
+  default: unknown;
 }>()(gc);
 
 // $ExpectType typeof Component
@@ -14,21 +14,21 @@ type Args = {
   foo: number;
 };
 
-let component = new Component<Args>({}, { foo: 123 });
+const component = new Component<Args>({}, { foo: 123 });
 
 hasExactKeys<{
-  args: unknown,
+  args: unknown;
   bounds: {
-    firstNode: unknown,
-    lastNode: unknown,
-  },
-  debugName: unknown,
-  didInsertElement: unknown,
-  didUpdate: unknown,
-  element: unknown,
-  isDestroying: unknown,
-  isDestroyed: unknown,
-  willDestroy: unknown,
+    firstNode: unknown;
+    lastNode: unknown;
+  };
+  debugName: unknown;
+  didInsertElement: unknown;
+  didUpdate: unknown;
+  element: unknown;
+  isDestroying: unknown;
+  isDestroyed: unknown;
+  willDestroy: unknown;
 }>()(component);
 
 // $ExpectType Args

@@ -5,25 +5,29 @@ import { DEBUG } from '@glimmer/env';
 import { track, value, validate } from '@glimmer/validator';
 
 import * as TSFixtures from './fixtures/typescript';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import * as BabelFixtures from './fixtures/babel';
 import { assertValidAfterUnrelatedBump } from './helpers/tags';
 
-[['Babel', BabelFixtures], ['TypeScript', TSFixtures]].forEach(([compiler, F]) => {
+[
+  ['Babel', BabelFixtures],
+  ['TypeScript', TSFixtures],
+].forEach(([compiler, F]) => {
   module(`[@glimmer/tracking] Tracked Property Decorators with ${compiler}`);
 
   test('tracked properties can be read and written to', assert => {
-    let obj = new F.Tom();
+    const obj = new F.Tom();
     assert.strictEqual(obj.firstName, 'Tom');
     obj.firstName = 'Edsger';
     assert.strictEqual(obj.firstName, 'Edsger');
   });
 
   test('can request a tag for a property', assert => {
-    let obj = new F.Tom();
+    const obj = new F.Tom();
     assert.strictEqual(obj.firstName, 'Tom');
 
-    let tag = track(() => {
+    const tag = track(() => {
       obj.firstName;
     });
     let snapshot = value(tag);
@@ -38,7 +42,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   test('can request a tag from a frozen class instance', assert => {
-    let obj = Object.freeze(new F.Toran());
+    const obj = Object.freeze(new F.Toran());
     assert.strictEqual(obj.firstName, 'Toran');
     assert.strictEqual(obj.lastName, 'Billups');
 
@@ -64,11 +68,11 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   test('can request a tag from an instance of a frozen class', assert => {
-    let obj = Object.freeze(new F.FrozenToran());
+    const obj = Object.freeze(new F.FrozenToran());
 
     assert.strictEqual(obj.firstName, 'Toran');
 
-    let tag = track(() => {
+    const tag = track(() => {
       obj.firstName;
     });
     let snapshot = value(tag);
@@ -80,11 +84,11 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   test('can track a getter', assert => {
-    let obj = new F.PersonWithCount();
+    const obj = new F.PersonWithCount();
     assert.strictEqual(obj.firstName, 'Tom0');
     assert.strictEqual(obj.firstName, 'Tom1');
 
-    let tag = track(() => {
+    const tag = track(() => {
       obj.firstName;
     });
     let snapshot = value(tag);
@@ -101,11 +105,11 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   test('getters are invalidated when their dependencies are invalidated', assert => {
-    let obj = new F.PersonWithSalutation();
+    const obj = new F.PersonWithSalutation();
     assert.strictEqual(obj.salutation, 'Hello, Tom Dale!', `the saluation field is valid`);
     assert.strictEqual(obj.fullName, 'Tom Dale', `the fullName field is valid`);
 
-    let tag = track(() => {
+    const tag = track(() => {
       obj.salutation;
     });
     let snapshot = value(tag);
@@ -142,12 +146,12 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   test('nested @tracked in multiple objects', assert => {
-    let obj = new F.Contact(new F.PersonForContact(), 'tom@example.com');
+    const obj = new F.Contact(new F.PersonForContact(), 'tom@example.com');
     assert.strictEqual(obj.contact, 'Tom Dale @ tom@example.com', `the contact field is valid`);
     assert.strictEqual(obj.person.fullName, 'Tom Dale', `the fullName field is valid`);
-    let person = obj.person;
+    const person = obj.person;
 
-    let tag = track(() => {
+    const tag = track(() => {
       obj.contact;
     });
     let snapshot = value(tag);

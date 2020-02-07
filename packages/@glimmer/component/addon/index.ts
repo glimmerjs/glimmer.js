@@ -21,9 +21,7 @@ export default class extends GlimmerComponent {
 
     if (DEBUG && !(owner !== null && typeof owner === 'object')) {
       throw new Error(
-        `You must pass both the owner and args to super() in your component: ${
-          this.constructor.name
-        }. You can pass them directly, or use ...arguments to pass all arguments through.`
+        `You must pass both the owner and args to super() in your component: ${this.constructor.name}. You can pass them directly, or use ...arguments to pass all arguments through.`
       );
     }
 

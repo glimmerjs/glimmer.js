@@ -1,10 +1,6 @@
 import { DEBUG } from '@glimmer/env';
 import { dict } from '@glimmer/util';
-import {
-  PathReference,
-  ConstReference,
-  CachedReference,
-} from '@glimmer/reference';
+import { PathReference, ConstReference, CachedReference } from '@glimmer/reference';
 import {
   DirtyableTag,
   UpdatableTag,
@@ -23,17 +19,23 @@ import {
   PrimitiveReference,
 } from '@glimmer/runtime';
 
-export function trackProperty<T = unknown>(obj: any, key: string, throwError = defaultErrorThrower): [T, Tag] {
+export function trackProperty<T = unknown>(
+  obj: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  key: string,
+  throwError = defaultErrorThrower
+): [T, Tag] {
   if (DEBUG && typeof obj === 'object') {
     installDevModeErrorInterceptor(obj, key, throwError);
   }
   let value: T | undefined;
-  const tag = track(() => { value = obj[key] as T; });
+  const tag = track(() => {
+    value = obj[key] as T;
+  });
   return [value!, tag];
 }
 
 export class UntrackedPropertyError extends Error {
-  static for(obj: any, key: string): UntrackedPropertyError {
+  static for(obj: {}, key: string): UntrackedPropertyError {
     return new UntrackedPropertyError(
       obj,
       key,
@@ -41,7 +43,7 @@ export class UntrackedPropertyError extends Error {
     );
   }
 
-  constructor(public target: any, public key: string, message: string) {
+  constructor(public target: {}, public key: string, message: string) {
     super(message);
   }
 }
@@ -51,10 +53,10 @@ export class UntrackedPropertyError extends Error {
  * error messages.
  */
 export interface UntrackedPropertyErrorThrower {
-  (obj: any, key: string): void;
+  (obj: {}, key: string): void;
 }
 
-function defaultErrorThrower(obj: any, key: string): UntrackedPropertyError {
+function defaultErrorThrower(obj: {}, key: string): UntrackedPropertyError {
   throw UntrackedPropertyError.for(obj, key);
 }
 
@@ -67,7 +69,7 @@ function installDevModeErrorInterceptor(
   obj: object,
   key: string,
   throwError: UntrackedPropertyErrorThrower
-) {
+): void {
   let target = obj;
   let descriptor: PropertyDescriptor | undefined;
 
@@ -89,7 +91,7 @@ function installDevModeErrorInterceptor(
   if (descriptor) {
     // Only install the interceptor if it's a simple (non-getter) property and
     // the existing property is able to be configured.
-    if (descriptor.hasOwnProperty('value') && (descriptor.configurable || !hasOwnDescriptor)) {
+    if ('value' in descriptor && (descriptor.configurable || !hasOwnDescriptor)) {
       Object.defineProperty(obj, key, {
         configurable: descriptor.configurable,
         enumerable: descriptor.enumerable,
@@ -116,7 +118,7 @@ export abstract class ComponentPathReference<T> implements PathReference<T> {
   abstract value(): T;
   abstract get tag(): Tag;
 
-  get(key: string): PathReference<any> {
+  get(key: string): PathReference<unknown> {
     return PropertyReference.create(this, key);
   }
 }
@@ -136,15 +138,14 @@ export class RootReference<T extends object> extends ConstReference<T> {
 }
 
 export abstract class PropertyReference<T> extends CachedReference<T> {
-  static create(parentReference: PathReference<any>, propertyKey: string) {
+  static create(parentReference: PathReference<unknown>, propertyKey: string): PropertyReference<unknown> {
     if (isConst(parentReference)) {
-      return new RootPropertyReference(parentReference.value(), propertyKey);
-    } else {
-      return new NestedPropertyReference(parentReference, propertyKey);
+      return new RootPropertyReference(parentReference.value() as object, propertyKey);
     }
+    return new NestedPropertyReference(parentReference, propertyKey);
   }
 
-  get(key: string): PathReference<any> {
+  get(key: string): PathReference<unknown> {
     return new NestedPropertyReference(this, key);
   }
 }
@@ -170,20 +171,21 @@ export class NestedPropertyReference<T> extends PropertyReference<T> {
   public tag: Tag;
   private propertyTag: UpdatableTag;
 
-  constructor(private parentReference: PathReference<any>, private propertyKey: string) {
+  constructor(private parentReference: PathReference<unknown>, private propertyKey: string) {
     super();
 
-    let parentReferenceTag = parentReference.tag;
-    let propertyTag = (this.propertyTag = createUpdatableTag());
+    const parentReferenceTag = parentReference.tag;
+    const propertyTag = (this.propertyTag = createUpdatableTag());
 
     this.tag = combine([parentReferenceTag, propertyTag]);
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   compute() {
-    let { parentReference, propertyTag, propertyKey } = this;
+    const { parentReference, propertyTag, propertyKey } = this;
 
-    let parentValue = parentReference.value();
-    let parentValueType = typeof parentValue;
+    const parentValue = parentReference.value();
+    const parentValueType = typeof parentValue;
 
     if (parentValueType === 'string' && propertyKey === 'length') {
       return (parentValue as string).length;
@@ -196,9 +198,8 @@ export class NestedPropertyReference<T> extends PropertyReference<T> {
       update(propertyTag, tag);
 
       return value;
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 }
 
@@ -218,7 +219,7 @@ export class UpdatableReference<T> extends ComponentPathReference<T> {
   }
 
   update(value: T): void {
-    let { _value } = this;
+    const { _value } = this;
 
     if (value !== _value) {
       dirty(this.tag);
@@ -228,9 +229,9 @@ export class UpdatableReference<T> extends ComponentPathReference<T> {
 }
 
 export class ConditionalReference extends GlimmerConditionalReference {
-  static create(reference: PathReference<any>) {
+  static create(reference: PathReference<boolean>): ConditionalReference | PrimitiveReference<boolean> {
     if (isConst(reference)) {
-      let value = reference.value();
+      const value = reference.value();
       return PrimitiveReference.create(value);
     }
 

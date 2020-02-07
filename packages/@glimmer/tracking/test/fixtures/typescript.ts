@@ -31,7 +31,7 @@ export class PersonWithCount {
   }
 }
 
-export  class PersonWithSalutation {
+export class PersonWithSalutation {
   get salutation() {
     return `Hello, ${this.fullName}!`;
   }
@@ -41,7 +41,7 @@ export  class PersonWithSalutation {
   }
 
   set fullName(fullName) {
-    let [firstName, lastName] = fullName.split(' ');
+    const [firstName, lastName] = fullName.split(' ');
     this.firstName = firstName;
     this.lastName = lastName;
   }
@@ -74,7 +74,7 @@ export class PersonForContact {
   }
 
   set fullName(fullName: string) {
-    let [firstName, lastName] = fullName.split(' ');
+    const [firstName, lastName] = fullName.split(' ');
     this.firstName = firstName;
     this.lastName = lastName;
   }
@@ -107,7 +107,7 @@ export function createClassWithTrackedSetter(): any {
 
     // @ts-ignore
     @tracked set fullName(fullName) {
-      let [firstName, lastName] = fullName.split(' ');
+      const [firstName, lastName] = fullName.split(' ');
       this.firstName = firstName;
       this.lastName = lastName;
     }
@@ -131,7 +131,7 @@ export function createClassWithTrackedDependentKeys(): any {
 
 export function createClassWithTrackedAsDecoratorFactory(): any {
   class DependentKeysAreCool {
-    //@ts-ignore
+    // @ts-ignore
     @tracked() fullName() {
       return `${this.firstName} ${this.lastName}`;
     }

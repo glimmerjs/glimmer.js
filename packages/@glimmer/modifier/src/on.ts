@@ -18,17 +18,17 @@ class OnModifierState {
     this.tag = args.tag;
   }
 
-  updateFromArgs() {
-    let { args } = this;
+  updateFromArgs(): void {
+    const { args } = this;
 
-    let eventName = args.positional.at(0).value() as string;
+    const eventName = args.positional.at(0).value() as string;
 
     if (eventName !== this.eventName) {
       this.eventName = eventName;
       this.shouldUpdate = true;
     }
 
-    let callback = args.positional.at(1).value() as EventListener;
+    const callback = args.positional.at(1).value() as EventListener;
 
     if (callback !== this.callback) {
       this.callback = callback;
@@ -36,7 +36,7 @@ class OnModifierState {
     }
   }
 
-  destroy() {
+  destroy(): void {
     this.element.removeEventListener(this.eventName, this.callback);
   }
 }
@@ -54,7 +54,7 @@ class OnModifierManager implements ModifierManager<OnModifierState | null, null>
     }
 
     const capturedArgs = args.capture();
-    return new OnModifierState(<Element>element, capturedArgs);
+    return new OnModifierState(element as Element, capturedArgs);
   }
 
   getTag(state: OnModifierState | null): Tag {
@@ -100,7 +100,7 @@ class OnModifierManager implements ModifierManager<OnModifierState | null, null>
     state.shouldUpdate = false;
   }
 
-  getDestructor(state: OnModifierState | null) {
+  getDestructor(state: OnModifierState | null): OnModifierState | null{
     return state;
   }
 }

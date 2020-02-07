@@ -4,7 +4,7 @@ import { Reference } from '@glimmer/reference';
 import { HOST_META_KEY } from '@glimmer/core';
 
 export function helper(helperFn: UserHelper): GlimmerHelper {
-  return (args, vm) => {
+  return (args, vm): HelperReference => {
     const dynamicScope = vm.dynamicScope();
     let services;
 

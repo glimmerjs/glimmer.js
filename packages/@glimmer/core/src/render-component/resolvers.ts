@@ -29,15 +29,13 @@ import { ComponentFactory, TemplateMeta } from '../managers/component/custom';
  * components, which is why `registry` is public, for ease of access.
  */
 export class RuntimeResolver implements RuntimeResolverDelegate {
-  constructor() {}
-
   registry: unknown[] = [];
 
   // TODO: This is only necessary because `renderJitComponent` only receives a
-// string, can't receive a handle. We should make that optional somehow.
-  registerRoot(factory: ComponentFactory) {
-    let definition = definitionForComponent(factory);
-    let { handle } = definition;
+  // string, can't receive a handle. We should make that optional somehow.
+  registerRoot(factory: ComponentFactory): string {
+    const definition = definitionForComponent(factory);
+    const { handle } = definition;
 
     this.registry[handle] = definition;
 
@@ -55,7 +53,7 @@ export class RuntimeResolver implements RuntimeResolverDelegate {
   }
 
   // TODO: Make these optional
-  compilable(_locator: any): Template<unknown> {
+  compilable(_locator: unknown): Template<unknown> {
     throw new Error('Method not implemented.');
   }
 

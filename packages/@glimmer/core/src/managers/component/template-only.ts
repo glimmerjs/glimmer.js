@@ -34,15 +34,16 @@ export const CAPABILITIES: ComponentCapabilities = {
 export class ComponentStateBucket {
   public name: string;
 
-  constructor(public args: CapturedArguments) {
-  }
+  constructor(public args: CapturedArguments) {}
 }
 
 const EMPTY_SELF = new RootReference({});
 
-let TemplateOnlyComponentDebugReference: undefined | {
-  new(name: string): ConstReference;
-};
+let TemplateOnlyComponentDebugReference:
+  | undefined
+  | {
+      new (name: string): ConstReference;
+    };
 
 if (DEBUG) {
   TemplateOnlyComponentDebugReference = class extends ConstReference<void> {
@@ -52,9 +53,7 @@ if (DEBUG) {
 
     get(propertyKey: string): PathReference<unknown> {
       throw new Error(
-        `You tried to reference {{${propertyKey}}} from the ${
-          this.name
-        } template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
+        `You tried to reference {{${propertyKey}}} from the ${this.name} template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
       );
     }
   };
@@ -76,7 +75,10 @@ export class TemplateOnlyComponentDebugBucket {
 
 export default class TemplateOnlyComponentManager
   implements
-    VMComponentManager<TemplateOnlyComponentDebugBucket | null, TemplateOnlyComponentDefinitionState>,
+    VMComponentManager<
+      TemplateOnlyComponentDebugBucket | null,
+      TemplateOnlyComponentDefinitionState
+    >,
     WithJitStaticLayout<
       TemplateOnlyComponentDebugBucket | null,
       TemplateOnlyComponentDefinitionState,
@@ -104,18 +106,20 @@ export default class TemplateOnlyComponentManager
   }
 
   getSelf(bucket: TemplateOnlyComponentDebugBucket): PathReference {
-    return DEBUG ? new TemplateOnlyComponentDebugReference!(bucket.definition.state.name) : EMPTY_SELF;
+    return DEBUG
+      ? new TemplateOnlyComponentDebugReference!(bucket.definition.state.name)
+      : EMPTY_SELF;
   }
 
   getTag(): Tag {
     return CONSTANT_TAG;
   }
 
-  didRenderLayout() {}
-  didCreate() {}
-  didUpdateLayout() {}
-  didUpdate() {}
-  getDestructor() {
+  didRenderLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  didCreate(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  didUpdateLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  didUpdate(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  getDestructor(): null {
     return null;
   }
 }

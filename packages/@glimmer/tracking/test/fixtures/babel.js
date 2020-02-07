@@ -31,7 +31,7 @@ export class PersonWithCount {
   }
 }
 
-export  class PersonWithSalutation {
+export class PersonWithSalutation {
   get salutation() {
     return `Hello, ${this.fullName}!`;
   }
@@ -41,7 +41,7 @@ export  class PersonWithSalutation {
   }
 
   set fullName(fullName) {
-    let [firstName, lastName] = fullName.split(' ');
+    const [firstName, lastName] = fullName.split(' ');
     this.firstName = firstName;
     this.lastName = lastName;
   }
@@ -74,7 +74,7 @@ export class PersonForContact {
   }
 
   set fullName(fullName) {
-    let [firstName, lastName] = fullName.split(' ');
+    const [firstName, lastName] = fullName.split(' ');
     this.firstName = firstName;
     this.lastName = lastName;
   }
@@ -106,7 +106,7 @@ export function createClassWithTrackedSetter() {
     @tracked lastName;
 
     @tracked set fullName(fullName) {
-      let [firstName, lastName] = fullName.split(' ');
+      const [firstName, lastName] = fullName.split(' ');
       this.firstName = firstName;
       this.lastName = lastName;
     }

@@ -15,5 +15,5 @@
   * blueprints/ folder
   */
 module.exports = {
-  name: '@glimmer/blueprint'
+  name: '@glimmer/blueprint',
 };

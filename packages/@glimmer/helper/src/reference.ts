@@ -11,9 +11,10 @@ export type UserHelper = (
   args: ReadonlyArray<unknown>,
   named: Dict<unknown>,
   options: HelperOptions
-) => any;
+) => unknown;
 
-export default class HelperReference extends CachedReference<unknown> implements VersionedPathReference {
+export default class HelperReference extends CachedReference<unknown>
+  implements VersionedPathReference {
   public tag: Tag;
   private args: CapturedArguments;
   private servicesRef?: Reference<Dict<unknown>>;
@@ -38,9 +39,9 @@ export default class HelperReference extends CachedReference<unknown> implements
     return new NestedPropertyReference(this, key);
   }
 
-  compute() {
-    let { helper, args } = this;
-    let options: HelperOptions = {};
+  compute(): unknown {
+    const { helper, args } = this;
+    const options: HelperOptions = {};
 
     if (this.servicesRef) {
       options.services = this.servicesRef.value();

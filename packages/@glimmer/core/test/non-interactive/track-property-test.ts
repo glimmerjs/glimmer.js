@@ -10,17 +10,16 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
 
       class UntrackedPerson {
         firstName = 'Tom';
-        get lastName() {
+        get lastName(): string {
           return 'Dale';
         }
-        set lastName(_value) {}
 
-        toString() {
+        toString(): string {
           return 'UntrackedPerson';
         }
       }
 
-      let obj = new UntrackedPerson();
+      const obj = new UntrackedPerson();
       trackProperty(obj, 'firstName');
 
       assert.throws(() => {
@@ -34,12 +33,12 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
       class UntrackedPerson {
         firstName = 'Tom';
 
-        toString() {
+        toString(): string {
           return 'UntrackedPerson';
         }
       }
 
-      let obj = new UntrackedPerson();
+      const obj = new UntrackedPerson();
       trackProperty(obj, 'firstName');
 
       obj.firstName = 'Ricardo';
@@ -50,7 +49,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
 
   if (DEBUG) {
     test('interceptor works correctly for own value descriptor', assert => {
-      let obj = { name: 'Martin' };
+      const obj = { name: 'Martin' };
 
       trackProperty(obj, 'name');
 
@@ -63,45 +62,44 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
 
     test('interceptor works correctly for inherited value descriptor', assert => {
       class Person {}
-      (Person.prototype as any).name = 'Martin';
+      Object.defineProperty(Person.prototype, 'name', { value: 'Martin' });
 
-      let obj = new Person();
+      const obj = new Person();
 
       trackProperty(obj, 'name');
 
-      assert.strictEqual((obj as any).name, 'Martin');
+      assert.strictEqual((obj as { name: string }).name, 'Martin');
 
       assert.throws(() => {
-        (obj as any).name = 'Tom';
+        (obj as { name: string }).name = 'Tom';
       }, UntrackedPropertyError.for(obj, 'name'));
     });
 
     test('interceptor works correctly for inherited non-configurable descriptor', assert => {
       class Person {}
-      (Person.prototype as any).name = 'Martin';
-      Object.defineProperty(Person.prototype, 'name', { configurable: false });
+      Object.defineProperty(Person.prototype, 'name', { value: 'Martin', configurable: false });
 
-      let obj = new Person();
+      const obj = new Person();
 
       trackProperty(obj, 'name');
 
-      assert.strictEqual((obj as any).name, 'Martin');
+      assert.strictEqual((obj as { name: string }).name, 'Martin');
 
       assert.throws(() => {
-        (obj as any).name = 'Tom';
+        (obj as { name: string }).name = 'Tom';
       }, UntrackedPropertyError.for(obj, 'name'));
     });
   }
 
   test('interceptor is not installed for getter descriptor', assert => {
-    let obj = {
+    const obj = {
       _name: 'Martin',
-      get name() {
+      get name(): string {
         return this._name;
       },
       set name(value) {
         this._name = value;
-      }
+      },
     };
 
     trackProperty(obj, 'name');
@@ -115,7 +113,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
     class Person {
       _name = 'Martin';
 
-      get name() {
+      get name(): string {
         return this._name;
       }
 
@@ -124,7 +122,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
       }
     }
 
-    let obj = new Person();
+    const obj = new Person();
 
     trackProperty(obj, 'name');
     assert.strictEqual(obj.name, 'Martin');
@@ -134,7 +132,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
   });
 
   test('interceptor is not installed for own non-configurable descriptor', assert => {
-    let obj = { name: 'Martin' };
+    const obj = { name: 'Martin' };
     Object.defineProperty(obj, 'name', { configurable: false });
 
     trackProperty(obj, 'name');
@@ -144,7 +142,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
   });
 
   test('interceptor is not installed for array length [issue #34]', assert => {
-    let array = [1, 2, 3];
+    const array = [1, 2, 3];
 
     trackProperty(array, 'length');
 
@@ -158,7 +156,7 @@ module('[@glimmer/core] Tracked Property Warning in Development Mode', () => {
   test('interceptor is not installed on a frozen object', assert => {
     assert.expect(2);
 
-    let obj = Object.freeze({
+    const obj = Object.freeze({
       firstName: 'Toran',
     });
 

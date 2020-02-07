@@ -5,10 +5,10 @@ import { getComponentManager } from '../../src/managers';
 
 module('component managers', () => {
   test('setting and getting', assert => {
-    let context = {};
+    const context = {};
 
-    const managerA = {} as any;
-    const managerAAB = {} as any;
+    const managerA = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const managerAAB = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     class A {}
     setComponentManager(() => managerA, A);
@@ -57,8 +57,16 @@ module('component managers', () => {
       'class AAA returns explicitly associated manager'
     );
 
-    assert.strictEqual(getComponentManager(context, B), undefined, 'class B returns undefined manager');
+    assert.strictEqual(
+      getComponentManager(context, B),
+      undefined,
+      'class B returns undefined manager'
+    );
 
-    assert.strictEqual(getComponentManager(context, BA), undefined, 'class BA returns undefined manager');
+    assert.strictEqual(
+      getComponentManager(context, BA),
+      undefined,
+      'class BA returns undefined manager'
+    );
   });
 });

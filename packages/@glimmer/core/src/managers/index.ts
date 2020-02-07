@@ -20,11 +20,14 @@ type ManagerWrapper = ComponentManagerWrapper | ModifierMangagerWrapper;
 ///////////
 
 const MANAGERS: WeakMap<object, ManagerWrapper> = new WeakMap();
-const MANAGER_INSTANCES: WeakMap<object, WeakMap<ManagerFactory<ManagerDelegate>, ManagerDelegate>> = new WeakMap();
+const MANAGER_INSTANCES: WeakMap<
+  object,
+  WeakMap<ManagerFactory<ManagerDelegate>, ManagerDelegate>
+> = new WeakMap();
 
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function setManager(wrapper: ManagerWrapper, obj: {}) {
+export function setManager(wrapper: ManagerWrapper, obj: {}): {} {
   MANAGERS.set(obj, wrapper);
   return obj;
 }
@@ -32,7 +35,7 @@ export function setManager(wrapper: ManagerWrapper, obj: {}) {
 function getManager(obj: object): ManagerWrapper | undefined {
   let pointer = obj;
   while (pointer !== undefined && pointer !== null) {
-    let manager = MANAGERS.get(pointer);
+    const manager = MANAGERS.get(pointer);
 
     if (manager !== undefined) {
       return manager;
@@ -44,7 +47,10 @@ function getManager(obj: object): ManagerWrapper | undefined {
   return undefined;
 }
 
-function getManagerInstanceForOwner<D extends ManagerDelegate>(owner: object, factory: ManagerFactory<D>): D  {
+function getManagerInstanceForOwner<D extends ManagerDelegate>(
+  owner: object,
+  factory: ManagerFactory<D>
+): D {
   let managers = MANAGER_INSTANCES.get(owner);
 
   if (managers === undefined) {
@@ -65,24 +71,27 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(owner: object, fa
 
 ///////////
 
-export function setModifierManager(factory: ManagerFactory<ModifierManager<unknown>>, obj: {}) {
+export function setModifierManager(factory: ManagerFactory<ModifierManager<unknown>>, obj: {}): {} {
   return setManager({ factory, type: 'modifier' }, obj);
 }
 
-export function getModifierManager(owner: object, obj: any): ModifierManager<unknown> | undefined {
-  let wrapper = getManager(obj);
+export function getModifierManager(owner: object, obj: {}): ModifierManager<unknown> | undefined {
+  const wrapper = getManager(obj);
 
   if (wrapper !== undefined && wrapper.type === 'modifier') {
     return getManagerInstanceForOwner(owner, wrapper.factory);
   }
 }
 
-export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, obj: {}) {
+export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, obj: {}): {} {
   return setManager({ factory, type: 'component' }, obj);
 }
 
-export function getComponentManager(owner: object, obj: object): ComponentManager<unknown> | undefined {
-  let wrapper = getManager(obj);
+export function getComponentManager(
+  owner: {},
+  obj: {}
+): ComponentManager<unknown> | undefined {
+  const wrapper = getManager(obj);
 
   if (wrapper !== undefined && wrapper.type === 'component') {
     return getManagerInstanceForOwner(owner, wrapper.factory);

@@ -35,12 +35,12 @@ class MyComponent extends Component {
   message = 'hello world';
   @tracked count = 55;
 
-  get currentLocale() {
+  get currentLocale(): string {
     return (getHostMeta(this) as { locale: LocaleService }).locale.currentLocale;
   }
 
   @action
-  increment() {
+  increment(): void {
     this.count++;
   }
 }

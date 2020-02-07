@@ -11,7 +11,7 @@ pluginTester({
   plugin,
   babelOptions: {
     cwd: packageRootPath,
-    root: packageRootPath
+    root: packageRootPath,
   },
   fixtures: path.join(__dirname, 'fixtures'),
   tests: [

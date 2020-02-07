@@ -66,7 +66,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
   });
 
   test('custom elements are rendered', async function(assert) {
-    let component = templateOnlyComponent();
+    const component = templateOnlyComponent();
 
     setComponentTemplate(component, createTemplate('<hello-world>foo</hello-world>'));
 
@@ -112,7 +112,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
       salutation = 'Glimmer';
     }
 
-    let HelloWorld = templateOnlyComponent();
+    const HelloWorld = templateOnlyComponent();
 
     setComponentTemplate(HelloWorld, createTemplate('{{yield @name}}!'));
 
@@ -168,13 +168,13 @@ module(`[@glimmer/core] non-interactive tests`, () => {
 
   test('a component can inject services', async assert => {
     class LocaleService {
-      get currentLocale() {
+      get currentLocale(): string {
         return 'en_US';
       }
     }
 
     class MyComponent extends Component {
-      get myLocale() {
+      get myLocale(): string {
         return (getHostMeta(this) as { locale: LocaleService })!.locale.currentLocale;
       }
     }
@@ -191,7 +191,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
 
   test('a helper can inject services', async assert => {
     class LocaleService {
-      get currentLocale() {
+      get currentLocale(): string {
         return 'en_US';
       }
     }
@@ -231,7 +231,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
       @tracked count = 0;
 
       @action
-      incrementCounter() {
+      incrementCounter(): void {
         this.count++;
       }
     }
@@ -244,11 +244,11 @@ module(`[@glimmer/core] non-interactive tests`, () => {
       )
     );
 
-    let html = await render(MyComponent);
+    const html = await render(MyComponent);
     assert.strictEqual(html, `<button>Count: 0</button>`, 'the component was rendered');
   });
 
-  test('throws an exception if an invoked component is not found', async (assert) => {
+  test('throws an exception if an invoked component is not found', async assert => {
     assert.expect(1);
 
     try {
@@ -258,11 +258,11 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     }
   });
 
-  test('renders multiple components in different places', async (assert) => {
+  test('renders multiple components in different places', async assert => {
     assert.expect(2);
 
-    let firstContainerElement = document.createElement('div');
-    let secondContainerElement = document.createElement('div');
+    const firstContainerElement = document.createElement('div');
+    const secondContainerElement = document.createElement('div');
 
     await render(createTemplate(`<h1>Hello Glimmer!</h1>`), firstContainerElement);
     await render(createTemplate(`<h1>Hello Robbie!</h1>`), secondContainerElement);
@@ -271,11 +271,11 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     assert.equal(secondContainerElement.innerHTML, '<h1>Hello Robbie!</h1>');
   });
 
-  test('renders a component without affecting existing content', async (assert) => {
+  test('renders a component without affecting existing content', async assert => {
     assert.expect(1);
 
-    let containerElement = document.createElement('div');
-    let previousSibling = document.createElement('p');
+    const containerElement = document.createElement('div');
+    const previousSibling = document.createElement('p');
 
     previousSibling.appendChild(document.createTextNode('foo'));
     containerElement.appendChild(previousSibling);
@@ -290,7 +290,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
       assert.expect(1);
 
-      let component = templateOnlyComponent();
+      const component = templateOnlyComponent();
       setComponentTemplate(component, createTemplate('<h1>Hello, {{this.name}}!</h1>'));
 
       try {
@@ -307,7 +307,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     test('accessing properties in template-only components produces an exception in production mode', async function(assert) {
       assert.expect(1);
 
-      let component = templateOnlyComponent();
+      const component = templateOnlyComponent();
       setComponentTemplate(component, createTemplate('<h1>Hello, {{this.name}}!</h1>'));
 
       try {

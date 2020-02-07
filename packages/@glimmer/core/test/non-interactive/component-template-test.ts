@@ -5,8 +5,8 @@ import { getComponentTemplate } from '../../src/template';
 
 module('component templates', () => {
   test('setting and getting', assert => {
-    const templateA = {} as any;
-    const templateAAB = {} as any;
+    const templateA = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const templateAAB = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     class A {}
     setComponentTemplate(A, templateA);

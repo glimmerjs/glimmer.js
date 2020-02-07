@@ -1,6 +1,13 @@
-import { renderComponent, ComponentFactory, RenderComponentOptions, didRender, templateOnlyComponent, setComponentTemplate } from '..';
+import {
+  renderComponent,
+  ComponentFactory,
+  RenderComponentOptions,
+  didRender,
+  templateOnlyComponent,
+  setComponentTemplate,
+} from '..';
 import { renderToString } from '@glimmer/ssr';
-import { Dict, SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
+import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
 import { TemplateMeta } from '../src/managers/component/custom';
 
 export const module = QUnit.module;
@@ -13,7 +20,7 @@ export async function render(
   options?: HTMLElement | Partial<RenderComponentOptions>
 ): Promise<string> {
   if ('id' in component && 'block' in component && 'meta' in component) {
-    let template = component;
+    const template = component;
 
     component = templateOnlyComponent();
 
@@ -35,14 +42,15 @@ export async function render(
     }
 
     return element.innerHTML;
-  } else {
-    return await renderToString(component, options as RenderComponentOptions);
   }
+  return await renderToString(component, options as RenderComponentOptions);
 }
 
-export async function settled() {
+export async function settled(): Promise<string> {
   if (!IS_INTERACTIVE) {
-    throw new Error('Attempted to `await settled()` in a non-interactive environment, such as SSR. Non-interactive environments will never update, usually because they only render once, so awaiting settled does not make sense. This is probably a non-SSR test that accidentally ran in SSR.');
+    throw new Error(
+      'Attempted to `await settled()` in a non-interactive environment, such as SSR. Non-interactive environments will never update, usually because they only render once, so awaiting settled does not make sense. This is probably a non-SSR test that accidentally ran in SSR.'
+    );
   }
 
   await didRender();

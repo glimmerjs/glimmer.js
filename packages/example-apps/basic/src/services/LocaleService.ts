@@ -5,7 +5,7 @@ export default class LocaleService {
     this._currentLocale = currentLocale;
   }
 
-  get currentLocale() {
+  get currentLocale(): string {
     return this._currentLocale;
   }
 }

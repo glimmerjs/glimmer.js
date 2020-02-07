@@ -18,7 +18,7 @@ export interface EnvironmentOptions {
 export default class EnvironmentImpl extends GlimmerEnvironmentImpl {
   private uselessAnchor: HTMLAnchorElement;
 
-  static create(options: Partial<EnvironmentOptions> = {}) {
+  static create(options: Partial<EnvironmentOptions> = {}): EnvironmentImpl {
     options.document = options.document || self.document;
     options.appendOperations =
       options.appendOperations || new DOMTreeConstruction(options.document as SimpleDocument);

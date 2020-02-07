@@ -10,7 +10,7 @@ QUnit.module('@glimmer/ssr rendering', () => {
     class MyComponent extends Component {}
 
     class CustomHTMLSerializer extends HTMLSerializer {
-      text(text: SerializableNode) {
+      text(text: SerializableNode): string {
         return super.text(text).replace(/Hello/g, 'Goodbye'); // Replaces repetitive whitespace with a single character.
       }
     }

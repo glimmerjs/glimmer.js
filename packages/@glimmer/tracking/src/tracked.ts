@@ -57,8 +57,9 @@ import { trackedData } from '@glimmer/validator';
  *  }
  * ```
  */
-export let tracked: PropertyDecorator = (...args: any[]) => {
-  let [target, key, descriptor] = args;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const tracked: PropertyDecorator = (...args: any[]) => {
+  const [target, key, descriptor] = args;
 
   // Error on `@tracked()`, `@tracked(...args)`, and `@tracked get propName()`
   if (DEBUG && typeof target === 'string') throwTrackedWithArgumentsError(args);
@@ -67,20 +68,19 @@ export let tracked: PropertyDecorator = (...args: any[]) => {
 
   if (descriptor) {
     return descriptorForField(target, key, descriptor);
-  } else {
-    // In TypeScript's implementation, decorators on simple class fields do not
-    // receive a descriptor, so we define the property on the target directly.
-    Object.defineProperty(target, key, descriptorForField(target, key));
   }
+  // In TypeScript's implementation, decorators on simple class fields do not
+  // receive a descriptor, so we define the property on the target directly.
+  Object.defineProperty(target, key, descriptorForField(target, key));
 };
 
-function throwTrackedComputedPropertyError() {
+function throwTrackedComputedPropertyError(): never {
   throw new Error(
     `The @tracked decorator does not need to be applied to getters. Properties implemented using a getter will recompute automatically when any tracked properties they access change.`
   );
 }
 
-function throwTrackedWithArgumentsError(args: any[]) {
+function throwTrackedWithArgumentsError(args: unknown[]): never {
   throw new Error(
     `You attempted to use @tracked with ${
       args.length > 1 ? 'arguments' : 'an argument'
@@ -92,7 +92,7 @@ function throwTrackedWithArgumentsError(args: any[]) {
   );
 }
 
-function throwTrackedWithEmptyArgumentsError() {
+function throwTrackedWithEmptyArgumentsError(): never {
   throw new Error(
     'You attempted to use @tracked(), which is no longer necessary nor supported. Remove the parentheses and you will be good to go!'
   );
@@ -111,7 +111,8 @@ function throwTrackedWithEmptyArgumentsError() {
  * that corresponds to the tracked properties consumed inside of
  * itself, including child tracked computed properties.
  */
-type DecoratorPropertyDescriptor = PropertyDescriptor & { initializer?: any } | undefined;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DecoratorPropertyDescriptor = (PropertyDescriptor & { initializer?: any }) | undefined;
 
 function descriptorForField<T extends object, K extends keyof T>(
   _target: T,
@@ -119,19 +120,23 @@ function descriptorForField<T extends object, K extends keyof T>(
   desc?: DecoratorPropertyDescriptor
 ): PropertyDescriptor {
   if (DEBUG && desc && (desc.value || desc.get || desc.set)) {
-    throw new Error(`You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`);
+    throw new Error(
+      `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
+    );
   }
 
-  let { getter, setter } = trackedData<T, K>(key, desc && desc.initializer);
+  const { getter, setter } = trackedData<T, K>(key, desc && desc.initializer);
 
   return {
     enumerable: true,
     configurable: true,
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get(this: T): any {
       return getter(this);
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     set(this: T, newValue: any): void {
       setter(this, newValue);
       propertyDidChange();
@@ -139,8 +144,10 @@ function descriptorForField<T extends object, K extends keyof T>(
   };
 }
 
-let propertyDidChange = function() {};
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+let propertyDidChange = function(): void {};
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function setPropertyDidChange(cb: () => void) {
   propertyDidChange = cb;
 }

@@ -22,7 +22,7 @@ module.exports = () => {
 
   // Include tests in development builds
   if (!IS_PRODUCTION) {
-    entry.tests = glob.sync('./tests/**/*.test.js')
+    entry.tests = glob.sync('./tests/**/*.test.js');
 
     plugins.push(
       new HtmlWebpackPlugin({
@@ -68,6 +68,6 @@ module.exports = () => {
     },
     devServer: {
       contentBase: path.resolve(__dirname, 'dist'),
-    }
+    },
   };
 };

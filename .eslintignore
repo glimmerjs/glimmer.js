@@ -9,11 +9,11 @@
 **/node_modules/**
 **/bower_components/**
 
-# remove these once all lint issues are fixed
-# **/packages/@glimmerx/babel-plugin-component-templates/**
-# **/packages/@glimmerx/component/**
-# **/packages/@glimmerx/core/**
-# **/packages/@glimmerx/helper/**
-# **/packages/@glimmerx/modifier/**
-# **/packages/@glimmerx/ssr/**
-# **/packages/example-app/**
+# These are fixtures for tests, should be ignored
+typescript.ts
+babel.js
+
+**/fixtures/**/*.js
+**/fixture-options/**/*.js
+
+test/types/utils.ts

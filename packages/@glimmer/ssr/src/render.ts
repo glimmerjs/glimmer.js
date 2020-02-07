@@ -1,7 +1,4 @@
-import {
-  ComponentFactory,
-  getTemplateIterator,
-} from '@glimmer/core';
+import { ComponentFactory, getTemplateIterator } from '@glimmer/core';
 import { Dict } from '@glimmer/interfaces';
 import createHTMLDocument from '@simple-dom/document';
 import HTMLSerializer from '@simple-dom/serializer';
@@ -37,9 +34,15 @@ export function renderToStream(
   stream: NodeJS.WritableStream,
   ComponentClass: ComponentFactory,
   options: RenderOptions = {}
-) {
+): void {
   const element = createHTMLDocument().body;
-  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), options.args, options.scope);
+  const iterator = getTemplateIterator(
+    ComponentClass,
+    element,
+    EnvironmentImpl.create(),
+    options.args,
+    options.scope
+  );
   iterator.sync();
 
   const serializer = options.serializer || defaultSerializer;

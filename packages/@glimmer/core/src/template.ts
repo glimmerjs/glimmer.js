@@ -14,12 +14,12 @@ export function createTemplate(
     // Babel transform does this type conversion
     block = (templateScopeOrTemplate as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
 
-    block.meta.scope = () => ({});
+    block.meta.scope = (): Dict<unknown> => ({});
   } else {
     // Babel transform does this type conversion
     block = (template as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
 
-    block.meta.scope = () => templateScopeOrTemplate as Dict<unknown>;
+    block.meta.scope = (): Dict<unknown> => templateScopeOrTemplate as Dict<unknown>;
   }
 
   return block;
@@ -33,11 +33,13 @@ export function setComponentTemplate<T extends object>(
   return ComponentClass;
 }
 
-export function getComponentTemplate<T extends object>(ComponentClass: T) {
+export function getComponentTemplate<T extends object>(
+  ComponentClass: T
+): SerializedTemplateWithLazyBlock<TemplateMeta> | undefined {
   let pointer = ComponentClass;
 
   while (pointer !== undefined && pointer !== null) {
-    let manager = TEMPLATE_MAP.get(pointer);
+    const manager = TEMPLATE_MAP.get(pointer);
 
     if (manager !== undefined) {
       return manager;

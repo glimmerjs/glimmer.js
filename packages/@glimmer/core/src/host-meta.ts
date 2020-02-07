@@ -2,10 +2,10 @@ const COMPONENT_INSTANCE_HOST_META_MAP = new WeakMap<{}, unknown>();
 
 export const HOST_META_KEY = `__HOST_META_${Math.floor(Math.random() * Date.now())}__`;
 
-export function getHostMeta(component: object) {
+export function getHostMeta(component: object): unknown {
   return COMPONENT_INSTANCE_HOST_META_MAP.get(component);
 }
 
-export function setHostMeta(component: object, hostMeta: unknown) {
+export function setHostMeta(component: object, hostMeta: unknown): void {
   COMPONENT_INSTANCE_HOST_META_MAP.set(component, hostMeta);
 }

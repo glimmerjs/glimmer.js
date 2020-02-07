@@ -39,9 +39,10 @@ export default class EnvironmentImpl extends GlimmerEnvironmentImpl {
     return iterableFor(ref, keyPath);
   }
 
-  getOwner(): any {
+  getOwner(): unknown {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setOwner(): void {}
 }

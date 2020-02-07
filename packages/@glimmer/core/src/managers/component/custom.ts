@@ -55,7 +55,7 @@ export function capabilities(
     'Invalid component manager compatibility specified'
   );
 
-  let updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
+  const updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
 
   return {
     asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
@@ -101,8 +101,8 @@ export function hasUpdateHook<ComponentInstance>(
 
 export interface ComponentManagerWithUpdateHook<ComponentInstance>
   extends ComponentManager<ComponentInstance> {
-    updateComponent(instance: ComponentInstance, args: Args): void;
-  }
+  updateComponent(instance: ComponentInstance, args: Args): void;
+}
 
 export function hasAsyncUpdateHook<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
@@ -144,7 +144,7 @@ export interface Factory<T, C extends object = object> {
   class?: C;
   fullName?: string;
   normalizedName?: string;
-  create(props?: { [prop: string]: any }): T;
+  create(props?: { [prop: string]: unknown }): T;
 }
 
 ///////////
@@ -177,8 +177,8 @@ export interface Factory<T, C extends object = object> {
 export default class CustomComponentManager<ComponentInstance>
   implements
     VMComponentManager<
-    CustomComponentState<ComponentInstance>,
-    CustomComponentDefinitionState<ComponentInstance>
+      CustomComponentState<ComponentInstance>,
+      CustomComponentDefinitionState<ComponentInstance>
     >,
     WithJitStaticLayout<
       CustomComponentState<ComponentInstance>,
@@ -189,17 +189,15 @@ export default class CustomComponentManager<ComponentInstance>
     _env: Environment,
     definition: CustomComponentDefinitionState<ComponentInstance>,
     args: VMArguments,
-    dynamicScope: DynamicScope,
+    dynamicScope: DynamicScope
   ): CustomComponentState<ComponentInstance> {
     const { delegate } = definition;
     const capturedArgs = args.capture();
 
-    let value;
-
-    let handler: ProxyHandler<{}> = {
+    const handler: ProxyHandler<{}> = {
       get(_target, prop) {
         if (capturedArgs.named.has(prop as string)) {
-          let ref = capturedArgs.named.get(prop as string);
+          const ref = capturedArgs.named.get(prop as string);
           consume(ref.tag);
 
           return ref.value();
@@ -217,7 +215,7 @@ export default class CustomComponentManager<ComponentInstance>
       getOwnPropertyDescriptor(_target, prop) {
         assert(
           capturedArgs.named.has(prop as string),
-          'args proxies do not have real property descriptors, so you should never need to call getOwnPropertyDescriptor yourself. This code exists for enumerability, such as in for-in loops and Object.keys()',
+          'args proxies do not have real property descriptors, so you should never need to call getOwnPropertyDescriptor yourself. This code exists for enumerability, such as in for-in loops and Object.keys()'
         );
 
         return {
@@ -228,7 +226,7 @@ export default class CustomComponentManager<ComponentInstance>
     };
 
     if (DEBUG) {
-      handler.set = function(_target, prop) {
+      handler.set = function(_target, prop): boolean {
         assert(
           false,
           `You attempted to set ${definition.ComponentClass}#${String(
@@ -240,20 +238,24 @@ export default class CustomComponentManager<ComponentInstance>
       };
     }
 
-    let namedArgsProxy = new Proxy({}, handler);
+    const namedArgsProxy = new Proxy({}, handler);
 
-    value = {
+    const value = {
       named: namedArgsProxy,
       positional: capturedArgs.positional.value(),
     };
 
     const hostMeta = dynamicScope.get(HOST_META_KEY);
-    const component = delegate.createComponent(definition.ComponentClass, value, hostMeta && hostMeta.value());
+    const component = delegate.createComponent(
+      definition.ComponentClass,
+      value,
+      hostMeta && hostMeta.value()
+    );
 
     return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);
   }
 
-  update({ delegate, component, args, namedArgsProxy }: CustomComponentState<ComponentInstance>) {
+  update({ delegate, component, args, namedArgsProxy }: CustomComponentState<ComponentInstance>): void {
     if (hasUpdateHook(delegate)) {
       const value = {
         named: namedArgsProxy,
@@ -264,32 +266,34 @@ export default class CustomComponentManager<ComponentInstance>
     }
   }
 
-  didCreate({ delegate, component }: CustomComponentState<ComponentInstance>) {
+  didCreate({ delegate, component }: CustomComponentState<ComponentInstance>): void {
     if (hasAsyncLifecycleCallbacks(delegate)) {
       delegate.didCreateComponent(component);
     }
   }
 
-  didUpdate({ delegate, component }: CustomComponentState<ComponentInstance>) {
+  didUpdate({ delegate, component }: CustomComponentState<ComponentInstance>): void {
     if (hasAsyncUpdateHook(delegate)) {
       delegate.didUpdateComponent(component);
     }
   }
 
-  getContext({ delegate, component }: CustomComponentState<ComponentInstance>) {
+  getContext({ delegate, component }: CustomComponentState<ComponentInstance>): void {
     delegate.getContext(component);
   }
 
-  getSelf({ delegate, component }: CustomComponentState<ComponentInstance>): PathReference<unknown> {
+  getSelf({
+    delegate,
+    component,
+  }: CustomComponentState<ComponentInstance>): PathReference<unknown> {
     return new RootReference(delegate.getContext(component) as object);
   }
 
   getDestructor(state: CustomComponentState<ComponentInstance>): Option<Destroyable> {
     if (hasDestructors(state.delegate)) {
       return state;
-    } else {
-      return null;
     }
+    return null;
   }
 
   getCapabilities({
@@ -304,15 +308,16 @@ export default class CustomComponentManager<ComponentInstance>
     if (isConst(args)) {
       // returning a const tag skips the update hook (VM BUG?)
       return createTag();
-    } else {
-      return args.tag;
     }
+    return args.tag;
   }
 
-  didRenderLayout() {}
-  didUpdateLayout() {}
+  didRenderLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  didUpdateLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  getJitStaticLayout({ definition }: CustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
+  getJitStaticLayout({
+    definition,
+  }: CustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
     return definition.template.asLayout();
   }
 }
@@ -330,7 +335,7 @@ export class CustomComponentState<ComponentInstance> {
     public namedArgsProxy: {}
   ) {}
 
-  destroy() {
+  destroy(): void {
     const { delegate, component } = this;
 
     if (hasDestructors(delegate)) {
@@ -365,9 +370,9 @@ export class CustomComponentDefinition<ComponentInstance> {
     this.state = {
       ComponentClass,
       delegate,
-      definition: this
+      definition: this,
     };
   }
 }
 
-export interface ComponentFactory {}
+export type ComponentFactory = {}

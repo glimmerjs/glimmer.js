@@ -34,7 +34,7 @@ interface HelperDefinition {
 }
 
 export interface Modifier {
-  state: any;
+  state: unknown;
   manager: ModifierManager;
 }
 
@@ -56,7 +56,7 @@ export function definitionForHelper(Helper: GlimmerHelper): HelperDefinition {
 
 let HANDLE = 0;
 
-export function handleForModifier(modifier: Modifier) {
+export function handleForModifier(modifier: Modifier): number {
   let handle = MODIFIER_HANDLES.get(modifier);
 
   if (!handle) {
@@ -85,12 +85,7 @@ function createComponentDefinition(
   } else {
     delegate = getComponentManager(CONTEXT, ComponentClass)!;
 
-    definition = new CustomComponentDefinition(
-      HANDLE++,
-      ComponentClass,
-      delegate,
-      template
-    );
+    definition = new CustomComponentDefinition(HANDLE++, ComponentClass, delegate, template);
   }
 
   COMPONENT_DEFINITIONS.set(ComponentClass, definition);

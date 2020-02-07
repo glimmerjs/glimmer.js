@@ -1,6 +1,8 @@
-import { componentCapabilities } from '@glimmer/core';
+import { componentCapabilities, CapturedArgs } from '@glimmer/core';
 
-import BaseComponentManager, { ComponentManagerArgs, Constructor } from '../addon/-private/base-component-manager';
+import BaseComponentManager, {
+  Constructor,
+} from '../addon/-private/base-component-manager';
 import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
 import { setHostMeta } from '@glimmer/core';
 
@@ -19,15 +21,19 @@ export default class GlimmerComponentManager extends BaseComponentManager(
   () => null,
   CAPABILITIES
 ) {
-  createComponent(ComponentClass: Constructor<GlimmerComponent>, args: ComponentManagerArgs, hostMeta: unknown) {
-    let instance = super.createComponent(ComponentClass, args, hostMeta);
+  createComponent(
+    ComponentClass: Constructor<GlimmerComponent>,
+    args: CapturedArgs,
+    hostMeta: unknown
+  ): GlimmerComponent {
+    const instance = super.createComponent(ComponentClass, args, hostMeta);
 
     setHostMeta(instance, hostMeta);
 
     return instance;
   }
 
-  destroyComponent(component: GlimmerComponent) {
+  destroyComponent(component: GlimmerComponent): void {
     setDestroying(component);
     component.willDestroy();
     setDestroyed(component);

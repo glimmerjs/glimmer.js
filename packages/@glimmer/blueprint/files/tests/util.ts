@@ -10,7 +10,7 @@ import 'qunit';
 import 'qunit/qunit/qunit.css';
 import 'qunit-dom/dist/qunit-dom';
 
-QUnit.start()
+QUnit.start();
 
 const getTestRoot = (): HTMLElement => document.getElementById('qunit-fixture');
 
@@ -30,7 +30,8 @@ export async function renderComponent(
   if (elementOrOptions instanceof HTMLElement) {
     options = { element: elementOrOptions };
   } else {
-    const element = elementOrOptions.element instanceof HTMLElement ? elementOrOptions.element : getTestRoot();
+    const element =
+      elementOrOptions.element instanceof HTMLElement ? elementOrOptions.element : getTestRoot();
 
     options = { ...elementOrOptions, element };
   }

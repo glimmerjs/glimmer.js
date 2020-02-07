@@ -26,13 +26,13 @@ class ArrayIterator implements OpaqueIterator {
   }
 
   next(): IterationItem<unknown, number> | null {
-    let { position, array, keyFor } = this;
+    const { position, array, keyFor } = this;
 
     if (position >= array.length) return null;
 
-    let value = array[position];
-    let key = keyFor(value, position);
-    let memo = position;
+    const value = array[position];
+    const key = keyFor(value, position);
+    const memo = position;
 
     this.position++;
 
@@ -57,13 +57,13 @@ class ObjectKeysIterator implements OpaqueIterator {
   }
 
   next(): IterationItem<unknown, string> | null {
-    let { position, keys, values, keyFor } = this;
+    const { position, keys, values, keyFor } = this;
 
     if (position >= keys.length) return null;
 
-    let value = values[position];
-    let memo = keys[position];
-    let key = keyFor(value, memo);
+    const value = values[position];
+    const memo = keys[position];
+    const key = keyFor(value, memo);
 
     this.position++;
 
@@ -82,35 +82,6 @@ class EmptyIterator implements OpaqueIterator {
 }
 
 const EMPTY_ITERATOR = new EmptyIterator();
-
-// TODO: Use built-in Glimmer VM iterables
-export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIterable {
-  let keyFor: KeyFor<unknown>;
-
-  if (!keyPath) {
-    throw new Error('Must specify a key for #each');
-  }
-  if (keyPath === '@identity') {
-    throw new Error('@identity key in #each loop supported only in Ember, use @primitive, @index or property path instead');
-  }
-
-  switch (keyPath) {
-    case '@index':
-      keyFor = (_, index: unknown) => String(index);
-      break;
-    case '@primitive':
-      keyFor = (item: unknown) => String(item);
-      break;
-    default:
-      if (keyPath.charAt(0) === '@') {
-        throw new Error(`Invalid key: ${keyPath}, valid keys: @index, @primitive, path`);
-      }
-      keyFor = (item: unknown) => (isDict(item) ? item[keyPath] : item);
-      break;
-  }
-
-  return new Iterable(ref, keyFor);
-}
 
 /** @internal */
 export default class Iterable
@@ -133,28 +104,32 @@ export default class Iterable
   }
 
   iterate(): OpaqueIterator {
-    let { ref, keyFor } = this;
+    const { ref, keyFor } = this;
 
-    let iterable = ref.value() as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const iterable = ref.value() as any;
 
     if (Array.isArray(iterable)) {
       return iterable.length > 0 ? new ArrayIterator(iterable, keyFor) : EMPTY_ITERATOR;
     } else if (iterable === undefined || iterable === null) {
       return EMPTY_ITERATOR;
     } else if (iterable.forEach !== undefined) {
-      let array: any[] = [];
-      iterable.forEach(function(item: any) {
+      const array: unknown[] = [];
+      iterable.forEach(function(item: unknown) {
         array.push(item);
       });
       return array.length > 0 ? new ArrayIterator(array, keyFor) : EMPTY_ITERATOR;
     } else if (typeof iterable === 'object') {
-      let keys = Object.keys(iterable);
+      const keys = Object.keys(iterable);
       return keys.length > 0
-        ? new ObjectKeysIterator(keys, keys.map(key => iterable[key]), keyFor)
+        ? new ObjectKeysIterator(
+            keys,
+            keys.map(key => iterable[key]),
+            keyFor
+          )
         : EMPTY_ITERATOR;
-    } else {
-      throw new Error(`Don't know how to {{#each ${iterable}}}`);
     }
+    throw new Error(`Don't know how to {{#each ${iterable}}}`);
   }
 
   valueReferenceFor(item: IterationItem<unknown, unknown>): UpdatableReference<unknown> {
@@ -164,7 +139,7 @@ export default class Iterable
   updateValueReference(
     reference: UpdatableReference<unknown>,
     item: IterationItem<unknown, unknown>
-  ) {
+  ): void {
     reference.update(item.value);
   }
 
@@ -175,7 +150,38 @@ export default class Iterable
   updateMemoReference(
     reference: UpdatableReference<unknown>,
     item: IterationItem<unknown, unknown>
-  ) {
+  ): void {
     reference.update(item.memo);
   }
+}
+
+// TODO: Use built-in Glimmer VM iterables
+export function iterableFor(ref: Reference<unknown>, keyPath: string): OpaqueIterable {
+  let keyFor: KeyFor<unknown>;
+
+  if (!keyPath) {
+    throw new Error('Must specify a key for #each');
+  }
+  if (keyPath === '@identity') {
+    throw new Error(
+      '@identity key in #each loop supported only in Ember, use @primitive, @index or property path instead'
+    );
+  }
+
+  switch (keyPath) {
+    case '@index':
+      keyFor = (_, index: unknown): string => String(index);
+      break;
+    case '@primitive':
+      keyFor = (item: unknown): string => String(item);
+      break;
+    default:
+      if (keyPath.charAt(0) === '@') {
+        throw new Error(`Invalid key: ${keyPath}, valid keys: @index, @primitive, path`);
+      }
+      keyFor = (item: unknown): unknown => (isDict(item) ? item[keyPath] : item);
+      break;
+  }
+
+  return new Iterable(ref, keyFor);
 }

@@ -10,6 +10,7 @@ export { iterableFor } from './src/environment/iterable';
 export { setComponentManager, setModifierManager } from './src/managers';
 
 export {
+  Args as CapturedArgs,
   ComponentManager,
   ComponentFactory,
   capabilities as componentCapabilities,

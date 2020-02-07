@@ -1,7 +1,7 @@
 const { precompile } = require('@glimmer/compiler');
 
 module.exports = function strictTemplatePrecompile(babel, options) {
-  const { types: t, parse} = babel;
+  const { parse } = babel;
   const { precompile: precompileOptions } = options || {};
 
   return {
@@ -28,18 +28,19 @@ module.exports = function strictTemplatePrecompile(babel, options) {
           throw new Error('`createTemplate()` must receive exactly one or two arguments');
         }
 
-        let templatePath = path.node.arguments.length === 1
-          ? path.get('arguments.0')
-          : path.get('arguments.1');
+        const templatePath =
+          path.node.arguments.length === 1 ? path.get('arguments.0') : path.get('arguments.1');
 
-        let { type } = templatePath.node;
+        const { type } = templatePath.node;
 
         if (type === 'TemplateLiteral' || type === 'StringLiteral') {
           let templateString;
 
           if (type === 'TemplateLiteral') {
             if (templatePath.node.quasis.length > 1 || templatePath.node.expressions.length > 0) {
-              throw new Error('template strings passed to the `createTemplate()` function may not have any dynamic segments');
+              throw new Error(
+                'template strings passed to the `createTemplate()` function may not have any dynamic segments'
+              );
             }
 
             templateString = templatePath.node.quasis[0].value.raw;
@@ -47,14 +48,14 @@ module.exports = function strictTemplatePrecompile(babel, options) {
             templateString = templatePath.node.value;
           }
 
-          let compiled = precompile(templateString, precompileOptions);
-          let parsed = parse(`(${compiled})`);
+          const compiled = precompile(templateString, precompileOptions);
+          const parsed = parse(`(${compiled})`);
 
           templatePath.replaceWith(parsed.program.body[0].expression);
         } else {
           throw new Error('createTemplate() must receive a template string');
         }
-      }
-    }
+      },
+    },
   };
-}
+};

@@ -5,7 +5,13 @@ import {
   CustomJitRuntime,
   DefaultDynamicScope,
 } from '@glimmer/runtime';
-import { Cursor as GlimmerCursor, RenderResult, Dict, Environment } from '@glimmer/interfaces';
+import {
+  Cursor as GlimmerCursor,
+  RenderResult,
+  Dict,
+  Environment,
+  TemplateIterator,
+} from '@glimmer/interfaces';
 import { JitContext } from '@glimmer/opcode-compiler';
 
 import EnvironmentImpl from '../environment';
@@ -28,7 +34,7 @@ type RejectFn = (error: Error) => void;
 
 let renderNotifiers: Array<[ResolveFn, RejectFn]> = [];
 
-export function didRender() {
+export function didRender(): Promise<void> {
   if (scheduled) {
     return new Promise((resolve, reject) => {
       renderNotifiers.push([resolve, reject]);
@@ -52,7 +58,13 @@ async function renderComponent(
   const options: RenderComponentOptions =
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
   const { element, meta, args } = options;
-  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args, meta);
+  const iterator = getTemplateIterator(
+    ComponentClass,
+    element,
+    EnvironmentImpl.create(),
+    args,
+    meta
+  );
   const result = iterator.sync();
   results.push(result);
 }
@@ -64,7 +76,7 @@ const results: RenderResult[] = [];
 setPropertyDidChange(scheduleRevalidation);
 
 let scheduled = false;
-function scheduleRevalidation() {
+function scheduleRevalidation(): void {
   if (scheduled) {
     return;
   }
@@ -83,8 +95,8 @@ function scheduleRevalidation() {
   }, 0);
 }
 
-function revalidate() {
-  for (let result of results) {
+function revalidate(): void {
+  for (const result of results) {
     const { env } = result;
     env.begin();
     result.rerender();
@@ -100,13 +112,10 @@ function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
     return {};
   }
 
-  return Object.keys(dict).reduce(
-    (acc, key) => {
-      acc[key] = new RootReference(dict[key]);
-      return acc;
-    },
-    {} as Dict<PathReference>
-  );
+  return Object.keys(dict).reduce((acc, key) => {
+    acc[key] = new RootReference(dict[key]);
+    return acc;
+  }, {} as Dict<PathReference>);
 }
 
 export function getTemplateIterator(
@@ -114,15 +123,15 @@ export function getTemplateIterator(
   element: Element | SimpleElement,
   env: Environment,
   componentArgs?: Dict<unknown>,
-  hostMeta?: unknown,
-) {
+  hostMeta?: unknown
+): TemplateIterator {
   const runtime = CustomJitRuntime(resolver, context, env);
   const builder = clientBuilder(runtime.env, {
     element,
     nextSibling: null,
   } as GlimmerCursor);
 
-  let handle = resolver.registerRoot(ComponentClass);
+  const handle = resolver.registerRoot(ComponentClass);
 
   let dynamicScope;
 
