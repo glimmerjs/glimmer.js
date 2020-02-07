@@ -8,9 +8,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "webpack",
-    "build-storybook": "build-storybook",
-    "storybook": "start-storybook -p 6006"
+    "build": "webpack"
   },
   "dependencies": {
     "@glimmer/core": "^1.0.0",
@@ -18,8 +16,5 @@
     "@glimmer/tracking": "^1.0.0",
     "@glimmer/helper": "^1.0.0",
     "@glimmer/modifier": "^1.0.0"
-  },
-  "devDependencies": {
-    "@glimmerx/storybook": "^0.1.12"
   }
 }

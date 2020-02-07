@@ -15,23 +15,10 @@ module.exports = {
     rules: [
       {
         test: /(\.ts|\.js)$/,
-        include: [path.resolve(__dirname, 'packages/@glimmer')],
-        use: {
-          loader: 'babel-loader',
-          options: {
-            plugins: [
-              '@glimmer/babel-plugin-glimmer-env',
-              '@glimmer/babel-plugin-strict-template-precompile',
-              ['@babel/plugin-proposal-decorators', { legacy: true }],
-              '@babel/plugin-proposal-class-properties',
-            ],
-            presets: ['@babel/preset-typescript'],
-          },
-        },
-      },
-      {
-        test: /\.ts$/,
-        include: [path.resolve(__dirname, 'packages/example-apps/basic')],
+        include: [
+          path.resolve(__dirname, 'packages/@glimmer'),
+          path.resolve(__dirname, 'packages/example-apps'),
+        ],
         use: {
           loader: 'babel-loader',
           options: {
@@ -58,5 +45,8 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+  },
+  devServer: {
+    writeToDisk: true,
   },
 };
