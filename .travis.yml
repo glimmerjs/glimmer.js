@@ -32,7 +32,7 @@ jobs:
       name: Package Tests
       script: yarn test
     - name: Lint
-      script: yarn tslint
+      script: yarn lint
     - name: Type Lint
       script:
         - yarn build
