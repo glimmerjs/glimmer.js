@@ -6,16 +6,16 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "bin/build.js",
+    "start": "webpack-dev-server",
     "clean": "bin/clean.js",
     "changelog": "lerna-changelog",
-    "test:ember": "yarn workspace @glimmer/component ember try:one",
-    "test:types": "dtslint test/types",
-    "lint": "eslint . --cache --ext .js,.ts",
-    "problems": "tsc -p tsconfig.json --noEmit",
-    "start": "webpack-dev-server",
     "test": "yarn lint && testem ci && yarn test:babel-plugins",
     "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
-    "test:watch": "testem"
+    "test:types": "dtslint test/types",
+    "test:ember": "yarn workspace @glimmer/component ember try:one",
+    "test:watch": "testem",
+    "problems": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --cache --ext .js,.ts"
   },
   "workspaces": [
     "packages/@glimmer/*",
