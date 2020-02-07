@@ -6,7 +6,7 @@ import { on, action } from '@glimmer/modifier';
 
 import {
   setComponentTemplate,
-  getScope,
+  getHostMeta,
   createTemplate,
   templateOnlyComponent,
 } from '@glimmer/core';
@@ -175,14 +175,14 @@ module(`[@glimmer/core] non-interactive tests`, () => {
 
     class MyComponent extends Component {
       get myLocale() {
-        return (getScope(this)!.locale as LocaleService).currentLocale;
+        return (getHostMeta(this) as { locale: LocaleService })!.locale.currentLocale;
       }
     }
 
     setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
 
     const html = await render(MyComponent, {
-      scope: {
+      meta: {
         locale: new LocaleService(),
       },
     });
@@ -205,7 +205,7 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
 
     const html = await render(MyComponent, {
-      scope: {
+      meta: {
         locale: new LocaleService(),
       },
     });

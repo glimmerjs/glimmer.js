@@ -9,14 +9,17 @@ export { iterableFor } from './src/environment/iterable';
 
 export { setComponentManager, setModifierManager } from './src/managers';
 
-export { ComponentManager, ComponentFactory } from './src/managers/component/custom';
-
-export { capabilities, Capabilities } from './src/managers/component/capabilities';
+export {
+  ComponentManager,
+  ComponentFactory,
+  capabilities as componentCapabilities,
+  Capabilities as ComponentCapabilities,
+} from './src/managers/component/custom';
 
 export { templateOnlyComponent } from './src/managers/component/template-only';
 
 export { createTemplate, setComponentTemplate } from './src/template';
 
-export { PUBLIC_DYNAMIC_SCOPE_KEY, getScope } from './src/scope';
+export { HOST_META_KEY, setHostMeta, getHostMeta } from './src/host-meta';
 
 export * from './src/references';

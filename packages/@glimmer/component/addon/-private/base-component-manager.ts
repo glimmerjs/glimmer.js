@@ -44,7 +44,8 @@ export default function BaseComponentManager<GlimmerComponent extends BaseCompon
 
     createComponent(
       ComponentClass: Constructor<GlimmerComponent>,
-      args: ComponentManagerArgs
+      args: ComponentManagerArgs,
+      _hostMeta: unknown
     ): GlimmerComponent {
       if (DEBUG) {
         ARGS_SET.set(args.named, true);

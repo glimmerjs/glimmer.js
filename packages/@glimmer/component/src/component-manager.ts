@@ -1,10 +1,10 @@
-import { capabilities } from '@glimmer/core';
-import { SHOULD_SET_SCOPE } from '@glimmer/core/src/managers/component/custom';
+import { componentCapabilities } from '@glimmer/core';
 
-import BaseComponentManager from '../addon/-private/base-component-manager';
+import BaseComponentManager, { ComponentManagerArgs, Constructor } from '../addon/-private/base-component-manager';
 import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
+import { setHostMeta } from '@glimmer/core';
 
-const CAPABILITIES = capabilities('3.13', {
+const CAPABILITIES = componentCapabilities('3.13', {
   destructor: true,
 });
 
@@ -19,7 +19,13 @@ export default class GlimmerComponentManager extends BaseComponentManager(
   () => null,
   CAPABILITIES
 ) {
-  [SHOULD_SET_SCOPE] = true;
+  createComponent(ComponentClass: Constructor<GlimmerComponent>, args: ComponentManagerArgs, hostMeta: unknown) {
+    let instance = super.createComponent(ComponentClass, args, hostMeta);
+
+    setHostMeta(instance, hostMeta);
+
+    return instance;
+  }
 
   destroyComponent(component: GlimmerComponent) {
     setDestroying(component);

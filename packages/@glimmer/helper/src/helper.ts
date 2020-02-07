@@ -1,7 +1,7 @@
 import { Helper as GlimmerHelper, Dict } from '@glimmer/interfaces';
 import HelperReference, { UserHelper } from './reference';
 import { Reference } from '@glimmer/reference';
-import { PUBLIC_DYNAMIC_SCOPE_KEY } from '@glimmer/core';
+import { HOST_META_KEY } from '@glimmer/core';
 
 export function helper(helperFn: UserHelper): GlimmerHelper {
   return (args, vm) => {
@@ -9,7 +9,7 @@ export function helper(helperFn: UserHelper): GlimmerHelper {
     let services;
 
     if (dynamicScope) {
-      services = dynamicScope.get(PUBLIC_DYNAMIC_SCOPE_KEY) as Reference<Dict<unknown>>;
+      services = dynamicScope.get(HOST_META_KEY) as Reference<Dict<unknown>>;
     }
 
     return new HelperReference(helperFn, args, services);

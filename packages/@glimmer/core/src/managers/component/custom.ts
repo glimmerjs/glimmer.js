@@ -17,11 +17,10 @@ import {
 } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
-import { setScope, PUBLIC_DYNAMIC_SCOPE_KEY } from '../../scope';
+import { HOST_META_KEY } from '../../host-meta';
 
 import { RootReference } from '../../references';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
-import { Capabilities } from './capabilities';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
@@ -37,9 +36,35 @@ export const VM_CAPABILITIES: VMComponentCapabilities = {
   dynamicScope: true,
 };
 
-///////////
+export interface Capabilities {
+  asyncLifecycleCallbacks: boolean;
+  destructor: boolean;
+  updateHook: boolean;
+}
 
-export const SHOULD_SET_SCOPE = Symbol('SHOULD_SET_SCOPE');
+export type OptionalCapabilities = Partial<Capabilities>;
+
+export type ManagerAPIVersion = '3.4' | '3.13';
+
+export function capabilities(
+  managerAPI: ManagerAPIVersion,
+  options: OptionalCapabilities = {}
+): Capabilities {
+  assert(
+    managerAPI === '3.4' || managerAPI === '3.13',
+    'Invalid component manager compatibility specified'
+  );
+
+  let updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
+
+  return {
+    asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
+    destructor: Boolean(options.destructor),
+    updateHook,
+  };
+}
+
+///////////
 
 export interface Args {
   named: Dict<unknown>;
@@ -53,7 +78,7 @@ export interface Args {
  */
 export interface ComponentManager<ComponentInstance> {
   capabilities: Capabilities;
-  createComponent(factory: unknown, args: Args): ComponentInstance;
+  createComponent(factory: unknown, args: Args, hostMeta: unknown): ComponentInstance;
   getContext(instance: ComponentInstance): unknown;
 }
 
@@ -222,15 +247,8 @@ export default class CustomComponentManager<ComponentInstance>
       positional: capturedArgs.positional.value(),
     };
 
-    const component = delegate.createComponent(definition.ComponentClass, value);
-
-    const publicScope = dynamicScope.get(PUBLIC_DYNAMIC_SCOPE_KEY);
-
-    // Currently, we only want to allow access to scope on our own components,
-    // not via custom component managers
-    if ((delegate as any)[SHOULD_SET_SCOPE] === true && publicScope !== undefined) {
-      setScope(component as any, publicScope.value() as Dict<unknown>);
-    }
+    const hostMeta = dynamicScope.get(HOST_META_KEY);
+    const component = delegate.createComponent(definition.ComponentClass, value, hostMeta && hostMeta.value());
 
     return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);
   }

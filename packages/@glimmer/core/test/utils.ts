@@ -10,11 +10,7 @@ const IS_INTERACTIVE = typeof document !== 'undefined';
 
 export async function render(
   component: ComponentFactory | SerializedTemplateWithLazyBlock<TemplateMeta>,
-  options?: Element | {
-    element?: Element;
-    args?: Dict<unknown>;
-    scope?: Dict<unknown>;
-  }
+  options?: HTMLElement | Partial<RenderComponentOptions>
 ): Promise<string> {
   if ('id' in component && 'block' in component && 'meta' in component) {
     let template = component;

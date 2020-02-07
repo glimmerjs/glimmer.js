@@ -4,7 +4,7 @@ import {
   createTemplate,
   setComponentTemplate,
   templateOnlyComponent,
-  getScope,
+  getHostMeta,
 } from '@glimmer/core';
 import { helper } from '@glimmer/helper';
 import OtherComponent from './OtherComponent';
@@ -36,7 +36,7 @@ class MyComponent extends Component {
   @tracked count = 55;
 
   get currentLocale() {
-    return (getScope(this)!.locale as LocaleService).currentLocale;
+    return (getHostMeta(this) as { locale: LocaleService }).locale.currentLocale;
   }
 
   @action

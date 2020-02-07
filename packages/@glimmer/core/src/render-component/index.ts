@@ -14,13 +14,13 @@ import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 import { RootReference, PathReference } from '@glimmer/reference';
 import { ComponentFactory } from '../managers/component/custom';
 
-import { PUBLIC_DYNAMIC_SCOPE_KEY } from '../scope';
+import { HOST_META_KEY } from '../host-meta';
 import { SimpleElement } from '@simple-dom/interface';
 
 export interface RenderComponentOptions {
   element: Element;
   args?: Dict<unknown>;
-  scope?: Dict<unknown>;
+  meta?: unknown;
 }
 
 type ResolveFn = () => void;
@@ -51,8 +51,8 @@ async function renderComponent(
 ): Promise<void> {
   const options: RenderComponentOptions =
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
-  const { element, scope, args } = options;
-  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args, scope);
+  const { element, meta, args } = options;
+  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args, meta);
   const result = iterator.sync();
   results.push(result);
 }
@@ -114,7 +114,7 @@ export function getTemplateIterator(
   element: Element | SimpleElement,
   env: Environment,
   componentArgs?: Dict<unknown>,
-  scope?: Dict<unknown>,
+  hostMeta?: unknown,
 ) {
   const runtime = CustomJitRuntime(resolver, context, env);
   const builder = clientBuilder(runtime.env, {
@@ -126,9 +126,9 @@ export function getTemplateIterator(
 
   let dynamicScope;
 
-  if (scope) {
+  if (hostMeta) {
     dynamicScope = new DefaultDynamicScope({
-      [PUBLIC_DYNAMIC_SCOPE_KEY]: new RootReference(scope),
+      [HOST_META_KEY]: new RootReference(hostMeta),
     });
   }
 

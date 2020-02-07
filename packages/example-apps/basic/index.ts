@@ -8,7 +8,7 @@ document.addEventListener(
     const element = document.getElementById('app');
     renderComponent(MyComponent, {
       element: element!,
-      scope: {
+      meta: {
         locale: new LocaleService('en_US'),
       },
     });
