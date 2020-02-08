@@ -4,7 +4,6 @@ import BaseComponentManager, {
   Constructor,
 } from '../addon/-private/base-component-manager';
 import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
-import { setHostMeta } from '@glimmer/core';
 
 const CAPABILITIES = componentCapabilities('3.13', {
   destructor: true,
@@ -23,12 +22,9 @@ export default class GlimmerComponentManager extends BaseComponentManager(
 ) {
   createComponent(
     ComponentClass: Constructor<GlimmerComponent>,
-    args: CapturedArgs,
-    hostMeta: unknown
+    args: CapturedArgs
   ): GlimmerComponent {
-    const instance = super.createComponent(ComponentClass, args, hostMeta);
-
-    setHostMeta(instance, hostMeta);
+    const instance = super.createComponent(ComponentClass, args);
 
     return instance;
   }

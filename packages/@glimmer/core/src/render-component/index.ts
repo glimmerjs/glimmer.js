@@ -3,7 +3,6 @@ import {
   clientBuilder,
   renderJitComponent,
   CustomJitRuntime,
-  DefaultDynamicScope,
 } from '@glimmer/runtime';
 import {
   Cursor as GlimmerCursor,
@@ -20,7 +19,6 @@ import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 import { RootReference, PathReference } from '@glimmer/reference';
 import { ComponentFactory } from '../managers/component/custom';
 
-import { HOST_META_KEY } from '../host-meta';
 import { SimpleElement } from '@simple-dom/interface';
 
 export interface RenderComponentOptions {
@@ -57,14 +55,10 @@ async function renderComponent(
 ): Promise<void> {
   const options: RenderComponentOptions =
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
-  const { element, meta, args } = options;
-  const iterator = getTemplateIterator(
-    ComponentClass,
-    element,
-    EnvironmentImpl.create(),
-    args,
-    meta
-  );
+
+  const { element, args } = options;
+
+  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args);
   const result = iterator.sync();
   results.push(result);
 }
@@ -122,8 +116,7 @@ export function getTemplateIterator(
   ComponentClass: ComponentFactory,
   element: Element | SimpleElement,
   env: Environment,
-  componentArgs?: Dict<unknown>,
-  hostMeta?: unknown
+  componentArgs?: Dict<unknown>
 ): TemplateIterator {
   const runtime = CustomJitRuntime(resolver, context, env);
   const builder = clientBuilder(runtime.env, {
@@ -133,21 +126,5 @@ export function getTemplateIterator(
 
   const handle = resolver.registerRoot(ComponentClass);
 
-  let dynamicScope;
-
-  if (hostMeta) {
-    dynamicScope = new DefaultDynamicScope({
-      [HOST_META_KEY]: new RootReference(hostMeta),
-    });
-  }
-
-  return renderJitComponent(
-    runtime,
-    builder,
-    context,
-    0,
-    handle,
-    dictToReference(componentArgs),
-    dynamicScope
-  );
+  return renderJitComponent(runtime, builder, context, 0, handle, dictToReference(componentArgs));
 }

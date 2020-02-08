@@ -24,7 +24,7 @@
   },
   "launch_in_ci": [
     "Node",
-    "Firefox"
+    "Chrome"
   ],
   "launch_in_dev": [
     "Node"

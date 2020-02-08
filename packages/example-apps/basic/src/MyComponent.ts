@@ -4,24 +4,24 @@ import {
   createTemplate,
   setComponentTemplate,
   templateOnlyComponent,
-  getHostMeta,
 } from '@glimmer/core';
 import { helper } from '@glimmer/helper';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
-import LocaleService from './services/LocaleService';
 
 const myHelper = helper(function([name], { greeting }) {
   return `Helper: ${greeting} ${name}`;
 });
 
-const isCJK = helper(function(args, hash, { services }) {
-  const localeService = services!.locale as LocaleService;
-  return (
-    localeService.currentLocale === 'zh_CN' ||
-    localeService.currentLocale === 'ko_KO' ||
-    localeService.currentLocale === 'ja_JP'
-  );
+const isCJK = helper(function(_args, _hash) {
+  // const localeService = services!.locale as LocaleService;
+  // return (
+  //   localeService.currentLocale === 'zh_CN' ||
+  //   localeService.currentLocale === 'ko_KO' ||
+  //   localeService.currentLocale === 'ja_JP'
+  // );
+
+  return true;
 });
 
 const TemplateOnlyComponent = templateOnlyComponent();
@@ -36,7 +36,8 @@ class MyComponent extends Component {
   @tracked count = 55;
 
   get currentLocale(): string {
-    return (getHostMeta(this) as { locale: LocaleService }).locale.currentLocale;
+    return 'zh_CN';
+    // return (getHostMeta(this) as { locale: LocaleService }).locale.currentLocale;
   }
 
   @action

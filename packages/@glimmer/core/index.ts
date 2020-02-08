@@ -21,6 +21,4 @@ export { templateOnlyComponent } from './src/managers/component/template-only';
 
 export { createTemplate, setComponentTemplate } from './src/template';
 
-export { HOST_META_KEY, setHostMeta, getHostMeta } from './src/host-meta';
-
 export * from './src/references';

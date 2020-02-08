@@ -13,11 +13,9 @@ import {
   TemplateOk,
   Environment,
   CompilableProgram,
-  DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
-import { HOST_META_KEY } from '../../host-meta';
 
 import { RootReference } from '../../references';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
@@ -78,7 +76,7 @@ export interface Args {
  */
 export interface ComponentManager<ComponentInstance> {
   capabilities: Capabilities;
-  createComponent(factory: unknown, args: Args, hostMeta: unknown): ComponentInstance;
+  createComponent(factory: unknown, args: Args): ComponentInstance;
   getContext(instance: ComponentInstance): unknown;
 }
 
@@ -188,8 +186,7 @@ export default class CustomComponentManager<ComponentInstance>
   create(
     _env: Environment,
     definition: CustomComponentDefinitionState<ComponentInstance>,
-    args: VMArguments,
-    dynamicScope: DynamicScope
+    args: VMArguments
   ): CustomComponentState<ComponentInstance> {
     const { delegate } = definition;
     const capturedArgs = args.capture();
@@ -245,11 +242,9 @@ export default class CustomComponentManager<ComponentInstance>
       positional: capturedArgs.positional.value(),
     };
 
-    const hostMeta = dynamicScope.get(HOST_META_KEY);
     const component = delegate.createComponent(
       definition.ComponentClass,
-      value,
-      hostMeta && hostMeta.value()
+      value
     );
 
     return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);

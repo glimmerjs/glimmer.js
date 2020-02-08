@@ -6,7 +6,6 @@ import { on, action } from '@glimmer/modifier';
 
 import {
   setComponentTemplate,
-  getHostMeta,
   createTemplate,
   templateOnlyComponent,
 } from '@glimmer/core';
@@ -14,7 +13,7 @@ import {
 import { module, test, render } from '../utils';
 import { DEBUG } from '@glimmer/env';
 
-module(`[@glimmer/core] non-interactive tests`, () => {
+module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('it renders a component', async assert => {
     class MyComponent extends Component {}
 
@@ -166,51 +165,51 @@ module(`[@glimmer/core] non-interactive tests`, () => {
   //   assert.equal(await render(MainComponent), 'Hello Glimmer!');
   // });
 
-  test('a component can inject services', async assert => {
-    class LocaleService {
-      get currentLocale(): string {
-        return 'en_US';
-      }
-    }
+  // test('a component can inject services', async assert => {
+  //   class LocaleService {
+  //     get currentLocale(): string {
+  //       return 'en_US';
+  //     }
+  //   }
 
-    class MyComponent extends Component {
-      get myLocale(): string {
-        return (getHostMeta(this) as { locale: LocaleService })!.locale.currentLocale;
-      }
-    }
+  //   class MyComponent extends Component {
+  //     get myLocale(): string {
+  //       return (getHostMeta(this) as { locale: LocaleService })!.locale.currentLocale;
+  //     }
+  //   }
 
-    setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
+  //   setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
 
-    const html = await render(MyComponent, {
-      meta: {
-        locale: new LocaleService(),
-      },
-    });
-    assert.strictEqual(html, '<h1>en_US</h1>');
-  });
+  //   const html = await render(MyComponent, {
+  //     meta: {
+  //       locale: new LocaleService(),
+  //     },
+  //   });
+  //   assert.strictEqual(html, '<h1>en_US</h1>');
+  // });
 
-  test('a helper can inject services', async assert => {
-    class LocaleService {
-      get currentLocale(): string {
-        return 'en_US';
-      }
-    }
+  // test('a helper can inject services', async assert => {
+  //   class LocaleService {
+  //     get currentLocale(): string {
+  //       return 'en_US';
+  //     }
+  //   }
 
-    const myHelper = helper((_args, _hash, { services }) => {
-      const localeService = services!.locale as LocaleService;
-      return `The locale is ${localeService.currentLocale}`;
-    });
+  //   const myHelper = helper((_args, _hash, { services }) => {
+  //     const localeService = services!.locale as LocaleService;
+  //     return `The locale is ${localeService.currentLocale}`;
+  //   });
 
-    class MyComponent extends Component {}
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
+  //   class MyComponent extends Component {}
+  //   setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
 
-    const html = await render(MyComponent, {
-      meta: {
-        locale: new LocaleService(),
-      },
-    });
-    assert.strictEqual(html, '<h1>The locale is en_US</h1>');
-  });
+  //   const html = await render(MyComponent, {
+  //     meta: {
+  //       locale: new LocaleService(),
+  //     },
+  //   });
+  //   assert.strictEqual(html, '<h1>The locale is en_US</h1>');
+  // });
 
   test('a component can be rendered more than once', async assert => {
     class MyComponent extends Component {}
@@ -256,34 +255,6 @@ module(`[@glimmer/core] non-interactive tests`, () => {
     } catch (err) {
       assert.ok(err.toString().match(/Cannot find component NonExistent in scope/));
     }
-  });
-
-  test('renders multiple components in different places', async assert => {
-    assert.expect(2);
-
-    const firstContainerElement = document.createElement('div');
-    const secondContainerElement = document.createElement('div');
-
-    await render(createTemplate(`<h1>Hello Glimmer!</h1>`), firstContainerElement);
-    await render(createTemplate(`<h1>Hello Robbie!</h1>`), secondContainerElement);
-
-    assert.equal(firstContainerElement.innerHTML, '<h1>Hello Glimmer!</h1>');
-    assert.equal(secondContainerElement.innerHTML, '<h1>Hello Robbie!</h1>');
-  });
-
-  test('renders a component without affecting existing content', async assert => {
-    assert.expect(1);
-
-    const containerElement = document.createElement('div');
-    const previousSibling = document.createElement('p');
-
-    previousSibling.appendChild(document.createTextNode('foo'));
-    containerElement.appendChild(previousSibling);
-    containerElement.appendChild(document.createTextNode('bar'));
-
-    await render(createTemplate(`<h1>Hello Glimmer!</h1>`), containerElement);
-
-    assert.equal(containerElement.innerHTML, '<p>foo</p>bar<h1>Hello Glimmer!</h1>');
   });
 
   if (DEBUG) {
