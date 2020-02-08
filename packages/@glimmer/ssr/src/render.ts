@@ -9,7 +9,6 @@ import EnvironmentImpl from './environment';
 export interface RenderOptions {
   args?: Dict<unknown>;
   serializer?: HTMLSerializer;
-  scope?: Dict<unknown>;
 }
 
 const defaultSerializer = new HTMLSerializer(voidMap);
@@ -40,8 +39,7 @@ export function renderToStream(
     ComponentClass,
     element,
     EnvironmentImpl.create(),
-    options.args,
-    options.scope
+    options.args
   );
   iterator.sync();
 
