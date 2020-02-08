@@ -4,26 +4,11 @@ import { TemplateMeta } from './managers/component/custom';
 const TEMPLATE_MAP = new WeakMap<object, SerializedTemplateWithLazyBlock<TemplateMeta>>();
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function createTemplate(
+// This is provided by the `babel-plugin-strict-template-precompile` plugin
+export declare function createTemplate(
   templateScopeOrTemplate: Dict<unknown> | string,
   template?: string
-): SerializedTemplateWithLazyBlock<TemplateMeta> {
-  let block;
-
-  if (template === undefined) {
-    // Babel transform does this type conversion
-    block = (templateScopeOrTemplate as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
-
-    block.meta.scope = (): Dict<unknown> => ({});
-  } else {
-    // Babel transform does this type conversion
-    block = (template as unknown) as SerializedTemplateWithLazyBlock<TemplateMeta>;
-
-    block.meta.scope = (): Dict<unknown> => templateScopeOrTemplate as Dict<unknown>;
-  }
-
-  return block;
-}
+): SerializedTemplateWithLazyBlock<TemplateMeta>;
 
 export function setComponentTemplate<T extends object>(
   ComponentClass: T,

@@ -1,13 +1,14 @@
-import { createTemplate } from '@glimmer/core';
-createTemplate({
-  id: '2cUE8DNl',
-  block:
-    '{"symbols":[],"statements":[[7,"Component",[],[[],[]],null]],"hasEval":false,"upvars":[]}',
-  meta: {},
+({
+  id: "2cUE8DNl",
+  block: "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
+  meta: {
+    scope: () => ({})
+  }
 });
-createTemplate({
-  id: '2cUE8DNl',
-  block:
-    '{"symbols":[],"statements":[[7,"Component",[],[[],[]],null]],"hasEval":false,"upvars":[]}',
-  meta: {},
+({
+  id: "2cUE8DNl",
+  block: "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
+  meta: {
+    scope: () => ({})
+  }
 });

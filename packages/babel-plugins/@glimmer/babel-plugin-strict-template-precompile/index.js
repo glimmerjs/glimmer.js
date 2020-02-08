@@ -1,7 +1,7 @@
 const { precompile } = require('@glimmer/compiler');
 
 module.exports = function strictTemplatePrecompile(babel, options) {
-  const { parse } = babel;
+  const { types: t, parse } = babel;
   const { precompile: precompileOptions } = options || {};
 
   return {
@@ -16,6 +16,13 @@ module.exports = function strictTemplatePrecompile(babel, options) {
 
         if (importedName === 'createTemplate') {
           state.templateImportId = localName;
+
+          // remove the createTemplate named import
+          if (path.parentPath.node.specifiers.length > 1) {
+            path.remove();
+          } else {
+            path.parentPath.remove();
+          }
         }
       },
 
@@ -28,8 +35,28 @@ module.exports = function strictTemplatePrecompile(babel, options) {
           throw new Error('`createTemplate()` must receive exactly one or two arguments');
         }
 
-        const templatePath =
-          path.node.arguments.length === 1 ? path.get('arguments.0') : path.get('arguments.1');
+        let scopePath, templatePath;
+
+        if (path.node.arguments.length === 1) {
+          templatePath = path.get('arguments.0');
+        } else {
+          scopePath = path.get('arguments.0');
+          templatePath = path.get('arguments.1');
+        }
+
+        let scope;
+
+        if (scopePath) {
+          if (scopePath.type !== 'ObjectExpression') {
+            throw new Error(
+              `createTemplate() must receive an object literal with all of the imported values for the template as its scope parameter, received: ${scopePath.type}`
+            );
+          }
+
+          scope = t.arrowFunctionExpression([], scopePath.node);
+        } else {
+          scope = t.arrowFunctionExpression([], t.objectExpression([]));
+        }
 
         const { type } = templatePath.node;
 
@@ -49,11 +76,22 @@ module.exports = function strictTemplatePrecompile(babel, options) {
           }
 
           const compiled = precompile(templateString, precompileOptions);
-          const parsed = parse(`(${compiled})`);
+          const ast = parse(`(${compiled})`);
 
-          templatePath.replaceWith(parsed.program.body[0].expression);
+          t.traverseFast(ast, node => {
+            if (t.isObjectProperty(node)) {
+              if (node.key.value === 'meta') {
+                node.value.properties.push(t.objectProperty(t.identifier('scope'), scope));
+              }
+              if (t.isStringLiteral(node.key)) {
+                node.key = t.identifier(node.key.value);
+              }
+            }
+          });
+
+          path.replaceWith(ast.program.body[0].expression);
         } else {
-          throw new Error('createTemplate() must receive a template string');
+          throw new Error(`createTemplate() must receive a template string, received: ${type}`);
         }
       },
     },
