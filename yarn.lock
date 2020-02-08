@@ -3182,11 +3182,6 @@ babel-plugin-module-resolver@^3.1.1:
     reselect "^3.0.1"
     resolve "^1.4.0"
 
-babel-plugin-strip-glimmer-utils@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-strip-glimmer-utils/-/babel-plugin-strip-glimmer-utils-0.1.1.tgz#df74a4a349d0b8522f434c457cb6cef20483c9ea"
-  integrity sha1-33Sko0nQuFIvQ0xFfLbO8gSDyeo=
-
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-async-functions/-/babel-plugin-syntax-async-functions-6.13.0.tgz#cad9cad1191b5ad634bf30ae0872391e0647be95"
