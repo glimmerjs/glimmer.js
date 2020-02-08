@@ -53,6 +53,9 @@
     "webpack-dev-server": "^3.7.1",
     "webpack": "^4.34.0"
   },
+  "resolutions": {
+    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
+  },
   "changelog": {
     "repo": "glimmerjs/glimmer.js",
     "labels": {
