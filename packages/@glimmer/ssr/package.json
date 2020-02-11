@@ -7,13 +7,10 @@
   "files": [
     "dist"
   ],
-  "main": "dist/commonjs/es5/index.js",
-  "module": "dist/modules/es2017/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
   "dependencies": {
-    "@glimmer/application": "^1.0.0",
-    "@glimmer/component": "^1.0.0",
-    "@glimmer/di": "^0.1.9",
+    "@glimmer/core": "^1.0.0",
     "@glimmer/node": "^0.44.0",
     "@glimmer/reference": "^0.44.0",
     "@glimmer/runtime": "^0.44.0",
@@ -21,5 +18,8 @@
     "@simple-dom/document": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"
+  },
+  "devDependencies": {
+    "@glimmer/component": "^1.0.0"
   }
 }

@@ -6,9 +6,8 @@
     "ember-addon"
   ],
   "license": "MIT",
-  "main": "dist/commonjs/es5/index.js",
-  "module": "dist/modules/es2017/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
     "Robert Jackson <me@rwjblue.com>",
@@ -27,7 +26,6 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
-    "@glimmer/di": "^0.1.9",
     "@glimmer/env": "^0.1.7",
     "@glimmer/util": "^0.44.0",
     "broccoli-file-creator": "^2.1.1",

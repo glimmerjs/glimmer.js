@@ -10,7 +10,6 @@ You will need the following things properly installed on your computer.
 * [Git](https://git-scm.com/)
 * [Node.js](https://nodejs.org/) (with NPM)
 * [Yarn](https://yarnpkg.com/en/)
-* [Ember CLI](https://ember-cli.com/)
 
 ## Installation
 
@@ -20,15 +19,15 @@ You will need the following things properly installed on your computer.
 
 ## Running / Development
 
-* `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
+* `yarn start`
+* Visit your app at [http://localhost:8080](http://localhost:8080).
 
 ### Building
 
-* `ember build` (development)
-* `ember build --environment production` (production)
+* `yarn build`
 
 ## Further Reading / Useful Links
 
-* [glimmerjs](http://github.com/tildeio/glimmer/)
-* [ember-cli](https://ember-cli.com/)
+* [glimmerjs](http://github.com/glimmerjs/glimmer.js/)
+* [webpack](https://webpack.js.org/)
+* [babel](https://babeljs.io/docs/en/configuration)

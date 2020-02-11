@@ -18,17 +18,16 @@
     "noUnusedLocals": true,
     "noImplicitThis": true,
     // Enabling these breaks @glimmer/application, fix and reenable this
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": false,
-    "noUnusedParameters": false,
-    "strictNullChecks": false,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
     "allowUnreachableCode": false,
     "noImplicitReturns": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
 
     "newLine": "LF",
-    "noEmit": true,
 
     "paths": {
       "*": ["*/src", "*"]
@@ -37,10 +36,9 @@
   "include": [
     // Because of the circular dependency, we have to avoid specifying globs
     // that include node_modules.
-    "packages/@glimmer/*/src/**/*.ts",
     "packages/@glimmer/*/index.ts",
-    "packages/@glimmer/*/test/**/*.ts",
-    "packages/rollup-plugin-typescript2/src/**/*.ts"
+    "packages/@glimmer/*/src/**/*.ts",
+    "packages/@glimmer/*/test/**/*.ts"
   ],
   "exclude": ["node_modules", "packages/@glimmer/blueprint"]
 }

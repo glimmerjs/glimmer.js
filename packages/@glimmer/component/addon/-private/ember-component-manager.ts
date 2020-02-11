@@ -6,11 +6,11 @@ import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
 import { gte } from 'ember-compatibility-helpers';
 import BaseComponentManager, {
-  ComponentManagerArgs,
   CustomComponentCapabilities,
 } from './base-component-manager';
 
 import GlimmerComponent, { setDestroyed, setDestroying } from './component';
+import { CapturedArgs } from '@glimmer/core';
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
@@ -23,29 +23,7 @@ const CAPABILITIES = gte('3.13.0-beta.1')
       asyncLifecycleCallbacks: false,
     });
 
-/**
- * This component manager runs in Ember.js environments and extends the base component manager to:
- *
- * 1. Properly destroy the component's associated `meta` data structure
- * 2. Schedule destruction using Ember's runloop
- */
-class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
-  destroyComponent(component: GlimmerComponent) {
-    if (component.isDestroying) {
-      return;
-    }
-
-    let meta = Ember.meta(component);
-
-    meta.setSourceDestroying();
-    setDestroying(component);
-
-    schedule('actions', component, component.willDestroy);
-    schedule('destroy', this, scheduledDestroyComponent, component, meta);
-  }
-}
-
-function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta) {
+function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta): void {
   if (component.isDestroyed) {
     return;
   }
@@ -56,8 +34,31 @@ function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta)
   setDestroyed(component);
 }
 
+/**
+ * This component manager runs in Ember.js environments and extends the base component manager to:
+ *
+ * 1. Properly destroy the component's associated `meta` data structure
+ * 2. Schedule destruction using Ember's runloop
+ */
+class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
+  destroyComponent(component: GlimmerComponent): void {
+    if (component.isDestroying) {
+      return;
+    }
+
+    const meta = Ember.meta(component);
+
+    meta.setSourceDestroying();
+    setDestroying(component);
+
+    schedule('actions', component, component.willDestroy);
+    schedule('destroy', this, scheduledDestroyComponent, component, meta);
+  }
+}
+
+
 interface EmberGlimmerComponentManager {
-  updateComponent?: (component: GlimmerComponent, args: ComponentManagerArgs) => void;
+  updateComponent?: (component: GlimmerComponent, args: CapturedArgs) => void;
 }
 
 // In Ember 3.12 and earlier, the updateComponent hook was mandatory.
@@ -69,8 +70,8 @@ interface EmberGlimmerComponentManager {
 if (!gte('3.13.0-beta.1')) {
   EmberGlimmerComponentManager.prototype.updateComponent = function updateComponent(
     component: GlimmerComponent,
-    args: ComponentManagerArgs
-  ) {
+    args: CapturedArgs
+  ): void {
     let argSnapshot = args.named;
 
     if (DEBUG) {
@@ -89,7 +90,7 @@ interface EmberMeta {
 }
 
 declare module 'ember' {
-
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   export namespace Ember {
     function destroy(obj: {}): void;
     function meta(obj: {}): EmberMeta;

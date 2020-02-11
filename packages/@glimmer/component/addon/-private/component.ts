@@ -1,17 +1,16 @@
 import { DEBUG } from '@glimmer/env';
-import { setOwner } from './owner';
 
-const DESTROYING = new WeakMap<BaseComponent<unknown>, boolean>();
-const DESTROYED = new WeakMap<BaseComponent<unknown>, boolean>();
+const DESTROYING = new WeakMap<GlimmerComponent<object>, boolean>();
+const DESTROYED = new WeakMap<GlimmerComponent<object>, boolean>();
 
-export function setDestroying(component: BaseComponent<unknown>) {
+export function setDestroying(component: GlimmerComponent<object>): void {
   DESTROYING.set(component, true);
 }
-export function setDestroyed(component: BaseComponent<unknown>) {
+export function setDestroyed(component: GlimmerComponent<object>): void {
   DESTROYED.set(component, true);
 }
 
-export let ARGS_SET: WeakMap<any, boolean>;
+export let ARGS_SET: WeakMap<object, boolean>;
 
 if (DEBUG) {
   ARGS_SET = new WeakMap();
@@ -140,7 +139,7 @@ if (DEBUG) {
  * `args` property. For example, if `{{@firstName}}` is `Tom` in the template,
  * inside the component `this.args.firstName` would also be `Tom`.
  */
-export default class BaseComponent<T = object> {
+export default class GlimmerComponent<Args extends {} = {}> {
   /**
    * Constructs a new component and assigns itself the passed properties. You
    * should not construct new components yourself. Instead, Glimmer will
@@ -149,17 +148,14 @@ export default class BaseComponent<T = object> {
    * @param owner
    * @param args
    */
-  constructor(owner: unknown, args: T) {
-    if (DEBUG && !(owner !== null && typeof owner === 'object' && ARGS_SET.has(args))) {
+  constructor(_owner: unknown, args: Args) {
+    if (DEBUG && !ARGS_SET.has(args)) {
       throw new Error(
-        `You must pass both the owner and args to super() in your component: ${
-          this.constructor.name
-        }. You can pass them directly, or use ...arguments to pass all arguments through.`
+        `You must pass both the owner and args to super() in your component: ${this.constructor.name}. You can pass them directly, or use ...arguments to pass all arguments through.`
       );
     }
 
     this.args = args;
-    setOwner(this, owner as any);
 
     DESTROYING.set(this, false);
     DESTROYED.set(this, false);
@@ -189,18 +185,18 @@ export default class BaseComponent<T = object> {
    * <p>Welcome, {{@firstName}} {{@lastName}}!</p>
    * ```
    */
-  args: Readonly<T>;
+  args: Readonly<Args>;
 
-  get isDestroying() {
-    return DESTROYING.get(this);
+  get isDestroying(): boolean {
+    return DESTROYING.get(this) || false;
   }
 
-  get isDestroyed() {
-    return DESTROYED.get(this);
+  get isDestroyed(): boolean {
+    return DESTROYED.get(this) || false;
   }
 
   /**
    * Called before the component has been removed from the DOM.
    */
-  willDestroy() {}
+  willDestroy(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 }

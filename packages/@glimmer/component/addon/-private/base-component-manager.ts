@@ -1,10 +1,6 @@
 import { DEBUG } from '@glimmer/env';
+import { ComponentManager, CapturedArgs } from '@glimmer/core';
 import BaseComponent, { ARGS_SET } from './component';
-
-export interface ComponentManagerArgs {
-  named: object;
-  positional: any[];
-}
 
 export type SetOwner = (obj: {}, owner: unknown) => void;
 export type GetOwner = (obj: {}) => unknown;
@@ -29,10 +25,10 @@ export default function BaseComponentManager<GlimmerComponent extends BaseCompon
   setOwner: SetOwner,
   getOwner: GetOwner,
   capabilities: CustomComponentCapabilities
-) {
+): { new(owner: unknown): ComponentManager<GlimmerComponent> } {
   return class {
-    static create(attrs: {}) {
-      let owner = getOwner(attrs);
+    static create(attrs: {}): ComponentManager<GlimmerComponent> {
+      const owner = getOwner(attrs);
       return new this(owner);
     }
 
@@ -44,7 +40,7 @@ export default function BaseComponentManager<GlimmerComponent extends BaseCompon
 
     createComponent(
       ComponentClass: Constructor<GlimmerComponent>,
-      args: ComponentManagerArgs
+      args: CapturedArgs
     ): GlimmerComponent {
       if (DEBUG) {
         ARGS_SET.set(args.named, true);
@@ -53,7 +49,7 @@ export default function BaseComponentManager<GlimmerComponent extends BaseCompon
       return new ComponentClass(getOwner(this), args.named);
     }
 
-    getContext(component: GlimmerComponent) {
+    getContext(component: GlimmerComponent): GlimmerComponent {
       return component;
     }
   };

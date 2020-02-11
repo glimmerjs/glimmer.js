@@ -1,0 +1,32 @@
+{
+  "framework": "qunit",
+  "test_page": "test/index.html",
+  "launchers": {
+    "Node": {
+      "command": "node_modules/.bin/qunit dist/nodeTests.bundle.js",
+      "protocol": "tap"
+    }
+  },
+  "on_start": {
+    "command": "webpack",
+    "wait_for_text": "Built at:"
+  },
+  "watch_files": [
+    "dist/tests.bundle.js",
+    "dist/nodeTests.bundle.js"
+  ],
+  "browser_args": {
+    "mode": "ci",
+    "Chrome": [
+      "--headless",
+      "--remote-debugging-port=9222"
+    ]
+  },
+  "launch_in_ci": [
+    "Node",
+    "Chrome"
+  ],
+  "launch_in_dev": [
+    "Node"
+  ]
+}

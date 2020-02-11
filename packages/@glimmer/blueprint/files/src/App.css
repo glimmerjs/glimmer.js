@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+}
+
+#app {
+  background: #1E293B;
+  min-height: 100vh;
+
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+#intro {
+  width: 34em;
+}
+
+#intro h1, #intro h3 {
+  font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-style: italic;
+
+  color: #FFFFFF;
+  margin: 0.35em;
+}
+
+#intro img {
+  float: left;
+  width: 6.5em;
+  margin: 0.5em 2em;
+}
+
+#intro a {
+  color: #FFFFFF;
+}

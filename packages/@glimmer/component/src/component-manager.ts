@@ -1,13 +1,11 @@
-import { capabilities, Bounds } from '@glimmer/application';
-import { setOwner, getOwner } from '@glimmer/di';
+import { componentCapabilities, CapturedArgs } from '@glimmer/core';
 
-import BaseComponentManager from '../addon/-private/base-component-manager';
-import { setDestroying, setDestroyed } from '../addon/-private/component';
-import GlimmerComponent from './component';
+import BaseComponentManager, {
+  Constructor,
+} from '../addon/-private/base-component-manager';
+import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
 
-const CAPABILITIES = capabilities('3.13', {
-  asyncLifecycleCallbacks: true,
-  updateHook: true,
+const CAPABILITIES = componentCapabilities('3.13', {
   destructor: true,
 });
 
@@ -18,27 +16,22 @@ const CAPABILITIES = capabilities('3.13', {
  * 2. Invoke legacy component lifecycle hooks (didInsertElement and didUpdate)
  */
 export default class GlimmerComponentManager extends BaseComponentManager(
-  setOwner,
-  getOwner,
+  () => null,
+  () => null,
   CAPABILITIES
 ) {
-  destroyComponent(component: GlimmerComponent) {
+  createComponent(
+    ComponentClass: Constructor<GlimmerComponent>,
+    args: CapturedArgs
+  ): GlimmerComponent {
+    const instance = super.createComponent(ComponentClass, args);
+
+    return instance;
+  }
+
+  destroyComponent(component: GlimmerComponent): void {
     setDestroying(component);
     component.willDestroy();
     setDestroyed(component);
-  }
-
-  didCreateComponent(component: GlimmerComponent) {
-    component.didInsertElement();
-  }
-
-  updateComponent() { }
-
-  didUpdateComponent(component: GlimmerComponent) {
-    component.didUpdate();
-  }
-
-  __glimmer__didRenderLayout(component: GlimmerComponent, bounds: Bounds) {
-    component.bounds = bounds;
   }
 }

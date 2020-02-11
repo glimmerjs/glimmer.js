@@ -1,6 +1,8 @@
-type ValidateStructure<T, Struct> =
-  T extends Struct ?
-  Exclude<keyof T, keyof Struct> extends never ? T : never : never;
+type ValidateStructure<T, Struct> = T extends Struct
+  ? Exclude<keyof T, keyof Struct> extends never
+    ? T
+    : never
+  : never;
 
 /**
  * Validates the _keys_ of an object. This tells us that it has exactly the
@@ -31,5 +33,5 @@ type ValidateStructure<T, Struct> =
  * ```
  */
 export function hasExactKeys<T>() {
-  return function <U>(value: ValidateStructure<U, T>) { };
+  return function<U>(value: ValidateStructure<U, T>) {};
 }

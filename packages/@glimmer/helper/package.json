@@ -1,0 +1,20 @@
+{
+  "name": "@glimmer/helper",
+  "version": "1.0.0",
+  "description": "Helper Functionality",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
+  "repository": "https://github.com/tomdale/glimmer-lite",
+  "author": "Tom Dale <tom@tomdale.net>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@glimmer/core": "^1.0.0",
+    "@glimmer/component": "^1.0.0",
+    "@glimmer/interfaces": "^0.44.0",
+    "@glimmer/reference": "^0.44.0"
+  }
+}

@@ -8,7 +8,7 @@ module('Integration | Component | glimmer.js guide example', function(hooks) {
 
   hooks.beforeEach(function(assert) {
     assert.validateSpeakers = (speakerNames, currentSpeaker) => {
-      let items = this.element.querySelectorAll('li');
+      const items = this.element.querySelectorAll('li');
       assert.equal(items.length, speakerNames.length, 'correct number of entires found');
 
       for (let i = 0; i < speakerNames.length; i++) {
@@ -18,7 +18,6 @@ module('Integration | Component | glimmer.js guide example', function(hooks) {
       assert.dom('p').hasText(`Speaking: ${currentSpeaker}`);
     };
   });
-
 
   test('renders', async function(assert) {
     await render(hbs`<ConferenceSpeakers />`);

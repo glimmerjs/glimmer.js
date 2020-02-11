@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '8'
+  - '10'
 
 env:
   - MOZ_HEADLESS=1
@@ -32,7 +32,7 @@ jobs:
       name: Package Tests
       script: yarn test
     - name: Lint
-      script: yarn tslint
+      script: yarn lint
     - name: Type Lint
       script:
         - yarn build

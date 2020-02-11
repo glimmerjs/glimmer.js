@@ -20,6 +20,7 @@ dist
 /npm-debug.log*
 /testem.log
 /yarn-error.log
+.eslintcache
 
 # ember-try
 **/.node_modules.ember-try/**
