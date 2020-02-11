@@ -24,8 +24,7 @@ You will need the following things properly installed on your computer.
 
 ### Building
 
-* `yarn build` (development)
-* `yarn build --mode production` (production)
+* `yarn build`
 
 ## Further Reading / Useful Links
 
