@@ -11,7 +11,7 @@
     "start": "webpack-dev-server",
     "test": "testem ci && yarn lint",
     "test:watch": "testem",
-    "lint": "eslint . --ext=js,ts"
+    "lint": "eslint . --ext=js,ts --cache"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
