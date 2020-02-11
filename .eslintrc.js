@@ -28,6 +28,7 @@ module.exports = {
         '**/blueprints/**/*.js',
         'webpack.config.js',
         'packages/babel-plugins/**/*.js',
+        'packages/@glimmer/blueprint/index.js',
       ],
       env: {
         es6: true,
