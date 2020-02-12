@@ -1,7 +1,6 @@
 const { module, test } = QUnit;
 
-import { setComponentManager } from '../..';
-import { getComponentManager } from '../../src/managers';
+import { getComponentManager, setComponentManager } from '../../src/managers';
 
 module('component managers', () => {
   test('setting and getting', assert => {
