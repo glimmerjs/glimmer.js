@@ -1,7 +1,6 @@
 const { module, test } = QUnit;
 
-import { setComponentTemplate } from '../..';
-import { getComponentTemplate } from '../../src/template';
+import { getComponentTemplate, setComponentTemplate } from '../../src/template';
 
 module('component templates', () => {
   test('setting and getting', assert => {
