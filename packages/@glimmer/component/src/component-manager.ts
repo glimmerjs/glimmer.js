@@ -1,8 +1,6 @@
-import { componentCapabilities, CapturedArgs } from '@glimmer/core';
+import { componentCapabilities } from '@glimmer/core';
 
-import BaseComponentManager, {
-  Constructor,
-} from '../addon/-private/base-component-manager';
+import BaseComponentManager from '../addon/-private/base-component-manager';
 import GlimmerComponent, { setDestroying, setDestroyed } from '../addon/-private/component';
 
 const CAPABILITIES = componentCapabilities('3.13', {
@@ -15,19 +13,8 @@ const CAPABILITIES = componentCapabilities('3.13', {
  * 1. Implement a lightweight destruction protocol (currently not deferred, like in Ember)
  * 2. Invoke legacy component lifecycle hooks (didInsertElement and didUpdate)
  */
-export default class GlimmerComponentManager extends BaseComponentManager(
-  () => null,
-  () => null,
-  CAPABILITIES
-) {
-  createComponent(
-    ComponentClass: Constructor<GlimmerComponent>,
-    args: CapturedArgs
-  ): GlimmerComponent {
-    const instance = super.createComponent(ComponentClass, args);
-
-    return instance;
-  }
+export default class GlimmerComponentManager extends BaseComponentManager<GlimmerComponent> {
+  capabilities = CAPABILITIES;
 
   destroyComponent(component: GlimmerComponent): void {
     setDestroying(component);

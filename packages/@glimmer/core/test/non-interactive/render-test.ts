@@ -8,6 +8,7 @@ import {
   setComponentTemplate,
   createTemplate,
   templateOnlyComponent,
+  getOwner,
 } from '@glimmer/core';
 
 import { module, test, render } from '../utils';
@@ -165,28 +166,33 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
   //   assert.equal(await render(MainComponent), 'Hello Glimmer!');
   // });
 
-  // test('a component can inject services', async assert => {
-  //   class LocaleService {
-  //     get currentLocale(): string {
-  //       return 'en_US';
-  //     }
-  //   }
+  test('components receive owner', async assert => {
+    class Owner {
+      services = {
+        locale: new LocaleService(),
+      };
+    }
 
-  //   class MyComponent extends Component {
-  //     get myLocale(): string {
-  //       return (getHostMeta(this) as { locale: LocaleService })!.locale.currentLocale;
-  //     }
-  //   }
+    class LocaleService {
+      get currentLocale(): string {
+        return 'en_US';
+      }
+    }
 
-  //   setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
+    class MyComponent extends Component {
+      get myLocale(): string {
+        return getOwner<Owner>(this).services.locale.currentLocale;
+      }
+    }
 
-  //   const html = await render(MyComponent, {
-  //     meta: {
-  //       locale: new LocaleService(),
-  //     },
-  //   });
-  //   assert.strictEqual(html, '<h1>en_US</h1>');
-  // });
+    setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
+
+    const html = await render(MyComponent, {
+      owner: new Owner(),
+    });
+
+    assert.strictEqual(html, '<h1>en_US</h1>');
+  });
 
   // test('a helper can inject services', async assert => {
   //   class LocaleService {

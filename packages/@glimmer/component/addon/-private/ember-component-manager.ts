@@ -1,16 +1,13 @@
 import { DEBUG } from '@glimmer/env';
 import Ember from 'ember';
 import { set } from '@ember/object';
-import { getOwner, setOwner } from '@ember/application';
 import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
 import { gte } from 'ember-compatibility-helpers';
-import BaseComponentManager, {
-  CustomComponentCapabilities,
-} from './base-component-manager';
+import BaseComponentManager from './base-component-manager';
 
 import GlimmerComponent, { setDestroyed, setDestroying } from './component';
-import { CapturedArgs } from '@glimmer/core';
+import { ComponentCapabilities, CapturedArgs } from '@glimmer/core';
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
@@ -40,7 +37,9 @@ function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta)
  * 1. Properly destroy the component's associated `meta` data structure
  * 2. Schedule destruction using Ember's runloop
  */
-class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
+class EmberGlimmerComponentManager extends BaseComponentManager<GlimmerComponent> {
+  capabilities = CAPABILITIES;
+
   destroyComponent(component: GlimmerComponent): void {
     if (component.isDestroying) {
       return;
@@ -100,6 +99,6 @@ declare module 'ember' {
 declare module '@ember/component' {
   export function capabilities(
     version: '3.13' | '3.4',
-    capabilities: Partial<CustomComponentCapabilities>
-  ): CustomComponentCapabilities;
+    capabilities: Partial<ComponentCapabilities>
+  ): ComponentCapabilities;
 }

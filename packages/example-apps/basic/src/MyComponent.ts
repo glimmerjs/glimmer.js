@@ -4,10 +4,12 @@ import {
   createTemplate,
   setComponentTemplate,
   templateOnlyComponent,
+  getOwner,
 } from '@glimmer/core';
 import { helper } from '@glimmer/helper';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
+import { Owner } from '..';
 
 const myHelper = helper(function([name], { greeting }) {
   return `Helper: ${greeting} ${name}`;
@@ -36,8 +38,7 @@ class MyComponent extends Component {
   @tracked count = 55;
 
   get currentLocale(): string {
-    return 'zh_CN';
-    // return (getHostMeta(this) as { locale: LocaleService }).locale.currentLocale;
+    return getOwner<Owner>(this).services.locale.currentLocale;
   }
 
   @action

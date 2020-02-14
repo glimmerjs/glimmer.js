@@ -37,3 +37,5 @@ export interface ModifierManager<ModifierInstance> {
   updateModifier(instance: ModifierInstance, args: Args): void;
   destroyModifier(instance: ModifierInstance, args: Args): void;
 }
+
+export type ModifierDefinition<_Instance = unknown> = {};

@@ -1,25 +1,31 @@
-import { ComponentManager } from './component/custom';
-import { ModifierManager } from './modifier';
+import { ComponentManager, ComponentDefinition } from './component/custom';
+import { ModifierManager, ModifierDefinition } from './modifier';
+
+type ManagedItemDefinition<Instance> = ComponentDefinition<Instance> | ModifierDefinition<Instance>;
+
+//////////
 
 export type ManagerFactory<D extends ManagerDelegate> = (owner: object) => D;
 
 type ManagerDelegate = ComponentManager<unknown> | ModifierManager<unknown>;
 
-interface ComponentManagerWrapper {
-  factory: ManagerFactory<ComponentManager<unknown>>;
+interface ComponentManagerWrapper<Instance> {
+  factory: ManagerFactory<ComponentManager<Instance>>;
   type: 'component';
 }
 
-interface ModifierMangagerWrapper {
-  factory: ManagerFactory<ModifierManager<unknown>>;
+interface ModifierMangagerWrapper<Instance> {
+  factory: ManagerFactory<ModifierManager<Instance>>;
   type: 'modifier';
 }
 
-type ManagerWrapper = ComponentManagerWrapper | ModifierMangagerWrapper;
+type ManagerWrapper<Instance> =
+  | ComponentManagerWrapper<Instance>
+  | ModifierMangagerWrapper<Instance>;
 
 ///////////
 
-const MANAGERS: WeakMap<object, ManagerWrapper> = new WeakMap();
+const MANAGERS: WeakMap<object, ManagerWrapper<unknown>> = new WeakMap();
 const MANAGER_INSTANCES: WeakMap<
   object,
   WeakMap<ManagerFactory<ManagerDelegate>, ManagerDelegate>
@@ -27,18 +33,20 @@ const MANAGER_INSTANCES: WeakMap<
 
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function setManager(wrapper: ManagerWrapper, obj: {}): {} {
+export function setManager<Instance = unknown>(wrapper: ManagerWrapper<Instance>, obj: {}): {} {
   MANAGERS.set(obj, wrapper);
   return obj;
 }
 
-function getManager(obj: object): ManagerWrapper | undefined {
+function getManager<Instance = unknown>(
+  obj: ManagedItemDefinition<Instance>
+): ManagerWrapper<Instance> | undefined {
   let pointer = obj;
   while (pointer !== undefined && pointer !== null) {
     const manager = MANAGERS.get(pointer);
 
     if (manager !== undefined) {
-      return manager;
+      return manager as ManagerWrapper<Instance>;
     }
 
     pointer = getPrototypeOf(pointer);
@@ -71,27 +79,36 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 
 ///////////
 
-export function setModifierManager(factory: ManagerFactory<ModifierManager<unknown>>, definition: {}): {} {
+export function setModifierManager<Instance>(
+  factory: ManagerFactory<ModifierManager<unknown>>,
+  definition: ModifierDefinition<Instance>
+): {} {
   return setManager({ factory, type: 'modifier' }, definition);
 }
 
-export function getModifierManager(owner: object, obj: {}): ModifierManager<unknown> | undefined {
-  const wrapper = getManager(obj);
+export function getModifierManager<Instance = unknown>(
+  owner: object,
+  definition: ModifierDefinition<Instance>
+): ModifierManager<unknown> | undefined {
+  const wrapper = getManager(definition);
 
   if (wrapper !== undefined && wrapper.type === 'modifier') {
     return getManagerInstanceForOwner(owner, wrapper.factory);
   }
 }
 
-export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, definition: {}): {} {
+export function setComponentManager<Instance>(
+  factory: ManagerFactory<ComponentManager<unknown>>,
+  definition: ComponentDefinition<Instance>
+): {} {
   return setManager({ factory, type: 'component' }, definition);
 }
 
-export function getComponentManager(
-  owner: {},
-  obj: {}
-): ComponentManager<unknown> | undefined {
-  const wrapper = getManager(obj);
+export function getComponentManager<Instance = unknown>(
+  owner: object,
+  definition: ComponentDefinition<Instance>
+): ComponentManager<Instance> | undefined {
+  const wrapper = getManager(definition);
 
   if (wrapper !== undefined && wrapper.type === 'component') {
     return getManagerInstanceForOwner(owner, wrapper.factory);
