@@ -29,6 +29,7 @@ export const CAPABILITIES: ComponentCapabilities = {
   prepareArgs: false,
   updateHook: false,
   wrapped: false,
+  willDestroy: false,
 };
 
 export class ComponentStateBucket {

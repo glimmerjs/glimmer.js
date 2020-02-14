@@ -5,7 +5,7 @@ export {
   getTemplateIterator,
 } from './src/render-component';
 
-export { iterableFor } from './src/environment/iterable';
+export { BaseEnvDelegate } from './src/environment/delegates';
 
 export { setComponentManager, setModifierManager } from './src/managers';
 

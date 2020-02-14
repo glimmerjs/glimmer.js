@@ -12,7 +12,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/interfaces": "^0.44.0",
+    "@glimmer/interfaces": "^0.47.6",
     "@simple-dom/interface": "^1.4.0"
   }
 }

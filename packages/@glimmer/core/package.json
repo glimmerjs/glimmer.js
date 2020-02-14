@@ -15,13 +15,13 @@
     "@glimmer/component": "^1.0.0",
     "@glimmer/env": "^0.1.7",
     "@glimmer/tracking": "^1.0.0",
-    "@glimmer/interfaces": "^0.44.0",
-    "@glimmer/opcode-compiler": "^0.44.0",
-    "@glimmer/runtime": "^0.44.0",
+    "@glimmer/interfaces": "^0.47.6",
+    "@glimmer/opcode-compiler": "^0.47.6",
+    "@glimmer/runtime": "^0.47.6",
     "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
-    "@glimmer/bundle-compiler": "^0.44.0",
-    "@glimmer/compiler": "^0.44.0"
+    "@glimmer/bundle-compiler": "^0.47.6",
+    "@glimmer/compiler": "^0.47.6"
   }
 }
