@@ -20,5 +20,3 @@ export {
 export { templateOnlyComponent } from './src/managers/component/template-only';
 
 export { createTemplate, setComponentTemplate } from './src/template';
-
-export * from './src/references';

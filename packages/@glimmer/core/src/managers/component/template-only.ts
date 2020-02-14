@@ -14,7 +14,6 @@ import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { DEBUG } from '@glimmer/env';
 
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
-import { RootReference } from '../../references';
 import { TemplateMeta } from './custom';
 
 export const CAPABILITIES: ComponentCapabilities = {
@@ -38,7 +37,7 @@ export class ComponentStateBucket {
   constructor(public args: CapturedArguments) {}
 }
 
-const EMPTY_SELF = new RootReference({});
+const EMPTY_SELF = new ConstReference(null);
 
 let TemplateOnlyComponentDebugReference:
   | undefined
