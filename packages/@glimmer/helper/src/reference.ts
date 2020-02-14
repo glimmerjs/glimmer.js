@@ -1,7 +1,6 @@
 import { Tag } from '@glimmer/validator';
-import { CachedReference, VersionedPathReference } from '@glimmer/reference';
+import { CachedReference, VersionedPathReference, PropertyReference, TemplateReferenceEnvironment } from '@glimmer/reference';
 import { Dict, VMArguments, CapturedArguments } from '@glimmer/interfaces';
-import { NestedPropertyReference } from '@glimmer/core';
 
 export type UserHelper = (
   args: ReadonlyArray<unknown>,
@@ -16,6 +15,7 @@ export default class HelperReference extends CachedReference<unknown>
   constructor(
     private helper: UserHelper,
     args: VMArguments,
+    private env: TemplateReferenceEnvironment
   ) {
     super();
     this.tag = args.tag;
@@ -24,7 +24,7 @@ export default class HelperReference extends CachedReference<unknown>
   }
 
   get(key: string): VersionedPathReference {
-    return new NestedPropertyReference(this, key);
+    return new PropertyReference(this, key, this.env);
   }
 
   compute(): unknown {

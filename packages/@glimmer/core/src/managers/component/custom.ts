@@ -14,10 +14,9 @@ import {
   Environment,
   CompilableProgram,
 } from '@glimmer/interfaces';
-import { PathReference } from '@glimmer/reference';
+import { PathReference, ComponentRootReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
 
-import { RootReference } from '../../references';
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
@@ -185,7 +184,7 @@ export default class CustomComponentManager<ComponentInstance>
       JitRuntimeResolver
     > {
   create(
-    _env: Environment,
+    env: Environment,
     definition: CustomComponentDefinitionState<ComponentInstance>,
     args: VMArguments
   ): CustomComponentState<ComponentInstance> {
@@ -248,7 +247,7 @@ export default class CustomComponentManager<ComponentInstance>
       value
     );
 
-    return new CustomComponentState(delegate, component, capturedArgs, namedArgsProxy);
+    return new CustomComponentState(env, delegate, component, capturedArgs, namedArgsProxy);
   }
 
   update({ delegate, component, args, namedArgsProxy }: CustomComponentState<ComponentInstance>): void {
@@ -279,10 +278,11 @@ export default class CustomComponentManager<ComponentInstance>
   }
 
   getSelf({
+    env,
     delegate,
     component,
   }: CustomComponentState<ComponentInstance>): PathReference<unknown> {
-    return new RootReference(delegate.getContext(component) as object);
+    return new ComponentRootReference(delegate.getContext(component) as object, env);
   }
 
   getDestructor(state: CustomComponentState<ComponentInstance>): Option<Destroyable> {
@@ -325,6 +325,7 @@ export default class CustomComponentManager<ComponentInstance>
  */
 export class CustomComponentState<ComponentInstance> {
   constructor(
+    public env: Environment,
     public delegate: ComponentManager<ComponentInstance>,
     public component: ComponentInstance,
     public args: CapturedArguments,
