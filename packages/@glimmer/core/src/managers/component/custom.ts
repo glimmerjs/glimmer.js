@@ -32,6 +32,7 @@ export const VM_CAPABILITIES: VMComponentCapabilities = {
   updateHook: false,
   createCaller: false,
   dynamicScope: true,
+  willDestroy: false,
 };
 
 export interface Capabilities {

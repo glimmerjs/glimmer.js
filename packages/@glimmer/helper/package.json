@@ -14,7 +14,7 @@
   "dependencies": {
     "@glimmer/core": "^1.0.0",
     "@glimmer/component": "^1.0.0",
-    "@glimmer/interfaces": "^0.44.0",
-    "@glimmer/reference": "^0.44.0"
+    "@glimmer/interfaces": "^0.47.6",
+    "@glimmer/reference": "^0.47.6"
   }
 }

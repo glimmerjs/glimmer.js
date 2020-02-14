@@ -15,13 +15,13 @@
   "module": "dist/modules/index.js",
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/validator": "^0.44.0"
+    "@glimmer/validator": "^0.47.6"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^1.0.0",
-    "@glimmer/compiler": "^0.44.0",
-    "@glimmer/interfaces": "^0.44.0",
+    "@glimmer/compiler": "^0.47.6",
+    "@glimmer/interfaces": "^0.47.6",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.44.0"
+    "@glimmer/wire-format": "^0.47.6"
   }
 }

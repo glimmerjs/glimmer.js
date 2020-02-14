@@ -4,7 +4,26 @@ import createHTMLDocument from '@simple-dom/document';
 import HTMLSerializer from '@simple-dom/serializer';
 import voidMap from '@simple-dom/void-map';
 import { PassThrough } from 'stream';
-import EnvironmentImpl from './environment';
+import { parse } from 'url';
+import { BaseEnvDelegate } from '@glimmer/core';
+import { NodeDOMTreeConstruction } from '@glimmer/node';
+import { DOMChanges } from '@glimmer/runtime';
+
+
+/**
+ * Server-side environment that can be used to configure the glimmer-vm to work
+ * on the server side.
+ *
+ * @internal
+ */
+class ServerEnvDelegate extends BaseEnvDelegate {
+  isInteractive = false;
+
+  protocolForURL(url: string): string {
+    const urlObject = parse(url);
+    return (urlObject && urlObject.protocol) || 'https';
+  }
+}
 
 export interface RenderOptions {
   args?: Dict<unknown>;
@@ -34,11 +53,18 @@ export function renderToStream(
   ComponentClass: ComponentFactory,
   options: RenderOptions = {}
 ): void {
-  const element = createHTMLDocument().body;
+  const document = createHTMLDocument();
+  const element = document.body;
+  const appendOperations = new NodeDOMTreeConstruction(document);
+
+  // TODO: Remove in Glimmer VM 0.48, it's not necessary
+  const updateOperations = new DOMChanges(document);
+
   const iterator = getTemplateIterator(
     ComponentClass,
     element,
-    EnvironmentImpl.create(),
+    { appendOperations, updateOperations },
+    new ServerEnvDelegate(),
     options.args
   );
   iterator.sync();

@@ -19,48 +19,7 @@ class HelloWorld extends Component {
 }
 
 module('[@glimmer/core] each helper', () => {
-  test('throw error if key for #each is not specified', async function(assert) {
-    assert.expect(1);
-
-    const Component = class extends HelloWorld {};
-
-    setComponentTemplate(
-      Component,
-      createTemplate(`<ul>{{#each this.strings as |item|}}<li>{{item}}</li>{{/each}}</ul>`)
-    );
-
-    try {
-      await render(Component);
-    } catch (e) {
-      assert.equal(e.toString(), 'Error: Must specify a key for #each');
-    }
-  });
-
-  test('throw error if key @identity used as key for #each', async function(assert) {
-    assert.expect(1);
-
-    const Component = class extends HelloWorld {};
-
-    setComponentTemplate(
-      Component,
-      createTemplate(
-        `<ul>{{#each this.strings key="@identity" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
-    );
-
-    try {
-      await render(Component);
-    } catch (e) {
-      assert.equal(
-        e.toString(),
-        'Error: @identity key in #each loop supported only in Ember, use @primitive, @index or property path instead'
-      );
-    }
-  });
-
-  test('throw error if unknown special key used as key for #each', async function(assert) {
-    assert.expect(1);
-
+  test('throw error if unknown special key used as key for #each', function(assert) {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
@@ -70,14 +29,7 @@ module('[@glimmer/core] each helper', () => {
       )
     );
 
-    try {
-      await render(Component);
-    } catch (e) {
-      assert.equal(
-        e.toString(),
-        'Error: Invalid key: @unknown, valid keys: @index, @primitive, path'
-      );
-    }
+    assert.rejects(render(Component), /Error: invalid keypath/);
   });
 
   test(`renders number literals - numbers`, async function(assert) {

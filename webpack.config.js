@@ -15,15 +15,11 @@ module.exports = {
     rules: [
       {
         test: /(\.ts|\.js)$/,
-        include: [
-          path.resolve(__dirname, 'packages/@glimmer'),
-          path.resolve(__dirname, 'packages/example-apps'),
-        ],
         use: {
           loader: 'babel-loader',
           options: {
             plugins: [
-              '@glimmer/babel-plugin-glimmer-env',
+              ['@glimmer/babel-plugin-glimmer-env', { DEBUG: true }],
               '@glimmer/babel-plugin-strict-template-precompile',
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               '@babel/plugin-proposal-class-properties',

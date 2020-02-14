@@ -2,24 +2,27 @@ import { setPropertyDidChange } from '@glimmer/tracking';
 import {
   clientBuilder,
   renderJitComponent,
-  CustomJitRuntime,
+  JitRuntimeFromProgram,
+  EnvironmentDelegate,
 } from '@glimmer/runtime';
 import {
   Cursor as GlimmerCursor,
   RenderResult,
   Dict,
-  Environment,
   TemplateIterator,
+  Environment,
+  EnvironmentOptions,
 } from '@glimmer/interfaces';
 import { JitContext } from '@glimmer/opcode-compiler';
 
-import EnvironmentImpl from '../environment';
+import { ClientEnvDelegate } from '../environment/delegates';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
-import { RootReference, PathReference } from '@glimmer/reference';
+import { ComponentRootReference, PathReference } from '@glimmer/reference';
 import { ComponentFactory } from '../managers/component/custom';
 
-import { SimpleElement } from '@simple-dom/interface';
+import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
+import { RuntimeProgramImpl } from '@glimmer/program';
 
 export interface RenderComponentOptions {
   element: Element;
@@ -57,8 +60,15 @@ async function renderComponent(
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
 
   const { element, args } = options;
+  const document = self.document as SimpleDocument;
 
-  const iterator = getTemplateIterator(ComponentClass, element, EnvironmentImpl.create(), args);
+  const iterator = getTemplateIterator(
+    ComponentClass,
+    element,
+    { document },
+    new ClientEnvDelegate(),
+    args
+  );
   const result = iterator.sync();
   results.push(result);
 }
@@ -100,14 +110,11 @@ function revalidate(): void {
 
 const resolver = new RuntimeResolver();
 const context = JitContext(new CompileTimeResolver(resolver));
+const program = new RuntimeProgramImpl(context.program.constants, context.program.heap);
 
-function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
-  if (!dict) {
-    return {};
-  }
-
+function dictToReference(dict: Dict<unknown>, env: Environment): Dict<PathReference> {
   return Object.keys(dict).reduce((acc, key) => {
-    acc[key] = new RootReference(dict[key]);
+    acc[key] = new ComponentRootReference(dict[key], env);
     return acc;
   }, {} as Dict<PathReference>);
 }
@@ -115,10 +122,11 @@ function dictToReference(dict?: Dict<unknown>): Dict<PathReference> {
 export function getTemplateIterator(
   ComponentClass: ComponentFactory,
   element: Element | SimpleElement,
-  env: Environment,
-  componentArgs?: Dict<unknown>
+  envOptions: EnvironmentOptions,
+  envDelegate: EnvironmentDelegate,
+  componentArgs: Dict<unknown> = {}
 ): TemplateIterator {
-  const runtime = CustomJitRuntime(resolver, context, env);
+  const runtime = JitRuntimeFromProgram(envOptions, program, resolver, envDelegate);
   const builder = clientBuilder(runtime.env, {
     element,
     nextSibling: null,
@@ -126,5 +134,12 @@ export function getTemplateIterator(
 
   const handle = resolver.registerRoot(ComponentClass);
 
-  return renderJitComponent(runtime, builder, context, 0, handle, dictToReference(componentArgs));
+  return renderJitComponent(
+    runtime,
+    builder,
+    context,
+    0,
+    handle,
+    dictToReference(componentArgs, runtime.env)
+  );
 }
