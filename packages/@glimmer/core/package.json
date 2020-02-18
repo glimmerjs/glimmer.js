@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/core",
-  "version": "1.0.0",
+  "version": "2.0.0-alpha.1",
   "description": "Core rendering functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
@@ -12,12 +12,12 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/component": "^1.0.0",
+    "@glimmer/component": "^2.0.0-alpha.1",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/tracking": "^1.0.0",
     "@glimmer/interfaces": "^0.47.6",
     "@glimmer/opcode-compiler": "^0.47.6",
     "@glimmer/runtime": "^0.47.6",
+    "@glimmer/tracking": "^2.0.0-alpha.1",
     "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
