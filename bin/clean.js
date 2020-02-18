@@ -6,6 +6,7 @@ const { promisify } = require('util');
 const glob = promisify(require('glob'));
 
 (async function() {
+  await remove(['./tmp']);
   await remove(await glob('./packages/@glimmer/*/dist'));
 
   console.log('\n\nDone');
