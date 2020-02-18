@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/modifier",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Modifier Functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
