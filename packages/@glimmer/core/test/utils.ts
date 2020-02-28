@@ -1,6 +1,6 @@
 import {
   renderComponent,
-  ComponentFactory,
+  ComponentDefinition,
   RenderComponentOptions,
   didRender,
   templateOnlyComponent,
@@ -16,7 +16,7 @@ export const test = QUnit.test;
 const IS_INTERACTIVE = typeof document !== 'undefined';
 
 export async function render(
-  component: ComponentFactory | SerializedTemplateWithLazyBlock<TemplateMeta>,
+  component: ComponentDefinition | SerializedTemplateWithLazyBlock<TemplateMeta>,
   options?: HTMLElement | Partial<RenderComponentOptions>
 ): Promise<string> {
   if ('id' in component && 'block' in component && 'meta' in component) {

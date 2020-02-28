@@ -71,8 +71,8 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 
 ///////////
 
-export function setModifierManager(factory: ManagerFactory<ModifierManager<unknown>>, obj: {}): {} {
-  return setManager({ factory, type: 'modifier' }, obj);
+export function setModifierManager(factory: ManagerFactory<ModifierManager<unknown>>, definition: {}): {} {
+  return setManager({ factory, type: 'modifier' }, definition);
 }
 
 export function getModifierManager(owner: object, obj: {}): ModifierManager<unknown> | undefined {
@@ -83,8 +83,8 @@ export function getModifierManager(owner: object, obj: {}): ModifierManager<unkn
   }
 }
 
-export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, obj: {}): {} {
-  return setManager({ factory, type: 'component' }, obj);
+export function setComponentManager(factory: ManagerFactory<ComponentManager<unknown>>, definition: {}): {} {
+  return setManager({ factory, type: 'component' }, definition);
 }
 
 export function getComponentManager(

@@ -1,6 +1,6 @@
 import {
   renderComponent as glimmerRenderComponent,
-  ComponentFactory,
+  ComponentDefinition,
   RenderComponentOptions,
   didRender,
 } from '@glimmer/core';
@@ -22,7 +22,7 @@ Object.defineProperty(QUnit.assert.dom, 'rootElement', { get: getTestRoot });
 // can still override the element by passing it directly, in cases where that
 // is necessary.
 export async function renderComponent(
-  component: ComponentFactory,
+  component: ComponentDefinition,
   elementOrOptions: HTMLElement | Partial<RenderComponentOptions> = {}
 ): Promise<void> {
   let options: RenderComponentOptions;

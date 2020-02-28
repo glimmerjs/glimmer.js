@@ -32,7 +32,7 @@ export interface Args {
 
 export interface ModifierManager<ModifierInstance> {
   capabilities: Capabilities;
-  createModifier(factory: unknown, args: Args): ModifierInstance;
+  createModifier(definition: unknown, args: Args): ModifierInstance;
   installModifier(instance: ModifierInstance, element: SimpleElement, args: Args): void;
   updateModifier(instance: ModifierInstance, args: Args): void;
   destroyModifier(instance: ModifierInstance, args: Args): void;

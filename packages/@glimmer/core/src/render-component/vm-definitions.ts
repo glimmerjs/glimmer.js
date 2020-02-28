@@ -1,5 +1,5 @@
 import {
-  ComponentDefinition,
+  ComponentDefinition as VMComponentDefinition,
   Helper as GlimmerHelper,
   ModifierManager,
   TemplateOk,
@@ -9,7 +9,7 @@ import { templateFactory } from '@glimmer/opcode-compiler';
 import { getComponentTemplate } from '../template';
 import { getComponentManager } from '../managers';
 import {
-  ComponentFactory,
+  ComponentDefinition,
   CustomComponentDefinition,
   TemplateMeta,
 } from '../managers/component/custom';
@@ -21,7 +21,7 @@ import {
 // Create a global context that we use as the "owner" for our managers
 const CONTEXT = {};
 
-export interface ComponentDefinitionWithHandle extends ComponentDefinition {
+export interface ComponentDefinitionWithHandle extends VMComponentDefinition {
   handle: number;
   template: TemplateOk<TemplateMeta>;
 }
@@ -40,28 +40,28 @@ export interface Modifier {
 
 ///////////
 
-const COMPONENT_DEFINITIONS = new WeakMap<ComponentFactory, ComponentDefinitionWithHandle>();
-const HELPER_DEFINITIONS = new WeakMap<GlimmerHelper, HelperDefinition>();
-const MODIFIER_HANDLES = new WeakMap<Modifier, number>();
+const VM_COMPONENT_DEFINITIONS = new WeakMap<ComponentDefinition, ComponentDefinitionWithHandle>();
+const VM_HELPER_DEFINITIONS = new WeakMap<GlimmerHelper, HelperDefinition>();
+const VM_MODIFIER_HANDLES = new WeakMap<Modifier, number>();
 
-export function definitionForComponent(
-  ComponentClass: ComponentFactory
+export function vmDefinitionForComponent(
+  ComponentClass: ComponentDefinition
 ): ComponentDefinitionWithHandle {
-  return COMPONENT_DEFINITIONS.get(ComponentClass) || createComponentDefinition(ComponentClass);
+  return VM_COMPONENT_DEFINITIONS.get(ComponentClass) || createVMComponentDefinition(ComponentClass);
 }
 
-export function definitionForHelper(Helper: GlimmerHelper): HelperDefinition {
-  return HELPER_DEFINITIONS.get(Helper) || createHelperDefinition(Helper);
+export function vmDefinitionForHelper(Helper: GlimmerHelper): HelperDefinition {
+  return VM_HELPER_DEFINITIONS.get(Helper) || createVMHelperDefinition(Helper);
 }
 
 let HANDLE = 0;
 
-export function handleForModifier(modifier: Modifier): number {
-  let handle = MODIFIER_HANDLES.get(modifier);
+export function vmHandleForModifier(modifier: Modifier): number {
+  let handle = VM_MODIFIER_HANDLES.get(modifier);
 
   if (!handle) {
     handle = HANDLE++;
-    MODIFIER_HANDLES.set(modifier, handle);
+    VM_MODIFIER_HANDLES.set(modifier, handle);
   }
 
   return handle;
@@ -69,8 +69,8 @@ export function handleForModifier(modifier: Modifier): number {
 
 ///////////
 
-function createComponentDefinition(
-  ComponentClass: ComponentFactory | TemplateOnlyComponent
+function createVMComponentDefinition(
+  ComponentClass: ComponentDefinition | TemplateOnlyComponent
 ): ComponentDefinitionWithHandle {
   const serializedTemplate = getComponentTemplate(ComponentClass);
   const template = templateFactory<TemplateMeta>(serializedTemplate!).create();
@@ -88,12 +88,12 @@ function createComponentDefinition(
     definition = new CustomComponentDefinition(HANDLE++, ComponentClass, delegate, template);
   }
 
-  COMPONENT_DEFINITIONS.set(ComponentClass, definition);
+  VM_COMPONENT_DEFINITIONS.set(ComponentClass, definition);
 
   return definition;
 }
 
-function createHelperDefinition(Helper: GlimmerHelper): HelperDefinition {
+function createVMHelperDefinition(Helper: GlimmerHelper): HelperDefinition {
   const definition = {
     state: {
       fn: Helper,
@@ -101,6 +101,6 @@ function createHelperDefinition(Helper: GlimmerHelper): HelperDefinition {
     },
   };
 
-  HELPER_DEFINITIONS.set(Helper, definition);
+  VM_HELPER_DEFINITIONS.set(Helper, definition);
   return definition;
 }

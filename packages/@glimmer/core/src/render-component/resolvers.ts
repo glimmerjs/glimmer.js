@@ -1,6 +1,6 @@
 import {
   ResolvedValue,
-  ComponentDefinition,
+  ComponentDefinition as VMComponentDefinition,
   RuntimeResolverDelegate,
   Template,
   Option,
@@ -10,13 +10,13 @@ import {
 import { ResolverDelegate, unwrapTemplate } from '@glimmer/opcode-compiler';
 
 import {
-  definitionForComponent,
-  definitionForHelper,
+  vmDefinitionForComponent,
+  vmDefinitionForHelper,
   Modifier,
-  handleForModifier,
-} from './definitions';
+  vmHandleForModifier,
+} from './vm-definitions';
 
-import { ComponentFactory, TemplateMeta } from '../managers/component/custom';
+import { ComponentDefinition, TemplateMeta } from '../managers/component/custom';
 
 ///////////
 
@@ -33,19 +33,19 @@ export class RuntimeResolver implements RuntimeResolverDelegate {
 
   // TODO: This is only necessary because `renderJitComponent` only receives a
   // string, can't receive a handle. We should make that optional somehow.
-  registerRoot(factory: ComponentFactory): string {
-    const definition = definitionForComponent(factory);
-    const { handle } = definition;
+  registerRoot(definition: ComponentDefinition): string {
+    const vmDefinition = vmDefinitionForComponent(definition);
+    const { handle } = vmDefinition;
 
-    this.registry[handle] = definition;
+    this.registry[handle] = vmDefinition;
 
     // We're lying to the type system here so we can pass handle around as a
     // string. Should definitely fix this in the future.
     return (handle as unknown) as string;
   }
 
-  lookupComponent(handle: string, _referrer?: unknown): Option<ComponentDefinition> {
-    return this.registry[(handle as unknown) as number] as Option<ComponentDefinition>;
+  lookupComponent(handle: string, _referrer?: unknown): Option<VMComponentDefinition> {
+    return this.registry[(handle as unknown) as number] as Option<VMComponentDefinition>;
   }
 
   resolve<U extends ResolvedValue>(handle: number): U {
@@ -77,7 +77,7 @@ export class CompileTimeResolver implements ResolverDelegate {
     const scope = referrer.scope();
     const Helper = scope[name] as GlimmerHelper;
 
-    const { state } = definitionForHelper(Helper);
+    const { state } = vmDefinitionForHelper(Helper);
     const { fn, handle } = state;
 
     this.inner.registry[handle] = fn;
@@ -92,20 +92,20 @@ export class CompileTimeResolver implements ResolverDelegate {
       throw new Error(`Cannot find modifier ${name} in scope`);
     }
 
-    const handle = handleForModifier(modifier);
+    const handle = vmHandleForModifier(modifier);
     this.inner.registry[handle] = modifier;
     return handle;
   }
 
   lookupComponent(name: string, referrer: TemplateMeta): Option<CompileTimeComponent> {
     const scope = referrer.scope();
-    const ComponentClass = scope[name] as ComponentFactory;
+    const ComponentDefinition = scope[name] as ComponentDefinition;
 
-    if (ComponentClass === undefined) {
+    if (ComponentDefinition === undefined) {
       throw new Error(`Cannot find component ${name} in scope`);
     }
 
-    const definition = definitionForComponent(ComponentClass);
+    const definition = vmDefinitionForComponent(ComponentDefinition);
     const { state, manager, template, handle } = definition;
 
     this.inner.registry[handle] = definition;

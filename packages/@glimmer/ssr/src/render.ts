@@ -1,4 +1,4 @@
-import { ComponentFactory, getTemplateIterator } from '@glimmer/core';
+import { ComponentDefinition, getTemplateIterator } from '@glimmer/core';
 import { Dict } from '@glimmer/interfaces';
 import createHTMLDocument from '@simple-dom/document';
 import HTMLSerializer from '@simple-dom/serializer';
@@ -33,7 +33,7 @@ export interface RenderOptions {
 const defaultSerializer = new HTMLSerializer(voidMap);
 
 export function renderToString(
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   options?: RenderOptions
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -50,7 +50,7 @@ export function renderToString(
 
 export function renderToStream(
   stream: NodeJS.WritableStream,
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   options: RenderOptions = {}
 ): void {
   const document = createHTMLDocument();

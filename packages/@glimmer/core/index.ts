@@ -12,7 +12,7 @@ export { setComponentManager, setModifierManager } from './src/managers';
 export {
   Args as CapturedArgs,
   ComponentManager,
-  ComponentFactory,
+  ComponentDefinition,
   capabilities as componentCapabilities,
   Capabilities as ComponentCapabilities,
 } from './src/managers/component/custom';
