@@ -1,7 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
-import { helper } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
 
 import {
@@ -73,21 +72,6 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.equal(await render(component), '<hello-world>foo</hello-world>');
   });
 
-  test('a component can render with helpers', async assert => {
-    const myHelper = helper(([name], { greeting }) => {
-      return `helper ${greeting} ${name}`;
-    });
-
-    class MyComponent extends Component {}
-    setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper "foo" greeting="Hello"}}</h1>')
-    );
-
-    const html = await render(MyComponent);
-    assert.strictEqual(html, '<h1>helper Hello foo</h1>', 'the template was rendered');
-  });
-
   test('a component can render with args', async assert => {
     class MyComponent extends Component {}
 
@@ -127,29 +111,58 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.equal(await render(MainComponent), 'Glimmer!');
   });
 
-  // [true, false].forEach((pred) => {
-  //   test(`can use inline if - ${pred}`, async function(assert) {
-  //     class Main extends Component {
-  //       pred = pred;
-  //       salutation = 'Glimmer';
-  //       alternative = 'Glimmer.js';
-  //     }
+  [true, false].forEach(pred => {
+    test(`can use inline if - ${pred}`, async function(assert) {
+      let salutationCount = 0;
+      let alternativeCount = 0;
 
-  //     let HelloWorld = templateOnlyComponent();
+      class Main extends Component {
+        pred = pred;
 
-  //     setComponentTemplate(HelloWorld, createTemplate('{{yield @name}}!'));
+        get salutation(): string {
+          salutationCount++;
+          return 'Glimmer';
+        }
 
-  //     setComponentTemplate(
-  //       Main,
-  //       createTemplate(
-  //         { HelloWorld },
-  //         '<HelloWorld @name={{if this.pred this.salutation this.alternative}} />'
-  //       )
-  //     );
+        get alternative(): string {
+          alternativeCount++;
+          return 'Glimmer.js';
+        }
+      }
 
-  //     assert.equal(await render(Main), `Hello ${pred ? 'Glimmer' : 'Glimmer.js'}!`);
-  //   });
-  // });
+      setComponentTemplate(
+        Main,
+        createTemplate('Hello {{if this.pred this.salutation this.alternative}}!')
+      );
+
+      assert.equal(
+        await render(Main),
+        `Hello ${pred ? 'Glimmer' : 'Glimmer.js'}!`,
+        'output is correct'
+      );
+
+      assert.equal(pred ? salutationCount : alternativeCount, 1, 'chosen branch value was used');
+      assert.equal(pred ? alternativeCount : salutationCount, 0, 'non-chosen branch value was not used');
+    });
+  });
+
+  test('inline if cannot be overwritten', async function(assert) {
+    class Main extends Component {
+      pred = true;
+      salutation = 'Glimmer';
+      alternative = 'Glimmer.js';
+    }
+
+    setComponentTemplate(
+      Main,
+      createTemplate(
+        { if: () => assert.ok(false, 'custom if was called') },
+        'Hello {{if this.pred this.salutation this.alternative}}!'
+      )
+    );
+
+    assert.equal(await render(Main), 'Hello Glimmer!', 'output is correct');
+  });
 
   // test('can render a component with the component helper', async function(assert) {
   //   const HelloWorld = templateOnlyComponent();
@@ -193,29 +206,6 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
 
     assert.strictEqual(html, '<h1>en_US</h1>');
   });
-
-  // test('a helper can inject services', async assert => {
-  //   class LocaleService {
-  //     get currentLocale(): string {
-  //       return 'en_US';
-  //     }
-  //   }
-
-  //   const myHelper = helper((_args, _hash, { services }) => {
-  //     const localeService = services!.locale as LocaleService;
-  //     return `The locale is ${localeService.currentLocale}`;
-  //   });
-
-  //   class MyComponent extends Component {}
-  //   setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
-
-  //   const html = await render(MyComponent, {
-  //     meta: {
-  //       locale: new LocaleService(),
-  //     },
-  //   });
-  //   assert.strictEqual(html, '<h1>The locale is en_US</h1>');
-  // });
 
   test('a component can be rendered more than once', async assert => {
     class MyComponent extends Component {}

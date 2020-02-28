@@ -1,149 +1,144 @@
-// import Component from '@glimmer/component';
-// import { tracked } from '@glimmer/tracking';
-// import { buildApp, didRender } from '@glimmer/application-test-helpers';
-// import { debugInfoForReference } from '@glimmer/application';
+import { module, test, render, settled } from '../utils';
+import Component from '@glimmer/component';
+import { tracked } from '@glimmer/tracking';
+import { fn } from '@glimmer/helper';
+import { on, action } from '@glimmer/modifier';
 
-// const { module, test } = QUnit;
+import { setComponentTemplate, createTemplate, templateOnlyComponent } from '@glimmer/core';
 
-// module('[@glimmer/application] Actions');
+module('[@glimmer/core] interactive - {{fn}}', () => {
+  test('can curry arguments via fn', async function(assert) {
+    assert.expect(9);
 
-// test('can curry arguments to actions', async function(assert) {
-//   assert.expect(9);
+    let helloWorldComponent: HelloWorld;
+    let passedMsg1, passedMsg2, passedEvent: MouseEvent | undefined;
 
-//   let fakeEvent: any = {};
-//   let helloWorldComponent: HelloWorld;
-//   let passedMsg1, passedMsg2, passedEvent;
+    class HelloWorld extends Component {
+      @tracked
+      name = 'world';
 
-//   class HelloWorld extends Component {
-//     @tracked
-//     name = 'world';
+      constructor(owner: unknown, args: {}) {
+        super(owner, args);
+        helloWorldComponent = this;
+      }
 
-//     constructor(owner: any, args: any) {
-//       super(owner, args);
-//       helloWorldComponent = this;
-//     }
+      @action
+      userDidClick(msg1: string, msg2: string, event: MouseEvent): void {
+        passedMsg1 = msg1;
+        passedMsg2 = msg2;
+        passedEvent = event;
+        assert.strictEqual(this, helloWorldComponent, 'function context is preserved');
+      }
+    }
 
-//     userDidClick(msg1: string, msg2: string, event: Event) {
-//       passedMsg1 = msg1;
-//       passedMsg2 = msg2;
-//       passedEvent = event;
-//       assert.strictEqual(this, helloWorldComponent, 'function context is preserved');
-//     }
-//   }
+    setComponentTemplate(
+      HelloWorld,
+      createTemplate(
+        { on, fn },
+        '<button {{on "click" (fn this.userDidClick "hello" name)}}>Hello World</button>'
+      )
+    );
 
-//   let app = await buildApp()
-//     .template('HelloWorld', '<h1 onclick={{action userDidClick "hello" name}}>Hello World</h1>')
-//     .template('Main', '<div><HelloWorld /></div>')
-//     .component('HelloWorld', HelloWorld)
-//     .boot();
+    const output = await render(HelloWorld);
 
-//   let root = app.rootElement as HTMLElement;
-//   assert.strictEqual(root.innerText, 'Hello World');
+    assert.strictEqual(output, '<button>Hello World</button>');
 
-//   let h1 = root.querySelector('h1');
-//   h1!.onclick!(fakeEvent);
+    const element = document.getElementById('qunit-fixture')!;
+    const button = element.querySelector('button')!;
+    button.click();
 
-//   assert.strictEqual(passedMsg1, 'hello');
-//   assert.strictEqual(passedMsg2, 'world');
-//   assert.strictEqual(passedEvent, fakeEvent);
-//   passedEvent = null;
+    assert.strictEqual(passedMsg1, 'hello');
+    assert.strictEqual(passedMsg2, 'world');
+    assert.ok(passedEvent instanceof MouseEvent);
+    passedEvent = undefined;
 
-//   helloWorldComponent!.name = 'cruel world';
-//   app.scheduleRerender();
+    helloWorldComponent!.name = 'cruel world';
 
-//   await didRender(app);
+    await settled();
 
-//   h1 = root.querySelector('h1');
-//   h1!.onclick!(fakeEvent);
+    button.click();
 
-//   assert.strictEqual(passedMsg1, 'hello');
-//   assert.strictEqual(passedMsg2, 'cruel world');
-//   assert.strictEqual(passedEvent, fakeEvent);
-// });
+    assert.strictEqual(passedMsg1, 'hello');
+    assert.strictEqual(passedMsg2, 'cruel world');
+    assert.ok(passedEvent! instanceof MouseEvent);
+  });
 
-// test('actions can be passed and invoked with additional arguments', async function(assert) {
-//   assert.expect(2);
+  test('functions can be curried multiple times', async function(assert) {
+    assert.expect(2);
 
-//   let fakeEvent: any = {
-//     type: 'click',
-//   };
-//   let parentComponent: ParentComponent;
-//   let passed: any[] = [];
+    let parentComponent: ParentComponent;
+    let passed: Array<number | Event> = [];
 
-//   class ParentComponent extends Component {
-//     name = 'world';
+    class ParentComponent extends Component {
+      name = 'world';
 
-//     constructor(owner: any, args: any) {
-//       super(owner, args);
-//       parentComponent = this;
-//     }
+      constructor(owner: unknown, args: {}) {
+        super(owner, args);
+        parentComponent = this;
+      }
 
-//     userDidClick(
-//       a1: number,
-//       a2: number,
-//       a3: number,
-//       a4: number,
-//       a5: number,
-//       a6: number,
-//       evt: Event
-//     ) {
-//       passed = [a1, a2, a3, a4, a5, a6, evt];
-//       assert.strictEqual(this, parentComponent, 'function context is preserved');
-//     }
-//   }
+      @action
+      userDidClick(a1: number, a2: number, a3: number, a4: number, a5: number, a6: number): void {
+        passed = [a1, a2, a3, a4, a5, a6];
+        assert.strictEqual(this, parentComponent, 'function context is preserved');
+      }
+    }
 
-//   let app = await buildApp()
-//     .template('Main', '<div><Parent /></div>')
-//     .template('Parent', '<div><Child @userDidClick={{action userDidClick 1 2}} /></div>')
-//     .component('Parent', ParentComponent)
-//     .template('Child', '<div><Grandchild @userDidClick={{action @userDidClick 3 4}} /></div>')
-//     .template('Grandchild', '<div class="grandchild" onclick={{action @userDidClick 5 6}}></div>')
-//     .boot();
+    const Grandchild = templateOnlyComponent();
+    setComponentTemplate(
+      Grandchild,
+      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>')
+    );
 
-//   let root = app.rootElement as Element;
+    const Child = templateOnlyComponent();
+    setComponentTemplate(
+      Child,
+      createTemplate(
+        { Grandchild, fn },
+        '<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>'
+      )
+    );
 
-//   let h1 = root.querySelector('.grandchild') as HTMLElement;
-//   h1!.onclick!(fakeEvent);
+    setComponentTemplate(
+      ParentComponent,
+      createTemplate({ Child, fn }, '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>')
+    );
 
-//   assert.deepEqual(passed, [1, 2, 3, 4, 5, 6, fakeEvent]);
-// });
+    await render(ParentComponent);
 
-// test('action helper invoked without a function raises an error', async function(assert) {
-//   class Parent extends Component {}
+    const element = document.getElementById('qunit-fixture')!;
+    const button = element.querySelector('button')!;
 
-//   let app = await buildApp()
-//     .template('Main', '<div><Parent /></div>')
-//     .template('Parent', '<div><span onclick={{action doesntExist}}></span></div>')
-//     .component('Parent', Parent);
+    button.click();
 
-//   try {
-//     await app.boot();
-//   } catch (e) {
-//     assert.equal(
-//       e.message,
-//       "You tried to create an action with the {{action}} helper, but the first argument ('doesntExist' on Parent) was undefined instead of a function."
-//     );
-//   }
-// });
+    assert.deepEqual(passed, [1, 2, 3, 4, 5, 6]);
+  });
 
-// test('debug name from references can be extracted', function(assert) {
-//   let refOne = {
-//     parent: {
-//       value() {
-//         return { debugName: 'parent' };
-//       },
-//     },
-//     property: 'name',
-//   };
+  test('action helper invoked without a function raises an error', function(assert) {
+    class Parent extends Component {}
 
-//   let refTwo = {
-//     _parentValue: {
-//       debugName: 'contact',
-//     },
-//     _propertyKey: 'address',
-//   };
+    setComponentTemplate(
+      Parent,
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>')
+    );
 
-//   assert.strictEqual(debugInfoForReference(null), '');
-//   assert.strictEqual(debugInfoForReference(refOne), `('name' on parent) `);
-//   assert.strictEqual(debugInfoForReference(refTwo), `('address' on contact) `);
-// });
+    assert.rejects(render(Parent), /fn must receive a function as its first parameter/);
+  });
+
+  test('fn helper invoked without a parameter raises an error', function(assert) {
+    class Parent extends Component {
+      @action
+      exists(): void {
+        assert.ok(false, 'this shouldnt run');
+      }
+    }
+
+    setComponentTemplate(
+      Parent,
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>')
+    );
+
+    assert.rejects(render(Parent), /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./);
+  });
+});
+

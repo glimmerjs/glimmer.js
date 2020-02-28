@@ -5,19 +5,26 @@ import {
   Template,
   Option,
   CompileTimeComponent,
-  Helper as GlimmerHelper,
 } from '@glimmer/interfaces';
 import { ResolverDelegate, unwrapTemplate } from '@glimmer/opcode-compiler';
 
 import {
   vmDefinitionForComponent,
   vmDefinitionForHelper,
+  vmDefinitionForBuiltInHelper,
   Modifier,
   vmHandleForModifier,
+  VMHelperDefinition,
 } from './vm-definitions';
 
 import { ComponentDefinition } from '../managers/component/custom';
 import { TemplateMeta } from '../template';
+import { HelperDefinition } from '../managers/helper';
+import { ifHelper } from './built-ins';
+
+const builtInHelpers: { [key: string]: VMHelperDefinition } = {
+  if: vmDefinitionForBuiltInHelper(ifHelper),
+};
 
 ///////////
 
@@ -76,12 +83,9 @@ export class CompileTimeResolver implements ResolverDelegate {
 
   lookupHelper(name: string, referrer: TemplateMeta): Option<number> {
     const scope = referrer.scope();
-    const Helper = scope[name] as GlimmerHelper;
+    const { helper, handle } = builtInHelpers[name] || vmDefinitionForHelper(scope[name] as HelperDefinition);
 
-    const { state } = vmDefinitionForHelper(Helper);
-    const { fn, handle } = state;
-
-    this.inner.registry[handle] = fn;
+    this.inner.registry[handle] = helper;
     return handle;
   }
 
