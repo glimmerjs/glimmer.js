@@ -13310,10 +13310,10 @@ typescript@next:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.0-dev.20200131.tgz#4cdfeb85da6c0e242538c648086722774bfa68e3"
   integrity sha512-E2g2SGl5WHFBOTCwJTzjzB6aARzXXnnf46jS63Nk1XX3RDFO7e4Kz0qcxGKFNljhp/Zl/XajzMdvcJvQ8hQOfg==
 
-typescript@~3.5.3:
-  version "3.5.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
-  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
+typescript@~3.8.2:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
