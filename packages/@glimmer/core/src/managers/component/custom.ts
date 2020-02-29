@@ -76,7 +76,7 @@ export interface Args {
  */
 export interface ComponentManager<ComponentInstance> {
   capabilities: Capabilities;
-  createComponent(factory: unknown, args: Args): ComponentInstance;
+  createComponent(definition: unknown, args: Args): ComponentInstance;
   getContext(instance: ComponentInstance): unknown;
 }
 
@@ -136,13 +136,6 @@ export interface TemplateMeta {
 
 export interface Destroyable {
   destroy(): void;
-}
-
-export interface Factory<T, C extends object = object> {
-  class?: C;
-  fullName?: string;
-  normalizedName?: string;
-  create(props?: { [prop: string]: unknown }): T;
 }
 
 ///////////
@@ -343,7 +336,7 @@ export class CustomComponentState<ComponentInstance> {
 
 export interface CustomComponentDefinitionState<ComponentInstance> {
   delegate: ComponentManager<ComponentInstance>;
-  ComponentClass: ComponentFactory;
+  ComponentClass: ComponentDefinition;
   definition: CustomComponentDefinition<ComponentInstance>;
 }
 
@@ -357,7 +350,7 @@ export class CustomComponentDefinition<ComponentInstance> {
 
   constructor(
     handle: number,
-    ComponentClass: ComponentFactory,
+    ComponentClass: ComponentDefinition,
     delegate: ComponentManager<ComponentInstance>,
     template: Template<TemplateMeta>
   ) {
@@ -372,4 +365,4 @@ export class CustomComponentDefinition<ComponentInstance> {
   }
 }
 
-export type ComponentFactory = {}
+export type ComponentDefinition = {}

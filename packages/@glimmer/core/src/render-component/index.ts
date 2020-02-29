@@ -19,7 +19,7 @@ import { ClientEnvDelegate } from '../environment/delegates';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
 import { ComponentRootReference, PathReference } from '@glimmer/reference';
-import { ComponentFactory } from '../managers/component/custom';
+import { ComponentDefinition } from '../managers/component/custom';
 
 import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
 import { RuntimeProgramImpl } from '@glimmer/program';
@@ -45,15 +45,15 @@ export function didRender(): Promise<void> {
 }
 
 async function renderComponent(
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   options: RenderComponentOptions
 ): Promise<void>;
 async function renderComponent(
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   element: HTMLElement
 ): Promise<void>;
 async function renderComponent(
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   optionsOrElement: RenderComponentOptions | HTMLElement
 ): Promise<void> {
   const options: RenderComponentOptions =
@@ -120,7 +120,7 @@ function dictToReference(dict: Dict<unknown>, env: Environment): Dict<PathRefere
 }
 
 export function getTemplateIterator(
-  ComponentClass: ComponentFactory,
+  ComponentClass: ComponentDefinition,
   element: Element | SimpleElement,
   envOptions: EnvironmentOptions,
   envDelegate: EnvironmentDelegate,
