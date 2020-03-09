@@ -4,6 +4,7 @@ import {
   renderJitComponent,
   JitRuntimeFromProgram,
   EnvironmentDelegate,
+  DefaultDynamicScope,
 } from '@glimmer/runtime';
 import {
   Cursor as GlimmerCursor,
@@ -18,16 +19,17 @@ import { JitContext } from '@glimmer/opcode-compiler';
 import { ClientEnvDelegate } from '../environment/delegates';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
-import { ComponentRootReference, PathReference } from '@glimmer/reference';
+import { ComponentRootReference, PathReference, ConstReference } from '@glimmer/reference';
 import { ComponentDefinition } from '../managers/component/custom';
 
+import { OWNER_KEY, DEFAULT_OWNER } from '../owner';
 import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
 import { RuntimeProgramImpl } from '@glimmer/program';
 
 export interface RenderComponentOptions {
   element: Element;
   args?: Dict<unknown>;
-  meta?: unknown;
+  owner?: object;
 }
 
 type ResolveFn = () => void;
@@ -59,7 +61,7 @@ async function renderComponent(
   const options: RenderComponentOptions =
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
 
-  const { element, args } = options;
+  const { element, args, owner } = options;
   const document = self.document as SimpleDocument;
 
   const iterator = getTemplateIterator(
@@ -67,7 +69,8 @@ async function renderComponent(
     element,
     { document },
     new ClientEnvDelegate(),
-    args
+    args,
+    owner
   );
   const result = iterator.sync();
   results.push(result);
@@ -124,7 +127,8 @@ export function getTemplateIterator(
   element: Element | SimpleElement,
   envOptions: EnvironmentOptions,
   envDelegate: EnvironmentDelegate,
-  componentArgs: Dict<unknown> = {}
+  componentArgs: Dict<unknown> = {},
+  owner = DEFAULT_OWNER
 ): TemplateIterator {
   const runtime = JitRuntimeFromProgram(envOptions, program, resolver, envDelegate);
   const builder = clientBuilder(runtime.env, {
@@ -134,12 +138,21 @@ export function getTemplateIterator(
 
   const handle = resolver.registerRoot(ComponentClass);
 
+  let dynamicScope;
+
+  if (owner) {
+    dynamicScope = new DefaultDynamicScope({
+      [OWNER_KEY]: new ConstReference(owner),
+    });
+  }
+
   return renderJitComponent(
     runtime,
     builder,
     context,
     0,
     handle,
-    dictToReference(componentArgs, runtime.env)
+    dictToReference(componentArgs, runtime.env),
+    dynamicScope
   );
 }

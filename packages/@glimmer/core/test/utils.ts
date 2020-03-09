@@ -8,7 +8,7 @@ import {
 } from '..';
 import { renderToString } from '@glimmer/ssr';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
-import { TemplateMeta } from '../src/managers/component/custom';
+import { TemplateMeta } from '../src/template';
 
 export const module = QUnit.module;
 export const test = QUnit.test;

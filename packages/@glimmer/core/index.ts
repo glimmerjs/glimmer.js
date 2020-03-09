@@ -20,3 +20,5 @@ export {
 export { templateOnlyComponent } from './src/managers/component/template-only';
 
 export { createTemplate, setComponentTemplate } from './src/template';
+
+export { getOwner, setOwner } from './src/owner';

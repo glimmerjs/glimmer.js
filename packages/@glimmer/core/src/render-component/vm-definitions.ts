@@ -6,20 +6,12 @@ import {
 } from '@glimmer/interfaces';
 import { templateFactory } from '@glimmer/opcode-compiler';
 
-import { getComponentTemplate } from '../template';
-import { getComponentManager } from '../managers';
-import {
-  ComponentDefinition,
-  CustomComponentDefinition,
-  TemplateMeta,
-} from '../managers/component/custom';
+import { getComponentTemplate, TemplateMeta } from '../template';
+import { VMCustomComponentDefinition, ComponentDefinition } from '../managers/component/custom';
 import {
   TemplateOnlyComponentDefinition,
   TemplateOnlyComponent,
 } from '../managers/component/template-only';
-
-// Create a global context that we use as the "owner" for our managers
-const CONTEXT = {};
 
 export interface ComponentDefinitionWithHandle extends VMComponentDefinition {
   handle: number;
@@ -45,9 +37,9 @@ const VM_HELPER_DEFINITIONS = new WeakMap<GlimmerHelper, HelperDefinition>();
 const VM_MODIFIER_HANDLES = new WeakMap<Modifier, number>();
 
 export function vmDefinitionForComponent(
-  ComponentClass: ComponentDefinition
+  ComponentDefinition: ComponentDefinition
 ): ComponentDefinitionWithHandle {
-  return VM_COMPONENT_DEFINITIONS.get(ComponentClass) || createVMComponentDefinition(ComponentClass);
+  return VM_COMPONENT_DEFINITIONS.get(ComponentDefinition) || createVMComponentDefinition(ComponentDefinition);
 }
 
 export function vmDefinitionForHelper(Helper: GlimmerHelper): HelperDefinition {
@@ -70,25 +62,23 @@ export function vmHandleForModifier(modifier: Modifier): number {
 ///////////
 
 function createVMComponentDefinition(
-  ComponentClass: ComponentDefinition | TemplateOnlyComponent
+  ComponentDefinition: ComponentDefinition | TemplateOnlyComponent
 ): ComponentDefinitionWithHandle {
-  const serializedTemplate = getComponentTemplate(ComponentClass);
+  const serializedTemplate = getComponentTemplate(ComponentDefinition);
   const template = templateFactory<TemplateMeta>(serializedTemplate!).create();
 
-  let definition, delegate;
+  let definition;
 
-  if (ComponentClass instanceof TemplateOnlyComponent) {
+  if (ComponentDefinition instanceof TemplateOnlyComponent) {
     // TODO: We probably need a better way to get a name for the template,
     // currently it'll just be `template-only-component` which is not great
     // for debugging
     definition = new TemplateOnlyComponentDefinition(HANDLE++, 'template-only-component', template);
   } else {
-    delegate = getComponentManager(CONTEXT, ComponentClass)!;
-
-    definition = new CustomComponentDefinition(HANDLE++, ComponentClass, delegate, template);
+    definition = new VMCustomComponentDefinition(HANDLE++, ComponentDefinition, template);
   }
 
-  VM_COMPONENT_DEFINITIONS.set(ComponentClass, definition);
+  VM_COMPONENT_DEFINITIONS.set(ComponentDefinition, definition);
 
   return definition;
 }

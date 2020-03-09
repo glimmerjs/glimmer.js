@@ -13,11 +13,15 @@ import {
   TemplateOk,
   Environment,
   CompilableProgram,
+  DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference, ComponentRootReference } from '@glimmer/reference';
 import { Tag, isConst, createTag, consume } from '@glimmer/validator';
+import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
+import { getComponentManager } from '..';
+import { TemplateMeta } from '../../template';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
@@ -53,7 +57,7 @@ export function capabilities(
     'Invalid component manager compatibility specified'
   );
 
-  const updateHook = managerAPI === '3.13' ? Boolean(options.updateHook) : true;
+  const updateHook = managerAPI !== '3.4' ? Boolean(options.updateHook) : true;
 
   return {
     asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
@@ -130,10 +134,6 @@ export interface ComponentArguments {
   named: Dict<unknown>;
 }
 
-export interface TemplateMeta {
-  scope: () => Dict<unknown>;
-}
-
 export interface Destroyable {
   destroy(): void;
 }
@@ -168,21 +168,25 @@ export interface Destroyable {
 export default class CustomComponentManager<ComponentInstance>
   implements
     VMComponentManager<
-      CustomComponentState<ComponentInstance>,
-      CustomComponentDefinitionState<ComponentInstance>
+      VMCustomComponentState<ComponentInstance>,
+      VMCustomComponentDefinitionState<ComponentInstance>
     >,
     WithJitStaticLayout<
-      CustomComponentState<ComponentInstance>,
-      CustomComponentDefinitionState<ComponentInstance>,
+      VMCustomComponentState<ComponentInstance>,
+      VMCustomComponentDefinitionState<ComponentInstance>,
       JitRuntimeResolver
     > {
   create(
     env: Environment,
-    definition: CustomComponentDefinitionState<ComponentInstance>,
-    args: VMArguments
-  ): CustomComponentState<ComponentInstance> {
-    const { delegate } = definition;
+    definition: VMCustomComponentDefinitionState<ComponentInstance>,
+    args: VMArguments,
+    dynamicScope: DynamicScope
+  ): VMCustomComponentState<ComponentInstance> {
+    const { ComponentDefinition } = definition;
     const capturedArgs = args.capture();
+
+    const owner = dynamicScope.get(OWNER_KEY).value() as object;
+    const delegate = getComponentManager(owner, ComponentDefinition)!;
 
     const handler: ProxyHandler<{}> = {
       get(_target, prop) {
@@ -219,7 +223,7 @@ export default class CustomComponentManager<ComponentInstance>
       handler.set = function(_target, prop): boolean {
         assert(
           false,
-          `You attempted to set ${definition.ComponentClass}#${String(
+          `You attempted to set ${ComponentDefinition}#${String(
             prop
           )} on a components arguments. Component arguments are immutable and cannot be updated directly, they always represent the values that are passed to your component. If you want to set default values, you should use a getter instead`
         );
@@ -235,15 +239,17 @@ export default class CustomComponentManager<ComponentInstance>
       positional: capturedArgs.positional.value(),
     };
 
-    const component = delegate.createComponent(
-      definition.ComponentClass,
-      value
-    );
+    const component = delegate.createComponent(ComponentDefinition, value);
 
-    return new CustomComponentState(env, delegate, component, capturedArgs, namedArgsProxy);
+    return new VMCustomComponentState(env, delegate, component, capturedArgs, namedArgsProxy);
   }
 
-  update({ delegate, component, args, namedArgsProxy }: CustomComponentState<ComponentInstance>): void {
+  update({
+    delegate,
+    component,
+    args,
+    namedArgsProxy,
+  }: VMCustomComponentState<ComponentInstance>): void {
     if (hasUpdateHook(delegate)) {
       const value = {
         named: namedArgsProxy,
@@ -254,19 +260,19 @@ export default class CustomComponentManager<ComponentInstance>
     }
   }
 
-  didCreate({ delegate, component }: CustomComponentState<ComponentInstance>): void {
+  didCreate({ delegate, component }: VMCustomComponentState<ComponentInstance>): void {
     if (hasAsyncLifecycleCallbacks(delegate)) {
       delegate.didCreateComponent(component);
     }
   }
 
-  didUpdate({ delegate, component }: CustomComponentState<ComponentInstance>): void {
+  didUpdate({ delegate, component }: VMCustomComponentState<ComponentInstance>): void {
     if (hasAsyncUpdateHook(delegate)) {
       delegate.didUpdateComponent(component);
     }
   }
 
-  getContext({ delegate, component }: CustomComponentState<ComponentInstance>): void {
+  getContext({ delegate, component }: VMCustomComponentState<ComponentInstance>): void {
     delegate.getContext(component);
   }
 
@@ -274,11 +280,11 @@ export default class CustomComponentManager<ComponentInstance>
     env,
     delegate,
     component,
-  }: CustomComponentState<ComponentInstance>): PathReference<unknown> {
+  }: VMCustomComponentState<ComponentInstance>): PathReference<unknown> {
     return new ComponentRootReference(delegate.getContext(component) as object, env);
   }
 
-  getDestructor(state: CustomComponentState<ComponentInstance>): Option<Destroyable> {
+  getDestructor(state: VMCustomComponentState<ComponentInstance>): Option<Destroyable> {
     if (hasDestructors(state.delegate)) {
       return state;
     }
@@ -286,14 +292,14 @@ export default class CustomComponentManager<ComponentInstance>
   }
 
   getCapabilities({
-    delegate,
-  }: CustomComponentDefinitionState<ComponentInstance>): VMComponentCapabilities {
+    capabilities,
+  }: VMCustomComponentDefinitionState<ComponentInstance>): VMComponentCapabilities {
     return Object.assign({}, VM_CAPABILITIES, {
-      updateHook: delegate.capabilities.updateHook,
+      updateHook: capabilities.updateHook,
     });
   }
 
-  getTag({ args }: CustomComponentState<ComponentInstance>): Tag {
+  getTag({ args }: VMCustomComponentState<ComponentInstance>): Tag {
     if (isConst(args)) {
       // returning a const tag skips the update hook (VM BUG?)
       return createTag();
@@ -306,7 +312,7 @@ export default class CustomComponentManager<ComponentInstance>
 
   getJitStaticLayout({
     definition,
-  }: CustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
+  }: VMCustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
     return definition.template.asLayout();
   }
 }
@@ -316,7 +322,7 @@ export default class CustomComponentManager<ComponentInstance>
 /**
  * Stores internal state about a component instance after it's been created.
  */
-export class CustomComponentState<ComponentInstance> {
+export class VMCustomComponentState<ComponentInstance> {
   constructor(
     public env: Environment,
     public delegate: ComponentManager<ComponentInstance>,
@@ -334,35 +340,36 @@ export class CustomComponentState<ComponentInstance> {
   }
 }
 
-export interface CustomComponentDefinitionState<ComponentInstance> {
-  delegate: ComponentManager<ComponentInstance>;
-  ComponentClass: ComponentDefinition;
-  definition: CustomComponentDefinition<ComponentInstance>;
+export interface VMCustomComponentDefinitionState<ComponentInstance> {
+  ComponentDefinition: ComponentDefinition<ComponentInstance>;
+  capabilities: Capabilities;
+  definition: VMCustomComponentDefinition<ComponentInstance>;
 }
 
 export const CUSTOM_COMPONENT_MANAGER = new CustomComponentManager();
 
-export class CustomComponentDefinition<ComponentInstance> {
-  public state: CustomComponentDefinitionState<ComponentInstance>;
+export class VMCustomComponentDefinition<ComponentInstance> {
+  public state: VMCustomComponentDefinitionState<ComponentInstance>;
   public manager = CUSTOM_COMPONENT_MANAGER as CustomComponentManager<ComponentInstance>;
   public template: TemplateOk<TemplateMeta>;
   public handle: number;
 
   constructor(
     handle: number,
-    ComponentClass: ComponentDefinition,
-    delegate: ComponentManager<ComponentInstance>,
+    ComponentDefinition: ComponentDefinition<ComponentInstance>,
     template: Template<TemplateMeta>
   ) {
     this.handle = handle;
     this.template = unwrapTemplate(template);
 
+    const capabilities = getComponentManager(DEFAULT_OWNER, ComponentDefinition)!.capabilities;
+
     this.state = {
-      ComponentClass,
-      delegate,
+      ComponentDefinition,
+      capabilities,
       definition: this,
     };
   }
 }
 
-export type ComponentDefinition = {}
+export type ComponentDefinition<_Instance = unknown> = {};

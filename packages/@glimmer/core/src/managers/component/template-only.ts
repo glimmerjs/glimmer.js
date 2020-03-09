@@ -14,7 +14,7 @@ import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { DEBUG } from '@glimmer/env';
 
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
-import { TemplateMeta } from './custom';
+import { TemplateMeta } from '../../template';
 
 export const CAPABILITIES: ComponentCapabilities = {
   attributeHook: false,

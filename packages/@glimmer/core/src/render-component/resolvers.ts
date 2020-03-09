@@ -16,7 +16,8 @@ import {
   vmHandleForModifier,
 } from './vm-definitions';
 
-import { ComponentDefinition, TemplateMeta } from '../managers/component/custom';
+import { ComponentDefinition } from '../managers/component/custom';
+import { TemplateMeta } from '../template';
 
 ///////////
 

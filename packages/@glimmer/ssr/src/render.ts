@@ -28,6 +28,7 @@ class ServerEnvDelegate extends BaseEnvDelegate {
 export interface RenderOptions {
   args?: Dict<unknown>;
   serializer?: HTMLSerializer;
+  owner?: object
 }
 
 const defaultSerializer = new HTMLSerializer(voidMap);
@@ -65,7 +66,8 @@ export function renderToStream(
     element,
     { appendOperations, updateOperations },
     new ServerEnvDelegate(),
-    options.args
+    options.args,
+    options.owner
   );
   iterator.sync();
 

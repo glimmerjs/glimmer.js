@@ -1,6 +1,9 @@
 import { DEBUG } from '@glimmer/env';
 import { SerializedTemplateWithLazyBlock, Dict } from '@glimmer/interfaces';
-import { TemplateMeta } from './managers/component/custom';
+
+export interface TemplateMeta {
+  scope: () => Dict<unknown>;
+}
 
 const TEMPLATE_MAP = new WeakMap<object, SerializedTemplateWithLazyBlock<TemplateMeta>>();
 const getPrototypeOf = Object.getPrototypeOf;
