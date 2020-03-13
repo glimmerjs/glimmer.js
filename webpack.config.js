@@ -24,7 +24,10 @@ module.exports = {
               ['@babel/plugin-proposal-decorators', { legacy: true }],
               '@babel/plugin-proposal-class-properties',
             ],
-            presets: ['@babel/preset-typescript'],
+            presets: [
+              '@babel/preset-typescript',
+              '@babel/preset-env',
+            ],
           },
         },
       },

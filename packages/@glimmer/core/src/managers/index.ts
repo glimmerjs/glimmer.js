@@ -1,27 +1,40 @@
 import { ComponentManager, ComponentDefinition } from './component/custom';
 import { ModifierManager, ModifierDefinition } from './modifier';
+import { HelperManager, HelperDefinition } from './helper';
 
-type ManagedItemDefinition<Instance> = ComponentDefinition<Instance> | ModifierDefinition<Instance>;
+type ManagedItemDefinition<StateBucket> =
+  | ComponentDefinition<StateBucket>
+  | ModifierDefinition<StateBucket>
+  | HelperDefinition<StateBucket>;
 
 //////////
 
 export type ManagerFactory<D extends ManagerDelegate> = (owner: object) => D;
 
-type ManagerDelegate = ComponentManager<unknown> | ModifierManager<unknown>;
+type ManagerDelegate =
+  | ComponentManager<unknown>
+  | ModifierManager<unknown>
+  | HelperManager<unknown>;
 
-interface ComponentManagerWrapper<Instance> {
-  factory: ManagerFactory<ComponentManager<Instance>>;
+interface ComponentManagerWrapper<StateBucket> {
+  factory: ManagerFactory<ComponentManager<StateBucket>>;
   type: 'component';
 }
 
-interface ModifierMangagerWrapper<Instance> {
-  factory: ManagerFactory<ModifierManager<Instance>>;
+interface ModifierMangagerWrapper<StateBucket> {
+  factory: ManagerFactory<ModifierManager<StateBucket>>;
   type: 'modifier';
 }
 
-type ManagerWrapper<Instance> =
-  | ComponentManagerWrapper<Instance>
-  | ModifierMangagerWrapper<Instance>;
+interface HelperManagerWrapper<StateBucket> {
+  factory: ManagerFactory<HelperManager<StateBucket>>;
+  type: 'helper';
+}
+
+type ManagerWrapper<StateBucket> =
+  | ComponentManagerWrapper<StateBucket>
+  | ModifierMangagerWrapper<StateBucket>
+  | HelperManagerWrapper<StateBucket>;
 
 ///////////
 
@@ -33,7 +46,7 @@ const MANAGER_INSTANCES: WeakMap<
 
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function setManager<Instance = unknown>(wrapper: ManagerWrapper<Instance>, obj: {}): {} {
+export function setManager<StateBucket = unknown>(wrapper: ManagerWrapper<StateBucket>, obj: {}): {} {
   MANAGERS.set(obj, wrapper);
   return obj;
 }
@@ -79,16 +92,16 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 
 ///////////
 
-export function setModifierManager<Instance>(
+export function setModifierManager<StateBucket>(
   factory: ManagerFactory<ModifierManager<unknown>>,
-  definition: ModifierDefinition<Instance>
+  definition: ModifierDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'modifier' }, definition);
 }
 
-export function getModifierManager<Instance = unknown>(
+export function getModifierManager<StateBucket = unknown>(
   owner: object,
-  definition: ModifierDefinition<Instance>
+  definition: ModifierDefinition<StateBucket>
 ): ModifierManager<unknown> | undefined {
   const wrapper = getManager(definition);
 
@@ -97,17 +110,35 @@ export function getModifierManager<Instance = unknown>(
   }
 }
 
-export function setComponentManager<Instance>(
-  factory: ManagerFactory<ComponentManager<unknown>>,
-  definition: ComponentDefinition<Instance>
+export function setHelperManager<StateBucket>(
+  factory: ManagerFactory<HelperManager<StateBucket>>,
+  definition: HelperDefinition<StateBucket>
+): {} {
+  return setManager({ factory, type: 'helper' }, definition);
+}
+
+export function getHelperManager<StateBucket = unknown>(
+  owner: object,
+  definition: HelperDefinition<StateBucket>
+): HelperManager<StateBucket> | undefined {
+  const wrapper = getManager(definition);
+
+  if (wrapper !== undefined && wrapper.type === 'helper') {
+    return getManagerInstanceForOwner(owner, wrapper.factory);
+  }
+}
+
+export function setComponentManager<StateBucket>(
+  factory: ManagerFactory<ComponentManager<StateBucket>>,
+  definition: ComponentDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'component' }, definition);
 }
 
-export function getComponentManager<Instance = unknown>(
+export function getComponentManager<StateBucket = unknown>(
   owner: object,
-  definition: ComponentDefinition<Instance>
-): ComponentManager<Instance> | undefined {
+  definition: ComponentDefinition<StateBucket>
+): ComponentManager<StateBucket> | undefined {
   const wrapper = getManager(definition);
 
   if (wrapper !== undefined && wrapper.type === 'component') {

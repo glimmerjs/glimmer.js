@@ -1,4 +1,3 @@
-import { DEBUG } from '@glimmer/env';
 import { assert } from '@glimmer/util';
 import {
   ComponentManager as VMComponentManager,
@@ -16,12 +15,14 @@ import {
   DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference, ComponentRootReference } from '@glimmer/reference';
-import { Tag, isConst, createTag, consume } from '@glimmer/validator';
+import { Tag, isConst, createTag } from '@glimmer/validator';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
 import { unwrapTemplate } from '@glimmer/opcode-compiler';
 import { getComponentManager } from '..';
 import { TemplateMeta } from '../../template';
+import { Args } from '../../interfaces';
+import { argsProxyFor } from '../util';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
@@ -67,11 +68,6 @@ export function capabilities(
 }
 
 ///////////
-
-export interface Args {
-  named: Dict<unknown>;
-  positional: unknown[];
-}
 
 /**
  * This is the public facing component manager. Named `ComponentManager` so the
@@ -184,79 +180,22 @@ export default class CustomComponentManager<ComponentInstance>
   ): VMCustomComponentState<ComponentInstance> {
     const { ComponentDefinition } = definition;
     const capturedArgs = args.capture();
-
     const owner = dynamicScope.get(OWNER_KEY).value() as object;
     const delegate = getComponentManager(owner, ComponentDefinition)!;
 
-    const handler: ProxyHandler<{}> = {
-      get(_target, prop) {
-        if (capturedArgs.named.has(prop as string)) {
-          const ref = capturedArgs.named.get(prop as string);
-          consume(ref.tag);
+    const argsProxy = argsProxyFor(capturedArgs, 'component');
+    const component = delegate.createComponent(ComponentDefinition, argsProxy);
 
-          return ref.value();
-        }
-      },
-
-      has(_target, prop) {
-        return capturedArgs.named.has(prop as string);
-      },
-
-      ownKeys(_target) {
-        return capturedArgs.named.names;
-      },
-
-      getOwnPropertyDescriptor(_target, prop) {
-        assert(
-          capturedArgs.named.has(prop as string),
-          'args proxies do not have real property descriptors, so you should never need to call getOwnPropertyDescriptor yourself. This code exists for enumerability, such as in for-in loops and Object.keys()'
-        );
-
-        return {
-          enumerable: true,
-          configurable: true,
-        };
-      },
-    };
-
-    if (DEBUG) {
-      handler.set = function(_target, prop): boolean {
-        assert(
-          false,
-          `You attempted to set ${ComponentDefinition}#${String(
-            prop
-          )} on a components arguments. Component arguments are immutable and cannot be updated directly, they always represent the values that are passed to your component. If you want to set default values, you should use a getter instead`
-        );
-
-        return false;
-      };
-    }
-
-    const namedArgsProxy = new Proxy({}, handler);
-
-    const value = {
-      named: namedArgsProxy,
-      positional: capturedArgs.positional.value(),
-    };
-
-    const component = delegate.createComponent(ComponentDefinition, value);
-
-    return new VMCustomComponentState(env, delegate, component, capturedArgs, namedArgsProxy);
+    return new VMCustomComponentState(env, delegate, component, capturedArgs, argsProxy);
   }
 
   update({
     delegate,
     component,
-    args,
-    namedArgsProxy,
+    argsProxy,
   }: VMCustomComponentState<ComponentInstance>): void {
     if (hasUpdateHook(delegate)) {
-      const value = {
-        named: namedArgsProxy,
-        positional: args.positional.value(),
-      };
-
-      delegate.updateComponent(component, value);
+      delegate.updateComponent(component, argsProxy);
     }
   }
 
@@ -328,7 +267,7 @@ export class VMCustomComponentState<ComponentInstance> {
     public delegate: ComponentManager<ComponentInstance>,
     public component: ComponentInstance,
     public args: CapturedArguments,
-    public namedArgsProxy: {}
+    public argsProxy: Args
   ) {}
 
   destroy(): void {

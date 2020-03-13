@@ -1,6 +1,6 @@
 import {
   ComponentDefinition as VMComponentDefinition,
-  Helper as GlimmerHelper,
+  Helper as VMHelperFactory,
   ModifierManager,
   TemplateOk,
 } from '@glimmer/interfaces';
@@ -8,21 +8,21 @@ import { templateFactory } from '@glimmer/opcode-compiler';
 
 import { getComponentTemplate, TemplateMeta } from '../template';
 import { VMCustomComponentDefinition, ComponentDefinition } from '../managers/component/custom';
+import { HelperDefinition, vmHelperFactoryFor } from '../managers/helper';
 import {
   TemplateOnlyComponentDefinition,
   TemplateOnlyComponent,
 } from '../managers/component/template-only';
+import { DEBUG } from '@glimmer/env';
 
-export interface ComponentDefinitionWithHandle extends VMComponentDefinition {
+export interface VMComponentDefinitionWithHandle extends VMComponentDefinition {
   handle: number;
   template: TemplateOk<TemplateMeta>;
 }
 
-interface HelperDefinition {
-  state: {
-    fn: GlimmerHelper;
-    handle: number;
-  };
+export interface VMHelperDefinition {
+  helper: VMHelperFactory;
+  handle: number;
 }
 
 export interface Modifier {
@@ -32,21 +32,21 @@ export interface Modifier {
 
 ///////////
 
-const VM_COMPONENT_DEFINITIONS = new WeakMap<ComponentDefinition, ComponentDefinitionWithHandle>();
-const VM_HELPER_DEFINITIONS = new WeakMap<GlimmerHelper, HelperDefinition>();
+let HANDLE = 0;
+
+const VM_COMPONENT_DEFINITIONS = new WeakMap<ComponentDefinition, VMComponentDefinitionWithHandle>();
+const VM_HELPER_DEFINITIONS = new WeakMap<HelperDefinition, VMHelperDefinition>();
 const VM_MODIFIER_HANDLES = new WeakMap<Modifier, number>();
 
 export function vmDefinitionForComponent(
   ComponentDefinition: ComponentDefinition
-): ComponentDefinitionWithHandle {
+): VMComponentDefinitionWithHandle {
   return VM_COMPONENT_DEFINITIONS.get(ComponentDefinition) || createVMComponentDefinition(ComponentDefinition);
 }
 
-export function vmDefinitionForHelper(Helper: GlimmerHelper): HelperDefinition {
+export function vmDefinitionForHelper(Helper: HelperDefinition): VMHelperDefinition {
   return VM_HELPER_DEFINITIONS.get(Helper) || createVMHelperDefinition(Helper);
 }
-
-let HANDLE = 0;
 
 export function vmHandleForModifier(modifier: Modifier): number {
   let handle = VM_MODIFIER_HANDLES.get(modifier);
@@ -61,9 +61,32 @@ export function vmHandleForModifier(modifier: Modifier): number {
 
 ///////////
 
+let BUILT_INS: WeakSet<object> | undefined;
+
+if (DEBUG) {
+  BUILT_INS = new WeakSet();
+}
+
+function handleForBuiltIn(builtIn: object): number {
+  if (DEBUG && BUILT_INS!.has(builtIn)) {
+    throw new Error('attempted to register the same built-in twice');
+  }
+
+  return HANDLE++
+}
+
+export function vmDefinitionForBuiltInHelper(helper: VMHelperFactory): VMHelperDefinition {
+  return {
+    helper,
+    handle: handleForBuiltIn(helper),
+  };
+}
+
+///////////
+
 function createVMComponentDefinition(
   ComponentDefinition: ComponentDefinition | TemplateOnlyComponent
-): ComponentDefinitionWithHandle {
+): VMComponentDefinitionWithHandle {
   const serializedTemplate = getComponentTemplate(ComponentDefinition);
   const template = templateFactory<TemplateMeta>(serializedTemplate!).create();
 
@@ -83,14 +106,12 @@ function createVMComponentDefinition(
   return definition;
 }
 
-function createVMHelperDefinition(Helper: GlimmerHelper): HelperDefinition {
+function createVMHelperDefinition(userDefinition: HelperDefinition): VMHelperDefinition {
   const definition = {
-    state: {
-      fn: Helper,
-      handle: HANDLE++,
-    },
+    helper: vmHelperFactoryFor(userDefinition),
+    handle: HANDLE++,
   };
 
-  VM_HELPER_DEFINITIONS.set(Helper, definition);
+  VM_HELPER_DEFINITIONS.set(userDefinition, definition);
   return definition;
 }

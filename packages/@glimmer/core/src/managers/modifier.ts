@@ -1,6 +1,6 @@
 import { assert } from '@glimmer/util';
-import { Dict } from '@glimmer/interfaces';
 import { SimpleElement } from '@simple-dom/interface';
+import { Args } from '../interfaces';
 
 ///////////
 
@@ -24,11 +24,6 @@ export function capabilities(
 }
 
 ///////////
-
-export interface Args {
-  named: Dict<unknown>;
-  positional: unknown[];
-}
 
 export interface ModifierManager<ModifierInstance> {
   capabilities: Capabilities;

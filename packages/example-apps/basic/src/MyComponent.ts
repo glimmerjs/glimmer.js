@@ -6,7 +6,7 @@ import {
   templateOnlyComponent,
   getOwner,
 } from '@glimmer/core';
-import { helper } from '@glimmer/helper';
+import { helper } from './utils/helper-with-services';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
 import { Owner } from '..';
@@ -15,13 +15,13 @@ const myHelper = helper(function([name], { greeting }) {
   return `Helper: ${greeting} ${name}`;
 });
 
-const isCJK = helper(function(_args, _hash) {
-  // const localeService = services!.locale as LocaleService;
-  // return (
-  //   localeService.currentLocale === 'zh_CN' ||
-  //   localeService.currentLocale === 'ko_KO' ||
-  //   localeService.currentLocale === 'ja_JP'
-  // );
+const isCJK = helper(function(_args, _hash, services) {
+  const localeService = services.locale as LocaleService;
+  return (
+    localeService.currentLocale === 'zh_CN' ||
+    localeService.currentLocale === 'ko_KO' ||
+    localeService.currentLocale === 'ja_JP'
+  );
 
   return true;
 });

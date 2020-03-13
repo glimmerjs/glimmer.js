@@ -5,6 +5,7 @@ import { IteratorDelegate } from '@glimmer/reference';
 
 import { isNativeIterable, NativeIterator } from './iterator';
 import { DEBUG } from '@glimmer/env';
+import toBool from './to-bool';
 
 /**
  * The environment delegate base class shared by both the client and SSR
@@ -18,14 +19,7 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
   abstract protocolForURL(url: string): string;
 
   // Match Ember's toBool semantics for cross-compatibility
-  toBool(predicate: unknown): boolean {
-    if (Array.isArray(predicate)) {
-      return (predicate as { length: number }).length !== 0;
-    } else {
-      return Boolean(predicate);
-    }
-  }
-
+  toBool = toBool;
 
   toIterator(value: unknown): Option<IteratorDelegate>  {
     if (isNativeIterable(value)) {
