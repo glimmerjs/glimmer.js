@@ -35,7 +35,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
       HelloWorld,
       createTemplate(
         { on, fn },
-        '<button {{on "click" (fn this.userDidClick "hello" name)}}>Hello World</button>'
+        '<button {{on "click" (fn this.userDidClick "hello" this.name)}}>Hello World</button>'
       )
     );
 

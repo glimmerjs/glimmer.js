@@ -243,16 +243,6 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, `<button>Count: 0</button>`, 'the component was rendered');
   });
 
-  test('throws an exception if an invoked component is not found', async assert => {
-    assert.expect(1);
-
-    try {
-      await render(createTemplate(`<NonExistent />`));
-    } catch (err) {
-      assert.ok(err.toString().match(/Cannot find component NonExistent in scope/));
-    }
-  });
-
   if (DEBUG) {
     test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
       assert.expect(1);

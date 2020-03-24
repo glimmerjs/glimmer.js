@@ -21,6 +21,7 @@ import { ComponentDefinition } from '../managers/component/custom';
 import { TemplateMeta } from '../template';
 import { HelperDefinition } from '../managers/helper';
 import { ifHelper } from './built-ins';
+import { DEBUG } from '@glimmer/env';
 
 const builtInHelpers: { [key: string]: VMHelperDefinition } = {
   if: vmDefinitionForBuiltInHelper(ifHelper),
@@ -93,10 +94,6 @@ export class CompileTimeResolver implements ResolverDelegate {
     const scope = referrer.scope();
     const modifier = scope[name] as Modifier;
 
-    if (modifier === undefined) {
-      throw new Error(`Cannot find modifier ${name} in scope`);
-    }
-
     const handle = vmHandleForModifier(modifier);
     this.inner.registry[handle] = modifier;
     return handle;
@@ -106,8 +103,8 @@ export class CompileTimeResolver implements ResolverDelegate {
     const scope = referrer.scope();
     const ComponentDefinition = scope[name] as ComponentDefinition;
 
-    if (ComponentDefinition === undefined) {
-      throw new Error(`Cannot find component ${name} in scope`);
+    if (DEBUG && ComponentDefinition === undefined) {
+      throw new Error(`Cannot find component \`${name}\` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add \`this\` to it: \`<this.${name}>\``);
     }
 
     const definition = vmDefinitionForComponent(ComponentDefinition);
