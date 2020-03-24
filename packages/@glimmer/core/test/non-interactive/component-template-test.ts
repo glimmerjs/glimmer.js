@@ -1,11 +1,19 @@
 const { module, test } = QUnit;
 
-import { getComponentTemplate, setComponentTemplate } from '../../src/template';
+import { getComponentTemplate, setComponentTemplate, TemplateMeta } from '../../src/template';
+import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
+
+class FakeTemplateMeta implements SerializedTemplateWithLazyBlock<TemplateMeta> {
+  block = "{}";
+  meta = {
+    scope: (): {} => ({})
+  }
+}
 
 module('component templates', () => {
   test('setting and getting', assert => {
-    const templateA = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    const templateAAB = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const templateA = new FakeTemplateMeta();
+    const templateAAB = new FakeTemplateMeta();
 
     class A {}
     setComponentTemplate(A, templateA);

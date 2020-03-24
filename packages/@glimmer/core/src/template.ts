@@ -22,10 +22,28 @@ if (DEBUG) {
   };
 }
 
+const builtInHelpers = {
+  if: true,
+  each: true,
+};
+
 export function setComponentTemplate<T extends object>(
   ComponentClass: T,
   template: SerializedTemplateWithLazyBlock<TemplateMeta>
 ): T {
+  if (DEBUG) {
+    const scope = template.meta.scope();
+    const block = JSON.parse(template.block);
+
+    if (block.upvars) {
+      for (const upvar of block.upvars) {
+        if (!(upvar in builtInHelpers) && scope[upvar] === undefined) {
+          throw new Error(`Cannot find identifier \`${upvar}\` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add \`this\` to it: \`{{this.${upvar}}}\``);
+        }
+      }
+    }
+  }
+
   TEMPLATE_MAP.set(ComponentClass, template);
   return ComponentClass;
 }
