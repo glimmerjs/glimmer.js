@@ -4,5 +4,6 @@
     "**/bower_components": true,
     "dist": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.enable": true
 }

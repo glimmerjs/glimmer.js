@@ -44,7 +44,11 @@ module.exports = {
     },
     // source Js
     {
-      files: ['src/**/*.js'],
+      files: ['**/src/**/*.js', '**/test/**/*.js'],
+      env: {
+        es2020: true,
+        browser: true,
+      },
       parserOptions: {
         sourceType: 'module',
       },

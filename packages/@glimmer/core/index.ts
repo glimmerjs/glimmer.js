@@ -16,6 +16,13 @@ export {
 export { Args as CapturedArgs } from './src/interfaces';
 
 export {
+  ModifierManager,
+  ModifierDefinition,
+  capabilities as modifierCapabilities,
+  Capabilities as ModifierCapabilities,
+} from './src/managers/modifier';
+
+export {
   HelperManager,
   HelperDefinition,
   capabilities as helperCapabilities,

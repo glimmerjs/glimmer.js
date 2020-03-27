@@ -1,5 +1,6 @@
 import {
   ComponentDefinition as VMComponentDefinition,
+  ModifierDefinition as VMModifierDefinition,
   Helper as VMHelperFactory,
   ModifierManager,
   TemplateOk,
@@ -14,11 +15,17 @@ import {
   TemplateOnlyComponent,
 } from '../managers/component/template-only';
 import { DEBUG } from '@glimmer/env';
+import { ModifierDefinition, VMCustomModifierDefinition } from '../managers/modifier';
 
 export interface VMComponentDefinitionWithHandle extends VMComponentDefinition {
   handle: number;
   template: TemplateOk<TemplateMeta>;
 }
+
+export interface VMModifierDefinitionWithHandle extends VMModifierDefinition {
+  handle: number;
+}
+
 
 export interface VMHelperDefinition {
   helper: VMHelperFactory;
@@ -36,7 +43,7 @@ let HANDLE = 0;
 
 const VM_COMPONENT_DEFINITIONS = new WeakMap<ComponentDefinition, VMComponentDefinitionWithHandle>();
 const VM_HELPER_DEFINITIONS = new WeakMap<HelperDefinition, VMHelperDefinition>();
-const VM_MODIFIER_HANDLES = new WeakMap<Modifier, number>();
+const VM_MODIFIER_DEFINITIONS = new WeakMap<ModifierDefinition, VMModifierDefinitionWithHandle>();
 
 export function vmDefinitionForComponent(
   ComponentDefinition: ComponentDefinition
@@ -48,15 +55,8 @@ export function vmDefinitionForHelper(Helper: HelperDefinition): VMHelperDefinit
   return VM_HELPER_DEFINITIONS.get(Helper) || createVMHelperDefinition(Helper);
 }
 
-export function vmHandleForModifier(modifier: Modifier): number {
-  let handle = VM_MODIFIER_HANDLES.get(modifier);
-
-  if (!handle) {
-    handle = HANDLE++;
-    VM_MODIFIER_HANDLES.set(modifier, handle);
-  }
-
-  return handle;
+export function vmDefinitionForModifier(Modifier: ModifierDefinition): VMModifierDefinitionWithHandle {
+  return VM_MODIFIER_DEFINITIONS.get(Modifier) || createVMModifierDefinition(Modifier);
 }
 
 ///////////
@@ -113,5 +113,15 @@ function createVMHelperDefinition(userDefinition: HelperDefinition): VMHelperDef
   };
 
   VM_HELPER_DEFINITIONS.set(userDefinition, definition);
+  return definition;
+}
+
+function createVMModifierDefinition(
+  Modifier: ModifierDefinition
+): VMModifierDefinitionWithHandle {
+  const definition = new VMCustomModifierDefinition(HANDLE++, Modifier);
+
+  VM_MODIFIER_DEFINITIONS.set(Modifier, definition);
+
   return definition;
 }
