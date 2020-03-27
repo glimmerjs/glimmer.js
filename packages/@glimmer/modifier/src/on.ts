@@ -1,111 +1,63 @@
-import { ModifierManager, VMArguments, CapturedArguments } from '@glimmer/interfaces';
-import { SimpleElement } from '@simple-dom/interface';
-import { Tag, CONSTANT_TAG } from '@glimmer/validator';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
+import { ModifierManager, modifierCapabilities, setModifierManager } from '@glimmer/core';
 
-class OnModifierState {
-  public element: Element;
-  private args: CapturedArguments;
-  public tag: Tag;
+// This function is just used to have an importable value to assign the modifier manager
+// to, so it doesn't actually get run. Having the typings is good for documentation
+// and discoverabilitity purposes though.
 
-  public eventName: string;
-  public callback: EventListener;
+export function on(
+  // @ts-ignore
+  element: Element,
+  // @ts-ignore
+  eventName: string,
+  // @ts-ignore
+  callBack: EventListenerOrEventListenerObject,
+  // @ts-ignore
+  options?: AddEventListenerOptions
+): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  public shouldUpdate = true;
+interface OnArgs {
+  positional: [string, EventListenerOrEventListenerObject];
+  named: AddEventListenerOptions;
+}
 
-  constructor(element: Element, args: CapturedArguments) {
-    this.element = element;
-    this.args = args;
-    this.tag = args.tag;
+interface OnStateBucket {
+  element?: Element;
+  args: OnArgs;
+  previousArgs: OnArgs;
+}
+
+class OnModifierManager implements ModifierManager<OnStateBucket> {
+  capabilities = modifierCapabilities('3.13');
+
+  createModifier(_definition: {}, args: unknown): OnStateBucket {
+    return { args: args as OnArgs, previousArgs: args as OnArgs };
   }
 
-  updateFromArgs(): void {
-    const { args } = this;
+  installModifier(bucket: OnStateBucket, element: Element): void {
+    const { args } = bucket;
+    const [eventName, listener] = args.positional;
+    const named = Object.assign({}, args.named);
 
-    const eventName = args.positional.at(0).value() as string;
+    element.addEventListener(eventName, listener, named);
 
-    if (eventName !== this.eventName) {
-      this.eventName = eventName;
-      this.shouldUpdate = true;
-    }
-
-    const callback = args.positional.at(1).value() as EventListener;
-
-    if (callback !== this.callback) {
-      this.callback = callback;
-      this.shouldUpdate = true;
-    }
+    bucket.element = element;
+    bucket.previousArgs = {
+      positional: [eventName, listener],
+      named,
+    };
   }
 
-  destroy(): void {
-    this.element.removeEventListener(this.eventName, this.callback);
+  updateModifier(bucket: OnStateBucket): void {
+    this.destroyModifier(bucket);
+    this.installModifier(bucket, bucket.element!);
+  }
+
+  destroyModifier({ element, previousArgs }: OnStateBucket): void {
+    const [eventName, listener] = previousArgs.positional;
+    element!.removeEventListener(eventName, listener, previousArgs.named);
   }
 }
 
-class OnModifierManager implements ModifierManager<OnModifierState | null, null> {
-  public isInteractive: boolean;
-
-  constructor() {
-    this.isInteractive = typeof document !== 'undefined';
-  }
-
-  create(element: SimpleElement, _state: null, args: VMArguments): OnModifierState | null {
-    if (!this.isInteractive) {
-      return null;
-    }
-
-    const capturedArgs = args.capture();
-    return new OnModifierState(element as Element, capturedArgs);
-  }
-
-  getTag(state: OnModifierState | null): Tag {
-    if (state === null) {
-      return CONSTANT_TAG;
-    }
-    return state.tag;
-  }
-
-  install(state: OnModifierState | null): void {
-    if (state === null) {
-      return;
-    }
-
-    state.updateFromArgs();
-
-    const { element, eventName, callback } = state;
-    element.addEventListener(eventName, callback);
-
-    state.shouldUpdate = false;
-  }
-
-  update(state: OnModifierState | null): void {
-    if (state === null) {
-      return;
-    }
-
-    // stash prior state for el.removeEventListener
-    const { element, eventName, callback } = state;
-
-    state.updateFromArgs();
-
-    if (!state.shouldUpdate) {
-      return;
-    }
-
-    // use prior state values for removal
-    element.removeEventListener(eventName, callback);
-
-    // read updated values from the state object
-    state.element.addEventListener(state.eventName, state.callback);
-
-    state.shouldUpdate = false;
-  }
-
-  getDestructor(state: OnModifierState | null): OnModifierState | null{
-    return state;
-  }
-}
-
-export const on = {
-  state: null,
-  manager: new OnModifierManager(),
-};
+setModifierManager(() => new OnModifierManager(), on);

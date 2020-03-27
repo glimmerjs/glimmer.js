@@ -1,1 +1,2 @@
-export { tracked, setPropertyDidChange } from './src/tracked';
+export { setPropertyDidChange } from '@glimmer/validator';
+export { tracked } from './src/tracked';

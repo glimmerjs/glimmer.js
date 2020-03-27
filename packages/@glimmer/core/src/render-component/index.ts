@@ -116,8 +116,10 @@ const context = JitContext(new CompileTimeResolver(resolver));
 const program = new RuntimeProgramImpl(context.program.constants, context.program.heap);
 
 function dictToReference(dict: Dict<unknown>, env: Environment): Dict<PathReference> {
+  const root = new ComponentRootReference(dict, env);
+
   return Object.keys(dict).reduce((acc, key) => {
-    acc[key] = new ComponentRootReference(dict[key], env);
+    acc[key] = root.get(key);
     return acc;
   }, {} as Dict<PathReference>);
 }

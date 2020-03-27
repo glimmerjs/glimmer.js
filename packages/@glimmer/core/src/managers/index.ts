@@ -93,7 +93,7 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 ///////////
 
 export function setModifierManager<StateBucket>(
-  factory: ManagerFactory<ModifierManager<unknown>>,
+  factory: ManagerFactory<ModifierManager<StateBucket>>,
   definition: ModifierDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'modifier' }, definition);
@@ -102,7 +102,7 @@ export function setModifierManager<StateBucket>(
 export function getModifierManager<StateBucket = unknown>(
   owner: object,
   definition: ModifierDefinition<StateBucket>
-): ModifierManager<unknown> | undefined {
+): ModifierManager<StateBucket> | undefined {
   const wrapper = getManager(definition);
 
   if (wrapper !== undefined && wrapper.type === 'modifier') {

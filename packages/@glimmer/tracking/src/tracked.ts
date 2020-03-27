@@ -139,15 +139,6 @@ function descriptorForField<T extends object, K extends keyof T>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     set(this: T, newValue: any): void {
       setter(this, newValue);
-      propertyDidChange();
     },
   };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-let propertyDidChange = function(): void {};
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function setPropertyDidChange(cb: () => void) {
-  propertyDidChange = cb;
 }

@@ -11,9 +11,8 @@ import { ResolverDelegate, unwrapTemplate } from '@glimmer/opcode-compiler';
 import {
   vmDefinitionForComponent,
   vmDefinitionForHelper,
+  vmDefinitionForModifier,
   vmDefinitionForBuiltInHelper,
-  Modifier,
-  vmHandleForModifier,
   VMHelperDefinition,
 } from './vm-definitions';
 
@@ -22,6 +21,7 @@ import { TemplateMeta } from '../template';
 import { HelperDefinition } from '../managers/helper';
 import { ifHelper } from './built-ins';
 import { DEBUG } from '@glimmer/env';
+import { ModifierDefinition } from '../managers/modifier';
 
 const builtInHelpers: { [key: string]: VMHelperDefinition } = {
   if: vmDefinitionForBuiltInHelper(ifHelper),
@@ -92,10 +92,13 @@ export class CompileTimeResolver implements ResolverDelegate {
 
   lookupModifier(name: string, referrer: TemplateMeta): Option<number> {
     const scope = referrer.scope();
-    const modifier = scope[name] as Modifier;
+    const modifier = scope[name] as ModifierDefinition;
 
-    const handle = vmHandleForModifier(modifier);
-    this.inner.registry[handle] = modifier;
+    const definition = vmDefinitionForModifier(modifier);
+    const { handle } = definition;
+
+    this.inner.registry[handle] = definition;
+
     return handle;
   }
 

@@ -9,6 +9,9 @@ import {
 import { renderToString } from '@glimmer/ssr';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
 import { TemplateMeta } from '../src/template';
+import { tracked as glimmerTracked } from '@glimmer/tracking';
+
+import TrackedObject from './utils/tracked-object';
 
 export const module = QUnit.module;
 export const test = QUnit.test;
@@ -56,4 +59,32 @@ export async function settled(): Promise<string> {
   await didRender();
 
   return document.getElementById('qunit-fixture')!.innerHTML;
+}
+
+export function tracked<T extends object>(
+  obj: T | typeof Object
+): T;
+
+export function tracked(
+  obj: object,
+  key: string | symbol,
+  desc?: PropertyDescriptor
+): void;
+
+export function tracked(
+  obj: object,
+  key?: string | symbol,
+  desc?: PropertyDescriptor
+): object | void {
+  if (key !== undefined && desc !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (glimmerTracked as any)(obj, key as string, desc);
+  }
+
+  switch (obj) {
+    case Object:
+      return new TrackedObject();
+  }
+
+  return new TrackedObject(obj);
 }
