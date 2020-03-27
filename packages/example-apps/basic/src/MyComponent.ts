@@ -10,7 +10,7 @@ import { helper } from './utils/helper-with-services';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
 import { Owner } from '..';
-
+import MyTable from './MyTable';
 const myHelper = helper(function([name], { greeting }) {
   return `Helper: ${greeting} ${name}`;
 });
@@ -50,7 +50,7 @@ class MyComponent extends Component {
 setComponentTemplate(
   MyComponent,
   createTemplate(
-    { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on },
+    { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on, MyTable },
     `
       <h1>Hello {{this.message}}</h1> <br/>
       {{myHelper "foo" greeting="Hello"}}
@@ -64,6 +64,7 @@ setComponentTemplate(
       <OtherComponent @count={{this.count}} /> <br/>
       <button {{on "click" this.increment}}>Increment</button>
       <TemplateOnlyComponent @name="For Glimmer"/>
+      <MyTable />
     `
   )
 );
