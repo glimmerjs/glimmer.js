@@ -11,9 +11,9 @@ import {
 } from '@glimmer/interfaces';
 import { PathReference, ConstReference } from '@glimmer/reference';
 import { CONSTANT_TAG, Tag } from '@glimmer/validator';
+import { unwrapTemplate } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
 
-import { unwrapTemplate } from '@glimmer/opcode-compiler';
 import { TemplateMeta } from '../../template';
 
 export const CAPABILITIES: ComponentCapabilities = {

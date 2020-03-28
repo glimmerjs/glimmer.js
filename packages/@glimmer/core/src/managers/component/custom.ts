@@ -1,4 +1,4 @@
-import { assert } from '@glimmer/util';
+import { assert, unwrapTemplate } from '@glimmer/util';
 import {
   ComponentManager as VMComponentManager,
   ComponentCapabilities as VMComponentCapabilities,
@@ -18,7 +18,6 @@ import { PathReference, ComponentRootReference } from '@glimmer/reference';
 import { Tag, isConst, createTag } from '@glimmer/validator';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
-import { unwrapTemplate } from '@glimmer/opcode-compiler';
 import { getComponentManager } from '..';
 import { TemplateMeta } from '../../template';
 import { Args } from '../../interfaces';

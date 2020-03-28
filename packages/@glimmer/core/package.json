@@ -14,14 +14,14 @@
   "dependencies": {
     "@glimmer/component": "^2.0.0-alpha.1",
     "@glimmer/env": "^0.1.7",
-    "@glimmer/interfaces": "^0.47.6",
-    "@glimmer/opcode-compiler": "^0.47.6",
-    "@glimmer/runtime": "^0.47.6",
+    "@glimmer/interfaces": "0.50.0",
+    "@glimmer/opcode-compiler": "0.50.0",
+    "@glimmer/runtime": "0.50.0",
     "@glimmer/tracking": "^2.0.0-alpha.1",
     "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
-    "@glimmer/bundle-compiler": "^0.47.6",
-    "@glimmer/compiler": "^0.47.6"
+    "@glimmer/bundle-compiler": "0.50.0",
+    "@glimmer/compiler": "0.50.0"
   }
 }

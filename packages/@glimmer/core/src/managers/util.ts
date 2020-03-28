@@ -1,5 +1,5 @@
 import { CapturedArguments } from '@glimmer/interfaces';
-import { consume } from '@glimmer/validator';
+import { consumeTag } from '@glimmer/validator';
 import { assert } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
 import { Args } from '../interfaces';
@@ -24,7 +24,7 @@ export function argsProxyFor(
     get(_target, prop) {
       if (named.has(prop as string)) {
         const ref = named.get(prop as string);
-        consume(ref.tag);
+        consumeTag(ref.tag);
 
         return ref.value();
       }
@@ -59,7 +59,7 @@ export function argsProxyFor(
   const positionalHandler: ProxyHandler<[]> = {
     get(target, prop) {
       if (prop === 'length') {
-        consume(positional.tag);
+        consumeTag(positional.tag);
         return positional.length;
       }
 
@@ -67,7 +67,7 @@ export function argsProxyFor(
 
       if (parsed !== null && parsed < positional.length) {
         const ref = positional.at(parsed);
-        consume(ref.tag);
+        consumeTag(ref.tag);
 
         return ref.value();
       }

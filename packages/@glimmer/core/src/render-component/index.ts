@@ -2,7 +2,7 @@ import { setPropertyDidChange } from '@glimmer/tracking';
 import {
   clientBuilder,
   renderJitComponent,
-  JitRuntimeFromProgram,
+  JitRuntime,
   EnvironmentDelegate,
   DefaultDynamicScope,
 } from '@glimmer/runtime';
@@ -24,7 +24,6 @@ import { ComponentDefinition } from '../managers/component/custom';
 
 import { OWNER_KEY, DEFAULT_OWNER } from '../owner';
 import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
-import { RuntimeProgramImpl } from '@glimmer/program';
 
 export interface RenderComponentOptions {
   element: Element;
@@ -113,7 +112,6 @@ function revalidate(): void {
 
 const resolver = new RuntimeResolver();
 const context = JitContext(new CompileTimeResolver(resolver));
-const program = new RuntimeProgramImpl(context.program.constants, context.program.heap);
 
 function dictToReference(dict: Dict<unknown>, env: Environment): Dict<PathReference> {
   const root = new ComponentRootReference(dict, env);
@@ -132,7 +130,7 @@ export function getTemplateIterator(
   componentArgs: Dict<unknown> = {},
   owner = DEFAULT_OWNER
 ): TemplateIterator {
-  const runtime = JitRuntimeFromProgram(envOptions, program, resolver, envDelegate);
+  const runtime = JitRuntime(envOptions, envDelegate, context, resolver);
   const builder = clientBuilder(runtime.env, {
     element,
     nextSibling: null,
