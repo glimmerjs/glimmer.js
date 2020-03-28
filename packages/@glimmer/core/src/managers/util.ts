@@ -2,7 +2,7 @@ import { CapturedArguments } from '@glimmer/interfaces';
 import { consumeTag } from '@glimmer/validator';
 import { assert } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
-import { Args } from '../interfaces';
+import { TemplateArgs } from '../interfaces';
 
 function convertToInt(prop: number | string | symbol): number | null {
   if (typeof prop === 'symbol') return null;
@@ -17,7 +17,7 @@ function convertToInt(prop: number | string | symbol): number | null {
 export function argsProxyFor(
   capturedArgs: CapturedArguments,
   type: 'component' | 'helper' | 'modifier'
-): Args {
+): TemplateArgs {
   const { named, positional } = capturedArgs;
 
   const namedHandler: ProxyHandler<{}> = {

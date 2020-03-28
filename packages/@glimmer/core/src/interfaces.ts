@@ -1,6 +1,6 @@
 import { Dict } from '@glimmer/interfaces';
 
-export interface Args<
+export interface TemplateArgs<
   Positional extends unknown[] = unknown[],
   Named extends Dict<unknown> = Dict<unknown>,
 > {

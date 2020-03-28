@@ -1,5 +1,5 @@
 import {
-  CapturedArgs,
+  TemplateArgs,
   helperCapabilities,
   HelperManager,
   setHelperManager,
@@ -12,7 +12,7 @@ interface Helper<
   Named extends Dict<unknown> = Dict<unknown>,
   Result = unknown
 > {
-  args?: Partial<CapturedArgs<Positional, Named>>;
+  args?: Partial<TemplateArgs<Positional, Named>>;
 
   value?: Result;
 
@@ -33,7 +33,7 @@ class CustomHelperManager implements HelperManager<Helper> {
 
   constructor(private owner: unknown) {}
 
-  createHelper(definition: HelperConstructor, args: CapturedArgs): Helper {
+  createHelper(definition: HelperConstructor, args: TemplateArgs): Helper {
     const instance = new definition();
     instance.args = args;
     setOwner(instance, this.owner);
@@ -45,7 +45,7 @@ class CustomHelperManager implements HelperManager<Helper> {
     return instance.value;
   }
 
-  updateHelper(instance: Helper, args: CapturedArgs): void {
+  updateHelper(instance: Helper, args: TemplateArgs): void {
     instance.args = args;
     instance.update?.();
   }

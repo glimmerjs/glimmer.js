@@ -8,7 +8,7 @@ import {
   createTemplate,
   templateOnlyComponent,
   modifierCapabilities,
-  CapturedArgs,
+  TemplateArgs,
   setModifierManager,
   ModifierManager,
 } from '@glimmer/core';
@@ -33,13 +33,13 @@ class CustomModifierManager implements ModifierManager<CustomModifier> {
     return new factory(this.owner);
   }
 
-  installModifier(instance: CustomModifier, element: Element, args: CapturedArgs): void {
+  installModifier(instance: CustomModifier, element: Element, args: TemplateArgs): void {
     instance.element = element;
     const { positional, named } = args;
     instance.didInsertElement(positional, named);
   }
 
-  updateModifier(instance: CustomModifier, args: CapturedArgs): void {
+  updateModifier(instance: CustomModifier, args: TemplateArgs): void {
     const { positional, named } = args;
     instance.didUpdate(positional, named);
   }
