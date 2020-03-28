@@ -11,10 +11,10 @@
   "module": "dist/modules/index.js",
   "dependencies": {
     "@glimmer/core": "^2.0.0-alpha.1",
-    "@glimmer/node": "^0.47.6",
-    "@glimmer/reference": "^0.47.6",
-    "@glimmer/runtime": "^0.47.6",
-    "@glimmer/util": "^0.47.6",
+    "@glimmer/node": "0.50.0",
+    "@glimmer/reference": "0.50.0",
+    "@glimmer/runtime": "0.50.0",
+    "@glimmer/util": "0.50.0",
     "@simple-dom/document": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"

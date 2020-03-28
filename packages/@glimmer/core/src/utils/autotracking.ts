@@ -1,4 +1,4 @@
-import { track, value, validate, consume, Tag, Revision } from '@glimmer/validator';
+import { track, valueForTag, validateTag, consumeTag, Tag, Revision } from '@glimmer/validator';
 
 export function trackedMemoize<T>(fn: () => T): () => T {
   let lastValue: T | undefined;
@@ -6,12 +6,12 @@ export function trackedMemoize<T>(fn: () => T): () => T {
   let snapshot: Revision;
 
   return (): T => {
-    if (!tag || !validate(tag, snapshot)) {
+    if (!tag || !validateTag(tag, snapshot)) {
       tag = track(() => (lastValue = fn()));
-      snapshot = value(tag);
+      snapshot = valueForTag(tag);
     }
 
-    consume(tag);
+    consumeTag(tag);
     return lastValue!;
-  }
+  };
 }

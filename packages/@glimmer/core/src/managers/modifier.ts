@@ -6,7 +6,7 @@ import {
   Destroyable,
   DynamicScope,
 } from '@glimmer/interfaces';
-import { Tag, createUpdatableTag, track, untrack, combine, update } from '@glimmer/validator';
+import { Tag, createUpdatableTag, track, untrack, combine, updateTag } from '@glimmer/validator';
 import { assert, debugToString } from '@glimmer/util';
 import { SimpleElement } from '@simple-dom/interface';
 import { Args } from '../interfaces';
@@ -157,7 +157,7 @@ export class CustomModifierManager<ModifierStateBucket>
         DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
       );
 
-      update(tag, combinedTrackingTag);
+      updateTag(tag, combinedTrackingTag);
     }
   }
 
@@ -171,7 +171,7 @@ export class CustomModifierManager<ModifierStateBucket>
         () => delegate.updateModifier(modifier, argsProxy),
         DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
       );
-      update(tag, combinedTrackingTag);
+      updateTag(tag, combinedTrackingTag);
     }
   }
 

@@ -6,7 +6,8 @@ import {
   Option,
   CompileTimeComponent,
 } from '@glimmer/interfaces';
-import { ResolverDelegate, unwrapTemplate } from '@glimmer/opcode-compiler';
+import { unwrapTemplate } from '@glimmer/util';
+import { ResolverDelegate } from '@glimmer/opcode-compiler';
 
 import {
   vmDefinitionForComponent,
