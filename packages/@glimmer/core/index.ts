@@ -13,7 +13,7 @@ export {
   setModifierManager,
 } from './src/managers';
 
-export { Args as CapturedArgs } from './src/interfaces';
+export { TemplateArgs } from './src/interfaces';
 
 export {
   ModifierManager,
