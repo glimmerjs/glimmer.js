@@ -16,8 +16,7 @@ import BsButton from './BsButton';
 export default class MyTable extends Component {
   @tracked id = 1;
   @tracked data = [];
-  @tracked
-  selected = undefined;
+  @tracked selected = undefined;
 
   @action create() {
     const result = run(this.id);
