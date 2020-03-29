@@ -2,12 +2,10 @@ import Component from '@glimmer/component';
 import { action, on } from '@glimmer/modifier';
 import { tracked } from '@glimmer/tracking';
 import { createTemplate, setComponentTemplate } from '@glimmer/core';
-
+import { fn } from '@glimmer/helper';
 import {
   run, runLots, add, update, swapRows, deleteRow,
 } from './utils/benchmark-helpers';
-
-import { fn } from './utils/fn-helper';
 
 import TableRow from './TableRow';
 import BsButton from './BsButton';
@@ -18,7 +16,7 @@ export default class MyTable extends Component {
   @tracked data = [];
   @tracked selected = undefined;
 
-  @action create() {
+  @action create(): void {
     const result = run(this.id);
 
     this.id = result.id;
@@ -26,15 +24,15 @@ export default class MyTable extends Component {
     this.selected  = undefined;
   }
 
-  @action add() {
+  @action add(): void {
     this.data = add(this.id, this.data)
   }
 
-  @action update() {
+  @action update(): void {
     update(this.data);
   }
 
-  @action runLots() {
+  @action runLots(): void {
     const result = runLots(this.id);
 
     this.data = result.data;
@@ -42,16 +40,16 @@ export default class MyTable extends Component {
     this.selected = undefined;
   }
 
-  @action clear() {
+  @action clear(): void {
     this.data = [];
     this.selected  = undefined;
   }
 
-  @action swapRows() {
+  @action swapRows(): void {
     this.data = swapRows(this.data);
   }
 
-  @action remove(id) {
+  @action remove(id): void {
     const selected = this.data.find(({selected}) => selected === true);
     if (selected) {
       selected.selected = false;
@@ -60,7 +58,7 @@ export default class MyTable extends Component {
     this.selected = undefined;
   }
 
-  @action select(id) {
+  @action select(id): void {
     this.selected = id;
     const selected = this.data.find(({selected}) => selected === true);
     if (selected) {
