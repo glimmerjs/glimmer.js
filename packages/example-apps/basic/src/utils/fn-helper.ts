@@ -1,9 +1,9 @@
 import { helper } from './helper-with-services';
 
 
-export function fn([method, ...args]) {
-  return  (...params)  => {
-      let el = [].concat(args, params);
+export const fn = helper(function([method, ...args]) {
+  return  (...params): []  => {
+      const el = [].concat(args, params);
       return method(...el);
   }
-};
+});
