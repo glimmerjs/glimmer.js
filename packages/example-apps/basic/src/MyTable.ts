@@ -14,8 +14,7 @@ import BsButton from './BsButton';
 
 
 export default class MyTable extends Component {
-  @tracked
-  id = 1;
+  @tracked id = 1;
   @tracked
   data = [];
   @tracked
