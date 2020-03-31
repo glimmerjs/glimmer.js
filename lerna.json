@@ -1,9 +1,0 @@
-{
-  "npmClient": "yarn",
-  "useWorkspaces": true,
-  "packages": [
-    "packages/@glimmer/*",
-    "packages/babel-plugins/*"
-  ],
-  "version": "2.0.0-alpha.1"
-}

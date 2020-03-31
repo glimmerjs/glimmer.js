@@ -2,25 +2,44 @@
   "name": "glimmer.js",
   "version": "1.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glimmerjs/glimmer.js.git"
+  },
   "license": "MIT",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "bin/build.js",
-    "start": "webpack-dev-server",
-    "clean": "bin/clean.js",
-    "changelog": "lerna-changelog",
-    "test": "yarn lint && testem ci && yarn test:babel-plugins",
-    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
-    "test:types": "dtslint test/types",
-    "test:ember": "yarn workspace @glimmer/component ember try:one",
-    "test:watch": "testem",
-    "problems": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint . --cache --ext .js,.ts"
-  },
   "workspaces": [
     "packages/@glimmer/*",
     "packages/babel-plugins/@glimmer/*"
   ],
+  "scripts": {
+    "build": "bin/build.js",
+    "clean": "bin/clean.js",
+    "lint": "eslint . --cache --ext .js,.ts",
+    "problems": "tsc -p tsconfig.json --noEmit",
+    "start": "webpack-dev-server",
+    "test": "yarn lint && testem ci && yarn test:babel-plugins",
+    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
+    "test:ember": "yarn workspace @glimmer/component ember try:one",
+    "test:types": "dtslint test/types",
+    "test:watch": "testem"
+  },
+  "browserslist": {
+    "production": [
+      "last 2 Edge versions",
+      "last 2 Chrome versions",
+      "last 2 Firefox versions",
+      "last 2 Safari versions"
+    ],
+    "development": [
+      "last 1 Chrome version",
+      "last 1 Firefox version",
+      "last 1 Safari version"
+    ]
+  },
+  "resolutions": {
+    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
@@ -37,11 +56,13 @@
     "eslint-plugin-prettier": "^3.1.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.0.5",
-    "lerna": "^3.15.0",
     "lerna-changelog": "^0.7.0",
     "mkdirp": "^0.5.1",
     "prettier": "^1.19.1",
     "qunit": "^2.9.2",
+    "release-it": "^13.5.0",
+    "release-it-lerna-changelog": "^2.1.2",
+    "release-it-yarn-workspaces": "^1.1.0",
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",
     "testem": "^2.16.0",
@@ -53,21 +74,8 @@
     "webpack-cli": "^3.3.4",
     "webpack-dev-server": "^3.7.1"
   },
-  "resolutions": {
-    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
-  },
-  "browserslist": {
-    "production": [
-      "last 2 Edge versions",
-      "last 2 Chrome versions",
-      "last 2 Firefox versions",
-      "last 2 Safari versions"
-    ],
-    "development": [
-      "last 1 Chrome version",
-      "last 1 Firefox version",
-      "last 1 Safari version"
-    ]
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "changelog": {
     "repo": "glimmerjs/glimmer.js",
@@ -79,5 +87,25 @@
       "internal": ":house: Internal",
       "deprecation": ":warning: Deprecation"
     }
+  },
+  "release-it": {
+    "hooks": {
+      "after:bump": "node bin/build.js"
+    },
+    "plugins": {
+      "release-it-lerna-changelog": {
+        "infile": "CHANGELOG.md",
+        "launchEditor": true
+      },
+      "release-it-yarn-workspaces": true
+    },
+    "git": {
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "tokenRef": "GITHUB_AUTH"
+    },
+    "npm": false
   }
 }
