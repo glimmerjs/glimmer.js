@@ -1,3 +1,7 @@
+## v2.0.0-beta.2 (2020-03-31)
+
+Fix a publishing error where cross dependencies were incorrectly published to `2.0.0-beta.1-alpha.1`.
+
 ## v2.0.0-beta.1 (2020-03-31)
 
 The first beta for Glimmer.js 2.0! A lot of changes have been made, some of the highlights include:

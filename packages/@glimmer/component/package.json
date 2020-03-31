@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Glimmer component library",
   "keywords": [
     "ember-addon"
@@ -45,7 +45,7 @@
     "@glimmer/compiler": "0.50.0",
     "@glimmer/interfaces": "0.50.0",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/tracking": "^2.0.0-beta.1-alpha.1",
+    "@glimmer/tracking": "^2.0.0-beta.2",
     "@glimmer/wire-format": "0.50.0",
     "@types/ember": "~3.0.29",
     "@types/ember-qunit": "~3.4.3",
