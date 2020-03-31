@@ -9,57 +9,60 @@ type ManagedItemDefinition<StateBucket> =
 
 //////////
 
-export type ManagerFactory<D extends ManagerDelegate> = (owner: object) => D;
+export type ManagerFactory<Owner extends object, D extends ManagerDelegate> = (owner: Owner) => D;
 
 type ManagerDelegate =
   | ComponentManager<unknown>
   | ModifierManager<unknown>
   | HelperManager<unknown>;
 
-interface ComponentManagerWrapper<StateBucket> {
-  factory: ManagerFactory<ComponentManager<StateBucket>>;
+interface ComponentManagerWrapper<Owner extends object, StateBucket> {
+  factory: ManagerFactory<Owner, ComponentManager<StateBucket>>;
   type: 'component';
 }
 
-interface ModifierMangagerWrapper<StateBucket> {
-  factory: ManagerFactory<ModifierManager<StateBucket>>;
+interface ModifierMangagerWrapper<Owner extends object, StateBucket> {
+  factory: ManagerFactory<Owner, ModifierManager<StateBucket>>;
   type: 'modifier';
 }
 
-interface HelperManagerWrapper<StateBucket> {
-  factory: ManagerFactory<HelperManager<StateBucket>>;
+interface HelperManagerWrapper<Owner extends object, StateBucket> {
+  factory: ManagerFactory<Owner, HelperManager<StateBucket>>;
   type: 'helper';
 }
 
-type ManagerWrapper<StateBucket> =
-  | ComponentManagerWrapper<StateBucket>
-  | ModifierMangagerWrapper<StateBucket>
-  | HelperManagerWrapper<StateBucket>;
+type ManagerWrapper<Owner extends object, StateBucket> =
+  | ComponentManagerWrapper<Owner, StateBucket>
+  | ModifierMangagerWrapper<Owner, StateBucket>
+  | HelperManagerWrapper<Owner, StateBucket>;
 
 ///////////
 
-const MANAGERS: WeakMap<object, ManagerWrapper<unknown>> = new WeakMap();
+const MANAGERS: WeakMap<object, ManagerWrapper<object, unknown>> = new WeakMap();
 const MANAGER_INSTANCES: WeakMap<
   object,
-  WeakMap<ManagerFactory<ManagerDelegate>, ManagerDelegate>
+  WeakMap<ManagerFactory<object, ManagerDelegate>, ManagerDelegate>
 > = new WeakMap();
 
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function setManager<StateBucket = unknown>(wrapper: ManagerWrapper<StateBucket>, obj: {}): {} {
+export function setManager<Owner extends object, StateBucket = unknown>(
+  wrapper: ManagerWrapper<Owner, StateBucket>,
+  obj: {}
+): {} {
   MANAGERS.set(obj, wrapper);
   return obj;
 }
 
 function getManager<Instance = unknown>(
   obj: ManagedItemDefinition<Instance>
-): ManagerWrapper<Instance> | undefined {
+): ManagerWrapper<object, Instance> | undefined {
   let pointer = obj;
   while (pointer !== undefined && pointer !== null) {
     const manager = MANAGERS.get(pointer);
 
     if (manager !== undefined) {
-      return manager as ManagerWrapper<Instance>;
+      return manager as ManagerWrapper<object, Instance>;
     }
 
     pointer = getPrototypeOf(pointer);
@@ -70,7 +73,7 @@ function getManager<Instance = unknown>(
 
 function getManagerInstanceForOwner<D extends ManagerDelegate>(
   owner: object,
-  factory: ManagerFactory<D>
+  factory: ManagerFactory<object, D>
 ): D {
   let managers = MANAGER_INSTANCES.get(owner);
 
@@ -92,8 +95,8 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 
 ///////////
 
-export function setModifierManager<StateBucket>(
-  factory: ManagerFactory<ModifierManager<StateBucket>>,
+export function setModifierManager<StateBucket, Owner extends object = object>(
+  factory: ManagerFactory<Owner, ModifierManager<StateBucket>>,
   definition: ModifierDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'modifier' }, definition);
@@ -110,8 +113,8 @@ export function getModifierManager<StateBucket = unknown>(
   }
 }
 
-export function setHelperManager<StateBucket>(
-  factory: ManagerFactory<HelperManager<StateBucket>>,
+export function setHelperManager<StateBucket, Owner extends object = object>(
+  factory: ManagerFactory<Owner, HelperManager<StateBucket>>,
   definition: HelperDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'helper' }, definition);
@@ -128,8 +131,8 @@ export function getHelperManager<StateBucket = unknown>(
   }
 }
 
-export function setComponentManager<StateBucket>(
-  factory: ManagerFactory<ComponentManager<StateBucket>>,
+export function setComponentManager<StateBucket, Owner extends object = object>(
+  factory: ManagerFactory<Owner, ComponentManager<StateBucket>>,
   definition: ComponentDefinition<StateBucket>
 ): {} {
   return setManager({ factory, type: 'component' }, definition);
