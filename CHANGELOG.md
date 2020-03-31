@@ -1,3 +1,65 @@
+## v2.0.0-beta.1 (2020-03-31)
+
+The first beta for Glimmer.js 2.0! A lot of changes have been made, some of the highlights include:
+
+
+- Minimal `renderComponent` API!
+
+  ```js
+  import { renderComponent } from '@glimmer/core';
+  import MyComponent from './MyComponent';
+
+  renderComponent(MyComponent, document.body);
+  ```
+
+- Template Import based design - no resolver necessary!
+- Standardized build - based on plain JavaScript modules, no need to a custom build pipeline. Use WebPack, Parcel, Rollup, or whatever other build system you want!
+- Helper Managers and Modifier Managers added to support custom helpers and modifiers!
+- A new blueprint for generating basic Glimmer.js apps!
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`
+  * [#249](https://github.com/glimmerjs/glimmer.js/pull/249) [REFACTOR] Rename Args to TemplateArgs ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`
+  * [#244](https://github.com/glimmerjs/glimmer.js/pull/244) [BUGFIX] Ensures Strict Mode ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/ssr`, `example-apps`
+  * [#240](https://github.com/glimmerjs/glimmer.js/pull/240) [FEATURE] Adds Owner ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/core`, `@glimmer/ssr`
+  * [#241](https://github.com/glimmerjs/glimmer.js/pull/241) [CLEANUP] Updates ComponentFactory to ComponentDefinition ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/blueprint`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/test-utils`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#235](https://github.com/glimmerjs/glimmer.js/pull/235) [BREAKING] Glimmer.js 2.0 ([@pzuraq](https://github.com/pzuraq))
+
+#### :rocket: Enhancement
+* `@glimmer/core`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#245](https://github.com/glimmerjs/glimmer.js/pull/245) [FEAT] Modifier Managers ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`, `@glimmer/helper`, `example-apps`
+  * [#243](https://github.com/glimmerjs/glimmer.js/pull/243) [FEAT] Adds Helpers and HelperManager ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/core`
+  * [#251](https://github.com/glimmerjs/glimmer.js/pull/251) [BUGFIX] Ensure Owner is generic for setManager APIs ([@pzuraq](https://github.com/pzuraq))
+  * [#237](https://github.com/glimmerjs/glimmer.js/pull/237) BUGFIX - Prevent duplicate compiled modules in test ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application`
+  * [#234](https://github.com/glimmerjs/glimmer.js/pull/234) Merge pull request #234 from glimmerjs/remove-compiler-from-runtime ([@chadhietala](https://github.com/chadhietala))
+
+#### :house: Internal
+* Other
+  * [#250](https://github.com/glimmerjs/glimmer.js/pull/250) Add automated release setup. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#248](https://github.com/glimmerjs/glimmer.js/pull/248) [CHORE] Update the VM to 0.50.0 ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/component`
+  * [#242](https://github.com/glimmerjs/glimmer.js/pull/242) [UPGRADE] Typescript 3.8 ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`, `@glimmer/helper`
+  * [#239](https://github.com/glimmerjs/glimmer.js/pull/239) [REFACTOR] Removes most of the remaining custom reference code. ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#238](https://github.com/glimmerjs/glimmer.js/pull/238) [REFACTOR] Updates to Glimmer-VM 0.47 ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 3
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v1.0.0-beta.2 (2019-11-15)
 
 #### :rocket: Enhancement

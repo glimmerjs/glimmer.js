@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/helper",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.1",
   "description": "Helper Functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
@@ -12,8 +12,8 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/component": "^2.0.0-alpha.1",
-    "@glimmer/core": "^2.0.0-alpha.1",
+    "@glimmer/component": "^2.0.0-beta.1-alpha.1",
+    "@glimmer/core": "^2.0.0-beta.1-alpha.1",
     "@glimmer/interfaces": "0.50.0",
     "@glimmer/reference": "0.50.0"
   }
