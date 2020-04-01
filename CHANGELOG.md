@@ -1,3 +1,33 @@
+## v2.0.0-beta.3 (2020-04-01)
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#262](https://github.com/glimmerjs/glimmer.js/pull/262) Upgrade dependencies to latest version. ([@rwjblue](https://github.com/rwjblue))
+  * [#260](https://github.com/glimmerjs/glimmer.js/pull/260) Update typescript related dependencies. ([@rwjblue](https://github.com/rwjblue))
+  * [#259](https://github.com/glimmerjs/glimmer.js/pull/259) Update babel related dependencies. ([@rwjblue](https://github.com/rwjblue))
+* `babel-plugins`
+  * [#256](https://github.com/glimmerjs/glimmer.js/pull/256) Adds a manual `precompileTemplate` API ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/blueprint`
+  * [#261](https://github.com/glimmerjs/glimmer.js/pull/261) Fix versions of @glimmer packages in new project output. ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`
+  * [#258](https://github.com/glimmerjs/glimmer.js/pull/258) Fix issues with setting a dynamic `<a href="{{@foo}}">` or `<img src="{{@foo}}">` ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#255](https://github.com/glimmerjs/glimmer.js/pull/255) Fixes inter-package dependencies ([@pzuraq](https://github.com/pzuraq))
+
+#### :memo: Documentation
+* `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `example-apps`
+  * [#254](https://github.com/glimmerjs/glimmer.js/pull/254) Update repository URLs for new packages. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#257](https://github.com/glimmerjs/glimmer.js/pull/257) Update release-it-yarn-workspaces. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0-beta.2 (2020-03-31)
 
 Fix a publishing error where cross dependencies were incorrectly published to `2.0.0-beta.1-alpha.1`.
