@@ -243,6 +243,24 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, `<button>Count: 0</button>`, 'the component was rendered');
   });
 
+  test('it can set a dynamic href on an anchor', async assert => {
+    class MyComponent extends Component {}
+
+    setComponentTemplate(MyComponent, createTemplate(`<a href={{@href}}>Link</a>`));
+
+    const html = await render(MyComponent, { args: { href: 'www.example.com' } });
+    assert.strictEqual(html, '<a href="www.example.com">Link</a>', 'the template was rendered');
+  });
+
+  test('it can set a dynamic src on an img', async assert => {
+    class MyComponent extends Component {}
+
+    setComponentTemplate(MyComponent, createTemplate(`<img src={{@src}}/>`));
+
+    const html = await render(MyComponent, { args: { src: './logo.svg' } });
+    assert.strictEqual(html, '<img src="./logo.svg">', 'the template was rendered');
+  });
+
   if (DEBUG) {
     test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
       assert.expect(1);

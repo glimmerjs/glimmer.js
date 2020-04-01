@@ -49,16 +49,9 @@ if (DEBUG) {
 export class ClientEnvDelegate extends BaseEnvDelegate {
   isInteractive = true;
 
-  private uselessAnchor: HTMLAnchorElement;
+  private uselessAnchor = self.document.createElement('a');
 
-  constructor() {
-    super();
-    // TODO - required for `protocolForURL` - seek alternative approach
-    // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = self.document.createElement('a');
-  }
-
-  protocolForURL(url: string): string {
+  protocolForURL = (url: string): string => {
     // TODO - investigate alternative approaches
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
     this.uselessAnchor.href = url;
