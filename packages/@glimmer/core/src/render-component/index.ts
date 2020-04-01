@@ -1,4 +1,4 @@
-import { setPropertyDidChange } from '@glimmer/tracking';
+import { setPropertyDidChange } from '@glimmer/validator';
 import {
   clientBuilder,
   renderJitComponent,
