@@ -99,7 +99,7 @@
       },
       "release-it-yarn-workspaces": {
         "additionalManifests": {
-          "dependencyUpdates": ["blueprints/*/files/package.json"]
+          "dependencyUpdates": ["packages/@glimmer/blueprint/files/package.json"]
         }
       }
     },
