@@ -10868,10 +10868,10 @@ release-it-lerna-changelog@^2.1.2:
     release-it "^13.3.2"
     tmp "^0.1.0"
 
-release-it-yarn-workspaces@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/release-it-yarn-workspaces/-/release-it-yarn-workspaces-1.1.0.tgz#f8826bca078436fd31e099c166826f3cd7f0bf15"
-  integrity sha512-K9xjHrKfhch3mFDBIJHSxDNPnCaBDRePstRLJF6fgzJCgt0m/UlVOrfTh3mJu2FwOyzHR5R84R2HEpYpz3sTgQ==
+release-it-yarn-workspaces@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/release-it-yarn-workspaces/-/release-it-yarn-workspaces-1.1.2.tgz#1b7b1071854859cd388b1160bf2d2692f468d9ad"
+  integrity sha512-KbHf/kPA1VT8e7T11pQ7KvvLkaEl81JGtNZrCgLjQGWxLYSZbujgGeMjpKLkXTrwZR4KF8mtcnQK6FQuTwvGXA==
   dependencies:
     detect-indent "^6.0.0"
     detect-newline "^3.1.0"
@@ -10880,10 +10880,10 @@ release-it-yarn-workspaces@^1.1.0:
     url-join "^4.0.1"
     walk-sync "^2.0.2"
 
-release-it@^13.3.2, release-it@^13.5.0:
-  version "13.5.0"
-  resolved "https://registry.yarnpkg.com/release-it/-/release-it-13.5.0.tgz#716ec42c4c06ae1b5f7c667466aa62b3c645faaf"
-  integrity sha512-jArSTUaGzQiWjEUCwWG5chNmE1xNTaI9HQQhPPIJfzk+cL6KvT5MwRkaUQeJbTkrqlB5UjIM9sF35OMndEUuUA==
+release-it@^13.3.2, release-it@^13.5.1:
+  version "13.5.1"
+  resolved "https://registry.yarnpkg.com/release-it/-/release-it-13.5.1.tgz#459b9e624c4b03391cdaab78e84cd14e373700c8"
+  integrity sha512-20t+aKKZxE2Wwh6Vi9jF3DINNJSHHuDxSkrCYvIsbAbj9Aj2An1lsRKAsCMcOio4go1TxOAWd3+iVt7KC6F+wg==
   dependencies:
     "@iarna/toml" "2.2.3"
     "@octokit/rest" "17.1.4"
