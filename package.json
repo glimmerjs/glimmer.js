@@ -97,7 +97,11 @@
         "infile": "CHANGELOG.md",
         "launchEditor": true
       },
-      "release-it-yarn-workspaces": true
+      "release-it-yarn-workspaces": {
+        "additionalManifests": {
+          "dependencyUpdates": ["blueprints/*/files/package.json"]
+        }
+      }
     },
     "git": {
       "tagName": "v${version}"
