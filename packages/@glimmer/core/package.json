@@ -4,7 +4,7 @@
   "description": "Core rendering functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
-  "repository": "https://github.com/tomdale/glimmer-lite",
+  "repository": "https://github.com/glimmerjs/glimmer.js/tree/master/packages/@glimmer/core",
   "author": "Tom Dale <tom@tomdale.net>",
   "license": "MIT",
   "private": false,
