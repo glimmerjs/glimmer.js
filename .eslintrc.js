@@ -35,6 +35,16 @@ module.exports = {
         node: true,
       },
     },
+    {
+      files: [
+        'packages/babel-plugins/**/test/**/*.js',
+      ],
+      env: {
+        es6: true,
+        node: true,
+        mocha: true,
+      },
+    },
     // bin scripts
     {
       files: ['bin/**/*.js'],
