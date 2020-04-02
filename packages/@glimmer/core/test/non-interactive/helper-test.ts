@@ -11,7 +11,7 @@ import {
 } from '@glimmer/core';
 
 module('[@glimmer/core] non-interactive - helper', () => {
-  test('simple helpers work', async assert => {
+  test('simple helpers work', async (assert) => {
     function myHelper(name: string, greeting: string): string {
       return `helper ${greeting} ${name}`;
     }
@@ -31,7 +31,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     assert.strictEqual(html, '<h1>helper Hello Rob</h1>', 'the template was rendered');
   });
 
-  test('simple helpers throw when using named args', assert => {
+  test('simple helpers throw when using named args', (assert) => {
     function myHelper(): void {
       assert.ok(false, 'helper should not be called');
     }
@@ -49,7 +49,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     );
   });
 
-  test('custom helpers work', async assert => {
+  test('custom helpers work', async (assert) => {
     const myHelper = helper(
       class {
         args: {
@@ -80,7 +80,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     assert.strictEqual(html, '<h1>helper Hello Rob</h1>', 'the template was rendered');
   });
 
-  test('custom helpers have access to host meta', async assert => {
+  test('custom helpers have access to host meta', async (assert) => {
     class Owner {
       services = {
         locale: new LocaleService(),

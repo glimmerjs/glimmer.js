@@ -3,10 +3,10 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-module('Integration | Component | glimmer.js guide example', function(hooks) {
+module('Integration | Component | glimmer.js guide example', function (hooks) {
   setupRenderingTest(hooks);
 
-  hooks.beforeEach(function(assert) {
+  hooks.beforeEach(function (assert) {
     assert.validateSpeakers = (speakerNames, currentSpeaker) => {
       const items = this.element.querySelectorAll('li');
       assert.equal(items.length, speakerNames.length, 'correct number of entires found');
@@ -19,13 +19,13 @@ module('Integration | Component | glimmer.js guide example', function(hooks) {
     };
   });
 
-  test('renders', async function(assert) {
+  test('renders', async function (assert) {
     await render(hbs`<ConferenceSpeakers />`);
 
     assert.validateSpeakers(['Tom', 'Yehuda', 'Ed'], 'Tom');
   });
 
-  test('cycles through speakers', async function(assert) {
+  test('cycles through speakers', async function (assert) {
     await render(hbs`<ConferenceSpeakers />`);
 
     assert.validateSpeakers(['Tom', 'Yehuda', 'Ed'], 'Tom');

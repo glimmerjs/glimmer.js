@@ -14,6 +14,6 @@ typescript.ts
 babel.js
 
 **/fixtures/**/*.js
-**/fixture-options/**/*.js
+**/fixtures-options/**/*.js
 
 test/types/utils.ts

@@ -58,7 +58,7 @@
     "glob": "^7.1.6",
     "lerna-changelog": "^1.0.1",
     "mkdirp": "^1.0.3",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.2",
     "qunit": "^2.9.3",
     "release-it": "^13.5.1",
     "release-it-lerna-changelog": "^2.1.2",

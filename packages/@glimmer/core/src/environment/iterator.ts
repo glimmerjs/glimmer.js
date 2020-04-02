@@ -2,7 +2,7 @@ import { Option } from '@glimmer/interfaces';
 import { IteratorDelegate } from '@glimmer/reference';
 
 export function isNativeIterable(value: unknown): value is Iterable<unknown> {
-  return typeof value === 'object' && value !== null && Symbol.iterator in value
+  return typeof value === 'object' && value !== null && Symbol.iterator in value;
 }
 
 export class NativeIterator<T = unknown> implements IteratorDelegate {
@@ -26,7 +26,7 @@ export class NativeIterator<T = unknown> implements IteratorDelegate {
     return false;
   }
 
-  next(): Option<{ value: T, memo: number }> {
+  next(): Option<{ value: T; memo: number }> {
     const { iterable, result, position } = this;
 
     if (result.done) {

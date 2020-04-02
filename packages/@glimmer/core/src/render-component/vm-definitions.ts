@@ -26,7 +26,6 @@ export interface VMModifierDefinitionWithHandle extends VMModifierDefinition {
   handle: number;
 }
 
-
 export interface VMHelperDefinition {
   helper: VMHelperFactory;
   handle: number;
@@ -41,21 +40,29 @@ export interface Modifier {
 
 let HANDLE = 0;
 
-const VM_COMPONENT_DEFINITIONS = new WeakMap<ComponentDefinition, VMComponentDefinitionWithHandle>();
+const VM_COMPONENT_DEFINITIONS = new WeakMap<
+  ComponentDefinition,
+  VMComponentDefinitionWithHandle
+>();
 const VM_HELPER_DEFINITIONS = new WeakMap<HelperDefinition, VMHelperDefinition>();
 const VM_MODIFIER_DEFINITIONS = new WeakMap<ModifierDefinition, VMModifierDefinitionWithHandle>();
 
 export function vmDefinitionForComponent(
   ComponentDefinition: ComponentDefinition
 ): VMComponentDefinitionWithHandle {
-  return VM_COMPONENT_DEFINITIONS.get(ComponentDefinition) || createVMComponentDefinition(ComponentDefinition);
+  return (
+    VM_COMPONENT_DEFINITIONS.get(ComponentDefinition) ||
+    createVMComponentDefinition(ComponentDefinition)
+  );
 }
 
 export function vmDefinitionForHelper(Helper: HelperDefinition): VMHelperDefinition {
   return VM_HELPER_DEFINITIONS.get(Helper) || createVMHelperDefinition(Helper);
 }
 
-export function vmDefinitionForModifier(Modifier: ModifierDefinition): VMModifierDefinitionWithHandle {
+export function vmDefinitionForModifier(
+  Modifier: ModifierDefinition
+): VMModifierDefinitionWithHandle {
   return VM_MODIFIER_DEFINITIONS.get(Modifier) || createVMModifierDefinition(Modifier);
 }
 
@@ -72,7 +79,7 @@ function handleForBuiltIn(builtIn: object): number {
     throw new Error('attempted to register the same built-in twice');
   }
 
-  return HANDLE++
+  return HANDLE++;
 }
 
 export function vmDefinitionForBuiltInHelper(helper: VMHelperFactory): VMHelperDefinition {
@@ -116,9 +123,7 @@ function createVMHelperDefinition(userDefinition: HelperDefinition): VMHelperDef
   return definition;
 }
 
-function createVMModifierDefinition(
-  Modifier: ModifierDefinition
-): VMModifierDefinitionWithHandle {
+function createVMModifierDefinition(Modifier: ModifierDefinition): VMModifierDefinitionWithHandle {
   const definition = new VMCustomModifierDefinition(HANDLE++, Modifier);
 
   VM_MODIFIER_DEFINITIONS.set(Modifier, definition);

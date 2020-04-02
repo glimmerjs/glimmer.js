@@ -11,7 +11,7 @@ import {
 import { helper } from '../utils/custom-helper';
 
 module('[@glimmer/core] interactive - helper', () => {
-  test('simple helpers update when args change', async assert => {
+  test('simple helpers update when args change', async (assert) => {
     let count = 0;
 
     function myHelper(name: string, greeting: string): string {
@@ -48,7 +48,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.equal(count, 2, 'simple helper reran after positional args changed');
   });
 
-  test('custom helpers update when positional args change', async assert => {
+  test('custom helpers update when positional args change', async (assert) => {
     let count = 0;
 
     const myHelper = helper(
@@ -97,7 +97,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.equal(count, 2, 'helper reran after positional args changed');
   });
 
-  test('custom helpers update when named args change', async assert => {
+  test('custom helpers update when named args change', async (assert) => {
     let count = 0;
 
     const myHelper = helper(
@@ -146,7 +146,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.equal(count, 2, 'helper reran after named args changed');
   });
 
-  test('helpers are not volatile', async assert => {
+  test('helpers are not volatile', async (assert) => {
     let count = 0;
 
     function myHelper(name: string, greeting: string): string {
@@ -185,7 +185,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.equal(count, 1, 'helper did not rerender after unrelated change');
   });
 
-  test('custom helpers lifecycle (basic)', async assert => {
+  test('custom helpers lifecycle (basic)', async (assert) => {
     let calls: string[] = [];
 
     const myHelper = helper(
@@ -257,7 +257,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.deepEqual(calls, ['teardown'], 'teardown hook called correctly');
   });
 
-  test('update and value hook lifecycle and memoization', async assert => {
+  test('update and value hook lifecycle and memoization', async (assert) => {
     // This is necessary because we can't create and dirty tags directly because
     // that doesn't trigger `propertyDidChange` currently.
     class Tag {
@@ -363,7 +363,7 @@ module('[@glimmer/core] interactive - helper', () => {
     );
   });
 
-  test('custom helpers update when local tracked props change', async assert => {
+  test('custom helpers update when local tracked props change', async (assert) => {
     let helperInstance: MyHelper;
 
     class MyHelper {
@@ -395,7 +395,7 @@ module('[@glimmer/core] interactive - helper', () => {
     assert.strictEqual(html, '<h1>en_UK</h1>', 'the template was updated');
   });
 
-  test('custom helpers update when values on owner change', async assert => {
+  test('custom helpers update when values on owner change', async (assert) => {
     class Owner {
       services = {
         locale: new LocaleService(),

@@ -33,10 +33,10 @@ class CustomModifierManager implements ModifierManager<CustomModifier> {
   destroyModifier(): void {}
 }
 
-setModifierManager(owner => new CustomModifierManager(owner), CustomModifier);
+setModifierManager((owner) => new CustomModifierManager(owner), CustomModifier);
 
 QUnit.module('@glimmer/ssr modifiers', () => {
-  QUnit.test('modifiers do not run in SSR', async assert => {
+  QUnit.test('modifiers do not run in SSR', async (assert) => {
     class Modifier extends CustomModifier {
       didInsertElement(): void {
         assert.ok(false, 'modifiers should not trigger insert in SSR');

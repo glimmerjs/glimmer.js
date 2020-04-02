@@ -7,7 +7,7 @@ import { on, action } from '@glimmer/modifier';
 import { setComponentTemplate, createTemplate, templateOnlyComponent } from '@glimmer/core';
 
 module('[@glimmer/core] interactive - {{fn}}', () => {
-  test('can curry arguments via fn', async function(assert) {
+  test('can curry arguments via fn', async function (assert) {
     assert.expect(9);
 
     let helloWorldComponent: HelloWorld;
@@ -63,7 +63,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.ok(passedEvent! instanceof MouseEvent);
   });
 
-  test('functions can be curried multiple times', async function(assert) {
+  test('functions can be curried multiple times', async function (assert) {
     assert.expect(2);
 
     let parentComponent: ParentComponent;
@@ -101,7 +101,10 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
 
     setComponentTemplate(
       ParentComponent,
-      createTemplate({ Child, fn }, '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>')
+      createTemplate(
+        { Child, fn },
+        '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>'
+      )
     );
 
     await render(ParentComponent);
@@ -114,7 +117,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.deepEqual(passed, [1, 2, 3, 4, 5, 6]);
   });
 
-  test('action helper invoked without a function raises an error', function(assert) {
+  test('action helper invoked without a function raises an error', function (assert) {
     class Parent extends Component {}
 
     setComponentTemplate(
@@ -125,7 +128,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.rejects(render(Parent), /fn must receive a function as its first parameter/);
   });
 
-  test('fn helper invoked without a parameter raises an error', function(assert) {
+  test('fn helper invoked without a parameter raises an error', function (assert) {
     class Parent extends Component {
       @action
       exists(): void {
@@ -138,7 +141,9 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
       createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>')
     );
 
-    assert.rejects(render(Parent), /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./);
+    assert.rejects(
+      render(Parent),
+      /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./
+    );
   });
 });
-

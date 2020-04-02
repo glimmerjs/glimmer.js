@@ -61,15 +61,9 @@ export async function settled(): Promise<string> {
   return document.getElementById('qunit-fixture')!.innerHTML;
 }
 
-export function tracked<T extends object>(
-  obj: T | typeof Object
-): T;
+export function tracked<T extends object>(obj: T | typeof Object): T;
 
-export function tracked(
-  obj: object,
-  key: string | symbol,
-  desc?: PropertyDescriptor
-): void;
+export function tracked(obj: object, key: string | symbol, desc?: PropertyDescriptor): void;
 
 export function tracked(
   obj: object,

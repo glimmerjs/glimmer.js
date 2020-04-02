@@ -5,7 +5,7 @@ const { promisify } = require('util');
 
 const glob = promisify(require('glob'));
 
-(async function() {
+(async function () {
   await remove(['./tmp']);
   await remove(await glob('./packages/@glimmer/*/dist'));
 
@@ -13,7 +13,7 @@ const glob = promisify(require('glob'));
 })();
 
 function remove(paths) {
-  return each(paths, pathOfDir => {
+  return each(paths, (pathOfDir) => {
     console.log(`Removing ${pathOfDir}`);
     return fs.remove(pathOfDir);
   });

@@ -64,7 +64,7 @@
     ],
     "extends": [
       "eslint:recommended",
-      "prettier"
+      "plugin:prettier/recommended"
     ],
     "ignorePatterns": [
       "dist/",

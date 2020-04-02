@@ -62,7 +62,10 @@ class SimpleModifierManager implements ModifierManager<SimpleModifierStateBucket
 
   createModifier(definition: SimpleModifier, args: TemplateArgs): SimpleModifierStateBucket {
     if (DEBUG) {
-      assert(Object.keys(args.named).length === 0, `You used named arguments with the ${definition.name} modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.`);
+      assert(
+        Object.keys(args.named).length === 0,
+        `You used named arguments with the ${definition.name} modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.`
+      );
     }
 
     return { definition };

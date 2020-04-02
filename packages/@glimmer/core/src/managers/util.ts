@@ -91,7 +91,7 @@ export function argsProxyFor(
   const positionalTarget: unknown[] = [];
 
   if (DEBUG) {
-    const setHandler = function(_target: unknown, prop: symbol | string | number): never {
+    const setHandler = function (_target: unknown, prop: symbol | string | number): never {
       throw new Error(
         `You attempted to set ${String(
           prop

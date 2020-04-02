@@ -32,7 +32,7 @@ module.exports = {
     let files = this._super.files.apply(this, arguments);
 
     if (this._shouldIncludeYarnLockInFiles()) {
-      files = files.filter(file => file !== 'yarn.lock');
+      files = files.filter((file) => file !== 'yarn.lock');
     }
 
     return files;
