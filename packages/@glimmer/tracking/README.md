@@ -1,7 +1,7 @@
 # @glimmer/tracking
 
-[![npm version](https://badge.fury.io/js/%40glimmer%2Fcomponent.svg)](https://badge.fury.io/js/%40glimmer%2Fcomponent)
-[![Build Status](https://secure.travis-ci.org/glimmerjs/glimmer-component.svg?branch=master)](http://travis-ci.org/glimmerjs/glimmer-component)
+[![npm version](https://badge.fury.io/js/%40glimmer%2Ftracking.svg)](https://badge.fury.io/js/%40glimmer%2Ftracking)
+[![CI](https://github.com/glimmerjs/glimmer.js/workflows/CI/badge.svg)](https://github.com/glimmerjs/glimmer.js/actions?query=workflow%3ACI)
 
 ## Installation
 
@@ -30,19 +30,9 @@ export default class MyComponent extends Component {
 }
 ```
 
-## Development
-
-For the development of this project, Yarn is preferred over npm. However, any Yarn command can be replaced by the npm equivalent.
-See [Migration from npm](https://yarnpkg.com/lang/en/docs/migrating-from-npm/) in the Yarn documentation for a list of the equivalent commands.
-
-- Clone repository locally: `git clone https://github.com/glimmerjs/glimmer-component.git`
-- Install dependencies: `yarn`, or `yarn install`
-- Open project in your editor of choice and make your changes
-- Run tests: `yarn run test`
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/glimmerjs/glimmer-component.
+Bug reports and pull requests are welcome on GitHub at https://github.com/glimmerjs/glimmer.js.
 
 ## Acknowledgements
 
