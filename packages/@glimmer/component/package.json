@@ -90,5 +90,9 @@
     "configPath": "tests/dummy/config",
     "defaultBlueprint": "install-glimmer-component",
     "main": "ember-addon-main.js"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

@@ -99,7 +99,9 @@
       },
       "release-it-yarn-workspaces": {
         "additionalManifests": {
-          "dependencyUpdates": ["packages/@glimmer/blueprint/files/package.json"]
+          "dependencyUpdates": [
+            "packages/@glimmer/blueprint/files/package.json"
+          ]
         }
       }
     },
@@ -111,5 +113,9 @@
       "tokenRef": "GITHUB_AUTH"
     },
     "npm": false
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

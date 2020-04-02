@@ -16,5 +16,9 @@
     "@glimmer/tracking": "^1.0.0",
     "@glimmer/helper": "^1.0.0",
     "@glimmer/modifier": "^1.0.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

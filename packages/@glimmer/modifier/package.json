@@ -14,5 +14,9 @@
   "dependencies": {
     "@glimmer/interfaces": "^0.50.0",
     "@simple-dom/interface": "^1.4.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }
