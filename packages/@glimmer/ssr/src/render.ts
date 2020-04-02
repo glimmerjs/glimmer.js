@@ -9,7 +9,6 @@ import { BaseEnvDelegate } from '@glimmer/core';
 import { NodeDOMTreeConstruction } from '@glimmer/node';
 import { DOMChanges } from '@glimmer/runtime';
 
-
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work
  * on the server side.
@@ -28,7 +27,7 @@ class ServerEnvDelegate extends BaseEnvDelegate {
 export interface RenderOptions {
   args?: Dict<unknown>;
   serializer?: HTMLSerializer;
-  owner?: object
+  owner?: object;
 }
 
 const defaultSerializer = new HTMLSerializer(voidMap);
@@ -41,9 +40,9 @@ export function renderToString(
     const stream = new PassThrough();
     let html = '';
 
-    stream.on('data', str => (html += str));
+    stream.on('data', (str) => (html += str));
     stream.on('end', () => resolve(html));
-    stream.on('error', err => reject(err));
+    stream.on('error', (err) => reject(err));
 
     renderToStream(stream, ComponentClass, options);
   });

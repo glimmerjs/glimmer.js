@@ -1,14 +1,16 @@
 import { DEBUG } from '@glimmer/env';
 
-export let unbindableFunction: undefined | (<T, U>(func: (...args: T[]) => U) => ((...args: T[]) => U));
+export let unbindableFunction:
+  | undefined
+  | (<T, U>(func: (...args: T[]) => U) => (...args: T[]) => U);
 
 if (DEBUG) {
   unbindableFunction = <T, U>(func: (...args: T[]) => U): ((...args: T[]) => U) => {
     const assertOnProperty = (property: string | number | symbol): never => {
       throw new Error(
-        `You accessed \`this.${String(
-          property
-        )}\` from a function passed to the ${func.name}, but the function itself was not bound to a valid \`this\` context. Consider updating to usage of \`@action\`.`
+        `You accessed \`this.${String(property)}\` from a function passed to the ${
+          func.name
+        }, but the function itself was not bound to a valid \`this\` context. Consider updating to usage of \`@action\`.`
       );
     };
 
@@ -30,5 +32,5 @@ if (DEBUG) {
     );
 
     return func.bind(untouchableThis);
-  }
+  };
 }

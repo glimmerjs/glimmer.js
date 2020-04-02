@@ -49,10 +49,10 @@ class CustomModifierManager implements ModifierManager<CustomModifier> {
   }
 }
 
-setModifierManager(owner => new CustomModifierManager(owner), CustomModifier);
+setModifierManager((owner) => new CustomModifierManager(owner), CustomModifier);
 
 module('Modifier Tests', () => {
-  test('Supports the on modifier', async assert => {
+  test('Supports the on modifier', async (assert) => {
     class MyComponent extends Component {
       @tracked count = 0;
 
@@ -85,7 +85,7 @@ module('Modifier Tests', () => {
     );
   });
 
-  test('simple functions can be used as modifiers', async assert => {
+  test('simple functions can be used as modifiers', async (assert) => {
     function modifier(element: Element, arg1: string, arg2: number): void {
       assert.equal(element, find('h1'), 'modifier received');
       assert.equal(arg1, 'string', 'modifier received');
@@ -101,7 +101,7 @@ module('Modifier Tests', () => {
     await render(Component);
   });
 
-  test('simple function modifiers throw an error when using named arguments', async assert => {
+  test('simple function modifiers throw an error when using named arguments', async (assert) => {
     function modifier(): void {
       assert.ok(false, 'should not be called');
     }
@@ -115,12 +115,15 @@ module('Modifier Tests', () => {
     try {
       await render(Component);
     } catch (e) {
-      assert.equal(e.message, 'You used named arguments with the modifier modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.', 'error thrown correctly');
+      assert.equal(
+        e.message,
+        'You used named arguments with the modifier modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.',
+        'error thrown correctly'
+      );
     }
   });
 
-
-  test('simple function modifier lifecycle', async assert => {
+  test('simple function modifier lifecycle', async (assert) => {
     const hooks: string[] = [];
 
     function modifier(): () => void {
@@ -169,7 +172,7 @@ module('Modifier Tests', () => {
     );
   });
 
-  test('custom modifiers correctly receive element', async assert => {
+  test('custom modifiers correctly receive element', async (assert) => {
     assert.expect(3);
 
     class Modifier extends CustomModifier {
@@ -215,7 +218,7 @@ module('Modifier Tests', () => {
     await settled();
   });
 
-  test('custom lifecycle hooks', async assert => {
+  test('custom lifecycle hooks', async (assert) => {
     const hooks: string[] = [];
     const positionalArgs: unknown[][] = [];
     const namedArgs: Dict<unknown>[] = [];
@@ -277,7 +280,7 @@ module('Modifier Tests', () => {
     assert.deepEqual(namedArgs, [{ foo: 123 }, { foo: 456 }], 'modifier initialized correctly');
   });
 
-  test('lifecycle hooks are autotracked by default', async assert => {
+  test('lifecycle hooks are autotracked by default', async (assert) => {
     const obj = tracked({
       foo: 123,
       bar: 456,

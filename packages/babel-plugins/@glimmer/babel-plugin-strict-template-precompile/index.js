@@ -95,7 +95,7 @@ function _precompileTemplate(parse, templateString, scopeNode, precompileOptions
 
   let metaSeen = false;
 
-  t.traverseFast(ast, node => {
+  t.traverseFast(ast, (node) => {
     if (t.isObjectProperty(node)) {
       if (node.key.value === 'meta') {
         metaSeen = true;
@@ -109,9 +109,10 @@ function _precompileTemplate(parse, templateString, scopeNode, precompileOptions
 
   if (metaSeen === false) {
     ast.program.body[0].expression.properties.push(
-      t.objectProperty(t.identifier('meta'), t.objectExpression([
-        t.objectProperty(t.identifier('scope'), scopeNode)
-      ]))
+      t.objectProperty(
+        t.identifier('meta'),
+        t.objectExpression([t.objectProperty(t.identifier('scope'), scopeNode)])
+      )
     );
   }
 
@@ -132,7 +133,7 @@ function precompileTemplate(templateString, importIdentifiers = [], precompileOp
   const scope = t.arrowFunctionExpression(
     [],
     t.objectExpression(
-      importIdentifiers.map(id => t.objectProperty(t.identifier(id), t.identifier(id)))
+      importIdentifiers.map((id) => t.objectProperty(t.identifier(id), t.identifier(id)))
     )
   );
 

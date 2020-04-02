@@ -5,7 +5,7 @@ import { module, test, render, settled } from '@glimmer/core/test/utils';
 import { setComponentTemplate, createTemplate } from '@glimmer/core';
 
 module('[@glimmer/component] Lifecycle Hooks', () => {
-  test('Lifecycle hook ordering', async function(assert) {
+  test('Lifecycle hook ordering', async function (assert) {
     assert.expect(2);
 
     let invocations: [string, string][] = [];

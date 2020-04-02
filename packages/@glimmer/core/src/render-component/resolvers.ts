@@ -85,7 +85,8 @@ export class CompileTimeResolver implements ResolverDelegate {
 
   lookupHelper(name: string, referrer: TemplateMeta): Option<number> {
     const scope = referrer.scope();
-    const { helper, handle } = builtInHelpers[name] || vmDefinitionForHelper(scope[name] as HelperDefinition);
+    const { helper, handle } =
+      builtInHelpers[name] || vmDefinitionForHelper(scope[name] as HelperDefinition);
 
     this.inner.registry[handle] = helper;
     return handle;
@@ -108,7 +109,9 @@ export class CompileTimeResolver implements ResolverDelegate {
     const ComponentDefinition = scope[name] as ComponentDefinition;
 
     if (DEBUG && ComponentDefinition === undefined) {
-      throw new Error(`Cannot find component \`${name}\` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add \`this\` to it: \`<this.${name}>\``);
+      throw new Error(
+        `Cannot find component \`${name}\` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add \`this\` to it: \`<this.${name}>\``
+      );
     }
 
     const definition = vmDefinitionForComponent(ComponentDefinition);

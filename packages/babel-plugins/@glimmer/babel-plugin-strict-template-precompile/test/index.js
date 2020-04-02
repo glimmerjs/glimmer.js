@@ -53,7 +53,11 @@ describe('precompileTemplate', () => {
   });
 
   it('can apply precompile transforms', () => {
-    let precompiled = precompileTemplate('{{bad}}<h1>Hello world</h1>', [], astTransformTestPluginOptions.precompile);
+    let precompiled = precompileTemplate(
+      '{{bad}}<h1>Hello world</h1>',
+      [],
+      astTransformTestPluginOptions.precompile
+    );
 
     expect(precompiled).to.equal(`({
   id: "k5+y7pkD",

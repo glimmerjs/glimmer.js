@@ -85,7 +85,7 @@ function throwTrackedWithArgumentsError(args: unknown[]): never {
     `You attempted to use @tracked with ${
       args.length > 1 ? 'arguments' : 'an argument'
     } ( @tracked(${args
-      .map(d => `'${d}'`)
+      .map((d) => `'${d}'`)
       .join(
         ', '
       )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`

@@ -40,7 +40,10 @@ export interface HelperManager<HelperStateBucket> {
   capabilities: Capabilities;
 
   getValue(bucket: HelperStateBucket): unknown;
-  createHelper(definition: HelperDefinition<HelperStateBucket>, args: TemplateArgs): HelperStateBucket;
+  createHelper(
+    definition: HelperDefinition<HelperStateBucket>,
+    args: TemplateArgs
+  ): HelperStateBucket;
 }
 
 export function hasUpdateHook<HelperStateBucket>(
@@ -116,10 +119,7 @@ export function vmHelperFactoryFor<HelperStateBucket>(
   definition: HelperDefinition<HelperStateBucket>
 ): VMHelperFactory {
   return (args, vm): HelperRootReference => {
-    const owner = vm
-      .dynamicScope()
-      .get(OWNER_KEY)
-      .value() as object;
+    const owner = vm.dynamicScope().get(OWNER_KEY).value() as object;
     const manager = getHelperManager(owner, definition)!;
     const capturedArgs = args.capture();
 

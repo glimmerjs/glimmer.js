@@ -55,9 +55,10 @@ class CustomHelperManager implements HelperManager<Helper> {
   }
 }
 
-const CustomHelperManagerFactory = (owner: unknown): CustomHelperManager => new CustomHelperManager(owner);
+const CustomHelperManagerFactory = (owner: unknown): CustomHelperManager =>
+  new CustomHelperManager(owner);
 
 export function helper(Class: HelperConstructor): HelperConstructor {
   setHelperManager(CustomHelperManagerFactory, Class);
   return Class;
-};
+}

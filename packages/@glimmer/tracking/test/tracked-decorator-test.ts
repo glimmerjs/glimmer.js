@@ -16,14 +16,14 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
 ].forEach(([compiler, F]) => {
   module(`[@glimmer/tracking] Tracked Property Decorators with ${compiler}`);
 
-  test('tracked properties can be read and written to', assert => {
+  test('tracked properties can be read and written to', (assert) => {
     const obj = new F.Tom();
     assert.strictEqual(obj.firstName, 'Tom');
     obj.firstName = 'Edsger';
     assert.strictEqual(obj.firstName, 'Edsger');
   });
 
-  test('can request a tag for a property', assert => {
+  test('can request a tag for a property', (assert) => {
     const obj = new F.Tom();
     assert.strictEqual(obj.firstName, 'Tom');
 
@@ -34,14 +34,18 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.ok(validateTag(tag, snapshot), 'tag should be valid to start');
 
     obj.firstName = 'Edsger';
-    assert.strictEqual(validateTag(tag, snapshot), false, 'tag is invalidated after property is set');
+    assert.strictEqual(
+      validateTag(tag, snapshot),
+      false,
+      'tag is invalidated after property is set'
+    );
     snapshot = valueForTag(tag);
     assert.strictEqual(validateTag(tag, snapshot), true, 'tag is valid on the second check');
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
 
-  test('can request a tag from a frozen class instance', assert => {
+  test('can request a tag from a frozen class instance', (assert) => {
     const obj = Object.freeze(new F.Toran());
     assert.strictEqual(obj.firstName, 'Toran');
     assert.strictEqual(obj.lastName, 'Billups');
@@ -67,7 +71,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
 
-  test('can request a tag from an instance of a frozen class', assert => {
+  test('can request a tag from an instance of a frozen class', (assert) => {
     const obj = Object.freeze(new F.FrozenToran());
 
     assert.strictEqual(obj.firstName, 'Toran');
@@ -83,7 +87,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
 
-  test('can track a getter', assert => {
+  test('can track a getter', (assert) => {
     const obj = new F.PersonWithCount();
     assert.strictEqual(obj.firstName, 'Tom0');
     assert.strictEqual(obj.firstName, 'Tom1');
@@ -98,13 +102,17 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.ok(validateTag(tag, snapshot), 'reading from property does not invalidate the tag');
 
     obj.firstName = 'Edsger';
-    assert.strictEqual(validateTag(tag, snapshot), false, 'tag is invalidated after property is set');
+    assert.strictEqual(
+      validateTag(tag, snapshot),
+      false,
+      'tag is invalidated after property is set'
+    );
     snapshot = valueForTag(tag);
 
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
 
-  test('getters are invalidated when their dependencies are invalidated', assert => {
+  test('getters are invalidated when their dependencies are invalidated', (assert) => {
     const obj = new F.PersonWithSalutation();
     assert.strictEqual(obj.salutation, 'Hello, Tom Dale!', `the saluation field is valid`);
     assert.strictEqual(obj.fullName, 'Tom Dale', `the fullName field is valid`);
@@ -145,7 +153,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assertValidAfterUnrelatedBump(tag, snapshot);
   });
 
-  test('nested @tracked in multiple objects', assert => {
+  test('nested @tracked in multiple objects', (assert) => {
     const obj = new F.Contact(new F.PersonForContact(), 'tom@example.com');
     assert.strictEqual(obj.contact, 'Tom Dale @ tom@example.com', `the contact field is valid`);
     assert.strictEqual(obj.person.fullName, 'Tom Dale', `the fullName field is valid`);
@@ -202,15 +210,15 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   });
 
   if (DEBUG) {
-    test('Tracked decorator with a getter throws an error', assert => {
+    test('Tracked decorator with a getter throws an error', (assert) => {
       assert.throws(F.createClassWithTrackedGetter);
     });
 
-    test('Tracked decorator with a setter throws an error', assert => {
+    test('Tracked decorator with a setter throws an error', (assert) => {
       assert.throws(F.createClassWithTrackedSetter);
     });
 
-    test('Tracked decorator with arguments throws an error', function(assert) {
+    test('Tracked decorator with arguments throws an error', function (assert) {
       assert.throws(
         F.createClassWithTrackedDependentKeys,
         /@tracked\('firstName', 'lastName'\)/,
@@ -218,7 +226,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
       );
     });
 
-    test('Using @tracked as a decorator factory throws an error', function(assert) {
+    test('Using @tracked as a decorator factory throws an error', function (assert) {
       assert.throws(
         F.createClassWithTrackedAsDecoratorFactory,
         /@tracked\(\)/,

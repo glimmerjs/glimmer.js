@@ -5,7 +5,7 @@ import { setComponentTemplate, createTemplate } from '@glimmer/core';
 import { module, test, render } from '../utils';
 
 module(`[@glimmer/core] non-interactive rendering tests`, () => {
-  test(`normal if treats empty arrays as falsy`, async function(assert) {
+  test(`normal if treats empty arrays as falsy`, async function (assert) {
     class Main extends Component {
       pred = [];
       salutation = 'Glimmer';
@@ -20,7 +20,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.equal(await render(Main), `Hello Glimmer.js!`, 'output is correct');
   });
 
-  test(`inline if treats empty arrays as falsy`, async function(assert) {
+  test(`inline if treats empty arrays as falsy`, async function (assert) {
     class Main extends Component {
       pred = [];
     }

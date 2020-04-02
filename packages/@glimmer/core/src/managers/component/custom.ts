@@ -188,11 +188,7 @@ export default class CustomComponentManager<ComponentInstance>
     return new VMCustomComponentState(env, delegate, component, capturedArgs, argsProxy);
   }
 
-  update({
-    delegate,
-    component,
-    argsProxy,
-  }: VMCustomComponentState<ComponentInstance>): void {
+  update({ delegate, component, argsProxy }: VMCustomComponentState<ComponentInstance>): void {
     if (hasUpdateHook(delegate)) {
       delegate.updateComponent(component, argsProxy);
     }

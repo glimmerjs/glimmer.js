@@ -14,7 +14,7 @@ import { module, test, render } from '../utils';
 import { DEBUG } from '@glimmer/env';
 
 module(`[@glimmer/core] non-interactive rendering tests`, () => {
-  test('it renders a component', async assert => {
+  test('it renders a component', async (assert) => {
     class MyComponent extends Component {}
 
     setComponentTemplate(MyComponent, createTemplate(`<h1>Hello world</h1>`));
@@ -24,7 +24,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.ok(true, 'rendered');
   });
 
-  test('a component can render a nested component', async assert => {
+  test('a component can render a nested component', async (assert) => {
     class OtherComponent extends Component {}
 
     setComponentTemplate(OtherComponent, createTemplate(`Hello world`));
@@ -40,7 +40,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.ok(true, 'rendered');
   });
 
-  test('a component can render multiple nested components', async assert => {
+  test('a component can render multiple nested components', async (assert) => {
     class Foo extends Component {}
     setComponentTemplate(Foo, createTemplate(`Foo`));
 
@@ -64,7 +64,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, '<h1>Hello world FooBar</h1>', 'the template was rendered');
   });
 
-  test('custom elements are rendered', async function(assert) {
+  test('custom elements are rendered', async function (assert) {
     const component = templateOnlyComponent();
 
     setComponentTemplate(component, createTemplate('<hello-world>foo</hello-world>'));
@@ -72,7 +72,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.equal(await render(component), '<hello-world>foo</hello-world>');
   });
 
-  test('a component can render with args', async assert => {
+  test('a component can render with args', async (assert) => {
     class MyComponent extends Component {}
 
     setComponentTemplate(MyComponent, createTemplate('<h1>{{@say}}</h1>'));
@@ -91,7 +91,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     );
   });
 
-  test('can use block params', async function(assert) {
+  test('can use block params', async function (assert) {
     class MainComponent extends Component {
       salutation = 'Glimmer';
     }
@@ -111,8 +111,8 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.equal(await render(MainComponent), 'Glimmer!');
   });
 
-  [true, false].forEach(pred => {
-    test(`can use inline if - ${pred}`, async function(assert) {
+  [true, false].forEach((pred) => {
+    test(`can use inline if - ${pred}`, async function (assert) {
       let salutationCount = 0;
       let alternativeCount = 0;
 
@@ -142,11 +142,15 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       );
 
       assert.equal(pred ? salutationCount : alternativeCount, 1, 'chosen branch value was used');
-      assert.equal(pred ? alternativeCount : salutationCount, 0, 'non-chosen branch value was not used');
+      assert.equal(
+        pred ? alternativeCount : salutationCount,
+        0,
+        'non-chosen branch value was not used'
+      );
     });
   });
 
-  test('inline if cannot be overwritten', async function(assert) {
+  test('inline if cannot be overwritten', async function (assert) {
     class Main extends Component {
       pred = true;
       salutation = 'Glimmer';
@@ -179,7 +183,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
   //   assert.equal(await render(MainComponent), 'Hello Glimmer!');
   // });
 
-  test('components receive owner', async assert => {
+  test('components receive owner', async (assert) => {
     class Owner {
       services = {
         locale: new LocaleService(),
@@ -207,7 +211,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, '<h1>en_US</h1>');
   });
 
-  test('a component can be rendered more than once', async assert => {
+  test('a component can be rendered more than once', async (assert) => {
     class MyComponent extends Component {}
 
     setComponentTemplate(MyComponent, createTemplate(`<h1>Bump</h1>`));
@@ -221,7 +225,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.ok(true, 'rendered');
   });
 
-  test('a component can use modifiers', async assert => {
+  test('a component can use modifiers', async (assert) => {
     class MyComponent extends Component {
       @tracked count = 0;
 
@@ -243,7 +247,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, `<button>Count: 0</button>`, 'the component was rendered');
   });
 
-  test('it can set a dynamic href on an anchor', async assert => {
+  test('it can set a dynamic href on an anchor', async (assert) => {
     class MyComponent extends Component {}
 
     setComponentTemplate(MyComponent, createTemplate(`<a href={{@href}}>Link</a>`));
@@ -252,7 +256,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, '<a href="www.example.com">Link</a>', 'the template was rendered');
   });
 
-  test('it can set a dynamic src on an img', async assert => {
+  test('it can set a dynamic src on an img', async (assert) => {
     class MyComponent extends Component {}
 
     setComponentTemplate(MyComponent, createTemplate(`<img src={{@src}}/>`));
@@ -262,7 +266,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
   });
 
   if (DEBUG) {
-    test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
+    test('accessing properties in template-only components produces a helpful error in development mode', async function (assert) {
       assert.expect(1);
 
       const component = templateOnlyComponent();
@@ -279,7 +283,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
     });
   } else {
-    test('accessing properties in template-only components produces an exception in production mode', async function(assert) {
+    test('accessing properties in template-only components produces an exception in production mode', async function (assert) {
       assert.expect(1);
 
       const component = templateOnlyComponent();

@@ -3,7 +3,7 @@ const { module, test } = QUnit;
 import { getComponentManager, setComponentManager } from '../../src/managers';
 
 module('component managers', () => {
-  test('setting and getting', assert => {
+  test('setting and getting', (assert) => {
     const context = {};
 
     const managerA = {} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
