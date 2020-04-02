@@ -24,5 +24,9 @@
     "@glimmer/compiler": "^0.50.0",
     "@glimmer/component": "2.0.0-beta.3",
     "@glimmer/tracking": "2.0.0-beta.3"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }
