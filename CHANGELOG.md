@@ -1,3 +1,26 @@
+## v2.0.0-beta.4 (2020-04-03)
+
+#### :bug: Bug Fix
+* `@glimmer/blueprint`
+  * [#265](https://github.com/glimmerjs/glimmer.js/pull/265) Add prettier to generated project's package.json. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#263](https://github.com/glimmerjs/glimmer.js/pull/263) Update to `prettier@2` and ensure it is enforced by `eslint` ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/tracking`
+  * [#266](https://github.com/glimmerjs/glimmer.js/pull/266) Remove outdated information from top level README. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* Other
+  * [#269](https://github.com/glimmerjs/glimmer.js/pull/269) Update release-it-yarn-workspaces to 1.3.0. ([@rwjblue](https://github.com/rwjblue))
+  * [#267](https://github.com/glimmerjs/glimmer.js/pull/267) Remove Travis CI setup. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#264](https://github.com/glimmerjs/glimmer.js/pull/264) Add GitHub Actions CI run. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0-beta.3 (2020-04-01)
 
 #### :rocket: Enhancement
