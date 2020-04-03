@@ -8,10 +8,11 @@
   },
   "scripts": {
     "build": "NODE_ENV=production webpack",
+    "lint": "eslint . --ext=js,ts --cache",
     "start": "webpack-dev-server",
-    "test": "testem ci && yarn lint",
-    "test:watch": "testem",
-    "lint": "eslint . --ext=js,ts --cache"
+    "test": "npm-run-all lint test:browsers",
+    "test:browsers": "testem ci",
+    "test:watch": "testem"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -40,6 +41,7 @@
     "file-loader": "^6.0.0",
     "glob": "7.1.6",
     "html-webpack-plugin": "^4.0.4",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.0.2",
     "qunit": "^2.9.3",
     "qunit-dom": "^1.1.0",
