@@ -1,3 +1,22 @@
+## v2.0.0-beta.5 (2020-04-04)
+
+#### :boom: Breaking Change
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/ssr`, `example-apps`
+  * [#271](https://github.com/glimmerjs/glimmer.js/pull/271) [BUGFIX][BREAKING] Fixes setComponentTemplate ([@pzuraq](https://github.com/pzuraq))
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#270](https://github.com/glimmerjs/glimmer.js/pull/270) Avoid using `&&` in `package.json` scripts. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/core`
+  * [#272](https://github.com/glimmerjs/glimmer.js/pull/272) [BUGFIX] Fixes the types of manager return values ([@pzuraq](https://github.com/pzuraq))
+
+#### :house: Internal
+* [#268](https://github.com/glimmerjs/glimmer.js/pull/268) Update dtslint to latest version. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v2.0.0-beta.4 (2020-04-03)
 
 #### :bug: Bug Fix
