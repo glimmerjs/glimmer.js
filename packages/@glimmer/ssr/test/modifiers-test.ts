@@ -45,8 +45,8 @@ QUnit.module('@glimmer/ssr modifiers', () => {
 
     const Component = templateOnlyComponent();
     setComponentTemplate(
-      Component,
-      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>')
+      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>'),
+      Component
     );
 
     const output = await renderToString(Component);

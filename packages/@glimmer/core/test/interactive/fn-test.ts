@@ -32,11 +32,11 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      HelloWorld,
       createTemplate(
         { on, fn },
         '<button {{on "click" (fn this.userDidClick "hello" this.name)}}>Hello World</button>'
-      )
+      ),
+      HelloWorld
     );
 
     const output = await render(HelloWorld);
@@ -84,27 +84,25 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
       }
     }
 
-    const Grandchild = templateOnlyComponent();
-    setComponentTemplate(
-      Grandchild,
-      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>')
+    const Grandchild = setComponentTemplate(
+      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>'),
+      templateOnlyComponent()
     );
 
-    const Child = templateOnlyComponent();
-    setComponentTemplate(
-      Child,
+    const Child = setComponentTemplate(
       createTemplate(
         { Grandchild, fn },
         '<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     setComponentTemplate(
-      ParentComponent,
       createTemplate(
         { Child, fn },
         '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>'
-      )
+      ),
+      ParentComponent
     );
 
     await render(ParentComponent);
@@ -121,8 +119,8 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     class Parent extends Component {}
 
     setComponentTemplate(
-      Parent,
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>')
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>'),
+      Parent
     );
 
     assert.rejects(render(Parent), /fn must receive a function as its first parameter/);
@@ -137,8 +135,8 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      Parent,
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>')
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>'),
+      Parent
     );
 
     assert.rejects(

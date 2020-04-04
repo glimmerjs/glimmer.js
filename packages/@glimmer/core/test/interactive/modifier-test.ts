@@ -6,11 +6,11 @@ import Component from '@glimmer/component';
 import {
   setComponentTemplate,
   createTemplate,
-  templateOnlyComponent,
   modifierCapabilities,
   TemplateArgs,
   setModifierManager,
   ModifierManager,
+  templateOnlyComponent,
 } from '@glimmer/core';
 import { Dict } from '@glimmer/interfaces';
 
@@ -63,11 +63,11 @@ module('Modifier Tests', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
       createTemplate(
         { on },
         `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
-      )
+      ),
+      MyComponent
     );
 
     assert.strictEqual(
@@ -92,10 +92,9 @@ module('Modifier Tests', () => {
       assert.equal(arg2, 123, 'modifier received');
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '<h1 {{modifier "string" 123}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier }, '<h1 {{modifier "string" 123}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     await render(Component);
@@ -106,10 +105,9 @@ module('Modifier Tests', () => {
       assert.ok(false, 'should not be called');
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '<h1 {{modifier named=456}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier }, '<h1 {{modifier named=456}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     try {
@@ -134,10 +132,12 @@ module('Modifier Tests', () => {
       };
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '{{#if @truthy}}<h1 {{modifier @value}}>hello world</h1>{{/if}}')
+    const Component = setComponentTemplate(
+      createTemplate(
+        { modifier },
+        '{{#if @truthy}}<h1 {{modifier @value}}>hello world</h1>{{/if}}'
+      ),
+      templateOnlyComponent()
     );
 
     await render(Component);
@@ -193,13 +193,12 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
+    const Component = setComponentTemplate(
       createTemplate(
         { modifier: Modifier },
         '{{#if @truthy}}<h1 {{modifier @value foo=@value}}>hello world</h1>{{/if}}'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     const args = tracked({
@@ -241,13 +240,12 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
+    const Component = setComponentTemplate(
       createTemplate(
         { modifier: Modifier },
         '{{#if @truthy}}<h1 {{modifier @value foo=@value}}>hello world</h1>{{/if}}'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     const args = tracked({
@@ -302,10 +300,9 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     const html = await render(Component);

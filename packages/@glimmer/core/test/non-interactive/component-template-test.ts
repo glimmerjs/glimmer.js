@@ -16,12 +16,12 @@ module('component templates', () => {
     const templateAAB = new FakeTemplateMeta();
 
     class A {}
-    setComponentTemplate(A, templateA);
+    setComponentTemplate(templateA, A);
     class AA extends A {}
     class AB extends A {}
     class AAA extends AA {}
     class AAB extends AA {}
-    setComponentTemplate(AAB, templateAAB);
+    setComponentTemplate(templateAAB, AAB);
 
     class B {}
     class BA {}

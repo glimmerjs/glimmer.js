@@ -28,8 +28,8 @@ const builtInHelpers = {
 };
 
 export function setComponentTemplate<T extends object>(
-  ComponentClass: T,
-  template: SerializedTemplateWithLazyBlock<TemplateMeta>
+  template: SerializedTemplateWithLazyBlock<TemplateMeta>,
+  ComponentClass: T
 ): T {
   if (DEBUG) {
     const scope = template.meta.scope();

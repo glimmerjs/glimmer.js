@@ -9,7 +9,6 @@ export default class App extends Component {
 }
 
 setComponentTemplate(
-  App,
   createTemplate(`
     <div id="intro">
       <img src={{this.logo}}/>
@@ -20,5 +19,6 @@ setComponentTemplate(
         and run tests by visiting <a href="./tests">/tests</a>
       </h3>
     </div>
-  `)
+  `),
+  App
 );

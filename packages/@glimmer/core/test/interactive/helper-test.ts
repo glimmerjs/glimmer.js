@@ -3,10 +3,10 @@ import { module, test, render, settled } from '../utils';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import {
-  templateOnlyComponent,
   setComponentTemplate,
   createTemplate,
   getOwner,
+  templateOnlyComponent,
 } from '@glimmer/core';
 import { helper } from '../utils/custom-helper';
 
@@ -31,8 +31,8 @@ module('[@glimmer/core] interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>'),
+      MyComponent
     );
 
     let html = await render(MyComponent);
@@ -80,8 +80,8 @@ module('[@glimmer/core] interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting=this.greeting}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting=this.greeting}}</h1>'),
+      MyComponent
     );
 
     let html = await render(MyComponent);
@@ -129,8 +129,8 @@ module('[@glimmer/core] interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting=this.greeting}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting=this.greeting}}</h1>'),
+      MyComponent
     );
 
     let html = await render(MyComponent);
@@ -168,8 +168,8 @@ module('[@glimmer/core] interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>'),
+      MyComponent
     );
 
     let html = await render(MyComponent);
@@ -230,11 +230,11 @@ module('[@glimmer/core] interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
       createTemplate(
         { myHelper },
         '{{#if this.cond}}{{myHelper this.name greeting="Hello"}}{{/if}}'
-      )
+      ),
+      MyComponent
     );
 
     let html = await render(MyComponent);
@@ -306,9 +306,10 @@ module('[@glimmer/core] interactive - helper', () => {
       }
     );
 
-    const MyComponent = templateOnlyComponent();
-
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '{{myHelper}}'));
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '{{myHelper}}'),
+      templateOnlyComponent()
+    );
 
     let html = await render(MyComponent);
 
@@ -380,9 +381,10 @@ module('[@glimmer/core] interactive - helper', () => {
 
     const myHelper = helper(MyHelper);
 
-    const MyComponent = templateOnlyComponent();
-
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'),
+      templateOnlyComponent()
+    );
 
     let html = await render(MyComponent);
 
@@ -414,9 +416,10 @@ module('[@glimmer/core] interactive - helper', () => {
       }
     );
 
-    const MyComponent = templateOnlyComponent();
-
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'),
+      templateOnlyComponent()
+    );
 
     const owner = new Owner();
 

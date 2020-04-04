@@ -3,8 +3,8 @@ import {
   ComponentDefinition,
   RenderComponentOptions,
   didRender,
-  templateOnlyComponent,
   setComponentTemplate,
+  templateOnlyComponent,
 } from '..';
 import { renderToString } from '@glimmer/ssr';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
@@ -25,9 +25,7 @@ export async function render(
   if ('id' in component && 'block' in component && 'meta' in component) {
     const template = component;
 
-    component = templateOnlyComponent();
-
-    setComponentTemplate(component, template);
+    component = setComponentTemplate(template, templateOnlyComponent());
   }
 
   if (IS_INTERACTIVE) {
