@@ -18,8 +18,9 @@
     "lint": "eslint . --cache --ext .js,.ts",
     "problems": "tsc -p tsconfig.json --noEmit",
     "start": "webpack-dev-server",
-    "test": "yarn lint && testem ci && yarn test:babel-plugins",
+    "test": "npm-run-all lint test:browsers test:babel-plugins test:types",
     "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
+    "test:browsers": "testem ci",
     "test:ember": "yarn workspace @glimmer/component ember try:one",
     "test:types": "dtslint test/types",
     "test:watch": "testem"
@@ -58,6 +59,7 @@
     "glob": "^7.1.6",
     "lerna-changelog": "^1.0.1",
     "mkdirp": "^1.0.3",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.0.2",
     "qunit": "^2.9.3",
     "release-it": "^13.5.1",
