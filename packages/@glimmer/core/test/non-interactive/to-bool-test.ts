@@ -13,8 +13,8 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      Main,
-      createTemplate('Hello {{if this.pred this.salutation this.alternative}}!')
+      createTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
+      Main
     );
 
     assert.equal(await render(Main), `Hello Glimmer.js!`, 'output is correct');
@@ -26,8 +26,8 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      Main,
-      createTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!')
+      createTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!'),
+      Main
     );
 
     assert.equal(await render(Main), `Hello Glimmer.js!`, 'output is correct');

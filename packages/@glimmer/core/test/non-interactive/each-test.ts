@@ -23,10 +23,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.strings key="@unknown" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.rejects(render(Component), /Error: invalid keypath/);
@@ -38,10 +38,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.numbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>1</li><li>2</li><li>3</li></ul>');
@@ -53,10 +53,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.frozenNumbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>1</li><li>2</li><li>3</li></ul>');
@@ -68,10 +68,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.strings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');
@@ -83,10 +83,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.frozenStrings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');
@@ -98,10 +98,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.objects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');
@@ -113,10 +113,10 @@ module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      Component,
       createTemplate(
         `<ul>{{#each this.frozenObjects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`
-      )
+      ),
+      Component
     );
 
     assert.equal(await render(Component), '<ul><li>Toran</li><li>Robert</li><li>Jesper</li></ul>');

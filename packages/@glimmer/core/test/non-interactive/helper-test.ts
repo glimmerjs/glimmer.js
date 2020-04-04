@@ -4,10 +4,10 @@ import { helper } from '../utils/custom-helper';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import {
-  templateOnlyComponent,
   setComponentTemplate,
   createTemplate,
   getOwner,
+  templateOnlyComponent,
 } from '@glimmer/core';
 
 module('[@glimmer/core] non-interactive - helper', () => {
@@ -22,8 +22,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>'),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -39,8 +39,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     class MyComponent extends Component {}
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>'),
+      MyComponent
     );
 
     assert.rejects(
@@ -71,8 +71,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>'),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -101,9 +101,10 @@ module('[@glimmer/core] non-interactive - helper', () => {
       }
     );
 
-    const MyComponent = templateOnlyComponent();
-
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'),
+      templateOnlyComponent()
+    );
 
     const html = await render(MyComponent, {
       owner: new Owner(),

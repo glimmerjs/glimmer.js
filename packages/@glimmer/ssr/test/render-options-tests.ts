@@ -17,7 +17,7 @@ QUnit.module('@glimmer/ssr rendering', () => {
 
     const options: RenderOptions = { serializer: new CustomHTMLSerializer(voidMap) };
 
-    setComponentTemplate(MyComponent, createTemplate(`<h1>Hello World</h1>`));
+    setComponentTemplate(createTemplate(`<h1>Hello World</h1>`), MyComponent);
 
     const output = await renderToString(MyComponent, options);
 

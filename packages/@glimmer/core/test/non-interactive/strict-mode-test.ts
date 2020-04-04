@@ -13,7 +13,7 @@ if (DEBUG) {
           say = 'Hello Dolly!';
         }
 
-        setComponentTemplate(MyComponent, createTemplate('<h1>{{say}}</h1>'));
+        setComponentTemplate(createTemplate('<h1>{{say}}</h1>'), MyComponent);
       }, /Error: Cannot find identifier `say` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add `this` to it: `{{this.say}}`/);
     });
 
@@ -28,8 +28,8 @@ if (DEBUG) {
         }
 
         setComponentTemplate(
-          MyComponent,
-          createTemplate({ myHelper }, '<h1>{{myHelper say}}</h1>')
+          createTemplate({ myHelper }, '<h1>{{myHelper say}}</h1>'),
+          MyComponent
         );
       }, /Error: Cannot find identifier `say` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add `this` to it: `{{this.say}}`/);
     });
@@ -40,7 +40,7 @@ if (DEBUG) {
           say = 'Hello Dolly!';
         }
 
-        setComponentTemplate(MyComponent, createTemplate('<h1>{{say this.bar}}</h1>'));
+        setComponentTemplate(createTemplate('<h1>{{say this.bar}}</h1>'), MyComponent);
       }, /Error: Cannot find identifier `say` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add `this` to it: `{{this.say}}`/);
     });
 
@@ -50,7 +50,7 @@ if (DEBUG) {
           say = 'Hello Dolly!';
         }
 
-        setComponentTemplate(MyComponent, createTemplate('<h1 {{say}}>Hello Dolly!</h1>'));
+        setComponentTemplate(createTemplate('<h1 {{say}}>Hello Dolly!</h1>'), MyComponent);
       }, /Error: Cannot find identifier `say` in scope. It was used in a template, but not imported into the template scope or defined as a local variable. If you meant to access a property, you must add `this` to it: `{{this.say}}`/);
     });
 

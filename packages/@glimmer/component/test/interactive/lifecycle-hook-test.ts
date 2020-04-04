@@ -37,7 +37,6 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
     class Component5 extends HookLoggerComponent {}
 
     setComponentTemplate(
-      Component1,
       createTemplate(
         { Component2, Component3 },
         `
@@ -46,11 +45,11 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
             <Component3 @name="component3"/>
           {{/if}}
         `
-      )
+      ),
+      Component1
     );
 
     setComponentTemplate(
-      Component2,
       createTemplate(
         { Component4, Component5 },
         `
@@ -58,14 +57,15 @@ module('[@glimmer/component] Lifecycle Hooks', () => {
           <Component4 @name="component4"/>
           <Component5 @name="component5"/>
         `
-      )
+      ),
+      Component2
     );
 
     const emptyTemplate = createTemplate('');
 
-    setComponentTemplate(Component3, emptyTemplate);
-    setComponentTemplate(Component4, emptyTemplate);
-    setComponentTemplate(Component5, emptyTemplate);
+    setComponentTemplate(emptyTemplate, Component3);
+    setComponentTemplate(emptyTemplate, Component4);
+    setComponentTemplate(emptyTemplate, Component5);
 
     await render(Component1, { args: { name: 'component1' } });
 

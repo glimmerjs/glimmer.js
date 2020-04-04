@@ -27,14 +27,14 @@ module('[@glimmer/component] Component Arguments', () => {
     }
 
     setComponentTemplate(
-      ParentComponent,
       createTemplate(
         { ChildComponent },
         '<ChildComponent @firstName={{this.firstName}} @status={{this.status}} />'
-      )
+      ),
+      ParentComponent
     );
 
-    setComponentTemplate(ChildComponent, createTemplate('{{this.name}} {{@status}}'));
+    setComponentTemplate(createTemplate('{{this.name}} {{@status}}'), ChildComponent);
 
     assert.equal(await render(ParentComponent), 'Tom Dale is dope');
 
