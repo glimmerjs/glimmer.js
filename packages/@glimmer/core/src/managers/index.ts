@@ -46,10 +46,10 @@ const MANAGER_INSTANCES: WeakMap<
 
 const getPrototypeOf = Object.getPrototypeOf;
 
-export function setManager<Owner extends object, StateBucket = unknown>(
+export function setManager<Def extends object, Owner extends object, StateBucket = unknown>(
   wrapper: ManagerWrapper<Owner, StateBucket>,
-  obj: {}
-): {} {
+  obj: Def
+): Def {
   MANAGERS.set(obj, wrapper);
   return obj;
 }
@@ -95,10 +95,11 @@ function getManagerInstanceForOwner<D extends ManagerDelegate>(
 
 ///////////
 
-export function setModifierManager<StateBucket, Owner extends object = object>(
-  factory: ManagerFactory<Owner, ModifierManager<StateBucket>>,
-  definition: ModifierDefinition<StateBucket>
-): {} {
+export function setModifierManager<
+  StateBucket,
+  Def extends ModifierDefinition<StateBucket>,
+  Owner extends object = object
+>(factory: ManagerFactory<Owner, ModifierManager<StateBucket>>, definition: Def): Def {
   return setManager({ factory, type: 'modifier' }, definition);
 }
 
@@ -113,10 +114,11 @@ export function getModifierManager<StateBucket = unknown>(
   }
 }
 
-export function setHelperManager<StateBucket, Owner extends object = object>(
-  factory: ManagerFactory<Owner, HelperManager<StateBucket>>,
-  definition: HelperDefinition<StateBucket>
-): {} {
+export function setHelperManager<
+  StateBucket,
+  Def extends HelperDefinition<StateBucket>,
+  Owner extends object = object
+>(factory: ManagerFactory<Owner, HelperManager<StateBucket>>, definition: Def): Def {
   return setManager({ factory, type: 'helper' }, definition);
 }
 
@@ -131,10 +133,11 @@ export function getHelperManager<StateBucket = unknown>(
   }
 }
 
-export function setComponentManager<StateBucket, Owner extends object = object>(
-  factory: ManagerFactory<Owner, ComponentManager<StateBucket>>,
-  definition: ComponentDefinition<StateBucket>
-): {} {
+export function setComponentManager<
+  StateBucket,
+  Def extends ComponentDefinition<StateBucket>,
+  Owner extends object = object
+>(factory: ManagerFactory<Owner, ComponentManager<StateBucket>>, definition: Def): Def {
   return setManager({ factory, type: 'component' }, definition);
 }
 
