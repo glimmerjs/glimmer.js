@@ -8,11 +8,11 @@
     "outDir": "dist",
     "baseUrl": "packages",
     "rootDir": "packages",
-    "importHelpers": true,
 
     // Environment Configuration
     "experimentalDecorators": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
 
     // Enhance Strictness
     "noUnusedLocals": true,
