@@ -1,3 +1,12 @@
+## v2.0.0-beta.6 (2020-04-16)
+
+#### :bug: Bug Fix
+* [#274](https://github.com/glimmerjs/glimmer.js/pull/274) [BUGFIX] Ensures interop with Commonjs ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+
 ## v2.0.0-beta.5 (2020-04-04)
 
 #### :boom: Breaking Change

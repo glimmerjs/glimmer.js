@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/core",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "description": "Core rendering functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
@@ -22,8 +22,8 @@
   "devDependencies": {
     "@glimmer/bundle-compiler": "^0.50.0",
     "@glimmer/compiler": "^0.50.0",
-    "@glimmer/component": "2.0.0-beta.5",
-    "@glimmer/tracking": "2.0.0-beta.5"
+    "@glimmer/component": "2.0.0-beta.6",
+    "@glimmer/tracking": "2.0.0-beta.6"
   },
   "volta": {
     "node": "12.16.1",
