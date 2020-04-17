@@ -1,4 +1,4 @@
-import { module, test, render, settled } from '../utils';
+import { module, test, render, settled, tracked as trackedObj } from '../utils';
 
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
@@ -19,28 +19,19 @@ module('[@glimmer/core] interactive - helper', () => {
       return `helper ${greeting} ${name}`;
     }
 
-    let component: MyComponent;
+    const args = trackedObj({ name: 'Rob' });
 
-    class MyComponent extends Component {
-      constructor(owner: unknown, args: {}) {
-        super(owner, args);
-        component = this;
-      }
-
-      @tracked name = 'Rob';
-    }
-
-    setComponentTemplate(
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>'),
-      MyComponent
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '<h1>{{myHelper @name "Hello"}}</h1>'),
+      templateOnlyComponent()
     );
 
-    let html = await render(MyComponent);
+    let html = await render(MyComponent, { args });
 
     assert.strictEqual(html, '<h1>helper Hello Rob</h1>', 'the template was rendered');
     assert.equal(count, 1, 'helper rendered once');
 
-    component!.name = 'Tom';
+    args.name = 'Tom';
 
     html = await settled();
 
