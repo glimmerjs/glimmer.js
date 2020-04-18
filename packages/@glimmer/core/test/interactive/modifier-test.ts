@@ -53,11 +53,9 @@ setModifierManager((owner) => new CustomModifierManager(owner), CustomModifier);
 
 module('Modifier Tests', () => {
   test('Supports the on modifier', async (assert) => {
-
     const args = tracked({ count: 0 });
-    
-    class MyComponent extends Component {
 
+    class MyComponent extends Component {
       @action
       incrementCounter(): void {
         args.count++;
@@ -307,7 +305,7 @@ module('Modifier Tests', () => {
       templateOnlyComponent()
     );
 
-    const html = await render(Component,);
+    const html = await render(Component);
     assert.equal(html, `<h1>hello world</h1>`, 'rendered correctly');
 
     assert.deepEqual(hooks, ['insert'], 'correct hooks called on initial render');

@@ -1,4 +1,4 @@
-import { module, test, render, settled, tracked as trackedObj} from '../utils';
+import { module, test, render, settled, tracked } from '../utils';
 import Component from '@glimmer/component';
 import { fn } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
@@ -12,10 +12,8 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     let helloWorldComponent: HelloWorld;
     let passedMsg1, passedMsg2, passedEvent: MouseEvent | undefined;
 
-    const args = trackedObj({ name: 'world' })
-    
+    const args = tracked({ name: 'world' });
     class HelloWorld extends Component {
-    
       constructor(owner: unknown, args: {}) {
         super(owner, args);
         helloWorldComponent = this;
