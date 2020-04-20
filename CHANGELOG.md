@@ -1,3 +1,17 @@
+## v2.0.0-beta.7 (2020-04-20)
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#285](https://github.com/glimmerjs/glimmer.js/pull/285) [CHORE] Update to glimmer-vm version 0.51.0 ([@chiragpat](https://github.com/chiragpat))
+
+#### :house: Internal
+* `@glimmer/core`
+  * [#283](https://github.com/glimmerjs/glimmer.js/pull/283) [Refactor] Updates tests to use tracked utility. ([@rahilvora](https://github.com/rahilvora))
+
+#### Committers: 2
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+- Rahil Vora ([@rahilvora](https://github.com/rahilvora))
+
 ## v2.0.0-beta.6 (2020-04-16)
 
 #### :bug: Bug Fix
