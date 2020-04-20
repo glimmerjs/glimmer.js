@@ -1,6 +1,5 @@
-import { module, test, render, settled } from '../utils';
+import { module, test, render, settled, tracked } from '../utils';
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { fn } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
 
@@ -13,10 +12,8 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     let helloWorldComponent: HelloWorld;
     let passedMsg1, passedMsg2, passedEvent: MouseEvent | undefined;
 
+    const args = tracked({ name: 'world' });
     class HelloWorld extends Component {
-      @tracked
-      name = 'world';
-
       constructor(owner: unknown, args: {}) {
         super(owner, args);
         helloWorldComponent = this;
@@ -34,12 +31,12 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     setComponentTemplate(
       createTemplate(
         { on, fn },
-        '<button {{on "click" (fn this.userDidClick "hello" this.name)}}>Hello World</button>'
+        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>'
       ),
       HelloWorld
     );
 
-    const output = await render(HelloWorld);
+    const output = await render(HelloWorld, { args });
 
     assert.strictEqual(output, '<button>Hello World</button>');
 
@@ -52,7 +49,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.ok(passedEvent instanceof MouseEvent);
     passedEvent = undefined;
 
-    helloWorldComponent!.name = 'cruel world';
+    args.name = 'cruel world';
 
     await settled();
 

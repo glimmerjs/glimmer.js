@@ -53,25 +53,25 @@ setModifierManager((owner) => new CustomModifierManager(owner), CustomModifier);
 
 module('Modifier Tests', () => {
   test('Supports the on modifier', async (assert) => {
-    class MyComponent extends Component {
-      @tracked count = 0;
+    const args = tracked({ count: 0 });
 
+    class MyComponent extends Component {
       @action
       incrementCounter(): void {
-        this.count++;
+        args.count++;
       }
     }
 
     setComponentTemplate(
       createTemplate(
         { on },
-        `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
+        `<button {{on "click" this.incrementCounter}}>Count: {{@count}}</button>`
       ),
       MyComponent
     );
 
     assert.strictEqual(
-      await render(MyComponent),
+      await render(MyComponent, { args }),
       `<button>Count: 0</button>`,
       'the component was rendered'
     );
