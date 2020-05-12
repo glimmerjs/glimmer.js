@@ -1,89 +1,139 @@
 import { tracked } from '@glimmer/tracking';
 
 class TodoItem {
-    @tracked label;
-    @tracked selected;
-    @tracked id
-    constructor({label,selected, id}) {
-        this.label = label;
-        this.selected = selected;
-        this.id = id;
-    }
+  @tracked label;
+  @tracked selected;
+  @tracked id;
+  constructor({ label, selected, id }) {
+    this.label = label;
+    this.selected = selected;
+    this.id = id;
+  }
 }
 
-const _random = (max) => {
-    return Math.round(Math.random() * 1000) % max;
+interface ItemsSnapshot {
+  id: number;
+  data: TodoItem[];
 }
 
-const updateData = (data, mod = 10) => {
-    for (let i = 0; i < data.length; i += mod) {
-        data[i].label =  data[i].label + ' !!!' ;
-    }
-    return data;
-}
+const _random = (max): number => {
+  return Math.round(Math.random() * 1000) % max;
+};
 
-export const buildData = (id, count = 1000) => {
-    var adjectives = [
-      "pretty", "large", "big", "small", "tall",
-      "short", "long", "handsome", "plain", "quaint",
-      "clean", "elegant", "easy", "angry", "crazy",
-      "helpful", "mushy", "odd", "unsightly", "adorable",
-      "important", "inexpensive", "cheap", "expensive", "fancy"];
+const updateData = (data, mod = 10): TodoItem[] => {
+  for (let i = 0; i < data.length; i += mod) {
+    data[i].label = data[i].label + ' !!!';
+  }
+  return data;
+};
 
-    var colours = [
-      "red", "yellow", "blue", "green", "pink", "brown", "purple",
-      "brown", "white", "black", "orange"];
+export const buildData = (id, count = 1000): ItemsSnapshot => {
+  const adjectives = [
+    'pretty',
+    'large',
+    'big',
+    'small',
+    'tall',
+    'short',
+    'long',
+    'handsome',
+    'plain',
+    'quaint',
+    'clean',
+    'elegant',
+    'easy',
+    'angry',
+    'crazy',
+    'helpful',
+    'mushy',
+    'odd',
+    'unsightly',
+    'adorable',
+    'important',
+    'inexpensive',
+    'cheap',
+    'expensive',
+    'fancy',
+  ];
 
-    var nouns = [
-      "table", "chair", "house", "bbq", "desk", "car", "pony", "cookie",
-      "sandwich", "burger", "pizza", "mouse", "keyboard"];
+  const colours = [
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange',
+  ];
 
-    var data = [];
+  const nouns = [
+    'table',
+    'chair',
+    'house',
+    'bbq',
+    'desk',
+    'car',
+    'pony',
+    'cookie',
+    'sandwich',
+    'burger',
+    'pizza',
+    'mouse',
+    'keyboard',
+  ];
 
-    for (var i = 0; i < count; i++)
-        data.push(new TodoItem({
-          id: id++,
-          selected: false,
-          label: adjectives[_random(adjectives.length)]
-            + " "
-            + colours[_random(colours.length)]
-            + " "
-            + nouns[_random(nouns.length)]
-        }));
+  const data = [];
 
-    return {data, id};
-}
+  for (let i = 0; i < count; i++)
+    data.push(
+      new TodoItem({
+        id: id++,
+        selected: false,
+        label:
+          adjectives[_random(adjectives.length)] +
+          ' ' +
+          colours[_random(colours.length)] +
+          ' ' +
+          nouns[_random(nouns.length)],
+      })
+    );
 
-export const add = (id, data) => {
-    const newData = buildData(id, 1000);
-    return [ ...data, ...newData.data];
-}
+  return { data, id };
+};
 
-export const run = (id) => {
-    return buildData(id);
-}
+export const add = (id, data): TodoItem[] => {
+  const newData = buildData(id, 1000);
+  return [...data, ...newData.data];
+};
 
-export const runLots = (id) => {
-    return buildData(id, 10000);
-}
+export const run = (id): ItemsSnapshot => {
+  return buildData(id);
+};
 
-export const update = (data) => {
-    return updateData(data);
-}
+export const runLots = (id): ItemsSnapshot => {
+  return buildData(id, 10000);
+};
 
-export const swapRows = (data) => {
-    const newData = [...data];
-    if (newData.length > 998) {
-        let temp = newData[1];
-        newData[1] = newData[998];
-        newData[998] = temp;
-    }
-    return newData;
-}
+export const update = (data): TodoItem[] => {
+  return updateData(data);
+};
 
-export const deleteRow = (data, id) => {
-    return data.filter(d => {
-        return d.id !== id
-    });
-}
+export const swapRows = (data): TodoItem[] => {
+  const newData = [...data];
+  if (newData.length > 998) {
+    const temp = newData[1];
+    newData[1] = newData[998];
+    newData[998] = temp;
+  }
+  return newData;
+};
 
+export const deleteRow = (data, id): TodoItem[] => {
+  return data.filter((d) => {
+    return d.id !== id;
+  });
+};

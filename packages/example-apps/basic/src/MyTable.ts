@@ -3,13 +3,10 @@ import { action, on } from '@glimmer/modifier';
 import { tracked } from '@glimmer/tracking';
 import { createTemplate, setComponentTemplate } from '@glimmer/core';
 import { fn } from '@glimmer/helper';
-import {
-  run, runLots, add, update, swapRows, deleteRow,
-} from './utils/benchmark-helpers';
+import { run, runLots, add, update, swapRows, deleteRow } from './utils/benchmark-helpers';
 
 import TableRow from './TableRow';
 import BsButton from './BsButton';
-
 
 export default class MyTable extends Component {
   @tracked id = 1;
@@ -21,11 +18,11 @@ export default class MyTable extends Component {
 
     this.id = result.id;
     this.data = result.data;
-    this.selected  = undefined;
+    this.selected = undefined;
   }
 
   @action add(): void {
-    this.data = add(this.id, this.data)
+    this.data = add(this.id, this.data);
   }
 
   @action update(): void {
@@ -42,7 +39,7 @@ export default class MyTable extends Component {
 
   @action clear(): void {
     this.data = [];
-    this.selected  = undefined;
+    this.selected = undefined;
   }
 
   @action swapRows(): void {
@@ -50,7 +47,7 @@ export default class MyTable extends Component {
   }
 
   @action remove(id): void {
-    const selected = this.data.find(({selected}) => selected === true);
+    const selected = this.data.find(({ selected }) => selected === true);
     if (selected) {
       selected.selected = false;
     }
@@ -60,16 +57,19 @@ export default class MyTable extends Component {
 
   @action select(id): void {
     this.selected = id;
-    const selected = this.data.find(({selected}) => selected === true);
+    const selected = this.data.find(({ selected }) => selected === true);
     if (selected) {
       selected.selected = false;
     }
-    this.data.find((item)=>item.id === id).selected = true;
+    this.data.find((item) => item.id === id).selected = true;
   }
-};
+}
 
-
-setComponentTemplate(MyTable, createTemplate({on, fn, TableRow, BsButton},`
+setComponentTemplate(
+  MyTable,
+  createTemplate(
+    { on, fn, TableRow, BsButton },
+    `
 <div class="jumbotron">
   <div class="row">
     <div class="col-md-6">
@@ -125,4 +125,6 @@ setComponentTemplate(MyTable, createTemplate({on, fn, TableRow, BsButton},`
 
 
 <span class="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
-`));
+`
+  )
+);
