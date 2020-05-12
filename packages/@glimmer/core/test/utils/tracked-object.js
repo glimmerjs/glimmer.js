@@ -1,24 +1,23 @@
-import { consume, tagFor, dirtyTagFor } from '@glimmer/validator';
+import { consumeTag, tagFor, dirtyTagFor } from '@glimmer/validator';
 
 const COLLECTION = Symbol();
 
 function createProxy(obj = {}) {
-
   return new Proxy(obj, {
     get(target, prop) {
-      consume(tagFor(target, prop));
+      consumeTag(tagFor(target, prop));
 
       return target[prop];
     },
 
     has(target, prop) {
-      consume(tagFor(target, prop));
+      consumeTag(tagFor(target, prop));
 
       return prop in target;
     },
 
     ownKeys(target) {
-      consume(tagFor(target, COLLECTION));
+      consumeTag(tagFor(target, COLLECTION));
 
       return Reflect.ownKeys(target);
     },
@@ -45,7 +44,7 @@ export default class TrackedObject {
 
   constructor(obj = {}) {
     let proto = Object.getPrototypeOf(obj);
-    let descs = Object.getOwnPropertyDescriptors(obj)
+    let descs = Object.getOwnPropertyDescriptors(obj);
 
     let clone = Object.create(proto);
 

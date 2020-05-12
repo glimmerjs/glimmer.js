@@ -1,22 +1,19 @@
-import { module, test, render, settled } from '../utils';
+import { module, test, render, settled, tracked } from '../utils';
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 import { fn } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
 
 import { setComponentTemplate, createTemplate, templateOnlyComponent } from '@glimmer/core';
 
 module('[@glimmer/core] interactive - {{fn}}', () => {
-  test('can curry arguments via fn', async function(assert) {
+  test('can curry arguments via fn', async function (assert) {
     assert.expect(9);
 
     let helloWorldComponent: HelloWorld;
     let passedMsg1, passedMsg2, passedEvent: MouseEvent | undefined;
 
+    const args = tracked({ name: 'world' });
     class HelloWorld extends Component {
-      @tracked
-      name = 'world';
-
       constructor(owner: unknown, args: {}) {
         super(owner, args);
         helloWorldComponent = this;
@@ -32,14 +29,14 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      HelloWorld,
       createTemplate(
         { on, fn },
-        '<button {{on "click" (fn this.userDidClick "hello" this.name)}}>Hello World</button>'
-      )
+        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>'
+      ),
+      HelloWorld
     );
 
-    const output = await render(HelloWorld);
+    const output = await render(HelloWorld, { args });
 
     assert.strictEqual(output, '<button>Hello World</button>');
 
@@ -52,7 +49,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.ok(passedEvent instanceof MouseEvent);
     passedEvent = undefined;
 
-    helloWorldComponent!.name = 'cruel world';
+    args.name = 'cruel world';
 
     await settled();
 
@@ -63,7 +60,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.ok(passedEvent! instanceof MouseEvent);
   });
 
-  test('functions can be curried multiple times', async function(assert) {
+  test('functions can be curried multiple times', async function (assert) {
     assert.expect(2);
 
     let parentComponent: ParentComponent;
@@ -84,24 +81,25 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
       }
     }
 
-    const Grandchild = templateOnlyComponent();
-    setComponentTemplate(
-      Grandchild,
-      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>')
+    const Grandchild = setComponentTemplate(
+      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>'),
+      templateOnlyComponent()
     );
 
-    const Child = templateOnlyComponent();
-    setComponentTemplate(
-      Child,
+    const Child = setComponentTemplate(
       createTemplate(
         { Grandchild, fn },
         '<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     setComponentTemplate(
-      ParentComponent,
-      createTemplate({ Child, fn }, '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>')
+      createTemplate(
+        { Child, fn },
+        '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>'
+      ),
+      ParentComponent
     );
 
     await render(ParentComponent);
@@ -114,18 +112,18 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     assert.deepEqual(passed, [1, 2, 3, 4, 5, 6]);
   });
 
-  test('action helper invoked without a function raises an error', function(assert) {
+  test('action helper invoked without a function raises an error', function (assert) {
     class Parent extends Component {}
 
     setComponentTemplate(
-      Parent,
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>')
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>'),
+      Parent
     );
 
     assert.rejects(render(Parent), /fn must receive a function as its first parameter/);
   });
 
-  test('fn helper invoked without a parameter raises an error', function(assert) {
+  test('fn helper invoked without a parameter raises an error', function (assert) {
     class Parent extends Component {
       @action
       exists(): void {
@@ -134,11 +132,13 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      Parent,
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>')
+      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>'),
+      Parent
     );
 
-    assert.rejects(render(Parent), /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./);
+    assert.rejects(
+      render(Parent),
+      /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./
+    );
   });
 });
-

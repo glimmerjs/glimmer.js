@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/blueprint",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Ember CLI blueprint for initializing a new Glimmer application.",
   "main": "index.js",
   "scripts": {
@@ -26,5 +26,9 @@
   },
   "ember-addon": {
     "main": "ember-addon-main.js"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

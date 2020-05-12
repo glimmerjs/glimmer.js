@@ -4,24 +4,24 @@ import { getComponentTemplate, setComponentTemplate, TemplateMeta } from '../../
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
 
 class FakeTemplateMeta implements SerializedTemplateWithLazyBlock<TemplateMeta> {
-  block = "{}";
+  block = '{}';
   meta = {
-    scope: (): {} => ({})
-  }
+    scope: (): {} => ({}),
+  };
 }
 
 module('component templates', () => {
-  test('setting and getting', assert => {
+  test('setting and getting', (assert) => {
     const templateA = new FakeTemplateMeta();
     const templateAAB = new FakeTemplateMeta();
 
     class A {}
-    setComponentTemplate(A, templateA);
+    setComponentTemplate(templateA, A);
     class AA extends A {}
     class AB extends A {}
     class AAA extends AA {}
     class AAB extends AA {}
-    setComponentTemplate(AAB, templateAAB);
+    setComponentTemplate(templateAAB, AAB);
 
     class B {}
     class BA {}

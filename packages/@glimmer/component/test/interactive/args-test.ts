@@ -5,7 +5,7 @@ import { setComponentTemplate, createTemplate } from '@glimmer/core';
 import { module, test, render, settled } from '@glimmer/core/test/utils';
 
 module('[@glimmer/component] Component Arguments', () => {
-  test('Getters that depend on `args` re-render correctly', async function(assert) {
+  test('Getters that depend on `args` re-render correctly', async function (assert) {
     assert.expect(2);
 
     let parent: ParentComponent;
@@ -27,14 +27,14 @@ module('[@glimmer/component] Component Arguments', () => {
     }
 
     setComponentTemplate(
-      ParentComponent,
       createTemplate(
         { ChildComponent },
         '<ChildComponent @firstName={{this.firstName}} @status={{this.status}} />'
-      )
+      ),
+      ParentComponent
     );
 
-    setComponentTemplate(ChildComponent, createTemplate('{{this.name}} {{@status}}'));
+    setComponentTemplate(createTemplate('{{this.name}} {{@status}}'), ChildComponent);
 
     assert.equal(await render(ParentComponent), 'Tom Dale is dope');
 

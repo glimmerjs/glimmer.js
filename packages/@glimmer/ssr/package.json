@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/ssr",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Server-side rendering for Glimmer Applications",
   "repository": "https://github.com/glimmerjs/glimmer.js",
   "license": "MIT",
@@ -10,16 +10,20 @@
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
   "dependencies": {
-    "@glimmer/core": "^2.0.0-alpha.1",
-    "@glimmer/node": "^0.47.6",
-    "@glimmer/reference": "^0.47.6",
-    "@glimmer/runtime": "^0.47.6",
-    "@glimmer/util": "^0.47.6",
+    "@glimmer/core": "2.0.0-beta.7",
+    "@glimmer/node": "^0.51.0",
+    "@glimmer/reference": "^0.51.0",
+    "@glimmer/runtime": "^0.51.0",
+    "@glimmer/util": "^0.51.0",
     "@simple-dom/document": "^1.4.0",
     "@simple-dom/serializer": "^1.4.0",
     "@simple-dom/void-map": "^1.4.0"
   },
   "devDependencies": {
-    "@glimmer/component": "^2.0.0-alpha.1"
+    "@glimmer/component": "2.0.0-beta.7"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

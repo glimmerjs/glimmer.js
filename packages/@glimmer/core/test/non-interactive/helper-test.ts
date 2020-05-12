@@ -4,14 +4,14 @@ import { helper } from '../utils/custom-helper';
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import {
-  templateOnlyComponent,
   setComponentTemplate,
   createTemplate,
   getOwner,
+  templateOnlyComponent,
 } from '@glimmer/core';
 
 module('[@glimmer/core] non-interactive - helper', () => {
-  test('simple helpers work', async assert => {
+  test('simple helpers work', async (assert) => {
     function myHelper(name: string, greeting: string): string {
       return `helper ${greeting} ${name}`;
     }
@@ -22,8 +22,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name "Hello"}}</h1>'),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -31,7 +31,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     assert.strictEqual(html, '<h1>helper Hello Rob</h1>', 'the template was rendered');
   });
 
-  test('simple helpers throw when using named args', assert => {
+  test('simple helpers throw when using named args', (assert) => {
     function myHelper(): void {
       assert.ok(false, 'helper should not be called');
     }
@@ -39,8 +39,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     class MyComponent extends Component {}
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>'),
+      MyComponent
     );
 
     assert.rejects(
@@ -49,7 +49,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     );
   });
 
-  test('custom helpers work', async assert => {
+  test('custom helpers work', async (assert) => {
     const myHelper = helper(
       class {
         args: {
@@ -71,8 +71,8 @@ module('[@glimmer/core] non-interactive - helper', () => {
     }
 
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>')
+      createTemplate({ myHelper }, '<h1>{{myHelper this.name greeting="Hello"}}</h1>'),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -80,7 +80,7 @@ module('[@glimmer/core] non-interactive - helper', () => {
     assert.strictEqual(html, '<h1>helper Hello Rob</h1>', 'the template was rendered');
   });
 
-  test('custom helpers have access to host meta', async assert => {
+  test('custom helpers have access to host meta', async (assert) => {
     class Owner {
       services = {
         locale: new LocaleService(),
@@ -101,9 +101,10 @@ module('[@glimmer/core] non-interactive - helper', () => {
       }
     );
 
-    const MyComponent = templateOnlyComponent();
-
-    setComponentTemplate(MyComponent, createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'));
+    const MyComponent = setComponentTemplate(
+      createTemplate({ myHelper }, '<h1>{{myHelper}}</h1>'),
+      templateOnlyComponent()
+    );
 
     const html = await render(MyComponent, {
       owner: new Owner(),

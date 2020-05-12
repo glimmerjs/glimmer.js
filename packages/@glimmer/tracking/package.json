@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/tracking",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Glimmer property tracking library",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
@@ -15,13 +15,17 @@
   "module": "dist/modules/index.js",
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/validator": "^0.47.6"
+    "@glimmer/validator": "^0.51.0"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^1.0.0",
-    "@glimmer/compiler": "^0.47.6",
-    "@glimmer/interfaces": "^0.47.6",
+    "@glimmer/compiler": "^0.51.0",
+    "@glimmer/interfaces": "^0.51.0",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.47.6"
+    "@glimmer/wire-format": "^0.51.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

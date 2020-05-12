@@ -6,8 +6,10 @@ import toBool from '../environment/to-bool';
 export function ifHelper(args: VMArguments, vm: VM): HelperRootReference {
   return new HelperRootReference(
     ({ positional }) => {
-      if (DEBUG && positional.length < 2 || positional.length > 3) {
-        throw new Error('The inline form of the `if` helper expects two or three arguments, e.g. `{{if trialExpired "Expired" expiryDate}}`.');
+      if ((DEBUG && positional.length < 2) || positional.length > 3) {
+        throw new Error(
+          'The inline form of the `if` helper expects two or three arguments, e.g. `{{if trialExpired "Expired" expiryDate}}`.'
+        );
       }
 
       const condition = positional.at(0);
@@ -23,5 +25,5 @@ export function ifHelper(args: VMArguments, vm: VM): HelperRootReference {
     args.capture(),
     vm.env,
     'if'
-  )
+  );
 }

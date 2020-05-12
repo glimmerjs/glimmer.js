@@ -1,10 +1,10 @@
 {
   "name": "@glimmer/modifier",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Modifier Functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
-  "repository": "https://github.com/tomdale/glimmer-lite",
+  "repository": "https://github.com/glimmerjs/glimmer.js/tree/master/packages/@glimmer/modifier",
   "author": "Tom Dale <tom@tomdale.net>",
   "license": "MIT",
   "private": false,
@@ -12,7 +12,11 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/interfaces": "^0.47.6",
+    "@glimmer/interfaces": "^0.51.0",
     "@simple-dom/interface": "^1.4.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

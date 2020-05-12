@@ -6,11 +6,11 @@ import Component from '@glimmer/component';
 import {
   setComponentTemplate,
   createTemplate,
-  templateOnlyComponent,
   modifierCapabilities,
-  CapturedArgs,
+  TemplateArgs,
   setModifierManager,
   ModifierManager,
+  templateOnlyComponent,
 } from '@glimmer/core';
 import { Dict } from '@glimmer/interfaces';
 
@@ -33,13 +33,13 @@ class CustomModifierManager implements ModifierManager<CustomModifier> {
     return new factory(this.owner);
   }
 
-  installModifier(instance: CustomModifier, element: Element, args: CapturedArgs): void {
+  installModifier(instance: CustomModifier, element: Element, args: TemplateArgs): void {
     instance.element = element;
     const { positional, named } = args;
     instance.didInsertElement(positional, named);
   }
 
-  updateModifier(instance: CustomModifier, args: CapturedArgs): void {
+  updateModifier(instance: CustomModifier, args: TemplateArgs): void {
     const { positional, named } = args;
     instance.didUpdate(positional, named);
   }
@@ -49,29 +49,29 @@ class CustomModifierManager implements ModifierManager<CustomModifier> {
   }
 }
 
-setModifierManager(owner => new CustomModifierManager(owner), CustomModifier);
+setModifierManager((owner) => new CustomModifierManager(owner), CustomModifier);
 
 module('Modifier Tests', () => {
-  test('Supports the on modifier', async assert => {
-    class MyComponent extends Component {
-      @tracked count = 0;
+  test('Supports the on modifier', async (assert) => {
+    const args = tracked({ count: 0 });
 
+    class MyComponent extends Component {
       @action
       incrementCounter(): void {
-        this.count++;
+        args.count++;
       }
     }
 
     setComponentTemplate(
-      MyComponent,
       createTemplate(
         { on },
-        `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
-      )
+        `<button {{on "click" this.incrementCounter}}>Count: {{@count}}</button>`
+      ),
+      MyComponent
     );
 
     assert.strictEqual(
-      await render(MyComponent),
+      await render(MyComponent, { args }),
       `<button>Count: 0</button>`,
       'the component was rendered'
     );
@@ -85,42 +85,43 @@ module('Modifier Tests', () => {
     );
   });
 
-  test('simple functions can be used as modifiers', async assert => {
+  test('simple functions can be used as modifiers', async (assert) => {
     function modifier(element: Element, arg1: string, arg2: number): void {
       assert.equal(element, find('h1'), 'modifier received');
       assert.equal(arg1, 'string', 'modifier received');
       assert.equal(arg2, 123, 'modifier received');
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '<h1 {{modifier "string" 123}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier }, '<h1 {{modifier "string" 123}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     await render(Component);
   });
 
-  test('simple function modifiers throw an error when using named arguments', async assert => {
+  test('simple function modifiers throw an error when using named arguments', async (assert) => {
     function modifier(): void {
       assert.ok(false, 'should not be called');
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '<h1 {{modifier named=456}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier }, '<h1 {{modifier named=456}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     try {
       await render(Component);
     } catch (e) {
-      assert.equal(e.message, 'You used named arguments with the modifier modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.', 'error thrown correctly');
+      assert.equal(
+        e.message,
+        'You used named arguments with the modifier modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.',
+        'error thrown correctly'
+      );
     }
   });
 
-
-  test('simple function modifier lifecycle', async assert => {
+  test('simple function modifier lifecycle', async (assert) => {
     const hooks: string[] = [];
 
     function modifier(): () => void {
@@ -131,10 +132,12 @@ module('Modifier Tests', () => {
       };
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier }, '{{#if @truthy}}<h1 {{modifier @value}}>hello world</h1>{{/if}}')
+    const Component = setComponentTemplate(
+      createTemplate(
+        { modifier },
+        '{{#if @truthy}}<h1 {{modifier @value}}>hello world</h1>{{/if}}'
+      ),
+      templateOnlyComponent()
     );
 
     await render(Component);
@@ -169,7 +172,7 @@ module('Modifier Tests', () => {
     );
   });
 
-  test('custom modifiers correctly receive element', async assert => {
+  test('custom modifiers correctly receive element', async (assert) => {
     assert.expect(3);
 
     class Modifier extends CustomModifier {
@@ -190,13 +193,12 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
+    const Component = setComponentTemplate(
       createTemplate(
         { modifier: Modifier },
         '{{#if @truthy}}<h1 {{modifier @value foo=@value}}>hello world</h1>{{/if}}'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     const args = tracked({
@@ -215,7 +217,7 @@ module('Modifier Tests', () => {
     await settled();
   });
 
-  test('custom lifecycle hooks', async assert => {
+  test('custom lifecycle hooks', async (assert) => {
     const hooks: string[] = [];
     const positionalArgs: unknown[][] = [];
     const namedArgs: Dict<unknown>[] = [];
@@ -238,13 +240,12 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
+    const Component = setComponentTemplate(
       createTemplate(
         { modifier: Modifier },
         '{{#if @truthy}}<h1 {{modifier @value foo=@value}}>hello world</h1>{{/if}}'
-      )
+      ),
+      templateOnlyComponent()
     );
 
     const args = tracked({
@@ -277,7 +278,7 @@ module('Modifier Tests', () => {
     assert.deepEqual(namedArgs, [{ foo: 123 }, { foo: 456 }], 'modifier initialized correctly');
   });
 
-  test('lifecycle hooks are autotracked by default', async assert => {
+  test('lifecycle hooks are autotracked by default', async (assert) => {
     const obj = tracked({
       foo: 123,
       bar: 456,
@@ -299,10 +300,9 @@ module('Modifier Tests', () => {
       }
     }
 
-    const Component = templateOnlyComponent();
-    setComponentTemplate(
-      Component,
-      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>')
+    const Component = setComponentTemplate(
+      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>'),
+      templateOnlyComponent()
     );
 
     const html = await render(Component);

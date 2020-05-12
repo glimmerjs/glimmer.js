@@ -3,7 +3,7 @@ import { createTemplate } from '@glimmer/core';
 import { module, test, render } from '../utils';
 
 module(`[@glimmer/core] interactive rendering tests`, () => {
-  test('renders multiple components in different places', async assert => {
+  test('renders multiple components in different places', async (assert) => {
     assert.expect(2);
 
     // Note: Should try to figure out how to do this in Node so we can make this
@@ -18,7 +18,7 @@ module(`[@glimmer/core] interactive rendering tests`, () => {
     assert.equal(secondContainerElement.innerHTML, '<h1>Hello Robbie!</h1>');
   });
 
-  test('renders a component without affecting existing content', async assert => {
+  test('renders a component without affecting existing content', async (assert) => {
     assert.expect(1);
 
     // Note: Should try to figure out how to do this in Node so we can make this

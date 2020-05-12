@@ -1,4 +1,7 @@
 const { precompile } = require('@glimmer/compiler');
+const { parse } = require('@babel/parser');
+const { default: generate } = require('@babel/generator');
+const t = require('@babel/types');
 
 module.exports = function strictTemplatePrecompile(babel, options) {
   const { types: t, parse } = babel;
@@ -75,19 +78,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
             templateString = templatePath.node.value;
           }
 
-          const compiled = precompile(templateString, precompileOptions);
-          const ast = parse(`(${compiled})`);
-
-          t.traverseFast(ast, node => {
-            if (t.isObjectProperty(node)) {
-              if (node.key.value === 'meta') {
-                node.value.properties.push(t.objectProperty(t.identifier('scope'), scope));
-              }
-              if (t.isStringLiteral(node.key)) {
-                node.key = t.identifier(node.key.value);
-              }
-            }
-          });
+          const ast = _precompileTemplate(parse, templateString, scope, precompileOptions);
 
           path.replaceWith(ast.program.body[0].expression);
         } else {
@@ -97,3 +88,58 @@ module.exports = function strictTemplatePrecompile(babel, options) {
     },
   };
 };
+
+function _precompileTemplate(parse, templateString, scopeNode, precompileOptions) {
+  const compiled = precompile(templateString, precompileOptions);
+  const ast = parse(`(${compiled})`);
+
+  let metaSeen = false;
+
+  t.traverseFast(ast, (node) => {
+    if (t.isObjectProperty(node)) {
+      if (node.key.value === 'meta') {
+        metaSeen = true;
+        node.value.properties.push(t.objectProperty(t.identifier('scope'), scopeNode));
+      }
+      if (t.isStringLiteral(node.key)) {
+        node.key = t.identifier(node.key.value);
+      }
+    }
+  });
+
+  if (metaSeen === false) {
+    ast.program.body[0].expression.properties.push(
+      t.objectProperty(
+        t.identifier('meta'),
+        t.objectExpression([t.objectProperty(t.identifier('scope'), scopeNode)])
+      )
+    );
+  }
+
+  return ast;
+}
+
+/**
+ * Allows users to programmatically precompile a template given a list of import
+ * identifiers and the template string. This is meant for usage in custom
+ * template transforms and formats.
+ *
+ * @public
+ * @param template string - the template to be compiled
+ * @param importIdentifiers string[] - the identifiers to import
+ * @param precompileOptions object - the options to be passed to the compiler
+ */
+function precompileTemplate(templateString, importIdentifiers = [], precompileOptions = {}) {
+  const scope = t.arrowFunctionExpression(
+    [],
+    t.objectExpression(
+      importIdentifiers.map((id) => t.objectProperty(t.identifier(id), t.identifier(id)))
+    )
+  );
+
+  let ast = _precompileTemplate(parse, templateString, scope, precompileOptions);
+
+  return generate(ast).code;
+}
+
+module.exports.precompileTemplate = precompileTemplate;

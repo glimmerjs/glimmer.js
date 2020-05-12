@@ -1,21 +1,17 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import {
-  createTemplate,
-  setComponentTemplate,
-  templateOnlyComponent,
-  getOwner,
-} from '@glimmer/core';
+import { createTemplate, setComponentTemplate, getOwner } from '@glimmer/core';
 import { helper } from './utils/helper-with-services';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
 import { Owner } from '..';
 import MyTable from './MyTable';
-const myHelper = helper(function([name], { greeting }) {
+
+const myHelper = helper(function ([name], { greeting }) {
   return `Helper: ${greeting} ${name}`;
 });
 
-const isCJK = helper(function(_args, _hash, services) {
+const isCJK = helper(function (_args, _hash, services) {
   const localeService = services.locale as LocaleService;
   return (
     localeService.currentLocale === 'zh_CN' ||
@@ -26,10 +22,7 @@ const isCJK = helper(function(_args, _hash, services) {
   return true;
 });
 
-const TemplateOnlyComponent = templateOnlyComponent();
-
-setComponentTemplate(
-  TemplateOnlyComponent,
+const TemplateOnlyComponent = setComponentTemplate(
   createTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`)
 );
 
@@ -48,7 +41,6 @@ class MyComponent extends Component {
 }
 
 setComponentTemplate(
-  MyComponent,
   createTemplate(
     { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on, MyTable },
     `
@@ -66,7 +58,8 @@ setComponentTemplate(
       <TemplateOnlyComponent @name="For Glimmer"/>
       <MyTable />
     `
-  )
+  ),
+  MyComponent
 );
 
 export default MyComponent;

@@ -1,4 +1,163 @@
-# Changelog
+## v2.0.0-beta.7 (2020-04-20)
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#285](https://github.com/glimmerjs/glimmer.js/pull/285) [CHORE] Update to glimmer-vm version 0.51.0 ([@chiragpat](https://github.com/chiragpat))
+
+#### :house: Internal
+* `@glimmer/core`
+  * [#283](https://github.com/glimmerjs/glimmer.js/pull/283) [Refactor] Updates tests to use tracked utility. ([@rahilvora](https://github.com/rahilvora))
+
+#### Committers: 2
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+- Rahil Vora ([@rahilvora](https://github.com/rahilvora))
+
+## v2.0.0-beta.6 (2020-04-16)
+
+#### :bug: Bug Fix
+* [#274](https://github.com/glimmerjs/glimmer.js/pull/274) [BUGFIX] Ensures interop with Commonjs ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+
+## v2.0.0-beta.5 (2020-04-04)
+
+#### :boom: Breaking Change
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/ssr`, `example-apps`
+  * [#271](https://github.com/glimmerjs/glimmer.js/pull/271) [BUGFIX][BREAKING] Fixes setComponentTemplate ([@pzuraq](https://github.com/pzuraq))
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#270](https://github.com/glimmerjs/glimmer.js/pull/270) Avoid using `&&` in `package.json` scripts. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/core`
+  * [#272](https://github.com/glimmerjs/glimmer.js/pull/272) [BUGFIX] Fixes the types of manager return values ([@pzuraq](https://github.com/pzuraq))
+
+#### :house: Internal
+* [#268](https://github.com/glimmerjs/glimmer.js/pull/268) Update dtslint to latest version. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+## v2.0.0-beta.4 (2020-04-03)
+
+#### :bug: Bug Fix
+* `@glimmer/blueprint`
+  * [#265](https://github.com/glimmerjs/glimmer.js/pull/265) Add prettier to generated project's package.json. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#263](https://github.com/glimmerjs/glimmer.js/pull/263) Update to `prettier@2` and ensure it is enforced by `eslint` ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/tracking`
+  * [#266](https://github.com/glimmerjs/glimmer.js/pull/266) Remove outdated information from top level README. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* Other
+  * [#269](https://github.com/glimmerjs/glimmer.js/pull/269) Update release-it-yarn-workspaces to 1.3.0. ([@rwjblue](https://github.com/rwjblue))
+  * [#267](https://github.com/glimmerjs/glimmer.js/pull/267) Remove Travis CI setup. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#264](https://github.com/glimmerjs/glimmer.js/pull/264) Add GitHub Actions CI run. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
+## v2.0.0-beta.3 (2020-04-01)
+
+#### :rocket: Enhancement
+* `@glimmer/blueprint`
+  * [#262](https://github.com/glimmerjs/glimmer.js/pull/262) Upgrade dependencies to latest version. ([@rwjblue](https://github.com/rwjblue))
+  * [#260](https://github.com/glimmerjs/glimmer.js/pull/260) Update typescript related dependencies. ([@rwjblue](https://github.com/rwjblue))
+  * [#259](https://github.com/glimmerjs/glimmer.js/pull/259) Update babel related dependencies. ([@rwjblue](https://github.com/rwjblue))
+* `babel-plugins`
+  * [#256](https://github.com/glimmerjs/glimmer.js/pull/256) Adds a manual `precompileTemplate` API ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/blueprint`
+  * [#261](https://github.com/glimmerjs/glimmer.js/pull/261) Fix versions of @glimmer packages in new project output. ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`
+  * [#258](https://github.com/glimmerjs/glimmer.js/pull/258) Fix issues with setting a dynamic `<a href="{{@foo}}">` or `<img src="{{@foo}}">` ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#255](https://github.com/glimmerjs/glimmer.js/pull/255) Fixes inter-package dependencies ([@pzuraq](https://github.com/pzuraq))
+
+#### :memo: Documentation
+* `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `example-apps`
+  * [#254](https://github.com/glimmerjs/glimmer.js/pull/254) Update repository URLs for new packages. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#257](https://github.com/glimmerjs/glimmer.js/pull/257) Update release-it-yarn-workspaces. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 2
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
+## v2.0.0-beta.2 (2020-03-31)
+
+Fix a publishing error where cross dependencies were incorrectly published to `2.0.0-beta.1-alpha.1`.
+
+## v2.0.0-beta.1 (2020-03-31)
+
+The first beta for Glimmer.js 2.0! A lot of changes have been made, some of the highlights include:
+
+
+- Minimal `renderComponent` API!
+
+  ```js
+  import { renderComponent } from '@glimmer/core';
+  import MyComponent from './MyComponent';
+
+  renderComponent(MyComponent, document.body);
+  ```
+
+- Template Import based design - no resolver necessary!
+- Standardized build - based on plain JavaScript modules, no need to a custom build pipeline. Use WebPack, Parcel, Rollup, or whatever other build system you want!
+- Helper Managers and Modifier Managers added to support custom helpers and modifiers!
+- A new blueprint for generating basic Glimmer.js apps!
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`
+  * [#249](https://github.com/glimmerjs/glimmer.js/pull/249) [REFACTOR] Rename Args to TemplateArgs ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`
+  * [#244](https://github.com/glimmerjs/glimmer.js/pull/244) [BUGFIX] Ensures Strict Mode ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/ssr`, `example-apps`
+  * [#240](https://github.com/glimmerjs/glimmer.js/pull/240) [FEATURE] Adds Owner ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/core`, `@glimmer/ssr`
+  * [#241](https://github.com/glimmerjs/glimmer.js/pull/241) [CLEANUP] Updates ComponentFactory to ComponentDefinition ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/app-compiler`, `@glimmer/application-test-helpers`, `@glimmer/application`, `@glimmer/blueprint`, `@glimmer/compiler-delegates`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/test-utils`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#235](https://github.com/glimmerjs/glimmer.js/pull/235) [BREAKING] Glimmer.js 2.0 ([@pzuraq](https://github.com/pzuraq))
+
+#### :rocket: Enhancement
+* `@glimmer/core`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#245](https://github.com/glimmerjs/glimmer.js/pull/245) [FEAT] Modifier Managers ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`, `@glimmer/helper`, `example-apps`
+  * [#243](https://github.com/glimmerjs/glimmer.js/pull/243) [FEAT] Adds Helpers and HelperManager ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/core`
+  * [#251](https://github.com/glimmerjs/glimmer.js/pull/251) [BUGFIX] Ensure Owner is generic for setManager APIs ([@pzuraq](https://github.com/pzuraq))
+  * [#237](https://github.com/glimmerjs/glimmer.js/pull/237) BUGFIX - Prevent duplicate compiled modules in test ([@chadhietala](https://github.com/chadhietala))
+* `@glimmer/application`
+  * [#234](https://github.com/glimmerjs/glimmer.js/pull/234) Merge pull request #234 from glimmerjs/remove-compiler-from-runtime ([@chadhietala](https://github.com/chadhietala))
+
+#### :house: Internal
+* Other
+  * [#250](https://github.com/glimmerjs/glimmer.js/pull/250) Add automated release setup. ([@rwjblue](https://github.com/rwjblue))
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#248](https://github.com/glimmerjs/glimmer.js/pull/248) [CHORE] Update the VM to 0.50.0 ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/component`
+  * [#242](https://github.com/glimmerjs/glimmer.js/pull/242) [UPGRADE] Typescript 3.8 ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/core`, `@glimmer/helper`
+  * [#239](https://github.com/glimmerjs/glimmer.js/pull/239) [REFACTOR] Removes most of the remaining custom reference code. ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#238](https://github.com/glimmerjs/glimmer.js/pull/238) [REFACTOR] Updates to Glimmer-VM 0.47 ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 3
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 
 ## v1.0.0-beta.2 (2019-11-15)
 

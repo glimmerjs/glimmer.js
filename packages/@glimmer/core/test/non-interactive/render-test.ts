@@ -6,33 +6,33 @@ import { on, action } from '@glimmer/modifier';
 import {
   setComponentTemplate,
   createTemplate,
-  templateOnlyComponent,
   getOwner,
+  templateOnlyComponent,
 } from '@glimmer/core';
 
 import { module, test, render } from '../utils';
 import { DEBUG } from '@glimmer/env';
 
 module(`[@glimmer/core] non-interactive rendering tests`, () => {
-  test('it renders a component', async assert => {
+  test('it renders a component', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(MyComponent, createTemplate(`<h1>Hello world</h1>`));
+    setComponentTemplate(createTemplate(`<h1>Hello world</h1>`), MyComponent);
 
     const html = await render(MyComponent);
     assert.strictEqual(html, '<h1>Hello world</h1>', 'the template was rendered');
     assert.ok(true, 'rendered');
   });
 
-  test('a component can render a nested component', async assert => {
+  test('a component can render a nested component', async (assert) => {
     class OtherComponent extends Component {}
 
-    setComponentTemplate(OtherComponent, createTemplate(`Hello world`));
+    setComponentTemplate(createTemplate(`Hello world`), OtherComponent);
 
     class MyComponent extends Component {}
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`)
+      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -40,23 +40,23 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.ok(true, 'rendered');
   });
 
-  test('a component can render multiple nested components', async assert => {
+  test('a component can render multiple nested components', async (assert) => {
     class Foo extends Component {}
-    setComponentTemplate(Foo, createTemplate(`Foo`));
+    setComponentTemplate(createTemplate(`Foo`), Foo);
 
     class Bar extends Component {}
-    setComponentTemplate(Bar, createTemplate(`Bar`));
+    setComponentTemplate(createTemplate(`Bar`), Bar);
 
     class OtherComponent extends Component {}
     setComponentTemplate(
-      OtherComponent,
-      createTemplate({ Foo, Bar }, `Hello world <Foo /><Bar />`)
+      createTemplate({ Foo, Bar }, `Hello world <Foo /><Bar />`),
+      OtherComponent
     );
 
     class MyComponent extends Component {}
     setComponentTemplate(
-      MyComponent,
-      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`)
+      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
+      MyComponent
     );
 
     const html = await render(MyComponent);
@@ -64,18 +64,19 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, '<h1>Hello world FooBar</h1>', 'the template was rendered');
   });
 
-  test('custom elements are rendered', async function(assert) {
-    const component = templateOnlyComponent();
-
-    setComponentTemplate(component, createTemplate('<hello-world>foo</hello-world>'));
+  test('custom elements are rendered', async function (assert) {
+    const component = setComponentTemplate(
+      createTemplate('<hello-world>foo</hello-world>'),
+      templateOnlyComponent()
+    );
 
     assert.equal(await render(component), '<hello-world>foo</hello-world>');
   });
 
-  test('a component can render with args', async assert => {
+  test('a component can render with args', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(MyComponent, createTemplate('<h1>{{@say}}</h1>'));
+    setComponentTemplate(createTemplate('<h1>{{@say}}</h1>'), MyComponent);
 
     const renderOptions = {
       args: {
@@ -91,28 +92,29 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     );
   });
 
-  test('can use block params', async function(assert) {
+  test('can use block params', async function (assert) {
     class MainComponent extends Component {
       salutation = 'Glimmer';
     }
 
-    const HelloWorld = templateOnlyComponent();
-
-    setComponentTemplate(HelloWorld, createTemplate('{{yield @name}}!'));
+    const HelloWorld = setComponentTemplate(
+      createTemplate('{{yield @name}}!'),
+      templateOnlyComponent()
+    );
 
     setComponentTemplate(
-      MainComponent,
       createTemplate(
         { HelloWorld },
         '<HelloWorld @name={{this.salutation}} as |name|>{{name}}</HelloWorld>'
-      )
+      ),
+      MainComponent
     );
 
     assert.equal(await render(MainComponent), 'Glimmer!');
   });
 
-  [true, false].forEach(pred => {
-    test(`can use inline if - ${pred}`, async function(assert) {
+  [true, false].forEach((pred) => {
+    test(`can use inline if - ${pred}`, async function (assert) {
       let salutationCount = 0;
       let alternativeCount = 0;
 
@@ -131,8 +133,8 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
 
       setComponentTemplate(
-        Main,
-        createTemplate('Hello {{if this.pred this.salutation this.alternative}}!')
+        createTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
+        Main
       );
 
       assert.equal(
@@ -142,11 +144,15 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       );
 
       assert.equal(pred ? salutationCount : alternativeCount, 1, 'chosen branch value was used');
-      assert.equal(pred ? alternativeCount : salutationCount, 0, 'non-chosen branch value was not used');
+      assert.equal(
+        pred ? alternativeCount : salutationCount,
+        0,
+        'non-chosen branch value was not used'
+      );
     });
   });
 
-  test('inline if cannot be overwritten', async function(assert) {
+  test('inline if cannot be overwritten', async function (assert) {
     class Main extends Component {
       pred = true;
       salutation = 'Glimmer';
@@ -154,11 +160,11 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      Main,
       createTemplate(
         { if: () => assert.ok(false, 'custom if was called') },
         'Hello {{if this.pred this.salutation this.alternative}}!'
-      )
+      ),
+      Main
     );
 
     assert.equal(await render(Main), 'Hello Glimmer!', 'output is correct');
@@ -179,7 +185,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
   //   assert.equal(await render(MainComponent), 'Hello Glimmer!');
   // });
 
-  test('components receive owner', async assert => {
+  test('components receive owner', async (assert) => {
     class Owner {
       services = {
         locale: new LocaleService(),
@@ -198,7 +204,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
     }
 
-    setComponentTemplate(MyComponent, createTemplate('<h1>{{this.myLocale}}</h1>'));
+    setComponentTemplate(createTemplate('<h1>{{this.myLocale}}</h1>'), MyComponent);
 
     const html = await render(MyComponent, {
       owner: new Owner(),
@@ -207,10 +213,10 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.strictEqual(html, '<h1>en_US</h1>');
   });
 
-  test('a component can be rendered more than once', async assert => {
+  test('a component can be rendered more than once', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(MyComponent, createTemplate(`<h1>Bump</h1>`));
+    setComponentTemplate(createTemplate(`<h1>Bump</h1>`), MyComponent);
 
     let html = await render(MyComponent);
     assert.strictEqual(html, '<h1>Bump</h1>', 'the component rendered');
@@ -221,7 +227,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     assert.ok(true, 'rendered');
   });
 
-  test('a component can use modifiers', async assert => {
+  test('a component can use modifiers', async (assert) => {
     class MyComponent extends Component {
       @tracked count = 0;
 
@@ -232,23 +238,43 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      MyComponent,
       createTemplate(
         { on },
         `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
-      )
+      ),
+      MyComponent
     );
 
     const html = await render(MyComponent);
     assert.strictEqual(html, `<button>Count: 0</button>`, 'the component was rendered');
   });
 
+  test('it can set a dynamic href on an anchor', async (assert) => {
+    class MyComponent extends Component {}
+
+    setComponentTemplate(createTemplate(`<a href={{@href}}>Link</a>`), MyComponent);
+
+    const html = await render(MyComponent, { args: { href: 'www.example.com' } });
+    assert.strictEqual(html, '<a href="www.example.com">Link</a>', 'the template was rendered');
+  });
+
+  test('it can set a dynamic src on an img', async (assert) => {
+    class MyComponent extends Component {}
+
+    setComponentTemplate(createTemplate(`<img src={{@src}}/>`), MyComponent);
+
+    const html = await render(MyComponent, { args: { src: './logo.svg' } });
+    assert.strictEqual(html, '<img src="./logo.svg">', 'the template was rendered');
+  });
+
   if (DEBUG) {
-    test('accessing properties in template-only components produces a helpful error in development mode', async function(assert) {
+    test('accessing properties in template-only components produces a helpful error in development mode', async function (assert) {
       assert.expect(1);
 
-      const component = templateOnlyComponent();
-      setComponentTemplate(component, createTemplate('<h1>Hello, {{this.name}}!</h1>'));
+      const component = setComponentTemplate(
+        createTemplate('<h1>Hello, {{this.name}}!</h1>'),
+        templateOnlyComponent()
+      );
 
       try {
         await render(component);
@@ -261,11 +287,13 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
     });
   } else {
-    test('accessing properties in template-only components produces an exception in production mode', async function(assert) {
+    test('accessing properties in template-only components produces an exception in production mode', async function (assert) {
       assert.expect(1);
 
-      const component = templateOnlyComponent();
-      setComponentTemplate(component, createTemplate('<h1>Hello, {{this.name}}!</h1>'));
+      const component = setComponentTemplate(
+        createTemplate('<h1>Hello, {{this.name}}!</h1>'),
+        templateOnlyComponent()
+      );
 
       try {
         await render(component);

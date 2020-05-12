@@ -7,13 +7,9 @@ export {
 
 export { BaseEnvDelegate } from './src/environment/delegates';
 
-export {
-  setComponentManager,
-  setHelperManager,
-  setModifierManager,
-} from './src/managers';
+export { setComponentManager, setHelperManager, setModifierManager } from './src/managers';
 
-export { Args as CapturedArgs } from './src/interfaces';
+export { TemplateArgs } from './src/interfaces';
 
 export {
   ModifierManager,

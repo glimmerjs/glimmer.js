@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/babel-plugin-glimmer-env",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Compiles Glimmer component templates",
   "repository": "https://github.com/glimmerjs/glimmer.js",
   "author": "Tom Dale <tom@tomdale.net>",
@@ -18,5 +18,9 @@
     "babel-plugin-tester": "^6.4.0",
     "esm": "^3.2.25",
     "mocha": "^6.2.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

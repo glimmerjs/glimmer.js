@@ -2,7 +2,6 @@ import { EnvironmentDelegate } from '@glimmer/runtime';
 import { Option, Dict } from '@glimmer/interfaces';
 import { IteratorDelegate } from '@glimmer/reference';
 
-
 import { isNativeIterable, NativeIterator } from './iterator';
 import { DEBUG } from '@glimmer/env';
 import toBool from './to-bool';
@@ -21,7 +20,7 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
   // Match Ember's toBool semantics for cross-compatibility
   toBool = toBool;
 
-  toIterator(value: unknown): Option<IteratorDelegate>  {
+  toIterator(value: unknown): Option<IteratorDelegate> {
     if (isNativeIterable(value)) {
       return NativeIterator.from(value);
     }
@@ -32,13 +31,18 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
 
 if (DEBUG) {
   // This is only possible in `key` on {{each}}
-  (BaseEnvDelegate.prototype as EnvironmentDelegate).getPath = (obj: unknown, path: string): unknown => {
+  (BaseEnvDelegate.prototype as EnvironmentDelegate).getPath = (
+    obj: unknown,
+    path: string
+  ): unknown => {
     if (path.includes('.')) {
-      throw new Error('You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.');
+      throw new Error(
+        'You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.'
+      );
     }
 
     return (obj as Dict)[path];
-  }
+  };
 }
 
 /**
@@ -49,19 +53,12 @@ if (DEBUG) {
 export class ClientEnvDelegate extends BaseEnvDelegate {
   isInteractive = true;
 
-  private uselessAnchor: HTMLAnchorElement;
+  private uselessAnchor = self.document.createElement('a');
 
-  constructor() {
-    super();
-    // TODO - required for `protocolForURL` - seek alternative approach
-    // e.g. see `installPlatformSpecificProtocolForURL` in Ember
-    this.uselessAnchor = self.document.createElement('a');
-  }
-
-  protocolForURL(url: string): string {
+  protocolForURL = (url: string): string => {
     // TODO - investigate alternative approaches
     // e.g. see `installPlatformSpecificProtocolForURL` in Ember
     this.uselessAnchor.href = url;
     return this.uselessAnchor.protocol;
-  }
+  };
 }

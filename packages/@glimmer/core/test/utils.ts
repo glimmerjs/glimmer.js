@@ -3,8 +3,8 @@ import {
   ComponentDefinition,
   RenderComponentOptions,
   didRender,
-  templateOnlyComponent,
   setComponentTemplate,
+  templateOnlyComponent,
 } from '..';
 import { renderToString } from '@glimmer/ssr';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
@@ -25,9 +25,7 @@ export async function render(
   if ('id' in component && 'block' in component && 'meta' in component) {
     const template = component;
 
-    component = templateOnlyComponent();
-
-    setComponentTemplate(component, template);
+    component = setComponentTemplate(template, templateOnlyComponent());
   }
 
   if (IS_INTERACTIVE) {
@@ -61,15 +59,9 @@ export async function settled(): Promise<string> {
   return document.getElementById('qunit-fixture')!.innerHTML;
 }
 
-export function tracked<T extends object>(
-  obj: T | typeof Object
-): T;
+export function tracked<T extends object>(obj: T | typeof Object): T;
 
-export function tracked(
-  obj: object,
-  key: string | symbol,
-  desc?: PropertyDescriptor
-): void;
+export function tracked(obj: object, key: string | symbol, desc?: PropertyDescriptor): void;
 
 export function tracked(
   obj: object,

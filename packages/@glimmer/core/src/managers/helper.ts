@@ -2,7 +2,7 @@ import { assert } from '@glimmer/util';
 import { Helper as VMHelperFactory, CapturedArguments, VM } from '@glimmer/interfaces';
 import { HelperRootReference } from '@glimmer/reference';
 import { DEBUG } from '@glimmer/env';
-import { Args } from '../interfaces';
+import { TemplateArgs } from '../interfaces';
 import { argsProxyFor } from './util';
 import { OWNER_KEY } from '../owner';
 import { getHelperManager } from '.';
@@ -40,7 +40,10 @@ export interface HelperManager<HelperStateBucket> {
   capabilities: Capabilities;
 
   getValue(bucket: HelperStateBucket): unknown;
-  createHelper(definition: HelperDefinition<HelperStateBucket>, args: Args): HelperStateBucket;
+  createHelper(
+    definition: HelperDefinition<HelperStateBucket>,
+    args: TemplateArgs
+  ): HelperStateBucket;
 }
 
 export function hasUpdateHook<HelperStateBucket>(
@@ -51,7 +54,7 @@ export function hasUpdateHook<HelperStateBucket>(
 
 export interface HelperManagerWithUpdateHook<HelperStateBucket>
   extends HelperManager<HelperStateBucket> {
-  updateHelper(bucket: HelperStateBucket, args: Args): void;
+  updateHelper(bucket: HelperStateBucket, args: TemplateArgs): void;
 }
 
 export function hasDestructor<HelperStateBucket>(
@@ -116,10 +119,7 @@ export function vmHelperFactoryFor<HelperStateBucket>(
   definition: HelperDefinition<HelperStateBucket>
 ): VMHelperFactory {
   return (args, vm): HelperRootReference => {
-    const owner = vm
-      .dynamicScope()
-      .get(OWNER_KEY)
-      .value() as object;
+    const owner = vm.dynamicScope().get(OWNER_KEY).value() as object;
     const manager = getHelperManager(owner, definition)!;
     const capturedArgs = args.capture();
 

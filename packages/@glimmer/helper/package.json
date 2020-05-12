@@ -1,10 +1,10 @@
 {
   "name": "@glimmer/helper",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-beta.7",
   "description": "Helper Functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
-  "repository": "https://github.com/tomdale/glimmer-lite",
+  "repository": "https://github.com/glimmerjs/glimmer.js/tree/master/packages/@glimmer/helper",
   "author": "Tom Dale <tom@tomdale.net>",
   "license": "MIT",
   "private": false,
@@ -12,9 +12,13 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/component": "^2.0.0-alpha.1",
-    "@glimmer/core": "^2.0.0-alpha.1",
-    "@glimmer/interfaces": "^0.47.6",
-    "@glimmer/reference": "^0.47.6"
+    "@glimmer/component": "2.0.0-beta.7",
+    "@glimmer/core": "2.0.0-beta.7",
+    "@glimmer/interfaces": "^0.51.0",
+    "@glimmer/reference": "^0.51.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

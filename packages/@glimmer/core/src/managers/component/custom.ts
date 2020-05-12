@@ -1,4 +1,4 @@
-import { assert } from '@glimmer/util';
+import { assert, unwrapTemplate } from '@glimmer/util';
 import {
   ComponentManager as VMComponentManager,
   ComponentCapabilities as VMComponentCapabilities,
@@ -18,10 +18,9 @@ import { PathReference, ComponentRootReference } from '@glimmer/reference';
 import { Tag, isConst, createTag } from '@glimmer/validator';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
-import { unwrapTemplate } from '@glimmer/opcode-compiler';
 import { getComponentManager } from '..';
 import { TemplateMeta } from '../../template';
-import { Args } from '../../interfaces';
+import { TemplateArgs } from '../../interfaces';
 import { argsProxyFor } from '../util';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
@@ -76,7 +75,7 @@ export function capabilities(
  */
 export interface ComponentManager<ComponentInstance> {
   capabilities: Capabilities;
-  createComponent(definition: unknown, args: Args): ComponentInstance;
+  createComponent(definition: unknown, args: TemplateArgs): ComponentInstance;
   getContext(instance: ComponentInstance): unknown;
 }
 
@@ -99,7 +98,7 @@ export function hasUpdateHook<ComponentInstance>(
 
 export interface ComponentManagerWithUpdateHook<ComponentInstance>
   extends ComponentManager<ComponentInstance> {
-  updateComponent(instance: ComponentInstance, args: Args): void;
+  updateComponent(instance: ComponentInstance, args: TemplateArgs): void;
 }
 
 export function hasAsyncUpdateHook<ComponentInstance>(
@@ -189,11 +188,7 @@ export default class CustomComponentManager<ComponentInstance>
     return new VMCustomComponentState(env, delegate, component, capturedArgs, argsProxy);
   }
 
-  update({
-    delegate,
-    component,
-    argsProxy,
-  }: VMCustomComponentState<ComponentInstance>): void {
+  update({ delegate, component, argsProxy }: VMCustomComponentState<ComponentInstance>): void {
     if (hasUpdateHook(delegate)) {
       delegate.updateComponent(component, argsProxy);
     }
@@ -267,7 +262,7 @@ export class VMCustomComponentState<ComponentInstance> {
     public delegate: ComponentManager<ComponentInstance>,
     public component: ComponentInstance,
     public args: CapturedArguments,
-    public argsProxy: Args
+    public argsProxy: TemplateArgs
   ) {}
 
   destroy(): void {

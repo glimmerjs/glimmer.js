@@ -8,12 +8,12 @@ import { set, computed } from '@ember/object';
 
 import { gte } from 'ember-compatibility-helpers';
 
-module('Integration | Component | @glimmer/component', function(hooks) {
+module('Integration | Component | @glimmer/component', function (hooks) {
   let InstrumentedComponent;
 
   setupRenderingTest(hooks);
 
-  hooks.beforeEach(function(assert) {
+  hooks.beforeEach(function (assert) {
     InstrumentedComponent = class extends GlimmerComponent {
       constructor() {
         super(...arguments);
@@ -26,7 +26,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     };
   });
 
-  test('it can render with curlies (no args)', async function(assert) {
+  test('it can render with curlies (no args)', async function (assert) {
     this.owner.register('component:under-test', InstrumentedComponent);
 
     await render(hbs`{{under-test}}`);
@@ -38,7 +38,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.verifySteps(['willDestroy'], 'post destroy steps');
   });
 
-  test('it can render and update with curlies (args)', async function(assert) {
+  test('it can render and update with curlies (args)', async function (assert) {
     this.owner.register('component:under-test', InstrumentedComponent);
     this.owner.register('template:components/under-test', hbs`<p>{{@text}}</p>`);
 
@@ -63,7 +63,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.verifySteps(['willDestroy'], 'post destroy steps');
   });
 
-  test('it can render with angles (no args)', async function(assert) {
+  test('it can render with angles (no args)', async function (assert) {
     this.owner.register('component:under-test', InstrumentedComponent);
 
     await render(hbs`<UnderTest />`);
@@ -75,7 +75,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.verifySteps(['willDestroy'], 'post destroy steps');
   });
 
-  test('it can render and update with angles (args)', async function(assert) {
+  test('it can render and update with angles (args)', async function (assert) {
     this.owner.register('component:under-test', InstrumentedComponent);
     this.owner.register('template:components/under-test', hbs`<p>{{@text}}</p>`);
 
@@ -100,7 +100,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.verifySteps(['willDestroy'], 'post destroy steps');
   });
 
-  test('it can use args in component', async function(assert) {
+  test('it can use args in component', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends GlimmerComponent {
@@ -116,7 +116,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('HELLO!');
   });
 
-  test('it can use args in constructor', async function(assert) {
+  test('it can use args in constructor', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends GlimmerComponent {
@@ -134,7 +134,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('HELLO!');
   });
 
-  test('it can use get/set to recompute for changes', async function(assert) {
+  test('it can use get/set to recompute for changes', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends GlimmerComponent {
@@ -164,7 +164,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('Count: 2');
   });
 
-  test('does not update for non-tracked property changes', async function(assert) {
+  test('does not update for non-tracked property changes', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends GlimmerComponent {
@@ -202,7 +202,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('Count: 0');
   });
 
-  test('it has an owner', async function(assert) {
+  test('it has an owner', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends GlimmerComponent {
@@ -219,7 +219,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
     assert.dom('p').hasText('Environment: test');
   });
 
-  test('computed properties can depend on args', async function(assert) {
+  test('computed properties can depend on args', async function (assert) {
     this.owner.register(
       'component:under-test',
       class extends InstrumentedComponent {
@@ -253,7 +253,7 @@ module('Integration | Component | @glimmer/component', function(hooks) {
   });
 
   if (gte('3.13.0-alpha.0')) {
-    test('args autotrack correctly', async function(assert) {
+    test('args autotrack correctly', async function (assert) {
       this.owner.register(
         'component:under-test',
         class extends InstrumentedComponent {

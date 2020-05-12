@@ -7,7 +7,7 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'prettier',
+    'plugin:prettier/recommended',
   ],
   plugins: ['@typescript-eslint', 'prettier'],
   overrides: [
@@ -33,6 +33,16 @@ module.exports = {
       env: {
         es6: true,
         node: true,
+      },
+    },
+    {
+      files: [
+        'packages/babel-plugins/**/test/**/*.js',
+      ],
+      env: {
+        es6: true,
+        node: true,
+        mocha: true,
       },
     },
     // bin scripts

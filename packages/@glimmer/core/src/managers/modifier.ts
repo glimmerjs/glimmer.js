@@ -6,10 +6,10 @@ import {
   Destroyable,
   DynamicScope,
 } from '@glimmer/interfaces';
-import { Tag, createUpdatableTag, track, untrack, combine, update } from '@glimmer/validator';
+import { Tag, createUpdatableTag, track, untrack, combine, updateTag } from '@glimmer/validator';
 import { assert, debugToString } from '@glimmer/util';
 import { SimpleElement } from '@simple-dom/interface';
-import { Args } from '../interfaces';
+import { TemplateArgs } from '../interfaces';
 import debugRenderMessage from '../utils/debug';
 import { argsProxyFor } from './util';
 import { getModifierManager } from '.';
@@ -41,10 +41,10 @@ export function capabilities(
 
 export interface ModifierManager<ModifierStateBucket> {
   capabilities: Capabilities;
-  createModifier(definition: unknown, args: Args): ModifierStateBucket;
-  installModifier(instance: ModifierStateBucket, element: Element, args: Args): void;
-  updateModifier(instance: ModifierStateBucket, args: Args): void;
-  destroyModifier(instance: ModifierStateBucket, args: Args): void;
+  createModifier(definition: unknown, args: TemplateArgs): ModifierStateBucket;
+  installModifier(instance: ModifierStateBucket, element: Element, args: TemplateArgs): void;
+  updateModifier(instance: ModifierStateBucket, args: TemplateArgs): void;
+  destroyModifier(instance: ModifierStateBucket, args: TemplateArgs): void;
 }
 
 export type ModifierDefinition<_Instance = unknown> = {};
@@ -60,20 +60,23 @@ interface SimpleModifierStateBucket {
 class SimpleModifierManager implements ModifierManager<SimpleModifierStateBucket> {
   capabilities = capabilities('3.13');
 
-  createModifier(definition: SimpleModifier, args: Args): SimpleModifierStateBucket {
+  createModifier(definition: SimpleModifier, args: TemplateArgs): SimpleModifierStateBucket {
     if (DEBUG) {
-      assert(Object.keys(args.named).length === 0, `You used named arguments with the ${definition.name} modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.`);
+      assert(
+        Object.keys(args.named).length === 0,
+        `You used named arguments with the ${definition.name} modifier, but it is a standard function. Normal functions cannot receive named arguments when used as modifiers.`
+      );
     }
 
     return { definition };
   }
 
-  installModifier(bucket: SimpleModifierStateBucket, element: Element, args: Args): void {
+  installModifier(bucket: SimpleModifierStateBucket, element: Element, args: TemplateArgs): void {
     bucket.destructor = bucket.definition(element, ...args.positional);
     bucket.element = element;
   }
 
-  updateModifier(bucket: SimpleModifierStateBucket, args: Args): void {
+  updateModifier(bucket: SimpleModifierStateBucket, args: TemplateArgs): void {
     this.destroyModifier(bucket);
     this.installModifier(bucket, bucket.element!, args);
   }
@@ -98,7 +101,7 @@ export class CustomModifierState<ModifierStateBucket> {
     public element: SimpleElement,
     public delegate: ModifierManager<ModifierStateBucket>,
     public modifier: ModifierStateBucket,
-    public argsProxy: Args,
+    public argsProxy: TemplateArgs,
     public capturedArgs: CapturedArguments
   ) {}
 
@@ -157,7 +160,7 @@ export class CustomModifierManager<ModifierStateBucket>
         DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
       );
 
-      update(tag, combinedTrackingTag);
+      updateTag(tag, combinedTrackingTag);
     }
   }
 
@@ -171,7 +174,7 @@ export class CustomModifierManager<ModifierStateBucket>
         () => delegate.updateModifier(modifier, argsProxy),
         DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
       );
-      update(tag, combinedTrackingTag);
+      updateTag(tag, combinedTrackingTag);
     }
   }
 

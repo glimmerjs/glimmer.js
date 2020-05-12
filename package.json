@@ -1,60 +1,29 @@
 {
   "name": "glimmer.js",
-  "version": "1.0.0",
+  "version": "2.0.0-beta.7",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glimmerjs/glimmer.js.git"
+  },
   "license": "MIT",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "bin/build.js",
-    "start": "webpack-dev-server",
-    "clean": "bin/clean.js",
-    "changelog": "lerna-changelog",
-    "test": "yarn lint && testem ci && yarn test:babel-plugins",
-    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
-    "test:types": "dtslint test/types",
-    "test:ember": "yarn workspace @glimmer/component ember try:one",
-    "test:watch": "testem",
-    "problems": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint . --cache --ext .js,.ts"
-  },
   "workspaces": [
     "packages/@glimmer/*",
     "packages/babel-plugins/@glimmer/*"
   ],
-  "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-decorators": "^7.4.4",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.3.3",
-    "@types/qunit": "^2.9.0",
-    "@typescript-eslint/eslint-plugin": "^2.21.0",
-    "@typescript-eslint/parser": "^2.21.0",
-    "babel-loader": "^8.0.6",
-    "dtslint": "^1.0.3",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "fs-extra": "^8.1.0",
-    "glob": "^7.0.5",
-    "lerna": "^3.15.0",
-    "lerna-changelog": "^0.7.0",
-    "mkdirp": "^0.5.1",
-    "prettier": "^1.19.1",
-    "qunit": "^2.9.2",
-    "rimraf": "^2.6.1",
-    "semver": "^5.3.0",
-    "testem": "^2.16.0",
-    "ts-loader": "^6.0.2",
-    "tsconfig-paths-webpack-plugin": "^3.2.0",
-    "tslib": "^1.8.0",
-    "typescript": "~3.8.2",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4",
-    "webpack-dev-server": "^3.7.1"
-  },
-  "resolutions": {
-    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
+  "scripts": {
+    "build": "bin/build.js",
+    "clean": "bin/clean.js",
+    "lint": "eslint . --cache --ext .js,.ts",
+    "problems": "tsc -p tsconfig.json --noEmit",
+    "start": "webpack-dev-server",
+    "test": "npm-run-all lint test:browsers test:babel-plugins test:types",
+    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
+    "test:browsers": "testem ci",
+    "test:ember": "yarn workspace @glimmer/component ember try:one",
+    "test:types": "dtslint test/types",
+    "test:watch": "testem"
   },
   "browserslist": {
     "production": [
@@ -69,6 +38,47 @@
       "last 1 Safari version"
     ]
   },
+  "resolutions": {
+    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/qunit": "^2.9.1",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "babel-loader": "^8.1.0",
+    "dtslint": "^3.4.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "fs-extra": "^9.0.0",
+    "glob": "^7.1.6",
+    "lerna-changelog": "^1.0.1",
+    "mkdirp": "^1.0.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.2",
+    "qunit": "^2.9.3",
+    "release-it": "^13.5.7",
+    "release-it-lerna-changelog": "^2.3.0",
+    "release-it-yarn-workspaces": "^1.4.0",
+    "rimraf": "^3.0.2",
+    "semver": "^7.1.3",
+    "testem": "^3.0.3",
+    "ts-loader": "^6.2.2",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "tslib": "^1.11.1",
+    "typescript": "~3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "changelog": {
     "repo": "glimmerjs/glimmer.js",
     "labels": {
@@ -79,5 +89,35 @@
       "internal": ":house: Internal",
       "deprecation": ":warning: Deprecation"
     }
+  },
+  "release-it": {
+    "hooks": {
+      "after:bump": "node bin/build.js"
+    },
+    "plugins": {
+      "release-it-lerna-changelog": {
+        "infile": "CHANGELOG.md",
+        "launchEditor": true
+      },
+      "release-it-yarn-workspaces": {
+        "additionalManifests": {
+          "dependencyUpdates": [
+            "packages/@glimmer/blueprint/files/package.json"
+          ]
+        }
+      }
+    },
+    "git": {
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "tokenRef": "GITHUB_AUTH"
+    },
+    "npm": false
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
   }
 }

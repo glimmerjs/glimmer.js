@@ -55,7 +55,6 @@ class EmberGlimmerComponentManager extends BaseComponentManager<GlimmerComponent
   }
 }
 
-
 interface EmberGlimmerComponentManager {
   updateComponent?: (component: GlimmerComponent, args: CapturedArgs) => void;
 }

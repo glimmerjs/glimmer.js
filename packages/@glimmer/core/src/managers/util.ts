@@ -1,8 +1,8 @@
 import { CapturedArguments } from '@glimmer/interfaces';
-import { consume } from '@glimmer/validator';
+import { consumeTag } from '@glimmer/validator';
 import { assert } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
-import { Args } from '../interfaces';
+import { TemplateArgs } from '../interfaces';
 
 function convertToInt(prop: number | string | symbol): number | null {
   if (typeof prop === 'symbol') return null;
@@ -17,14 +17,14 @@ function convertToInt(prop: number | string | symbol): number | null {
 export function argsProxyFor(
   capturedArgs: CapturedArguments,
   type: 'component' | 'helper' | 'modifier'
-): Args {
+): TemplateArgs {
   const { named, positional } = capturedArgs;
 
   const namedHandler: ProxyHandler<{}> = {
     get(_target, prop) {
       if (named.has(prop as string)) {
         const ref = named.get(prop as string);
-        consume(ref.tag);
+        consumeTag(ref.tag);
 
         return ref.value();
       }
@@ -59,7 +59,7 @@ export function argsProxyFor(
   const positionalHandler: ProxyHandler<[]> = {
     get(target, prop) {
       if (prop === 'length') {
-        consume(positional.tag);
+        consumeTag(positional.tag);
         return positional.length;
       }
 
@@ -67,7 +67,7 @@ export function argsProxyFor(
 
       if (parsed !== null && parsed < positional.length) {
         const ref = positional.at(parsed);
-        consume(ref.tag);
+        consumeTag(ref.tag);
 
         return ref.value();
       }
@@ -91,7 +91,7 @@ export function argsProxyFor(
   const positionalTarget: unknown[] = [];
 
   if (DEBUG) {
-    const setHandler = function(_target: unknown, prop: symbol | string | number): never {
+    const setHandler = function (_target: unknown, prop: symbol | string | number): never {
       throw new Error(
         `You attempted to set ${String(
           prop
