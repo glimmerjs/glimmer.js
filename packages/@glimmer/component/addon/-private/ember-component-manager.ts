@@ -47,7 +47,7 @@ class EmberGlimmerComponentManager extends BaseComponentManager<GlimmerComponent
 
     const meta = Ember.meta(component);
 
-    meta.setSourceDestroying();
+    meta.destroy ? meta.destroy() : meta.setSourceDestroying();
     setDestroying(component);
 
     schedule('actions', component, component.willDestroy);
