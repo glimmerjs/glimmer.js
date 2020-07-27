@@ -2,7 +2,7 @@ import { capabilities, Bounds } from '@glimmer/application';
 import { setOwner, getOwner } from '@glimmer/di';
 
 import BaseComponentManager from '../addon/-private/base-component-manager';
-import { setDestroying, setDestroyed } from '../addon/-private/component';
+import { setDestroying, setDestroyed } from '../addon/-private/destroyables';
 import GlimmerComponent from './component';
 
 const CAPABILITIES = capabilities('3.13', {

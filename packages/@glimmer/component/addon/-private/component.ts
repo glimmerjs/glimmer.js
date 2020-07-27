@@ -1,15 +1,6 @@
 import { DEBUG } from '@glimmer/env';
 import { setOwner } from './owner';
-
-const DESTROYING = new WeakMap<BaseComponent<unknown>, boolean>();
-const DESTROYED = new WeakMap<BaseComponent<unknown>, boolean>();
-
-export function setDestroying(component: BaseComponent<unknown>) {
-  DESTROYING.set(component, true);
-}
-export function setDestroyed(component: BaseComponent<unknown>) {
-  DESTROYED.set(component, true);
-}
+import { isDestroying, isDestroyed } from './destroyables';
 
 export let ARGS_SET: WeakMap<any, boolean>;
 
@@ -160,9 +151,6 @@ export default class BaseComponent<T = object> {
 
     this.args = args;
     setOwner(this, owner as any);
-
-    DESTROYING.set(this, false);
-    DESTROYED.set(this, false);
   }
 
   /**
@@ -192,11 +180,11 @@ export default class BaseComponent<T = object> {
   args: Readonly<T>;
 
   get isDestroying() {
-    return DESTROYING.get(this);
+    return isDestroying(this);
   }
 
   get isDestroyed() {
-    return DESTROYED.get(this);
+    return isDestroyed(this);
   }
 
   /**
