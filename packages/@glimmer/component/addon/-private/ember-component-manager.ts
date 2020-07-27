@@ -10,7 +10,8 @@ import BaseComponentManager, {
   CustomComponentCapabilities,
 } from './base-component-manager';
 
-import GlimmerComponent, { setDestroyed, setDestroying } from './component';
+import GlimmerComponent, { Constructor } from './component';
+import { setDestroyed, setDestroying } from './destroyables';
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
@@ -23,14 +24,23 @@ const CAPABILITIES = gte('3.13.0-beta.1')
       asyncLifecycleCallbacks: false,
     });
 
-/**
- * This component manager runs in Ember.js environments and extends the base component manager to:
- *
- * 1. Properly destroy the component's associated `meta` data structure
- * 2. Schedule destruction using Ember's runloop
- */
-class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
-  destroyComponent(component: GlimmerComponent) {
+const scheduledDestroyComponent = gte('3.20.0-beta.4')
+  ? undefined
+  : (component: GlimmerComponent, meta: EmberMeta) => {
+    if (component.isDestroyed) {
+      return;
+    }
+
+    Ember.destroy(component);
+
+    meta.setSourceDestroyed();
+    setDestroyed(component);
+  };
+
+const destroy = gte('3.20.0-beta.4')
+  // @ts-ignore
+  ? Ember.__loader.require('@glimmer/runtime').destroy
+  : (component:  GlimmerComponent) => {
     if (component.isDestroying) {
       return;
     }
@@ -42,18 +52,38 @@ class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwn
 
     schedule('actions', component, component.willDestroy);
     schedule('destroy', this, scheduledDestroyComponent, component, meta);
+  };
+
+
+const registerDestructor = gte('3.20.0-beta.4')
+  // @ts-ignore
+  ? Ember.__loader.require('@glimmer/runtime').registerDestructor
+  : undefined;
+
+/**
+ * This component manager runs in Ember.js environments and extends the base component manager to:
+ *
+ * 1. Properly destroy the component's associated `meta` data structure
+ * 2. Schedule destruction using Ember's runloop
+ */
+class EmberGlimmerComponentManager extends BaseComponentManager(setOwner, getOwner, CAPABILITIES) {
+  createComponent(
+    ComponentClass: Constructor<GlimmerComponent>,
+    args: ComponentManagerArgs
+  ): GlimmerComponent {
+    const component = super.createComponent(ComponentClass, args);
+    if (gte('3.20.0-beta.4')) {
+      registerDestructor(component, () => {
+        component.willDestroy();
+      });
+    }
+
+    return component;
   }
-}
 
-function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta) {
-  if (component.isDestroyed) {
-    return;
+  destroyComponent(component: GlimmerComponent) {
+    destroy(component);
   }
-
-  Ember.destroy(component);
-
-  meta.setSourceDestroyed();
-  setDestroyed(component);
 }
 
 interface EmberGlimmerComponentManager {
