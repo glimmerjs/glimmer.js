@@ -2,6 +2,7 @@
 
 const writeFile = require('broccoli-file-creator');
 const MergeTrees = require('broccoli-merge-trees');
+const VersionChecker = require('ember-cli-version-checker');
 
 module.exports = {
   name: '@glimmer/component',
