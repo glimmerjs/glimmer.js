@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.0.1 (2020-07-27)
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#293](https://github.com/glimmerjs/glimmer.js/pull/293) Leverage built-in destroyables on Ember 3.20+ to avoid deprecations. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* `@glimmer/component`
+  * [#291](https://github.com/glimmerjs/glimmer.js/pull/291) Add Ember 3.8, 3.12, 3.16, and 3.20 to @glimmer/component CI.. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
+
 ## v1.0.0-beta.2 (2019-11-15)
 
 #### :rocket: Enhancement
