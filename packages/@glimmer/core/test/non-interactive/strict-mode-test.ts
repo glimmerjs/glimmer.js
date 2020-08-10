@@ -69,5 +69,37 @@ if (DEBUG) {
         );
       }
     });
+
+    test('throws a helpful error if upvar is used as a helper', async (assert) => {
+      assert.expect(1);
+
+      try {
+        await render(createTemplate(`{{nope "yup"}}`));
+      } catch (err) {
+        assert.ok(
+          err
+            .toString()
+            .match(
+              /Cannot find helper `nope` in scope. It was used in a template, but not imported into the template scope or defined as a local variable./
+            )
+        );
+      }
+    });
+
+    test('throws a modifier error if upvar is used as a helper', async (assert) => {
+      assert.expect(1);
+
+      try {
+        await render(createTemplate(`<div {{nope "yup"}}></div>`));
+      } catch (err) {
+        assert.ok(
+          err
+            .toString()
+            .match(
+              /Cannot find modifier `nope` in scope. It was used in a template, but not imported into the template scope or defined as a local variable./
+            )
+        );
+      }
+    });
   });
 }

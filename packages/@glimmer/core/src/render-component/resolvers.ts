@@ -85,6 +85,13 @@ export class CompileTimeResolver implements ResolverDelegate {
 
   lookupHelper(name: string, referrer: TemplateMeta): Option<number> {
     const scope = referrer.scope();
+
+    if (DEBUG && builtInHelpers[name] === undefined && scope[name] === undefined) {
+      throw new Error(
+        `Cannot find helper \`${name}\` in scope. It was used in a template, but not imported into the template scope.`
+      );
+    }
+
     const { helper, handle } =
       builtInHelpers[name] || vmDefinitionForHelper(scope[name] as HelperDefinition);
 
@@ -95,6 +102,12 @@ export class CompileTimeResolver implements ResolverDelegate {
   lookupModifier(name: string, referrer: TemplateMeta): Option<number> {
     const scope = referrer.scope();
     const modifier = scope[name] as ModifierDefinition;
+
+    if (DEBUG && modifier === undefined) {
+      throw new Error(
+        `Cannot find modifier \`${name}\` in scope. It was used in a template, but not imported into the template scope.`
+      );
+    }
 
     const definition = vmDefinitionForModifier(modifier);
     const { handle } = definition;
