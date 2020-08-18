@@ -1,10 +1,23 @@
-import { EnvironmentDelegate } from '@glimmer/runtime';
-import { Option, Dict } from '@glimmer/interfaces';
+import { EnvironmentDelegate, setScheduleDestroy, setScheduleDestroyed } from '@glimmer/runtime';
+import { Option, Dict, Destructor, Destroyable } from '@glimmer/interfaces';
 import { IteratorDelegate } from '@glimmer/reference';
 
 import { isNativeIterable, NativeIterator } from './iterator';
 import { DEBUG } from '@glimmer/env';
 import toBool from './to-bool';
+
+let scheduledDestroyables: Destroyable[] = [];
+let scheduledDestructors: Destructor<object>[] = [];
+let scheduledFinishDestruction: (() => void)[] = [];
+
+setScheduleDestroy(<T extends Destroyable>(destroyable: T, destructor: Destructor<T>) => {
+  scheduledDestroyables.push(destroyable);
+  scheduledDestructors.push(destructor);
+});
+
+setScheduleDestroyed((fn: () => void) => {
+  scheduledFinishDestruction.push(fn);
+});
 
 /**
  * The environment delegate base class shared by both the client and SSR
@@ -26,6 +39,18 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
     }
 
     return null;
+  }
+
+  onTransactionCommit(): void {
+    for (let i = 0; i < scheduledDestroyables.length; i++) {
+      scheduledDestructors[i](scheduledDestroyables[i]);
+    }
+
+    scheduledFinishDestruction.forEach((fn) => fn());
+
+    scheduledDestroyables = [];
+    scheduledDestructors = [];
+    scheduledFinishDestruction = [];
   }
 }
 

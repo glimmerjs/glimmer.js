@@ -119,7 +119,7 @@ export default class TemplateOnlyComponentManager
   didCreate(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
   didUpdateLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
   didUpdate(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
-  getDestructor(): null {
+  getDestroyable(): null {
     return null;
   }
 }

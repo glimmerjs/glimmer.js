@@ -15,7 +15,7 @@
     "@babel/helper-module-imports": "^7.0.0",
     "@babel/parser": "^7.9.4",
     "@babel/types": "^7.9.0",
-    "@glimmer/compiler": "0.51.0"
+    "@glimmer/compiler": "0.56.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.8.3",

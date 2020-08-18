@@ -6,6 +6,7 @@ import {
   setOwner,
 } from '@glimmer/core';
 import { Dict } from '@glimmer/interfaces';
+import { registerDestructor } from '@glimmer/runtime';
 
 interface Helper<
   Positional extends unknown[] = unknown[],
@@ -27,7 +28,7 @@ interface HelperConstructor {
 
 class CustomHelperManager implements HelperManager<Helper> {
   capabilities = helperCapabilities('glimmerjs-2.0.0', {
-    destructor: true,
+    destroyable: true,
     updateHook: true,
   });
 
@@ -38,6 +39,11 @@ class CustomHelperManager implements HelperManager<Helper> {
     instance.args = args;
     setOwner(instance, this.owner);
     instance.setup?.();
+
+    if (instance.teardown) {
+      registerDestructor(instance, () => instance.teardown!());
+    }
+
     return instance;
   }
 
@@ -50,8 +56,8 @@ class CustomHelperManager implements HelperManager<Helper> {
     instance.update?.();
   }
 
-  destroyHelper(instance: Helper): void {
-    instance.teardown?.();
+  getDestroyable(instance: Helper): object {
+    return instance;
   }
 }
 

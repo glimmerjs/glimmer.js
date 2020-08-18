@@ -12,7 +12,7 @@ import { trackedMemoize } from '../utils/autotracking';
 ///////////
 
 export interface Capabilities {
-  destructor: boolean;
+  destroyable: boolean;
   updateHook: boolean;
 }
 
@@ -27,7 +27,7 @@ export function capabilities(
   assert(managerAPI === 'glimmerjs-2.0.0', 'Invalid helper manager compatibility specified');
 
   return {
-    destructor: Boolean(options.destructor),
+    destroyable: Boolean(options.destroyable),
     updateHook: Boolean(options.updateHook),
   };
 }
@@ -57,15 +57,15 @@ export interface HelperManagerWithUpdateHook<HelperStateBucket>
   updateHelper(bucket: HelperStateBucket, args: TemplateArgs): void;
 }
 
-export function hasDestructor<HelperStateBucket>(
+export function hasDestroyable<HelperStateBucket>(
   delegate: HelperManager<HelperStateBucket>
-): delegate is HelperManagerWithDestructor<HelperStateBucket> {
-  return delegate.capabilities.destructor;
+): delegate is HelperManagerWithDestroyable<HelperStateBucket> {
+  return delegate.capabilities.destroyable;
 }
 
-export interface HelperManagerWithDestructor<HelperStateBucket>
+export interface HelperManagerWithDestroyable<HelperStateBucket>
   extends HelperManager<HelperStateBucket> {
-  destroyHelper(bucket: HelperStateBucket): void;
+  getDestroyable(bucket: HelperStateBucket): object;
 }
 
 ///////////
@@ -81,21 +81,15 @@ function customHelperFn<T>(
   const argsProxy = argsProxyFor(capturedArgs, 'helper');
   const hasUpdate = hasUpdateHook(manager);
 
-  if (hasDestructor(manager)) {
-    vm.associateDestroyable({
-      destroy() {
-        if (bucket !== undefined) {
-          manager.destroyHelper(bucket);
-        }
-      },
-    });
-  }
-
   const getValue = trackedMemoize(() => manager.getValue(bucket!));
 
   const createOrUpdate = trackedMemoize(() => {
     if (bucket === undefined) {
       bucket = manager.createHelper(definition, argsProxy);
+
+      if (hasDestroyable(manager)) {
+        vm.associateDestroyable(manager.getDestroyable(bucket));
+      }
     } else if (hasUpdate) {
       (manager as HelperManagerWithUpdateHook<T>).updateHelper(bucket!, argsProxy);
     }

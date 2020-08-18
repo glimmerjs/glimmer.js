@@ -15,6 +15,7 @@ import { argsProxyFor } from './util';
 import { getModifierManager } from '.';
 import { OWNER_KEY } from '../owner';
 import { VMModifierDefinitionWithHandle } from '../render-component/vm-definitions';
+import { registerDestructor } from '@glimmer/runtime';
 
 ///////////
 
@@ -103,11 +104,8 @@ export class CustomModifierState<ModifierStateBucket> {
     public modifier: ModifierStateBucket,
     public argsProxy: TemplateArgs,
     public capturedArgs: CapturedArguments
-  ) {}
-
-  destroy(): void {
-    const { delegate, modifier, argsProxy } = this;
-    delegate.destroyModifier(modifier, argsProxy);
+  ) {
+    registerDestructor(this, () => delegate.destroyModifier(modifier, argsProxy));
   }
 }
 
@@ -178,7 +176,7 @@ export class CustomModifierManager<ModifierStateBucket>
     }
   }
 
-  getDestructor(state: CustomModifierState<ModifierStateBucket>): Destroyable {
+  getDestroyable(state: CustomModifierState<ModifierStateBucket>): Destroyable {
     return state;
   }
 }
