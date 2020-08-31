@@ -1,7 +1,7 @@
 import Component from './component';
 ({
-  id: "2cUE8DNl",
-  block: "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
+  id: "8UKysVot",
+  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
   meta: {
     scope: () => ({
       Component
@@ -9,8 +9,8 @@ import Component from './component';
   }
 });
 ({
-  id: "2cUE8DNl",
-  block: "{\"symbols\":[],\"statements\":[[7,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
+  id: "8UKysVot",
+  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
   meta: {
     scope: () => ({
       Component

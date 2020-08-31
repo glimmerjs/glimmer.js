@@ -3,7 +3,6 @@ import {
   ComponentManager as VMComponentManager,
   ComponentCapabilities as VMComponentCapabilities,
   Dict,
-  Option,
   VMArguments,
   CapturedArguments,
   JitRuntimeResolver,
@@ -15,13 +14,14 @@ import {
   DynamicScope,
 } from '@glimmer/interfaces';
 import { PathReference, ComponentRootReference } from '@glimmer/reference';
-import { Tag, isConst, createTag } from '@glimmer/validator';
+import { Tag, isConstTagged, createTag } from '@glimmer/validator';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
 import { getComponentManager } from '..';
 import { TemplateMeta } from '../../template';
 import { TemplateArgs } from '../../interfaces';
 import { argsProxyFor } from '../util';
+import { registerDestructor } from '@glimmer/runtime';
 
 export const VM_CAPABILITIES: VMComponentCapabilities = {
   createInstance: true,
@@ -129,10 +129,6 @@ export interface ComponentArguments {
   named: Dict<unknown>;
 }
 
-export interface Destroyable {
-  destroy(): void;
-}
-
 ///////////
 
 /**
@@ -218,11 +214,8 @@ export default class CustomComponentManager<ComponentInstance>
     return new ComponentRootReference(delegate.getContext(component) as object, env);
   }
 
-  getDestructor(state: VMCustomComponentState<ComponentInstance>): Option<Destroyable> {
-    if (hasDestructors(state.delegate)) {
-      return state;
-    }
-    return null;
+  getDestroyable(state: VMCustomComponentState<ComponentInstance>): object {
+    return state;
   }
 
   getCapabilities({
@@ -234,7 +227,7 @@ export default class CustomComponentManager<ComponentInstance>
   }
 
   getTag({ args }: VMCustomComponentState<ComponentInstance>): Tag {
-    if (isConst(args)) {
+    if (isConstTagged(args)) {
       // returning a const tag skips the update hook (VM BUG?)
       return createTag();
     }
@@ -263,13 +256,9 @@ export class VMCustomComponentState<ComponentInstance> {
     public component: ComponentInstance,
     public args: CapturedArguments,
     public argsProxy: TemplateArgs
-  ) {}
-
-  destroy(): void {
-    const { delegate, component } = this;
-
+  ) {
     if (hasDestructors(delegate)) {
-      delegate.destroyComponent(component);
+      registerDestructor(this, () => delegate.destroyComponent(component));
     }
   }
 }
