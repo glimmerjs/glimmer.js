@@ -1,3 +1,25 @@
+## v2.0.0-beta.8 (2020-09-02)
+
+#### :rocket: Enhancement
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#299](https://github.com/glimmerjs/glimmer.js/pull/299) [FEAT] Updates the VM to 0.56.1 ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#297](https://github.com/glimmerjs/glimmer.js/pull/297) Add version range to ember-cli-typescript deps ([@ondrejsevcik](https://github.com/ondrejsevcik))
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#301](https://github.com/glimmerjs/glimmer.js/pull/301) [FEAT] Upgrade the VM to v0.61.1 ([@pzuraq](https://github.com/pzuraq))
+* Other
+  * [#287](https://github.com/glimmerjs/glimmer.js/pull/287) Ensure the top level package.json is updated upon release. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 3
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Ondrej Sevcik ([@ondrejsevcik](https://github.com/ondrejsevcik))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0-beta.7 (2020-04-20)
 
 #### :boom: Breaking Change

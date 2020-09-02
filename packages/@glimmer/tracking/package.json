@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/tracking",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.8",
   "description": "Glimmer property tracking library",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
