@@ -7,7 +7,7 @@ import { PassThrough } from 'stream';
 import { parse } from 'url';
 import { BaseEnvDelegate } from '@glimmer/core';
 import { NodeDOMTreeConstruction } from '@glimmer/node';
-import { DOMChanges } from '@glimmer/runtime';
+import { DOMChanges, renderSync } from '@glimmer/runtime';
 
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work
@@ -60,7 +60,7 @@ export function renderToStream(
   // TODO: Remove in Glimmer VM 0.48, it's not necessary
   const updateOperations = new DOMChanges(document);
 
-  const iterator = getTemplateIterator(
+  const { env, iterator } = getTemplateIterator(
     ComponentClass,
     element,
     { appendOperations, updateOperations },
@@ -68,7 +68,7 @@ export function renderToStream(
     options.args,
     options.owner
   );
-  iterator.sync();
+  renderSync(env, iterator);
 
   const serializer = options.serializer || defaultSerializer;
 

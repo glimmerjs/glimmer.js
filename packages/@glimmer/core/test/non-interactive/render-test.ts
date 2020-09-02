@@ -281,7 +281,7 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
       } catch (err) {
         assert.ok(
           err.message.match(
-            "You tried to reference {{name}} from the template-only-component template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@name}}?"
+            'You attempted to access `this` on a template only component, template-only-component. Template only components do not have a `this` context, and can only access arguments'
           )
         );
       }

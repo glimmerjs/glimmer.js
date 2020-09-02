@@ -3,13 +3,13 @@ import {
   ComponentCapabilities,
   CapturedArguments,
   Environment,
-  JitRuntimeResolver,
+  RuntimeResolver,
   CompilableProgram,
   Template,
   TemplateOk,
-  WithJitStaticLayout,
+  WithStaticLayout,
 } from '@glimmer/interfaces';
-import { PathReference, ConstReference } from '@glimmer/reference';
+import { createComputeRef, createConstRef, Reference } from '@glimmer/reference';
 import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { unwrapTemplate } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
@@ -37,27 +37,7 @@ export class ComponentStateBucket {
   constructor(public args: CapturedArguments) {}
 }
 
-const EMPTY_SELF = new ConstReference(null);
-
-let TemplateOnlyComponentDebugReference:
-  | undefined
-  | {
-      new (name: string): ConstReference;
-    };
-
-if (DEBUG) {
-  TemplateOnlyComponentDebugReference = class extends ConstReference<void> {
-    constructor(protected name: string) {
-      super(undefined);
-    }
-
-    get(propertyKey: string): PathReference<unknown> {
-      throw new Error(
-        `You tried to reference {{${propertyKey}}} from the ${this.name} template, which doesn't have an associated component class. Template-only components can only access args passed to them. Did you mean {{@${propertyKey}}}?`
-      );
-    }
-  };
-}
+const EMPTY_SELF = createConstRef(null, 'this');
 
 /**
  * For performance reasons, we want to avoid instantiating component buckets for
@@ -79,20 +59,24 @@ export default class TemplateOnlyComponentManager
       TemplateOnlyComponentDebugBucket | null,
       TemplateOnlyComponentDefinitionState
     >,
-    WithJitStaticLayout<
+    WithStaticLayout<
       TemplateOnlyComponentDebugBucket | null,
       TemplateOnlyComponentDefinitionState,
-      JitRuntimeResolver
+      RuntimeResolver
     > {
   static create(): TemplateOnlyComponentManager {
     return new TemplateOnlyComponentManager();
+  }
+
+  getDebugName(state: TemplateOnlyComponentDefinitionState): string {
+    return state.name;
   }
 
   getCapabilities(): ComponentCapabilities {
     return CAPABILITIES;
   }
 
-  getJitStaticLayout({ definition }: TemplateOnlyComponentDefinitionState): CompilableProgram {
+  getStaticLayout({ definition }: TemplateOnlyComponentDefinitionState): CompilableProgram {
     return definition.template.asLayout();
   }
 
@@ -105,9 +89,14 @@ export default class TemplateOnlyComponentManager
     return DEBUG ? new TemplateOnlyComponentDebugBucket(state.definition) : undefined;
   }
 
-  getSelf(bucket: TemplateOnlyComponentDebugBucket): PathReference {
+  getSelf(bucket: TemplateOnlyComponentDebugBucket): Reference {
+    // TODO: Make this error message better, https://github.com/glimmerjs/glimmer-vm/issues/1153
     return DEBUG
-      ? new TemplateOnlyComponentDebugReference!(bucket.definition.state.name)
+      ? createComputeRef(() => {
+          throw new Error(
+            `You attempted to access \`this\` on a template only component, ${bucket.definition.state.name}. Template only components do not have a \`this\` context, and can only access arguments`
+          );
+        })
       : EMPTY_SELF;
   }
 

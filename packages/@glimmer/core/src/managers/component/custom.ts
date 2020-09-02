@@ -5,16 +5,15 @@ import {
   Dict,
   VMArguments,
   CapturedArguments,
-  JitRuntimeResolver,
-  WithJitStaticLayout,
+  RuntimeResolver,
+  WithStaticLayout,
   Template,
   TemplateOk,
   Environment,
   CompilableProgram,
   DynamicScope,
 } from '@glimmer/interfaces';
-import { PathReference, ComponentRootReference } from '@glimmer/reference';
-import { Tag, isConstTagged, createTag } from '@glimmer/validator';
+import { valueForRef, createConstRef, Reference } from '@glimmer/reference';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
 import { getComponentManager } from '..';
@@ -162,10 +161,10 @@ export default class CustomComponentManager<ComponentInstance>
       VMCustomComponentState<ComponentInstance>,
       VMCustomComponentDefinitionState<ComponentInstance>
     >,
-    WithJitStaticLayout<
+    WithStaticLayout<
       VMCustomComponentState<ComponentInstance>,
       VMCustomComponentDefinitionState<ComponentInstance>,
-      JitRuntimeResolver
+      RuntimeResolver
     > {
   create(
     env: Environment,
@@ -175,7 +174,7 @@ export default class CustomComponentManager<ComponentInstance>
   ): VMCustomComponentState<ComponentInstance> {
     const { ComponentDefinition } = definition;
     const capturedArgs = args.capture();
-    const owner = dynamicScope.get(OWNER_KEY).value() as object;
+    const owner = valueForRef(dynamicScope.get(OWNER_KEY)) as object;
     const delegate = getComponentManager(owner, ComponentDefinition)!;
 
     const argsProxy = argsProxyFor(capturedArgs, 'component');
@@ -206,12 +205,13 @@ export default class CustomComponentManager<ComponentInstance>
     delegate.getContext(component);
   }
 
-  getSelf({
-    env,
-    delegate,
-    component,
-  }: VMCustomComponentState<ComponentInstance>): PathReference<unknown> {
-    return new ComponentRootReference(delegate.getContext(component) as object, env);
+  getDebugName(state: VMCustomComponentDefinitionState<ComponentInstance>): string {
+    // TODO: This should likely call `delegate.getDebugName` somehow
+    return String(state.ComponentDefinition);
+  }
+
+  getSelf({ delegate, component }: VMCustomComponentState<ComponentInstance>): Reference<unknown> {
+    return createConstRef(delegate.getContext(component) as object, 'this');
   }
 
   getDestroyable(state: VMCustomComponentState<ComponentInstance>): object {
@@ -226,18 +226,10 @@ export default class CustomComponentManager<ComponentInstance>
     });
   }
 
-  getTag({ args }: VMCustomComponentState<ComponentInstance>): Tag {
-    if (isConstTagged(args)) {
-      // returning a const tag skips the update hook (VM BUG?)
-      return createTag();
-    }
-    return args.tag;
-  }
-
   didRenderLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
   didUpdateLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  getJitStaticLayout({
+  getStaticLayout({
     definition,
   }: VMCustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
     return definition.template.asLayout();

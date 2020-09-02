@@ -1,7 +1,7 @@
 import { CapturedArguments } from '@glimmer/interfaces';
-import { consumeTag } from '@glimmer/validator';
 import { assert } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
+import { valueForRef } from '@glimmer/reference';
 import { TemplateArgs } from '../interfaces';
 
 function convertToInt(prop: number | string | symbol): number | null {
@@ -22,20 +22,19 @@ export function argsProxyFor(
 
   const namedHandler: ProxyHandler<{}> = {
     get(_target, prop) {
-      if (named.has(prop as string)) {
-        const ref = named.get(prop as string);
-        consumeTag(ref.tag);
+      const ref = named[prop as string];
 
-        return ref.value();
+      if (ref !== undefined) {
+        return valueForRef(ref);
       }
     },
 
     has(_target, prop) {
-      return named.has(prop as string);
+      return prop in named;
     },
 
     ownKeys(_target) {
-      return named.names;
+      return Object.keys(named);
     },
 
     isExtensible() {
@@ -45,7 +44,7 @@ export function argsProxyFor(
     getOwnPropertyDescriptor(_target, prop) {
       if (DEBUG) {
         assert(
-          named.has(prop as string),
+          prop in named,
           'args proxies do not have real property descriptors, so you should never need to call getOwnPropertyDescriptor yourself. This code exists for enumerability, such as in for-in loops and Object.keys()'
         );
       }
@@ -59,17 +58,13 @@ export function argsProxyFor(
   const positionalHandler: ProxyHandler<[]> = {
     get(target, prop) {
       if (prop === 'length') {
-        consumeTag(positional.tag);
         return positional.length;
       }
 
       const parsed = convertToInt(prop);
 
       if (parsed !== null && parsed < positional.length) {
-        const ref = positional.at(parsed);
-        consumeTag(ref.tag);
-
-        return ref.value();
+        return valueForRef(positional[parsed]);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
