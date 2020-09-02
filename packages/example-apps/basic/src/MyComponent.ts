@@ -1,6 +1,11 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { createTemplate, setComponentTemplate, getOwner } from '@glimmer/core';
+import {
+  createTemplate,
+  setComponentTemplate,
+  getOwner,
+  templateOnlyComponent,
+} from '@glimmer/core';
 import { helper } from './utils/helper-with-services';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
@@ -22,7 +27,8 @@ const isCJK = helper(function (_args, _hash, services) {
 });
 
 const TemplateOnlyComponent = setComponentTemplate(
-  createTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`)
+  createTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`),
+  templateOnlyComponent()
 );
 
 class MyComponent extends Component {

@@ -6,16 +6,16 @@ import {
   Destroyable,
   DynamicScope,
 } from '@glimmer/interfaces';
-import { Tag, createUpdatableTag, track, untrack, combine, updateTag } from '@glimmer/validator';
-import { assert, debugToString } from '@glimmer/util';
+import { UpdatableTag, createUpdatableTag, untrack } from '@glimmer/validator';
+import { assert } from '@glimmer/util';
 import { SimpleElement } from '@simple-dom/interface';
 import { TemplateArgs } from '../interfaces';
-import debugRenderMessage from '../utils/debug';
 import { argsProxyFor } from './util';
 import { getModifierManager } from '.';
 import { OWNER_KEY } from '../owner';
 import { VMModifierDefinitionWithHandle } from '../render-component/vm-definitions';
 import { registerDestructor } from '@glimmer/runtime';
+import { valueForRef } from '@glimmer/reference';
 
 ///////////
 
@@ -121,7 +121,7 @@ export class CustomModifierManager<ModifierStateBucket>
     args: VMArguments,
     dynamicScope: DynamicScope
   ): CustomModifierState<ModifierStateBucket> {
-    const owner = dynamicScope.get(OWNER_KEY).value() as object;
+    const owner = valueForRef(dynamicScope.get(OWNER_KEY)) as object;
     let delegate = getModifierManager(owner, definition);
 
     if (delegate === undefined) {
@@ -143,36 +143,32 @@ export class CustomModifierManager<ModifierStateBucket>
     return new CustomModifierState(element, delegate, instance, argsProxy, capturedArgs);
   }
 
-  getTag({ tag, capturedArgs }: CustomModifierState<ModifierStateBucket>): Tag {
-    return combine([tag, capturedArgs.tag]);
+  getDebugName(state: CustomModifierState<ModifierStateBucket>): string {
+    // TODO: This should be updated to call `delegate.getDebugName` or something along those lines
+    return String(state.modifier);
+  }
+
+  getTag({ tag }: CustomModifierState<ModifierStateBucket>): UpdatableTag {
+    return tag;
   }
 
   install(state: CustomModifierState<ModifierStateBucket>): void {
-    const { element, argsProxy, delegate, modifier, tag } = state;
+    const { element, argsProxy, delegate, modifier } = state;
 
     if (delegate.capabilities.disableAutoTracking === true) {
       untrack(() => delegate.installModifier(modifier, element as Element, argsProxy));
     } else {
-      const combinedTrackingTag = track(
-        () => delegate.installModifier(modifier, element as Element, argsProxy),
-        DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
-      );
-
-      updateTag(tag, combinedTrackingTag);
+      delegate.installModifier(modifier, element as Element, argsProxy);
     }
   }
 
   update(state: CustomModifierState<ModifierStateBucket>): void {
-    const { argsProxy, delegate, modifier, tag } = state;
+    const { argsProxy, delegate, modifier } = state;
 
     if (delegate.capabilities.disableAutoTracking === true) {
       untrack(() => delegate.updateModifier(modifier, argsProxy));
     } else {
-      const combinedTrackingTag = track(
-        () => delegate.updateModifier(modifier, argsProxy),
-        DEBUG && debugRenderMessage!(`(instance of a \`${debugToString!(modifier)}\` modifier)`)
-      );
-      updateTag(tag, combinedTrackingTag);
+      delegate.updateModifier(modifier, argsProxy);
     }
   }
 

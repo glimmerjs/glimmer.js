@@ -1,22 +1,60 @@
-import { EnvironmentDelegate, setScheduleDestroy, setScheduleDestroyed } from '@glimmer/runtime';
-import { Option, Dict, Destructor, Destroyable } from '@glimmer/interfaces';
+import setGlobalContext from '@glimmer/global-context';
+import { EnvironmentDelegate } from '@glimmer/runtime';
+import { Option, Destructor, Destroyable } from '@glimmer/interfaces';
 import { IteratorDelegate } from '@glimmer/reference';
 
 import { isNativeIterable, NativeIterator } from './iterator';
 import { DEBUG } from '@glimmer/env';
 import toBool from './to-bool';
+import { scheduleRevalidate } from '../render-component';
 
 let scheduledDestroyables: Destroyable[] = [];
 let scheduledDestructors: Destructor<object>[] = [];
 let scheduledFinishDestruction: (() => void)[] = [];
 
-setScheduleDestroy(<T extends Destroyable>(destroyable: T, destructor: Destructor<T>) => {
-  scheduledDestroyables.push(destroyable);
-  scheduledDestructors.push(destructor);
-});
+setGlobalContext({
+  getProp(obj: Record<string, unknown>, key: string) {
+    return obj[key];
+  },
 
-setScheduleDestroyed((fn: () => void) => {
-  scheduledFinishDestruction.push(fn);
+  setProp(obj: Record<string, unknown>, key: string, newValue: unknown) {
+    obj[key] = newValue;
+  },
+
+  getPath(obj: Record<string, unknown>, key: string) {
+    if (DEBUG && key.includes('.')) {
+      throw new Error(
+        'You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.'
+      );
+    }
+
+    return obj[key];
+  },
+
+  scheduleRevalidate,
+
+  toBool,
+
+  toIterator(value: unknown): Option<IteratorDelegate> {
+    if (isNativeIterable(value)) {
+      return NativeIterator.from(value);
+    }
+
+    return null;
+  },
+
+  scheduleDestroy(destroyable, destructor) {
+    scheduledDestroyables.push(destroyable);
+    scheduledDestructors.push(destructor);
+  },
+
+  scheduleDestroyed(fn) {
+    scheduledFinishDestruction.push(fn);
+  },
+
+  warnIfStyleNotTrusted() {
+    // Do nothing
+  },
 });
 
 /**
@@ -30,15 +68,10 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
   abstract isInteractive: boolean;
   abstract protocolForURL(url: string): string;
 
-  // Match Ember's toBool semantics for cross-compatibility
-  toBool = toBool;
+  extra = undefined;
 
-  toIterator(value: unknown): Option<IteratorDelegate> {
-    if (isNativeIterable(value)) {
-      return NativeIterator.from(value);
-    }
-
-    return null;
+  onTransactionBegin(): void {
+    // Do nothing
   }
 
   onTransactionCommit(): void {
@@ -52,22 +85,6 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
     scheduledDestructors = [];
     scheduledFinishDestruction = [];
   }
-}
-
-if (DEBUG) {
-  // This is only possible in `key` on {{each}}
-  (BaseEnvDelegate.prototype as EnvironmentDelegate).getPath = (
-    obj: unknown,
-    path: string
-  ): unknown => {
-    if (path.includes('.')) {
-      throw new Error(
-        'You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.'
-      );
-    }
-
-    return (obj as Dict)[path];
-  };
 }
 
 /**

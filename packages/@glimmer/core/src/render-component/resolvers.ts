@@ -1,13 +1,13 @@
 import {
   ResolvedValue,
   ComponentDefinition as VMComponentDefinition,
-  RuntimeResolverDelegate,
+  RuntimeResolver as VMRuntimeResolver,
+  CompileTimeResolver as VMCompileTimeResolver,
   Template,
   Option,
   CompileTimeComponent,
 } from '@glimmer/interfaces';
 import { unwrapTemplate } from '@glimmer/util';
-import { ResolverDelegate } from '@glimmer/opcode-compiler';
 
 import {
   vmDefinitionForComponent,
@@ -38,7 +38,7 @@ const builtInHelpers: { [key: string]: VMHelperDefinition } = {
  * The CompileTimeResolver is responsible for registering everything but root
  * components, which is why `registry` is public, for ease of access.
  */
-export class RuntimeResolver implements RuntimeResolverDelegate {
+export class RuntimeResolver implements VMRuntimeResolver {
   registry: unknown[] = [];
 
   // TODO: This is only necessary because `renderJitComponent` only receives a
@@ -80,7 +80,7 @@ export class RuntimeResolver implements RuntimeResolverDelegate {
  * the values on the RuntimeResolver, which Glimmer then uses to actually
  * resolve later on via the handle that is returned.
  */
-export class CompileTimeResolver implements ResolverDelegate {
+export class CompileTimeResolver implements VMCompileTimeResolver {
   constructor(private inner: RuntimeResolver) {}
 
   lookupHelper(name: string, referrer: TemplateMeta): Option<number> {

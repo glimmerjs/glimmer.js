@@ -1,25 +1,27 @@
-import { setPropertyDidChange } from '@glimmer/validator';
 import {
   clientBuilder,
-  renderJitComponent,
-  JitRuntime,
+  renderComponent as glimmerRenderComponent,
+  runtimeContext,
   EnvironmentDelegate,
-  DefaultDynamicScope,
+  DynamicScopeImpl,
+  renderSync,
 } from '@glimmer/runtime';
 import {
   Cursor as GlimmerCursor,
   RenderResult,
   Dict,
   TemplateIterator,
-  Environment,
   EnvironmentOptions,
+  WithStaticLayout,
+  Environment,
 } from '@glimmer/interfaces';
-import { JitContext } from '@glimmer/opcode-compiler';
+import { artifacts } from '@glimmer/program';
+import { syntaxCompilationContext } from '@glimmer/opcode-compiler';
 
 import { ClientEnvDelegate } from '../environment/delegates';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
-import { ComponentRootReference, PathReference, ConstReference } from '@glimmer/reference';
+import { createConstRef, childRefFor, Reference } from '@glimmer/reference';
 import { ComponentDefinition } from '../managers/component/custom';
 
 import { OWNER_KEY, DEFAULT_OWNER } from '../owner';
@@ -63,7 +65,7 @@ async function renderComponent(
   const { element, args, owner } = options;
   const document = self.document as SimpleDocument;
 
-  const iterator = getTemplateIterator(
+  const { env, iterator } = getTemplateIterator(
     ComponentClass,
     element,
     { document },
@@ -71,7 +73,7 @@ async function renderComponent(
     args,
     owner
   );
-  const result = iterator.sync();
+  const result = renderSync(env, iterator);
   results.push(result);
 }
 
@@ -79,10 +81,8 @@ export default renderComponent;
 
 const results: RenderResult[] = [];
 
-setPropertyDidChange(scheduleRevalidation);
-
 let scheduled = false;
-function scheduleRevalidation(): void {
+export function scheduleRevalidate(): void {
   if (scheduled) {
     return;
   }
@@ -111,15 +111,16 @@ function revalidate(): void {
 }
 
 const resolver = new RuntimeResolver();
-const context = JitContext(new CompileTimeResolver(resolver));
+const sharedArtifacts = artifacts();
+const context = syntaxCompilationContext(sharedArtifacts, new CompileTimeResolver(resolver));
 
-function dictToReference(dict: Dict<unknown>, env: Environment): Dict<PathReference> {
-  const root = new ComponentRootReference(dict, env);
+function dictToReference(dict: Dict<unknown>): Dict<Reference> {
+  const root = createConstRef(dict, 'args');
 
   return Object.keys(dict).reduce((acc, key) => {
-    acc[key] = root.get(key);
+    acc[key] = childRefFor(root, key);
     return acc;
-  }, {} as Dict<PathReference>);
+  }, {} as Dict<Reference>);
 }
 
 export function getTemplateIterator(
@@ -129,30 +130,38 @@ export function getTemplateIterator(
   envDelegate: EnvironmentDelegate,
   componentArgs: Dict<unknown> = {},
   owner = DEFAULT_OWNER
-): TemplateIterator {
-  const runtime = JitRuntime(envOptions, envDelegate, context, resolver);
+): { iterator: TemplateIterator; env: Environment } {
+  const runtime = runtimeContext(envOptions, envDelegate, sharedArtifacts, resolver);
   const builder = clientBuilder(runtime.env, {
     element,
     nextSibling: null,
   } as GlimmerCursor);
 
   const handle = resolver.registerRoot(ComponentClass);
+  const definition = resolver.lookupComponent(handle)!;
+  const compilable = (definition.manager as WithStaticLayout).getStaticLayout(
+    definition.state,
+    resolver
+  );
 
   let dynamicScope;
 
   if (owner) {
-    dynamicScope = new DefaultDynamicScope({
-      [OWNER_KEY]: new ConstReference(owner),
+    dynamicScope = new DynamicScopeImpl({
+      [OWNER_KEY]: createConstRef(owner, 'owner'),
     });
   }
 
-  return renderJitComponent(
-    runtime,
-    builder,
-    context,
-    0,
-    handle,
-    dictToReference(componentArgs, runtime.env),
-    dynamicScope
-  );
+  return {
+    iterator: glimmerRenderComponent(
+      runtime,
+      builder,
+      context,
+      definition,
+      compilable,
+      dictToReference(componentArgs),
+      dynamicScope
+    ),
+    env: runtime.env,
+  };
 }

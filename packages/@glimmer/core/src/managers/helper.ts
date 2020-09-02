@@ -1,6 +1,7 @@
 import { assert } from '@glimmer/util';
+import { reifyPositional } from '@glimmer/runtime';
 import { Helper as VMHelperFactory, CapturedArguments, VM } from '@glimmer/interfaces';
-import { HelperRootReference } from '@glimmer/reference';
+import { createComputeRef, valueForRef, Reference } from '@glimmer/reference';
 import { DEBUG } from '@glimmer/env';
 import { TemplateArgs } from '../interfaces';
 import { argsProxyFor } from './util';
@@ -112,8 +113,8 @@ export type SimpleHelper<T = unknown, U = unknown> = (...args: T[]) => U;
 export function vmHelperFactoryFor<HelperStateBucket>(
   definition: HelperDefinition<HelperStateBucket>
 ): VMHelperFactory {
-  return (args, vm): HelperRootReference => {
-    const owner = vm.dynamicScope().get(OWNER_KEY).value() as object;
+  return (args, vm): Reference => {
+    const owner = valueForRef(vm.dynamicScope().get(OWNER_KEY)) as object;
     const manager = getHelperManager(owner, definition)!;
     const capturedArgs = args.capture();
 
@@ -134,7 +135,7 @@ export function vmHelperFactoryFor<HelperStateBucket>(
         : (definition as SimpleHelper);
 
       helperFn = (capturedArgs: CapturedArguments): unknown => {
-        if (DEBUG && capturedArgs.named.length > 0) {
+        if (DEBUG && Object.keys(capturedArgs.named).length > 0) {
           throw new Error(
             `You used named arguments with the ${func.name.replace(
               /^bound /,
@@ -143,10 +144,10 @@ export function vmHelperFactoryFor<HelperStateBucket>(
           );
         }
 
-        return func(...capturedArgs.positional.value());
+        return func(...reifyPositional(capturedArgs.positional));
       };
     }
 
-    return new HelperRootReference(helperFn, capturedArgs, vm.env);
+    return createComputeRef(() => helperFn(capturedArgs), null, helperFn.name);
   };
 }
