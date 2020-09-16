@@ -1,3 +1,13 @@
+## v2.0.0-beta.9 (2020-09-16)
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#305](https://github.com/glimmerjs/glimmer.js/pull/305) chore: Update glimmer-vm packages ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+
+
 ## v2.0.0-beta.8 (2020-09-02)
 
 #### :rocket: Enhancement
