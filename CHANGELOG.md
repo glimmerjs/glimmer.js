@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.2 (2020-09-18)
+
+#### :bug: Bug Fix
+* `@glimmer/tracking`
+  * [#306](https://github.com/glimmerjs/glimmer.js/pull/306) Make @glimmer/tracking an ember-cli addon for Ember apps. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
 ## v1.0.1 (2020-07-27)
 
 #### :bug: Bug Fix
