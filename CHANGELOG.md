@@ -1,3 +1,16 @@
+## v2.0.0-beta.10 (2020-09-18)
+
+#### :bug: Bug Fix
+* `@glimmer/tracking`
+  * [#306](https://github.com/glimmerjs/glimmer.js/pull/306) Make @glimmer/tracking an ember-cli addon for Ember apps. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#308](https://github.com/glimmerjs/glimmer.js/pull/308) Update `yarn.lock` for glimmer-vm upgrade. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0-beta.9 (2020-09-16)
 
 #### :house: Internal
