@@ -1,0 +1,5 @@
+{
+  "name": "@glimmer/tracking/primitives/cache",
+  "main": "dist/commonjs/primitives/cache.js",
+  "modules": "dist/modules/primitives/cache.js"
+}

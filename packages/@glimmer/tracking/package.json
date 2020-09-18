@@ -15,12 +15,14 @@
     "Dan Gebhardt <dan@cerebris.com>",
     "Tom Dale <tom@tomdale.net>"
   ],
-  "main": "dist/commonjs/index.js",
-  "module": "dist/modules/index.js",
+  "license": "MIT",
   "files": [
     "dist",
-    "ember-addon-main.js"
+    "ember-addon-main.js",
+    "primitives"
   ],
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
   "dependencies": {
     "@glimmer/env": "^0.1.7",
     "@glimmer/validator": "0.61.2"
