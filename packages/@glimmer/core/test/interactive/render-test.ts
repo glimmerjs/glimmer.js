@@ -34,4 +34,17 @@ module(`[@glimmer/core] interactive rendering tests`, () => {
 
     assert.equal(containerElement.innerHTML, '<p>foo</p>bar<h1>Hello Glimmer!</h1>');
   });
+
+  test('rehydrates a component from existing markup when rehydrate option is set', async (assert) => {
+    const containerElement = document.createElement('div');
+    containerElement.innerHTML =
+      '<!--%+b:0%--><!--%+b:1%--><h1>Hello World</h1><!--%-b:1%--><!--%-b:0%-->';
+
+    await render(createTemplate(`<h1>Hello World</h1>`), {
+      element: containerElement,
+      rehydrate: true,
+    });
+
+    assert.equal(containerElement.innerHTML, '<h1>Hello World</h1>');
+  });
 });

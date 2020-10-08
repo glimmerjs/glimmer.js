@@ -5,6 +5,7 @@ import {
   EnvironmentDelegate,
   DynamicScopeImpl,
   renderSync,
+  rehydrationBuilder,
 } from '@glimmer/runtime';
 import {
   Cursor as GlimmerCursor,
@@ -32,6 +33,7 @@ export interface RenderComponentOptions {
   element: Element;
   args?: Dict<unknown>;
   owner?: object;
+  rehydrate?: boolean;
 }
 
 type ResolveFn = () => void;
@@ -72,7 +74,8 @@ async function renderComponent(
     { document },
     new ClientEnvDelegate(),
     args,
-    owner
+    owner,
+    options.rehydrate ? rehydrationBuilder : clientBuilder
   );
   const result = renderSync(env, iterator);
   results.push(result);
