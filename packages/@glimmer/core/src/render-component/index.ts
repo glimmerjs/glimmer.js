@@ -14,6 +14,7 @@ import {
   EnvironmentOptions,
   WithStaticLayout,
   Environment,
+  ElementBuilder,
 } from '@glimmer/interfaces';
 import { artifacts } from '@glimmer/program';
 import { syntaxCompilationContext } from '@glimmer/opcode-compiler';
@@ -129,10 +130,11 @@ export function getTemplateIterator(
   envOptions: EnvironmentOptions,
   envDelegate: EnvironmentDelegate,
   componentArgs: Dict<unknown> = {},
-  owner = DEFAULT_OWNER
+  owner = DEFAULT_OWNER,
+  builderFactory: (env: Environment, cursor: GlimmerCursor) => ElementBuilder = clientBuilder
 ): { iterator: TemplateIterator; env: Environment } {
   const runtime = runtimeContext(envOptions, envDelegate, sharedArtifacts, resolver);
-  const builder = clientBuilder(runtime.env, {
+  const builder = builderFactory(runtime.env, {
     element,
     nextSibling: null,
   } as GlimmerCursor);
