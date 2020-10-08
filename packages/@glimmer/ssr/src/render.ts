@@ -6,8 +6,8 @@ import voidMap from '@simple-dom/void-map';
 import { PassThrough } from 'stream';
 import { parse } from 'url';
 import { BaseEnvDelegate } from '@glimmer/core';
-import { NodeDOMTreeConstruction } from '@glimmer/node';
-import { DOMChanges, renderSync } from '@glimmer/runtime';
+import { NodeDOMTreeConstruction, serializeBuilder } from '@glimmer/node';
+import { clientBuilder, DOMChanges, renderSync } from '@glimmer/runtime';
 
 /**
  * Server-side environment that can be used to configure the glimmer-vm to work
@@ -28,6 +28,7 @@ export interface RenderOptions {
   args?: Dict<unknown>;
   serializer?: HTMLSerializer;
   owner?: object;
+  rehydrate?: boolean;
 }
 
 const defaultSerializer = new HTMLSerializer(voidMap);
@@ -66,7 +67,8 @@ export function renderToStream(
     { appendOperations, updateOperations },
     new ServerEnvDelegate(),
     options.args,
-    options.owner
+    options.owner,
+    options.rehydrate ? serializeBuilder : clientBuilder
   );
   renderSync(env, iterator);
 

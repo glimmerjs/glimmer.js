@@ -23,4 +23,15 @@ QUnit.module('@glimmer/ssr rendering', () => {
 
     assert.equal(output, '<h1>Goodbye World</h1>');
   });
+
+  QUnit.test('setting rehydrate option outputs the block stacks', async (assert) => {
+    class MyComponent extends Component {}
+    setComponentTemplate(createTemplate(`<h1>Hello World</h1>`), MyComponent);
+    const output = await renderToString(MyComponent, { rehydrate: true });
+
+    assert.equal(
+      output,
+      '<!--%+b:0%--><!--%+b:1%--><h1>Hello World</h1><!--%-b:1%--><!--%-b:0%-->'
+    );
+  });
 });
