@@ -1,3 +1,17 @@
+## v2.0.0-beta.11 (2020-10-26)
+
+#### :rocket: Enhancement
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#315](https://github.com/glimmerjs/glimmer.js/pull/315) Add support for partial rehydration and example apps for rehydration ([@chiragpat](https://github.com/chiragpat))
+* `@glimmer/core`
+  * [#313](https://github.com/glimmerjs/glimmer.js/pull/313) Add new rehydrate option to renderComponent clientside api ([@chiragpat](https://github.com/chiragpat))
+* `@glimmer/core`, `@glimmer/ssr`
+  * [#312](https://github.com/glimmerjs/glimmer.js/pull/312) Add new option to output rehydratable markup from @glimmer/ssr ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 1
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+
+
 ## v2.0.0-beta.10 (2020-09-18)
 
 #### :bug: Bug Fix
