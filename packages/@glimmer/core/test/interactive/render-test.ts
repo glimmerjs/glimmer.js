@@ -47,4 +47,23 @@ module(`[@glimmer/core] interactive rendering tests`, () => {
 
     assert.equal(containerElement.innerHTML, '<h1>Hello World</h1>');
   });
+
+  test('can partially rehydrate from a different root dom node', async (assert) => {
+    const containerElement = document.createElement('div');
+    containerElement.innerHTML =
+      '<!--%+b:0%--><!--%+b:1%--><div id="test"><!--%+b:2%--><h1>Hello <!--%+b:3%-->World<!--%-b:3%--></h1><!--%-b:2%--></div><!--%-b:1%--><!--%-b:0%-->';
+
+    await render(createTemplate(`<h1>Hello {{@name}}</h1>`), {
+      element: containerElement.querySelector('#test')!,
+      rehydrate: true,
+      args: {
+        name: 'World',
+      },
+    });
+
+    assert.equal(
+      containerElement.innerHTML,
+      '<!--%+b:0%--><!--%+b:1%--><div id="test"><h1>Hello World</h1></div><!--%-b:1%--><!--%-b:0%-->'
+    );
+  });
 });

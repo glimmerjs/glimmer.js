@@ -1,0 +1,25 @@
+{
+  "name": "example-app-partial-rehydration",
+  "version": "0.1.12",
+  "description": "Example application using @glimmer packages for partial rehydration",
+  "main": "dist/commonjs/index.js",
+  "repository": "https://github.com/glimmerjs/glimmer.js/tree/master/packages/example-apps/partial-rehydration",
+  "author": "Chirag Patel",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@glimmer/core": "^1.0.0",
+    "@glimmer/component": "^1.0.0",
+    "@glimmer/tracking": "^1.0.0",
+    "@glimmer/helper": "^1.0.0",
+    "@glimmer/modifier": "^1.0.0",
+    "@glimmer/ssr": "^1.0.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
+  }
+}
