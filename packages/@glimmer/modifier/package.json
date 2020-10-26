@@ -12,7 +12,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/interfaces": "0.61.2",
+    "@glimmer/interfaces": "0.62.4",
     "@simple-dom/interface": "^1.4.0"
   },
   "volta": {
