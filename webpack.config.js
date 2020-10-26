@@ -10,7 +10,6 @@ const commonBabelPlugins = [
 
 const commonConfig = {
   mode: 'development',
-  devtool: false,
   externals: {
     fs: 'fs',
   },
@@ -25,7 +24,6 @@ const commonConfig = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    libraryTarget: 'umd',
   },
   devServer: {
     writeToDisk: true,
@@ -50,6 +48,7 @@ const browserConfig = {
     rehydration: './packages/example-apps/rehydration/index.ts',
     partialRehydration: './packages/example-apps/partial-rehydration/index.ts',
     tests: './test/index.ts',
+    nodeTests: './test/node.ts',
   },
   module: {
     rules: [
@@ -67,12 +66,16 @@ const browserConfig = {
   },
 };
 
-const nodeConfig = {
+const nodeServerConfig = {
   ...commonConfig,
+  devtool: false,
   entry: {
     rehydrationNodeServer: './packages/example-apps/rehydration/server.ts',
     partialRehydrationNodeServer: './packages/example-apps/partial-rehydration/server.ts',
-    nodeTests: './test/node.ts',
+  },
+  output: {
+    ...commonConfig.output,
+    libraryTarget: 'umd',
   },
   externals: {
     // Remove once we have new glimmer-vm version published. The duplicate version is from linking issues
@@ -105,4 +108,4 @@ const nodeConfig = {
   },
 };
 
-module.exports = [nodeConfig, browserConfig];
+module.exports = [nodeServerConfig, browserConfig];
