@@ -13,16 +13,16 @@
   },
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/global-context": "0.61.2",
-    "@glimmer/interfaces": "0.61.2",
-    "@glimmer/opcode-compiler": "0.61.2",
-    "@glimmer/program": "0.61.2",
-    "@glimmer/runtime": "0.61.2",
-    "@glimmer/validator": "0.61.2",
+    "@glimmer/global-context": "0.62.4",
+    "@glimmer/interfaces": "0.62.4",
+    "@glimmer/opcode-compiler": "0.62.4",
+    "@glimmer/program": "0.62.4",
+    "@glimmer/runtime": "0.62.4",
+    "@glimmer/validator": "0.62.4",
     "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
-    "@glimmer/compiler": "0.61.2",
+    "@glimmer/compiler": "0.62.4",
     "@glimmer/component": "2.0.0-beta.10",
     "@glimmer/tracking": "2.0.0-beta.10"
   },

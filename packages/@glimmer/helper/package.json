@@ -14,8 +14,8 @@
   "dependencies": {
     "@glimmer/component": "2.0.0-beta.10",
     "@glimmer/core": "2.0.0-beta.10",
-    "@glimmer/interfaces": "0.61.2",
-    "@glimmer/reference": "0.61.2"
+    "@glimmer/interfaces": "0.62.4",
+    "@glimmer/reference": "0.62.4"
   },
   "volta": {
     "node": "12.16.1",
