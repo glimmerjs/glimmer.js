@@ -11,6 +11,7 @@ export default async function handler(
   clientsideBundleLocation: string
 ): Promise<void> {
   const ssrOutput = await renderToString(StaticComponent, {
+    args: { foo: { bar: 'bar' } },
     rehydrate: true,
   });
 
@@ -22,7 +23,7 @@ export default async function handler(
         </head>
         <body>
           <div id="app">${ssrOutput}</div>
-          <script src="${clientsideBundleLocation}"></script>
+          <script async src="${clientsideBundleLocation}"></script>
         </body>
       </html>
     `);

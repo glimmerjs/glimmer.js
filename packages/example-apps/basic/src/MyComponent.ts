@@ -57,10 +57,10 @@ setComponentTemplate(
       {{else}}
         <p>Component is not in a CJK locale</p>
       {{/if}}
-
       <OtherComponent @count={{this.count}} /> <br/>
       <button {{on "click" this.increment}}>Increment</button>
       <TemplateOnlyComponent @name="For Glimmer"/>
+
     `
   ),
   MyComponent
