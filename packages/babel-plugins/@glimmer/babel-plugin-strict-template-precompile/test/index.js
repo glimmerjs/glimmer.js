@@ -32,6 +32,7 @@ describe('precompileTemplate', () => {
     expect(precompiled).to.equal(`({
   id: "mtRxClUL",
   block: "{\\"symbols\\":[],\\"statements\\":[[8,\\"Component\\",[],[[],[]],null]],\\"hasEval\\":false,\\"upvars\\":[]}",
+  moduleName: "(unknown template module)",
   meta: {
     scope: () => ({})
   }
@@ -44,6 +45,7 @@ describe('precompileTemplate', () => {
     expect(precompiled).to.equal(`({
   id: "mtRxClUL",
   block: "{\\"symbols\\":[],\\"statements\\":[[8,\\"Component\\",[],[[],[]],null]],\\"hasEval\\":false,\\"upvars\\":[]}",
+  moduleName: "(unknown template module)",
   meta: {
     scope: () => ({
       Component: Component
@@ -60,8 +62,9 @@ describe('precompileTemplate', () => {
     );
 
     expect(precompiled).to.equal(`({
-  id: "iLYq0mJl",
+  id: "9bMgfwbA",
   block: "{\\"symbols\\":[],\\"statements\\":[[10,\\"h1\\"],[12],[2,\\"Hello world\\"],[13]],\\"hasEval\\":false,\\"upvars\\":[]}",
+  moduleName: "(unknown template module)",
   meta: {
     scope: () => ({})
   }

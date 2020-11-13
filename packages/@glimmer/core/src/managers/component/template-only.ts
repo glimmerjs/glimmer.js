@@ -1,10 +1,8 @@
 import {
-  ComponentManager as VMComponentManager,
-  ComponentCapabilities,
+  InternalComponentManager,
+  InternalComponentCapabilities,
   CapturedArguments,
   Environment,
-  RuntimeResolver,
-  CompilableProgram,
   Template,
   TemplateOk,
   WithStaticLayout,
@@ -14,9 +12,7 @@ import { CONSTANT_TAG, Tag } from '@glimmer/validator';
 import { unwrapTemplate } from '@glimmer/util';
 import { DEBUG } from '@glimmer/env';
 
-import { TemplateMeta } from '../../template';
-
-export const CAPABILITIES: ComponentCapabilities = {
+export const CAPABILITIES: InternalComponentCapabilities = {
   attributeHook: false,
   createArgs: false,
   createCaller: false,
@@ -55,14 +51,13 @@ export class TemplateOnlyComponentDebugBucket {
 
 export default class TemplateOnlyComponentManager
   implements
-    VMComponentManager<
+    InternalComponentManager<
       TemplateOnlyComponentDebugBucket | null,
       TemplateOnlyComponentDefinitionState
     >,
     WithStaticLayout<
       TemplateOnlyComponentDebugBucket | null,
-      TemplateOnlyComponentDefinitionState,
-      RuntimeResolver
+      TemplateOnlyComponentDefinitionState
     > {
   static create(): TemplateOnlyComponentManager {
     return new TemplateOnlyComponentManager();
@@ -72,12 +67,12 @@ export default class TemplateOnlyComponentManager
     return state.name;
   }
 
-  getCapabilities(): ComponentCapabilities {
+  getCapabilities(): InternalComponentCapabilities {
     return CAPABILITIES;
   }
 
-  getStaticLayout({ definition }: TemplateOnlyComponentDefinitionState): CompilableProgram {
-    return definition.template.asLayout();
+  getStaticLayout({ definition }: TemplateOnlyComponentDefinitionState): Template {
+    return definition.template;
   }
 
   create(
@@ -123,10 +118,10 @@ export const TEMPLATE_ONLY_MANAGER = new TemplateOnlyComponentManager();
 export class TemplateOnlyComponentDefinition {
   public state: TemplateOnlyComponentDefinitionState;
   public manager = TEMPLATE_ONLY_MANAGER;
-  public template: TemplateOk<TemplateMeta>;
+  public template: TemplateOk;
   public handle: number;
 
-  constructor(handle: number, name: string, template: Template<TemplateMeta>) {
+  constructor(handle: number, name: string, template: Template) {
     this.handle = handle;
     this.template = unwrapTemplate(template);
 

@@ -2,12 +2,12 @@ import {
   ComponentDefinition as VMComponentDefinition,
   ModifierDefinition as VMModifierDefinition,
   Helper as VMHelperFactory,
-  ModifierManager,
   TemplateOk,
+  InternalModifierManager,
 } from '@glimmer/interfaces';
 import { templateFactory } from '@glimmer/opcode-compiler';
 
-import { getComponentTemplate, TemplateMeta } from '../template';
+import { getComponentTemplate, SCOPE_MAP } from '../template';
 import { VMCustomComponentDefinition, ComponentDefinition } from '../managers/component/custom';
 import { HelperDefinition, vmHelperFactoryFor } from '../managers/helper';
 import {
@@ -19,7 +19,7 @@ import { ModifierDefinition, VMCustomModifierDefinition } from '../managers/modi
 
 export interface VMComponentDefinitionWithHandle extends VMComponentDefinition {
   handle: number;
-  template: TemplateOk<TemplateMeta>;
+  template: TemplateOk;
 }
 
 export interface VMModifierDefinitionWithHandle extends VMModifierDefinition {
@@ -33,7 +33,7 @@ export interface VMHelperDefinition {
 
 export interface Modifier {
   state: unknown;
-  manager: ModifierManager;
+  manager: InternalModifierManager;
 }
 
 ///////////
@@ -94,8 +94,9 @@ export function vmDefinitionForBuiltInHelper(helper: VMHelperFactory): VMHelperD
 function createVMComponentDefinition(
   ComponentDefinition: ComponentDefinition | TemplateOnlyComponent
 ): VMComponentDefinitionWithHandle {
-  const serializedTemplate = getComponentTemplate(ComponentDefinition);
-  const template = templateFactory<TemplateMeta>(serializedTemplate!).create();
+  const serializedTemplate = getComponentTemplate(ComponentDefinition)!;
+  const scope = SCOPE_MAP.get(serializedTemplate);
+  const template = templateFactory(serializedTemplate)(scope);
 
   let definition;
 

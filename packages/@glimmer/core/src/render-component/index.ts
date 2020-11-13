@@ -28,6 +28,7 @@ import { ComponentDefinition } from '../managers/component/custom';
 
 import { OWNER_KEY, DEFAULT_OWNER } from '../owner';
 import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
+import { unwrapTemplate } from '@glimmer/util';
 
 export interface RenderComponentOptions {
   element: Element;
@@ -144,10 +145,7 @@ export function getTemplateIterator(
 
   const handle = resolver.registerRoot(ComponentClass);
   const definition = resolver.lookupComponent(handle)!;
-  const compilable = (definition.manager as WithStaticLayout).getStaticLayout(
-    definition.state,
-    resolver
-  );
+  const compilable = (definition.manager as WithStaticLayout).getStaticLayout(definition.state);
 
   let dynamicScope;
 
@@ -163,7 +161,7 @@ export function getTemplateIterator(
       builder,
       context,
       definition,
-      compilable,
+      unwrapTemplate(compilable).asLayout(),
       dictToReference(componentArgs),
       dynamicScope
     ),
