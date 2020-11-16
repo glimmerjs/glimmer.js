@@ -8,7 +8,7 @@ rehydrate({
   },
 });
 
-function rehydrate(componentMapping) {
+function rehydrate(componentMapping): void {
   const hasHydrated = new WeakSet();
   const observer = new IntersectionObserver(
     (entries) => {
