@@ -1,6 +1,6 @@
 import { createTemplate, setComponentTemplate, templateOnlyComponent } from '@glimmer/core';
 
-function toJSON(args) {
+function toJSON(args): string {
   return JSON.stringify(args);
 }
 
