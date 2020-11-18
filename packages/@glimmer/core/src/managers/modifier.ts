@@ -1,52 +1,43 @@
 import { DEBUG } from '@glimmer/env';
 import {
-  ModifierManager as VMModifierManager,
+  InternalModifierManager,
   VMArguments,
   CapturedArguments,
   Destroyable,
   DynamicScope,
+  ModifierManager,
+  ModifierCapabilitiesVersions,
+  ModifierCapabilities,
 } from '@glimmer/interfaces';
 import { UpdatableTag, createUpdatableTag, untrack } from '@glimmer/validator';
 import { assert } from '@glimmer/util';
 import { SimpleElement } from '@simple-dom/interface';
 import { TemplateArgs } from '../interfaces';
 import { argsProxyFor } from './util';
-import { getModifierManager } from '.';
 import { OWNER_KEY } from '../owner';
 import { VMModifierDefinitionWithHandle } from '../render-component/vm-definitions';
-import { registerDestructor } from '@glimmer/runtime';
+import { registerDestructor, getModifierManager, buildCapabilities } from '@glimmer/runtime';
 import { valueForRef } from '@glimmer/reference';
 
 ///////////
 
-export interface Capabilities {
-  disableAutoTracking: boolean;
-}
+export function capabilities<Version extends keyof ModifierCapabilitiesVersions>(
+  managerAPI: Version,
+  optionalFeatures: ModifierCapabilitiesVersions[Version] = {}
+): ModifierCapabilities {
+  assert(
+    managerAPI === '3.13' || managerAPI === '3.22',
+    'Invalid modifier manager compatibility specified'
+  );
 
-export type OptionalCapabilities = Partial<Capabilities>;
-
-export type ManagerAPIVersion = '3.13';
-
-export function capabilities(
-  managerAPI: ManagerAPIVersion,
-  options: OptionalCapabilities = {}
-): Capabilities {
-  assert(managerAPI === '3.13', 'Invalid component manager compatibility specified');
-
-  return {
-    disableAutoTracking: Boolean(options.disableAutoTracking),
-  };
+  return buildCapabilities({
+    disableAutoTracking: Boolean(optionalFeatures.disableAutoTracking),
+    useArgsProxy: managerAPI === '3.13' ? false : true,
+    passFactoryToCreate: managerAPI === '3.13',
+  });
 }
 
 ///////////
-
-export interface ModifierManager<ModifierStateBucket> {
-  capabilities: Capabilities;
-  createModifier(definition: unknown, args: TemplateArgs): ModifierStateBucket;
-  installModifier(instance: ModifierStateBucket, element: Element, args: TemplateArgs): void;
-  updateModifier(instance: ModifierStateBucket, args: TemplateArgs): void;
-  destroyModifier(instance: ModifierStateBucket, args: TemplateArgs): void;
-}
 
 export type ModifierDefinition<_Instance = unknown> = {};
 
@@ -55,7 +46,7 @@ export type SimpleModifier = (element: Element, ...args: unknown[]) => undefined
 interface SimpleModifierStateBucket {
   definition: SimpleModifier;
   destructor?(): void;
-  element?: Element;
+  element?: SimpleElement;
 }
 
 class SimpleModifierManager implements ModifierManager<SimpleModifierStateBucket> {
@@ -72,8 +63,12 @@ class SimpleModifierManager implements ModifierManager<SimpleModifierStateBucket
     return { definition };
   }
 
-  installModifier(bucket: SimpleModifierStateBucket, element: Element, args: TemplateArgs): void {
-    bucket.destructor = bucket.definition(element, ...args.positional);
+  installModifier(
+    bucket: SimpleModifierStateBucket,
+    element: SimpleElement,
+    args: TemplateArgs
+  ): void {
+    bucket.destructor = bucket.definition((element as unknown) as Element, ...args.positional);
     bucket.element = element;
   }
 
@@ -111,7 +106,7 @@ export class CustomModifierState<ModifierStateBucket> {
 
 export class CustomModifierManager<ModifierStateBucket>
   implements
-    VMModifierManager<
+    InternalModifierManager<
       CustomModifierState<ModifierStateBucket>,
       ModifierDefinition<ModifierStateBucket>
     > {
@@ -122,7 +117,7 @@ export class CustomModifierManager<ModifierStateBucket>
     dynamicScope: DynamicScope
   ): CustomModifierState<ModifierStateBucket> {
     const owner = valueForRef(dynamicScope.get(OWNER_KEY)) as object;
-    let delegate = getModifierManager(owner, definition);
+    let delegate = getModifierManager(owner, definition) as ModifierManager<ModifierStateBucket>;
 
     if (delegate === undefined) {
       if (DEBUG) {
@@ -156,9 +151,9 @@ export class CustomModifierManager<ModifierStateBucket>
     const { element, argsProxy, delegate, modifier } = state;
 
     if (delegate.capabilities.disableAutoTracking === true) {
-      untrack(() => delegate.installModifier(modifier, element as Element, argsProxy));
+      untrack(() => delegate.installModifier(modifier, element, argsProxy));
     } else {
-      delegate.installModifier(modifier, element as Element, argsProxy);
+      delegate.installModifier(modifier, element, argsProxy);
     }
   }
 

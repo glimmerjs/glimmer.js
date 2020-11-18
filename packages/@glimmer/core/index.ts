@@ -7,16 +7,19 @@ export {
 
 export { BaseEnvDelegate } from './src/environment/delegates';
 
-export { setComponentManager, setHelperManager, setModifierManager } from './src/managers';
+export type {
+  ModifierManager,
+  ModifierCapabilities,
+  ComponentManager,
+  ComponentCapabilities,
+} from '@glimmer/interfaces';
+
+export { setComponentManager, setModifierManager } from '@glimmer/runtime';
+export { setHelperManager } from './src/managers';
 
 export { TemplateArgs } from './src/interfaces';
 
-export {
-  ModifierManager,
-  ModifierDefinition,
-  capabilities as modifierCapabilities,
-  Capabilities as ModifierCapabilities,
-} from './src/managers/modifier';
+export { ModifierDefinition, capabilities as modifierCapabilities } from './src/managers/modifier';
 
 export {
   HelperManager,
@@ -26,10 +29,8 @@ export {
 } from './src/managers/helper';
 
 export {
-  ComponentManager,
   ComponentDefinition,
   capabilities as componentCapabilities,
-  Capabilities as ComponentCapabilities,
 } from './src/managers/component/custom';
 
 export { templateOnlyComponent } from './src/managers/component/template-only';

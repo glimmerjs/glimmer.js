@@ -68,11 +68,8 @@ export abstract class BaseEnvDelegate implements EnvironmentDelegate {
   abstract isInteractive: boolean;
   abstract protocolForURL(url: string): string;
 
-  extra = undefined;
-
-  onTransactionBegin(): void {
-    // Do nothing
-  }
+  enableDebugTooling = false;
+  owner = {};
 
   onTransactionCommit(): void {
     for (let i = 0; i < scheduledDestroyables.length; i++) {

@@ -1,28 +1,30 @@
 import { assert, unwrapTemplate } from '@glimmer/util';
 import {
-  ComponentManager as VMComponentManager,
-  ComponentCapabilities as VMComponentCapabilities,
-  Dict,
+  InternalComponentManager,
+  InternalComponentCapabilities,
   VMArguments,
   CapturedArguments,
-  RuntimeResolver,
   WithStaticLayout,
   Template,
   TemplateOk,
   Environment,
-  CompilableProgram,
   DynamicScope,
+  ComponentManager,
+  ComponentManagerWithUpdateHook,
+  ComponentManagerWithAsyncLifeCycleCallbacks,
+  ComponentCapabilitiesVersions,
+  ComponentCapabilities,
+  ComponentManagerWithAsyncUpdateHook,
+  ComponentManagerWithDestructors,
 } from '@glimmer/interfaces';
 import { valueForRef, createConstRef, Reference } from '@glimmer/reference';
 import { OWNER_KEY, DEFAULT_OWNER } from '../../owner';
 
-import { getComponentManager } from '..';
-import { TemplateMeta } from '../../template';
 import { TemplateArgs } from '../../interfaces';
 import { argsProxyFor } from '../util';
-import { registerDestructor } from '@glimmer/runtime';
+import { registerDestructor, getComponentManager, buildCapabilities } from '@glimmer/runtime';
 
-export const VM_CAPABILITIES: VMComponentCapabilities = {
+export const VM_CAPABILITIES: InternalComponentCapabilities = {
   createInstance: true,
   dynamicLayout: false,
   dynamicTag: false,
@@ -37,56 +39,34 @@ export const VM_CAPABILITIES: VMComponentCapabilities = {
   willDestroy: false,
 };
 
-export interface Capabilities {
-  asyncLifecycleCallbacks: boolean;
-  destructor: boolean;
-  updateHook: boolean;
-}
-
-export type OptionalCapabilities = Partial<Capabilities>;
-
-export type ManagerAPIVersion = '3.4' | '3.13';
-
-export function capabilities(
-  managerAPI: ManagerAPIVersion,
-  options: OptionalCapabilities = {}
-): Capabilities {
+export function capabilities<Version extends keyof ComponentCapabilitiesVersions>(
+  managerAPI: Version,
+  options: ComponentCapabilitiesVersions[Version] = {}
+): ComponentCapabilities {
   assert(
     managerAPI === '3.4' || managerAPI === '3.13',
     'Invalid component manager compatibility specified'
   );
 
-  const updateHook = managerAPI !== '3.4' ? Boolean(options.updateHook) : true;
+  let updateHook = true;
 
-  return {
-    asyncLifecycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
+  if (managerAPI === '3.13') {
+    updateHook = Boolean((options as ComponentCapabilitiesVersions['3.13']).updateHook);
+  }
+
+  return buildCapabilities({
+    asyncLifeCycleCallbacks: Boolean(options.asyncLifecycleCallbacks),
     destructor: Boolean(options.destructor),
     updateHook,
-  };
+  });
 }
 
 ///////////
 
-/**
- * This is the public facing component manager. Named `ComponentManager` so the
- * type is nice to external users, but it is different from the internal VM
- * component manager.
- */
-export interface ComponentManager<ComponentInstance> {
-  capabilities: Capabilities;
-  createComponent(definition: unknown, args: TemplateArgs): ComponentInstance;
-  getContext(instance: ComponentInstance): unknown;
-}
-
 export function hasAsyncLifecycleCallbacks<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
-): delegate is ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance> {
-  return delegate.capabilities.asyncLifecycleCallbacks;
-}
-
-export interface ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance>
-  extends ComponentManager<ComponentInstance> {
-  didCreateComponent(instance: ComponentInstance): void;
+): delegate is ComponentManagerWithAsyncLifeCycleCallbacks<ComponentInstance> {
+  return delegate.capabilities.asyncLifeCycleCallbacks;
 }
 
 export function hasUpdateHook<ComponentInstance>(
@@ -95,37 +75,16 @@ export function hasUpdateHook<ComponentInstance>(
   return delegate.capabilities.updateHook;
 }
 
-export interface ComponentManagerWithUpdateHook<ComponentInstance>
-  extends ComponentManager<ComponentInstance> {
-  updateComponent(instance: ComponentInstance, args: TemplateArgs): void;
-}
-
 export function hasAsyncUpdateHook<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
 ): delegate is ComponentManagerWithAsyncUpdateHook<ComponentInstance> {
   return hasAsyncLifecycleCallbacks(delegate) && hasUpdateHook(delegate);
 }
 
-export interface ComponentManagerWithAsyncUpdateHook<ComponentInstance>
-  extends ComponentManagerWithAsyncLifecycleCallbacks<ComponentInstance>,
-    ComponentManagerWithUpdateHook<ComponentInstance> {
-  didUpdateComponent(instance: ComponentInstance): void;
-}
-
 export function hasDestructors<ComponentInstance>(
   delegate: ComponentManager<ComponentInstance>
 ): delegate is ComponentManagerWithDestructors<ComponentInstance> {
   return delegate.capabilities.destructor;
-}
-
-export interface ComponentManagerWithDestructors<ComponentInstance>
-  extends ComponentManager<ComponentInstance> {
-  destroyComponent(instance: ComponentInstance): void;
-}
-
-export interface ComponentArguments {
-  positional: unknown[];
-  named: Dict<unknown>;
 }
 
 ///////////
@@ -157,14 +116,13 @@ export interface ComponentArguments {
 */
 export default class CustomComponentManager<ComponentInstance>
   implements
-    VMComponentManager<
+    InternalComponentManager<
       VMCustomComponentState<ComponentInstance>,
       VMCustomComponentDefinitionState<ComponentInstance>
     >,
     WithStaticLayout<
       VMCustomComponentState<ComponentInstance>,
-      VMCustomComponentDefinitionState<ComponentInstance>,
-      RuntimeResolver
+      VMCustomComponentDefinitionState<ComponentInstance>
     > {
   create(
     env: Environment,
@@ -175,7 +133,9 @@ export default class CustomComponentManager<ComponentInstance>
     const { ComponentDefinition } = definition;
     const capturedArgs = args.capture();
     const owner = valueForRef(dynamicScope.get(OWNER_KEY)) as object;
-    const delegate = getComponentManager(owner, ComponentDefinition)!;
+    const delegate = getComponentManager(owner, ComponentDefinition) as ComponentManager<
+      ComponentInstance
+    >;
 
     const argsProxy = argsProxyFor(capturedArgs, 'component');
     const component = delegate.createComponent(ComponentDefinition, argsProxy);
@@ -220,7 +180,7 @@ export default class CustomComponentManager<ComponentInstance>
 
   getCapabilities({
     capabilities,
-  }: VMCustomComponentDefinitionState<ComponentInstance>): VMComponentCapabilities {
+  }: VMCustomComponentDefinitionState<ComponentInstance>): InternalComponentCapabilities {
     return Object.assign({}, VM_CAPABILITIES, {
       updateHook: capabilities.updateHook,
     });
@@ -229,10 +189,8 @@ export default class CustomComponentManager<ComponentInstance>
   didRenderLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
   didUpdateLayout(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 
-  getStaticLayout({
-    definition,
-  }: VMCustomComponentDefinitionState<ComponentInstance>): CompilableProgram {
-    return definition.template.asLayout();
+  getStaticLayout({ definition }: VMCustomComponentDefinitionState<ComponentInstance>): Template {
+    return definition.template;
   }
 }
 
@@ -257,7 +215,7 @@ export class VMCustomComponentState<ComponentInstance> {
 
 export interface VMCustomComponentDefinitionState<ComponentInstance> {
   ComponentDefinition: ComponentDefinition<ComponentInstance>;
-  capabilities: Capabilities;
+  capabilities: ComponentCapabilities;
   definition: VMCustomComponentDefinition<ComponentInstance>;
 }
 
@@ -266,18 +224,21 @@ export const CUSTOM_COMPONENT_MANAGER = new CustomComponentManager();
 export class VMCustomComponentDefinition<ComponentInstance> {
   public state: VMCustomComponentDefinitionState<ComponentInstance>;
   public manager = CUSTOM_COMPONENT_MANAGER as CustomComponentManager<ComponentInstance>;
-  public template: TemplateOk<TemplateMeta>;
+  public template: TemplateOk;
   public handle: number;
 
   constructor(
     handle: number,
     ComponentDefinition: ComponentDefinition<ComponentInstance>,
-    template: Template<TemplateMeta>
+    template: Template
   ) {
     this.handle = handle;
     this.template = unwrapTemplate(template);
 
-    const capabilities = getComponentManager(DEFAULT_OWNER, ComponentDefinition)!.capabilities;
+    const manager = getComponentManager(DEFAULT_OWNER, ComponentDefinition) as ComponentManager<
+      ComponentInstance
+    >;
+    const capabilities = manager.capabilities;
 
     this.state = {
       ComponentDefinition,

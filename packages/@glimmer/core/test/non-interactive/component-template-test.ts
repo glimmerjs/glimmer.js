@@ -1,19 +1,35 @@
 const { module, test } = QUnit;
 
-import { getComponentTemplate, setComponentTemplate, TemplateMeta } from '../../src/template';
+import {
+  getComponentTemplate,
+  setComponentTemplate,
+  CustomSerializedTemplate,
+} from '../../src/template';
 import { SerializedTemplateWithLazyBlock } from '@glimmer/interfaces';
 
-class FakeTemplateMeta implements SerializedTemplateWithLazyBlock<TemplateMeta> {
-  block = '{}';
+class FakeTemplate implements CustomSerializedTemplate {
+  constructor(public block: string) {}
+
   meta = {
     scope: (): {} => ({}),
   };
 }
 
+function makeInternalTemplate(block: string): SerializedTemplateWithLazyBlock {
+  return {
+    block,
+    id: undefined,
+    moduleName: '(unknown module)',
+  };
+}
+
 module('component templates', () => {
   test('setting and getting', (assert) => {
-    const templateA = new FakeTemplateMeta();
-    const templateAAB = new FakeTemplateMeta();
+    const templateA = new FakeTemplate('{ "foo": "A" }');
+    const templateAAB = new FakeTemplate('{ "foo": "AAB" }');
+
+    const internalTemplateA = makeInternalTemplate('{ "foo": "A" }');
+    const internalTemplateAAB = makeInternalTemplate('{ "foo": "AAB" }');
 
     class A {}
     setComponentTemplate(templateA, A);
@@ -26,39 +42,39 @@ module('component templates', () => {
     class B {}
     class BA {}
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(A),
-      templateA,
+      internalTemplateA,
       'class A returns explicitly associated template'
     );
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(AA),
-      templateA,
+      internalTemplateA,
       'class AA returns inherited template from parent'
     );
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(AB),
-      templateA,
+      internalTemplateA,
       'class AA returns inherited template from parent'
     );
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(AAA),
-      templateA,
+      internalTemplateA,
       'class AAA returns inherited template from grandparent'
     );
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(AAB),
-      templateAAB,
+      internalTemplateAAB,
       'class AAA returns explicitly associated template'
     );
 
-    assert.strictEqual(
+    assert.deepEqual(
       getComponentTemplate(AAB),
-      templateAAB,
+      internalTemplateAAB,
       'class AAA returns explicitly associated template'
     );
 

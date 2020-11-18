@@ -3,7 +3,6 @@ import {
   ComponentDefinition as VMComponentDefinition,
   RuntimeResolver as VMRuntimeResolver,
   CompileTimeResolver as VMCompileTimeResolver,
-  Template,
   Option,
   CompileTimeComponent,
 } from '@glimmer/interfaces';
@@ -18,7 +17,7 @@ import {
 } from './vm-definitions';
 
 import { ComponentDefinition } from '../managers/component/custom';
-import { TemplateMeta } from '../template';
+import { TemplateScope } from '../template';
 import { HelperDefinition } from '../managers/helper';
 import { ifHelper } from './built-ins';
 import { DEBUG } from '@glimmer/env';
@@ -62,11 +61,6 @@ export class RuntimeResolver implements VMRuntimeResolver {
     return this.registry[handle] as U;
   }
 
-  // TODO: Make these optional
-  compilable(_locator: unknown): Template<unknown> {
-    throw new Error('Method not implemented.');
-  }
-
   lookupPartial(_name: string, _referrer?: unknown): Option<number> {
     throw new Error('Method not implemented.');
   }
@@ -83,8 +77,8 @@ export class RuntimeResolver implements VMRuntimeResolver {
 export class CompileTimeResolver implements VMCompileTimeResolver {
   constructor(private inner: RuntimeResolver) {}
 
-  lookupHelper(name: string, referrer: TemplateMeta): Option<number> {
-    const scope = referrer.scope();
+  lookupHelper(name: string, _scope: TemplateScope): Option<number> {
+    const scope = _scope();
     const { helper, handle } =
       builtInHelpers[name] || vmDefinitionForHelper(scope[name] as HelperDefinition);
 
@@ -92,8 +86,8 @@ export class CompileTimeResolver implements VMCompileTimeResolver {
     return handle;
   }
 
-  lookupModifier(name: string, referrer: TemplateMeta): Option<number> {
-    const scope = referrer.scope();
+  lookupModifier(name: string, _scope: TemplateScope): Option<number> {
+    const scope = _scope();
     const modifier = scope[name] as ModifierDefinition;
 
     const definition = vmDefinitionForModifier(modifier);
@@ -104,8 +98,8 @@ export class CompileTimeResolver implements VMCompileTimeResolver {
     return handle;
   }
 
-  lookupComponent(name: string, referrer: TemplateMeta): Option<CompileTimeComponent> {
-    const scope = referrer.scope();
+  lookupComponent(name: string, _scope: TemplateScope): Option<CompileTimeComponent> {
+    const scope = _scope();
     const ComponentDefinition = scope[name] as ComponentDefinition;
 
     if (DEBUG && ComponentDefinition === undefined) {
@@ -126,8 +120,9 @@ export class CompileTimeResolver implements VMCompileTimeResolver {
     };
   }
 
-  resolve(handle: number): unknown {
-    return this.inner.resolve(handle);
+  // TODO: Remove this in the future
+  resolve(): null {
+    return null;
   }
 
   // TODO: Make this optional
