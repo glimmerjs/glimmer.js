@@ -38,8 +38,7 @@ const scheduledDestroyComponent = gte('3.20.0-beta.4')
   };
 
 const destroy = gte('3.20.0-beta.4')
-  // @ts-ignore
-  ? Ember.__loader.require('@glimmer/runtime').destroy
+  ? Ember.destroy
   : (component:  GlimmerComponent) => {
     if (component.isDestroying) {
       return;
@@ -55,7 +54,10 @@ const destroy = gte('3.20.0-beta.4')
   };
 
 
-const registerDestructor = gte('3.20.0-beta.4')
+const registerDestructor = gte('3.22.0-beta')
+  // @ts-ignore
+  ? Ember._registerDestructor
+  : gte('3.20.0-beta.4')
   // @ts-ignore
   ? Ember.__loader.require('@glimmer/runtime').registerDestructor
   : undefined;

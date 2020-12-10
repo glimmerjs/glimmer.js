@@ -1,3 +1,6 @@
+// NOTE: DO NOT MODIFY
+//
+// This module is clobbered by ember-addon-main when used in Ember >= 3.20.0-beta.4
 const DESTROYING = new WeakMap<object, boolean>();
 const DESTROYED = new WeakMap<object, boolean>();
 
