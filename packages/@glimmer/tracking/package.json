@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/tracking",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Glimmer property tracking library",
   "keywords": [
     "ember-addon"
@@ -23,7 +23,7 @@
     "@glimmer/validator": "^0.44.0"
   },
   "devDependencies": {
-    "@glimmer/application-test-helpers": "^1.0.2",
+    "@glimmer/application-test-helpers": "^1.0.3",
     "@glimmer/compiler": "^0.44.0",
     "@glimmer/interfaces": "^0.44.0",
     "@glimmer/resolver": "^0.3.0",
