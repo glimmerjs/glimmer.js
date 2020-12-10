@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.3 (2020-12-10)
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#321](https://github.com/glimmerjs/glimmer.js/pull/321) Ensure stability of destroyable APIs in Ember 3.22+. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([rwjblue](https://github.com/rwjblue))
+
 ## v1.0.2 (2020-09-18)
 
 #### :bug: Bug Fix
