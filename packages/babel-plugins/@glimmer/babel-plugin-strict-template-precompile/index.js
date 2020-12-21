@@ -56,9 +56,9 @@ module.exports = function strictTemplatePrecompile(babel, options) {
             );
           }
 
-          scope = t.arrowFunctionExpression([], scopePath.node);
+          scope = scopePath.node;
         } else {
-          scope = t.arrowFunctionExpression([], t.objectExpression([]));
+          scope = t.objectExpression([]);
         }
 
         const { type } = templatePath.node;
@@ -90,31 +90,45 @@ module.exports = function strictTemplatePrecompile(babel, options) {
 };
 
 function _precompileTemplate(parse, templateString, scopeNode, precompileOptions) {
-  const compiled = precompile(templateString, precompileOptions);
+  const localsMap = scopeNode.properties.reduce((map, property) => {
+    // Object keys can either be identifiers or literals
+    const keyName = t.isIdentifier(property.key)
+      ? property.key.name
+      : property.key.value.toString();
+    if (!t.isIdentifier(property.value)) {
+      throw new Error(
+        `Currently the babel-plugin-strict-template-precompile only supports identifiers as values for the imported values object literal. Received: ${property.value.type}`
+      );
+    }
+    map[keyName] = property.value.name;
+    return map;
+  }, {});
+
+  const compiled = precompile(templateString, {
+    ...precompileOptions,
+    strictMode: true,
+    locals: Object.keys(localsMap),
+  });
   const ast = parse(`(${compiled})`);
 
-  let metaSeen = false;
-
   t.traverseFast(ast, (node) => {
-    if (t.isObjectProperty(node)) {
-      if (node.key.value === 'meta') {
-        metaSeen = true;
-        node.value.properties.push(t.objectProperty(t.identifier('scope'), scopeNode));
-      }
-      if (t.isStringLiteral(node.key)) {
-        node.key = t.identifier(node.key.value);
-      }
+    if (
+      t.isObjectProperty(node) &&
+      node.key.value === 'scope' &&
+      t.isArrowFunctionExpression(node.value)
+    ) {
+      const scopeFnNode = node.value;
+      const scopeArray = scopeFnNode.body.elements;
+      scopeArray.forEach((scopeElementNode) => {
+        if (
+          t.isIdentifier(scopeElementNode) &&
+          scopeElementNode.name !== localsMap[scopeElementNode.name]
+        ) {
+          scopeElementNode.name = localsMap[scopeElementNode.name];
+        }
+      });
     }
   });
-
-  if (metaSeen === false) {
-    ast.program.body[0].expression.properties.push(
-      t.objectProperty(
-        t.identifier('meta'),
-        t.objectExpression([t.objectProperty(t.identifier('scope'), scopeNode)])
-      )
-    );
-  }
 
   return ast;
 }
@@ -130,16 +144,13 @@ function _precompileTemplate(parse, templateString, scopeNode, precompileOptions
  * @param precompileOptions object - the options to be passed to the compiler
  */
 function precompileTemplate(templateString, importIdentifiers = [], precompileOptions = {}) {
-  const scope = t.arrowFunctionExpression(
-    [],
-    t.objectExpression(
-      importIdentifiers.map((id) => t.objectProperty(t.identifier(id), t.identifier(id)))
-    )
+  const scope = t.objectExpression(
+    importIdentifiers.map((id) => t.objectProperty(t.identifier(id), t.identifier(id)))
   );
 
   let ast = _precompileTemplate(parse, templateString, scope, precompileOptions);
 
   return generate(ast).code;
 }
-
+// TODO: Is this still required with the new strict mode precompile function from the vm?
 module.exports.precompileTemplate = precompileTemplate;

@@ -1,5 +1,5 @@
 import { createTemplate } from '@glimmer/core';
 
-createTemplate(`<Component/>`);
+createTemplate(`<h1>Hello World</h1>`);
 
-createTemplate('<Component/>');
+createTemplate('<h1>Hello World</h1>');

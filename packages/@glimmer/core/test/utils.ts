@@ -12,7 +12,6 @@ import { tracked as glimmerTracked } from '@glimmer/tracking';
 
 import TrackedObject from './utils/tracked-object';
 
-export const module = QUnit.module;
 export const test = QUnit.test;
 
 const IS_INTERACTIVE = typeof document !== 'undefined';
@@ -21,7 +20,7 @@ export async function render(
   component: ComponentDefinition | SerializedTemplateWithLazyBlock,
   options?: HTMLElement | Partial<RenderComponentOptions>
 ): Promise<string> {
-  if ('id' in component && 'block' in component && 'meta' in component) {
+  if ('id' in component && 'block' in component) {
     const template = component;
 
     component = setComponentTemplate(template, templateOnlyComponent());

@@ -10,10 +10,9 @@ import {
   templateOnlyComponent,
 } from '@glimmer/core';
 
-import { module, test, render } from '../utils';
-import { DEBUG } from '@glimmer/env';
+import { test, render } from '../utils';
 
-module(`[@glimmer/core] non-interactive rendering tests`, () => {
+QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('it renders a component', async (assert) => {
     class MyComponent extends Component {}
 
@@ -152,24 +151,6 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     });
   });
 
-  test('inline if cannot be overwritten', async function (assert) {
-    class Main extends Component {
-      pred = true;
-      salutation = 'Glimmer';
-      alternative = 'Glimmer.js';
-    }
-
-    setComponentTemplate(
-      createTemplate(
-        { if: () => assert.ok(false, 'custom if was called') },
-        'Hello {{if this.pred this.salutation this.alternative}}!'
-      ),
-      Main
-    );
-
-    assert.equal(await render(Main), 'Hello Glimmer!', 'output is correct');
-  });
-
   // test('can render a component with the component helper', async function(assert) {
   //   const HelloWorld = templateOnlyComponent();
 
@@ -266,40 +247,4 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     const html = await render(MyComponent, { args: { src: './logo.svg' } });
     assert.strictEqual(html, '<img src="./logo.svg">', 'the template was rendered');
   });
-
-  if (DEBUG) {
-    test('accessing properties in template-only components produces a helpful error in development mode', async function (assert) {
-      assert.expect(1);
-
-      const component = setComponentTemplate(
-        createTemplate('<h1>Hello, {{this.name}}!</h1>'),
-        templateOnlyComponent()
-      );
-
-      try {
-        await render(component);
-      } catch (err) {
-        assert.ok(
-          err.message.match(
-            'You attempted to access `this` on a template only component, template-only-component. Template only components do not have a `this` context, and can only access arguments'
-          )
-        );
-      }
-    });
-  } else {
-    test('accessing properties in template-only components produces an exception in production mode', async function (assert) {
-      assert.expect(1);
-
-      const component = setComponentTemplate(
-        createTemplate('<h1>Hello, {{this.name}}!</h1>'),
-        templateOnlyComponent()
-      );
-
-      try {
-        await render(component);
-      } catch (err) {
-        assert.ok(err instanceof TypeError);
-      }
-    });
-  }
 });

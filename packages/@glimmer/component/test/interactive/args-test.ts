@@ -2,9 +2,9 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 import { setComponentTemplate, createTemplate } from '@glimmer/core';
-import { module, test, render, settled } from '@glimmer/core/test/utils';
+import { test, render, settled } from '@glimmer/core/test/utils';
 
-module('[@glimmer/component] Component Arguments', () => {
+QUnit.module('[@glimmer/component] Component Arguments', () => {
   test('Getters that depend on `args` re-render correctly', async function (assert) {
     assert.expect(2);
 

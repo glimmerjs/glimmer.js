@@ -1,21 +1,15 @@
 import Component from './component';
 ({
-  id: "mtRxClUL",
-  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
-  moduleName: "(unknown template module)",
-  meta: {
-    scope: () => ({
-      Component
-    })
-  }
+  "id": "zK8QcLjf",
+  "block": "[[[8,[32,0],null,null,null]],[],false,[]]",
+  "moduleName": "(unknown template module)",
+  "scope": () => [Component],
+  "isStrictMode": true
 });
 ({
-  id: "mtRxClUL",
-  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
-  moduleName: "(unknown template module)",
-  meta: {
-    scope: () => ({
-      Component
-    })
-  }
+  "id": "zK8QcLjf",
+  "block": "[[[8,[32,0],null,null,null]],[],false,[]]",
+  "moduleName": "(unknown template module)",
+  "scope": () => [Component],
+  "isStrictMode": true
 });

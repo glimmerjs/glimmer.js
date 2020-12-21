@@ -1,2 +1,2 @@
-export { on } from './src/on';
+export { on } from '@glimmer/runtime';
 export { action } from './src/action';

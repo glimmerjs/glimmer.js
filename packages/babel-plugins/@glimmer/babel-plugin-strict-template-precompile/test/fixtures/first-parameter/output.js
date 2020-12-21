@@ -1,16 +1,14 @@
 ({
-  id: "mtRxClUL",
-  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
-  moduleName: "(unknown template module)",
-  meta: {
-    scope: () => ({})
-  }
+  "id": "gPHf663l",
+  "block": "[[[10,\"h1\"],[12],[1,\"Hello World\"],[13]],[],false,[]]",
+  "moduleName": "(unknown template module)",
+  "scope": null,
+  "isStrictMode": true
 });
 ({
-  id: "mtRxClUL",
-  block: "{\"symbols\":[],\"statements\":[[8,\"Component\",[],[[],[]],null]],\"hasEval\":false,\"upvars\":[]}",
-  moduleName: "(unknown template module)",
-  meta: {
-    scope: () => ({})
-  }
+  "id": "gPHf663l",
+  "block": "[[[10,\"h1\"],[12],[1,\"Hello World\"],[13]],[],false,[]]",
+  "moduleName": "(unknown template module)",
+  "scope": null,
+  "isStrictMode": true
 });

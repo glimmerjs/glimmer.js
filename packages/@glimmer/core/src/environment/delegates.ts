@@ -31,6 +31,16 @@ setGlobalContext({
     return obj[key];
   },
 
+  setPath(obj: Record<string, unknown>, key: string, newValue: unknown) {
+    if (DEBUG && key.includes('.')) {
+      throw new Error(
+        'You attempted to set a path with a `.` in it, but Glimmer.js does not support paths with dots.'
+      );
+    }
+
+    obj[key] = newValue;
+  },
+
   scheduleRevalidate,
 
   toBool,
