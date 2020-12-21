@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-expression */
-const { module, test } = QUnit;
+const { test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
 import { track, valueForTag, validateTag } from '@glimmer/validator';
@@ -14,7 +14,7 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
   ['Babel', BabelFixtures],
   ['TypeScript', TSFixtures],
 ].forEach(([compiler, F]) => {
-  module(`[@glimmer/tracking] Tracked Property Decorators with ${compiler}`);
+  QUnit.module(`[@glimmer/tracking] Tracked Property Decorators with ${compiler}`);
 
   test('tracked properties can be read and written to', (assert) => {
     const obj = new F.Tom();

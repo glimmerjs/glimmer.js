@@ -1,1 +1,1 @@
-export { default as fn } from './src/fn';
+export { fn } from '@glimmer/runtime';

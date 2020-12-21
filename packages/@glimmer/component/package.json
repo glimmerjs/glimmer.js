@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/util": "0.65.0",
+    "@glimmer/util": "0.73.0",
     "@glimmer/core": "2.0.0-beta.11",
     "broccoli-file-creator": "^2.1.1",
     "broccoli-merge-trees": "^3.0.2",
@@ -43,11 +43,11 @@
   "devDependencies": {
     "@ember/optional-features": "^0.6.1",
     "@glimmer/application-test-helpers": "^1.0.0",
-    "@glimmer/compiler": "0.65.0",
-    "@glimmer/interfaces": "0.65.0",
+    "@glimmer/compiler": "0.73.0",
+    "@glimmer/interfaces": "0.73.0",
     "@glimmer/resolver": "^0.3.0",
     "@glimmer/tracking": "2.0.0-beta.11",
-    "@glimmer/wire-format": "0.65.0",
+    "@glimmer/wire-format": "0.73.0",
     "@types/ember": "~3.0.29",
     "@types/ember-qunit": "~3.4.3",
     "@types/ember-test-helpers": "~1.0.6",

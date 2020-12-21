@@ -1,8 +1,8 @@
 import { createTemplate } from '@glimmer/core';
 
-import { module, test, render } from '../utils';
+import { test, render } from '../utils';
 
-module(`[@glimmer/core] interactive rendering tests`, () => {
+QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
   test('renders multiple components in different places', async (assert) => {
     assert.expect(2);
 

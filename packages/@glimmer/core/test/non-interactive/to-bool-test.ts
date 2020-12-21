@@ -2,9 +2,9 @@ import Component from '@glimmer/component';
 
 import { setComponentTemplate, createTemplate } from '@glimmer/core';
 
-import { module, test, render } from '../utils';
+import { test, render } from '../utils';
 
-module(`[@glimmer/core] non-interactive rendering tests`, () => {
+QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test(`normal if treats empty arrays as falsy`, async function (assert) {
     class Main extends Component {
       pred = [];

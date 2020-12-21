@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 
-import { module, test, render } from '../utils';
+import { test, render } from '../utils';
 import { setComponentTemplate, createTemplate } from '@glimmer/core';
 
 function freeze<T>(array: T[]): ReadonlyArray<Readonly<T>> {
@@ -18,7 +18,7 @@ class HelloWorld extends Component {
   frozenObjects = freeze(this.objects);
 }
 
-module('[@glimmer/core] each helper', () => {
+QUnit.module('[@glimmer/core] each helper', () => {
   test('throw error if unknown special key used as key for #each', function (assert) {
     const Component = class extends HelloWorld {};
 
