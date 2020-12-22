@@ -1,3 +1,20 @@
+## v2.0.0-beta.12 (2020-12-21)
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#324](https://github.com/glimmerjs/glimmer.js/pull/324) Updating glimmer-vm to 0.73.0 ([@chiragpat](https://github.com/chiragpat))
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#317](https://github.com/glimmerjs/glimmer.js/pull/317) [FEAT] Upgrade to Glimmer VM v0.65.0 ([@pzuraq](https://github.com/pzuraq))
+* `example-apps`
+  * [#318](https://github.com/glimmerjs/glimmer.js/pull/318) Intersection observer ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 3
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v2.0.0-beta.11 (2020-10-26)
 
 #### :rocket: Enhancement
