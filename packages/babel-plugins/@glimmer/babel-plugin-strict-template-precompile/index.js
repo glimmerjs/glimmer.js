@@ -17,10 +17,10 @@ module.exports = function strictTemplatePrecompile(babel, options) {
         const importedName = path.node.imported.name;
         const localName = path.node.local.name;
 
-        if (importedName === 'createTemplate') {
+        if (importedName === 'precompileTemplate') {
           state.templateImportId = localName;
 
-          // remove the createTemplate named import
+          // remove the precompileTemplate named import
           if (path.parentPath.node.specifiers.length > 1) {
             path.remove();
           } else {
@@ -35,7 +35,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
         }
 
         if (path.node.arguments.length === 0 || path.node.arguments.length > 2) {
-          throw new Error('`createTemplate()` must receive exactly one or two arguments');
+          throw new Error('`precompileTemplate()` must receive exactly one or two arguments');
         }
 
         let scopePath, templatePath;
@@ -52,7 +52,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
         if (scopePath) {
           if (scopePath.type !== 'ObjectExpression') {
             throw new Error(
-              `createTemplate() must receive an object literal with all of the imported values for the template as its scope parameter, received: ${scopePath.type}`
+              `precompileTemplate() must receive an object literal with all of the imported values for the template as its scope parameter, received: ${scopePath.type}`
             );
           }
 
@@ -69,7 +69,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
           if (type === 'TemplateLiteral') {
             if (templatePath.node.quasis.length > 1 || templatePath.node.expressions.length > 0) {
               throw new Error(
-                'template strings passed to the `createTemplate()` function may not have any dynamic segments'
+                'template strings passed to the `precompileTemplate()` function may not have any dynamic segments'
               );
             }
 
@@ -82,7 +82,7 @@ module.exports = function strictTemplatePrecompile(babel, options) {
 
           path.replaceWith(ast.program.body[0].expression);
         } else {
-          throw new Error(`createTemplate() must receive a template string, received: ${type}`);
+          throw new Error(`precompileTemplate() must receive a template string, received: ${type}`);
         }
       },
     },

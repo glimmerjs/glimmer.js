@@ -1,5 +1,5 @@
-import { createTemplate } from '@glimmer/core';
+import { precompileTemplate } from '@glimmer/core';
 
-createTemplate(`<h1>Hello World</h1>`);
+precompileTemplate(`<h1>Hello World</h1>`);
 
-createTemplate('<h1>Hello World</h1>');
+precompileTemplate('<h1>Hello World</h1>');

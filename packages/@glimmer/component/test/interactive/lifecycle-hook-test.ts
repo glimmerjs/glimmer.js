@@ -2,7 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
 import { test, render, settled } from '@glimmer/core/test/utils';
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
 QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
   test('Lifecycle hook ordering', async function (assert) {
@@ -37,7 +37,7 @@ QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
     class Component5 extends HookLoggerComponent {}
 
     setComponentTemplate(
-      createTemplate(
+      precompileTemplate(
         { Component2, Component3 },
         `
           {{#if this.showChildren}}
@@ -50,7 +50,7 @@ QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
     );
 
     setComponentTemplate(
-      createTemplate(
+      precompileTemplate(
         { Component4, Component5 },
         `
           {{@firstName}}
@@ -61,7 +61,7 @@ QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
       Component2
     );
 
-    const emptyTemplate = createTemplate('');
+    const emptyTemplate = precompileTemplate('');
 
     setComponentTemplate(emptyTemplate, Component3);
     setComponentTemplate(emptyTemplate, Component4);

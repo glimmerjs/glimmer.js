@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { createTemplate, setComponentTemplate } from '@glimmer/core';
+import { precompileTemplate, setComponentTemplate } from '@glimmer/core';
 import { on, action } from '@glimmer/modifier';
 import RehydratableRegion from './RehydratableRegion';
 
@@ -13,7 +13,7 @@ class RehydratableCounter extends Component {
 }
 
 setComponentTemplate(
-  createTemplate(
+  precompileTemplate(
     { on, RehydratableRegion },
     `<RehydratableRegion @name="RehydratableCounter" @data={{this.args}}>
       <h1>{{@message}}</h1>

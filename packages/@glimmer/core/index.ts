@@ -31,4 +31,4 @@ export {
 
 export { getOwner, setOwner } from '@glimmer/owner';
 
-export { createTemplate, setComponentTemplate } from './src/template';
+export { precompileTemplate, setComponentTemplate } from './src/template';

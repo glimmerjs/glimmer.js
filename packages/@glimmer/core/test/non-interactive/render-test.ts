@@ -5,7 +5,7 @@ import { on, action } from '@glimmer/modifier';
 
 import {
   setComponentTemplate,
-  createTemplate,
+  precompileTemplate,
   getOwner,
   templateOnlyComponent,
 } from '@glimmer/core';
@@ -16,7 +16,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('it renders a component', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(createTemplate(`<h1>Hello world</h1>`), MyComponent);
+    setComponentTemplate(precompileTemplate(`<h1>Hello world</h1>`), MyComponent);
 
     const html = await render(MyComponent);
     assert.strictEqual(html, '<h1>Hello world</h1>', 'the template was rendered');
@@ -26,11 +26,11 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('a component can render a nested component', async (assert) => {
     class OtherComponent extends Component {}
 
-    setComponentTemplate(createTemplate(`Hello world`), OtherComponent);
+    setComponentTemplate(precompileTemplate(`Hello world`), OtherComponent);
 
     class MyComponent extends Component {}
     setComponentTemplate(
-      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
+      precompileTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
       MyComponent
     );
 
@@ -41,20 +41,20 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
 
   test('a component can render multiple nested components', async (assert) => {
     class Foo extends Component {}
-    setComponentTemplate(createTemplate(`Foo`), Foo);
+    setComponentTemplate(precompileTemplate(`Foo`), Foo);
 
     class Bar extends Component {}
-    setComponentTemplate(createTemplate(`Bar`), Bar);
+    setComponentTemplate(precompileTemplate(`Bar`), Bar);
 
     class OtherComponent extends Component {}
     setComponentTemplate(
-      createTemplate({ Foo, Bar }, `Hello world <Foo /><Bar />`),
+      precompileTemplate({ Foo, Bar }, `Hello world <Foo /><Bar />`),
       OtherComponent
     );
 
     class MyComponent extends Component {}
     setComponentTemplate(
-      createTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
+      precompileTemplate({ OtherComponent }, `<h1><OtherComponent /></h1>`),
       MyComponent
     );
 
@@ -65,7 +65,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
 
   test('custom elements are rendered', async function (assert) {
     const component = setComponentTemplate(
-      createTemplate('<hello-world>foo</hello-world>'),
+      precompileTemplate('<hello-world>foo</hello-world>'),
       templateOnlyComponent()
     );
 
@@ -75,7 +75,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('a component can render with args', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(createTemplate('<h1>{{@say}}</h1>'), MyComponent);
+    setComponentTemplate(precompileTemplate('<h1>{{@say}}</h1>'), MyComponent);
 
     const renderOptions = {
       args: {
@@ -97,12 +97,12 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     const HelloWorld = setComponentTemplate(
-      createTemplate('{{yield @name}}!'),
+      precompileTemplate('{{yield @name}}!'),
       templateOnlyComponent()
     );
 
     setComponentTemplate(
-      createTemplate(
+      precompileTemplate(
         { HelloWorld },
         '<HelloWorld @name={{this.salutation}} as |name|>{{name}}</HelloWorld>'
       ),
@@ -132,7 +132,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
 
       setComponentTemplate(
-        createTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
+        precompileTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
         Main
       );
 
@@ -154,14 +154,14 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   // test('can render a component with the component helper', async function(assert) {
   //   const HelloWorld = templateOnlyComponent();
 
-  //   setComponentTemplate(HelloWorld, createTemplate('<h1>Hello {{@name}}!</h1>'));
+  //   setComponentTemplate(HelloWorld, precompileTemplate('<h1>Hello {{@name}}!</h1>'));
 
   //   class MainComponent extends Component {
   //     salutation = 'Glimmer';
   //     HelloWorld = HelloWorld;
   //   }
 
-  //   setComponentTemplate(MainComponent, createTemplate('{{component this.HelloWorld name=salutation}}'));
+  //   setComponentTemplate(MainComponent, precompileTemplate('{{component this.HelloWorld name=salutation}}'));
 
   //   assert.equal(await render(MainComponent), 'Hello Glimmer!');
   // });
@@ -185,7 +185,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
       }
     }
 
-    setComponentTemplate(createTemplate('<h1>{{this.myLocale}}</h1>'), MyComponent);
+    setComponentTemplate(precompileTemplate('<h1>{{this.myLocale}}</h1>'), MyComponent);
 
     const html = await render(MyComponent, {
       owner: new Owner(),
@@ -197,7 +197,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('a component can be rendered more than once', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(createTemplate(`<h1>Bump</h1>`), MyComponent);
+    setComponentTemplate(precompileTemplate(`<h1>Bump</h1>`), MyComponent);
 
     let html = await render(MyComponent);
     assert.strictEqual(html, '<h1>Bump</h1>', 'the component rendered');
@@ -219,7 +219,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      createTemplate(
+      precompileTemplate(
         { on },
         `<button {{on "click" this.incrementCounter}}>Count: {{this.count}}</button>`
       ),
@@ -233,7 +233,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('it can set a dynamic href on an anchor', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(createTemplate(`<a href={{@href}}>Link</a>`), MyComponent);
+    setComponentTemplate(precompileTemplate(`<a href={{@href}}>Link</a>`), MyComponent);
 
     const html = await render(MyComponent, { args: { href: 'www.example.com' } });
     assert.strictEqual(html, '<a href="www.example.com">Link</a>', 'the template was rendered');
@@ -242,7 +242,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test('it can set a dynamic src on an img', async (assert) => {
     class MyComponent extends Component {}
 
-    setComponentTemplate(createTemplate(`<img src={{@src}}/>`), MyComponent);
+    setComponentTemplate(precompileTemplate(`<img src={{@src}}/>`), MyComponent);
 
     const html = await render(MyComponent, { args: { src: './logo.svg' } });
     assert.strictEqual(html, '<img src="./logo.svg">', 'the template was rendered');

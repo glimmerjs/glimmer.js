@@ -1,3 +1,3 @@
-import { createTemplate } from '@glimmer/core';
+import { precompileTemplate } from '@glimmer/core';
 
-createTemplate(`<NonExistent/>`);
+precompileTemplate(`<NonExistent/>`);
