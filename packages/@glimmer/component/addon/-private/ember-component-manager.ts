@@ -11,7 +11,8 @@ import BaseComponentManager, {
 } from './base-component-manager';
 
 import GlimmerComponent, { Constructor } from './component';
-import { setDestroyed, setDestroying } from './destroyables';
+import * as destroyables from './destroyables';
+const { setDestroyed, setDestroying } = destroyables;
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
