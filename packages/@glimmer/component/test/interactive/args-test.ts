@@ -14,7 +14,7 @@ QUnit.module('[@glimmer/component] Component Arguments', () => {
       @tracked firstName = 'Tom';
       @tracked status = 'is dope';
 
-      constructor(owner: unknown, args: {}) {
+      constructor(owner: object, args: {}) {
         super(owner, args);
         parent = this;
       }

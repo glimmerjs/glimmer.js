@@ -3,7 +3,7 @@ import { ComponentManager, ComponentCapabilities, TemplateArgs } from '@glimmer/
 import BaseComponent, { ARGS_SET } from './component';
 
 export interface Constructor<T> {
-  new (owner: unknown, args: {}): T;
+  new (owner: unknown, args: Record<string, unknown>): T;
 }
 
 export default abstract class BaseComponentManager<GlimmerComponent extends BaseComponent>

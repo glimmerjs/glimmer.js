@@ -9,6 +9,7 @@ export function action(_target: {}, _key: string, desc?: PropertyDescriptor): Pr
     enumerable: desc!.enumerable,
     configurable: desc!.configurable,
 
+    // eslint-disable-next-line @typescript-eslint/ban-types
     get(): Function {
       let bindings = BINDINGS_MAP.get(this);
       if (bindings === undefined) {

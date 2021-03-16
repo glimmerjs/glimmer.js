@@ -5,7 +5,7 @@ import { DEBUG } from '@glimmer/env';
 import { track, valueForTag, validateTag } from '@glimmer/validator';
 
 import * as TSFixtures from './fixtures/typescript';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as BabelFixtures from './fixtures/babel';
 import { assertValidAfterUnrelatedBump } from './helpers/tags';

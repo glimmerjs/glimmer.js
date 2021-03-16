@@ -34,7 +34,7 @@ describe('precompileTemplate', () => {
     let precompiled = precompileTemplate(`<h1>Hello World</h1>`);
 
     expect(precompiled).to.equal(`({
-  "id": "gPHf663l",
+  "id": null,
   "block": "[[[10,\\"h1\\"],[12],[1,\\"Hello World\\"],[13]],[],false,[]]",
   "moduleName": "(unknown template module)",
   "scope": null,
@@ -46,7 +46,7 @@ describe('precompileTemplate', () => {
     let precompiled = precompileTemplate(`<Component/>`, ['Component']);
 
     expect(precompiled).to.equal(`({
-  "id": "zK8QcLjf",
+  "id": null,
   "block": "[[[8,[32,0],null,null,null]],[],false,[]]",
   "moduleName": "(unknown template module)",
   "scope": () => [Component],
@@ -62,7 +62,7 @@ describe('precompileTemplate', () => {
     );
 
     expect(precompiled).to.equal(`({
-  "id": "iQBI6eOx",
+  "id": null,
   "block": "[[[10,\\"h1\\"],[12],[1,\\"Hello world\\"],[13]],[],false,[]]",
   "moduleName": "(unknown template module)",
   "scope": null,
