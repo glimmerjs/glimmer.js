@@ -12,7 +12,7 @@ QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
     let component1: Component1;
 
     abstract class HookLoggerComponent extends Component<{ name: string }> {
-      constructor(owner: unknown, args: { name: string }) {
+      constructor(owner: object, args: { name: string }) {
         super(owner, args);
         invocations.push([this.args.name, 'constructor']);
       }
@@ -26,7 +26,7 @@ QUnit.module('[@glimmer/component] Lifecycle Hooks', () => {
       @tracked firstName = 'Chirag';
       @tracked showChildren = true;
 
-      constructor(owner: unknown, args: { name: string }) {
+      constructor(owner: object, args: { name: string }) {
         super(owner, args);
         component1 = this;
       }

@@ -23,14 +23,14 @@
   ],
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/validator": "0.73.0"
+    "@glimmer/validator": "0.77.3"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^1.0.0",
-    "@glimmer/compiler": "0.73.0",
-    "@glimmer/interfaces": "0.73.0",
+    "@glimmer/compiler": "0.77.3",
+    "@glimmer/interfaces": "0.77.3",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "0.73.0"
+    "@glimmer/wire-format": "0.77.3"
   },
   "ember-addon": {
     "main": "ember-addon-main.js"

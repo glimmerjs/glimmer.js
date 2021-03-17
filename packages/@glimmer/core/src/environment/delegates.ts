@@ -65,6 +65,18 @@ setGlobalContext({
   warnIfStyleNotTrusted() {
     // Do nothing
   },
+
+  assert(test: unknown, msg: string) {
+    if (!test) {
+      throw new Error(msg);
+    }
+  },
+
+  deprecate(msg: string, test: unknown) {
+    if (!test) {
+      console.warn(msg);
+    }
+  },
 });
 
 /**

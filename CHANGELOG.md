@@ -2,7 +2,7 @@
 
 #### :boom: Breaking Change
 * `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
-  * [#324](https://github.com/glimmerjs/glimmer.js/pull/324) Updating glimmer-vm to 0.73.0 ([@chiragpat](https://github.com/chiragpat))
+  * [#324](https://github.com/glimmerjs/glimmer.js/pull/324) Updating glimmer-vm to 0.77.3 ([@chiragpat](https://github.com/chiragpat))
 
 #### :house: Internal
 * `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`

@@ -181,7 +181,7 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
 
     class MyComponent extends Component {
       get myLocale(): string {
-        return getOwner<Owner>(this).services.locale.currentLocale;
+        return getOwner<Owner>(this)!.services.locale.currentLocale;
       }
     }
 
