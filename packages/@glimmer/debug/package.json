@@ -1,0 +1,18 @@
+{
+  "name": "@glimmer/debug",
+  "version": "2.0.0-beta.12",
+  "description": "Debug Functionality",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/modules/index.js",
+  "repository": "https://github.com/glimmerjs/glimmer.js/tree/master/packages/@glimmer/debug",
+  "author": "Tom Dale <tom@tomdale.net>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@glimmer/global-context": "0.77.3"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
+  }
+}

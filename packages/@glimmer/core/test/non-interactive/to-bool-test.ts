@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
 import { test, render } from '../utils';
 
@@ -13,7 +13,9 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      createTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
+      precompileTemplate('Hello {{if this.pred this.salutation this.alternative}}!', {
+        strictMode: true,
+      }),
       Main
     );
 
@@ -26,7 +28,9 @@ QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      createTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!'),
+      precompileTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!', {
+        strictMode: true,
+      }),
       Main
     );
 

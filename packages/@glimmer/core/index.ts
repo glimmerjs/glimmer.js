@@ -16,19 +16,19 @@ export type {
   HelperManager,
 } from '@glimmer/interfaces';
 
+export { templateFactory as createTemplateFactory } from '@glimmer/opcode-compiler';
 export { templateOnlyComponent } from '@glimmer/runtime';
-
-export { TemplateArgs } from './src/interfaces';
 
 export {
   setComponentManager,
   setModifierManager,
-  modifierCapabilities,
   setHelperManager,
   componentCapabilities,
+  modifierCapabilities,
   helperCapabilities,
+  setComponentTemplate,
 } from '@glimmer/manager';
 
 export { getOwner, setOwner } from '@glimmer/owner';
 
-export { createTemplate, setComponentTemplate } from './src/template';
+export { precompileTemplate } from './src/template';

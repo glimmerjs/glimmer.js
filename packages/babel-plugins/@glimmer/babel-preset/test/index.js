@@ -1,4 +1,3 @@
-import plugin from '..';
 import pluginTester from 'babel-plugin-tester';
 import path from 'path';
 
@@ -7,7 +6,11 @@ import path from 'path';
 const packageRootPath = path.resolve(__dirname, '..');
 
 pluginTester({
-  plugin,
+  plugin() {
+    return {
+      name: 'dummy plugin',
+    };
+  },
   babelOptions: {
     cwd: packageRootPath,
     root: packageRootPath,

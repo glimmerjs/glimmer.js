@@ -1,25 +1,19 @@
 import { DEBUG } from '@glimmer/env';
-import { setComponentTemplate as vmSetComponentTemplate } from '@glimmer/manager';
-import { SerializedTemplateWithLazyBlock, Dict } from '@glimmer/interfaces';
-import { templateFactory } from '@glimmer/opcode-compiler';
+import { TemplateFactory } from '@glimmer/interfaces';
 
-// This is provided by the `babel-plugin-strict-template-precompile` plugin
-export let createTemplate: (
-  scopeOrTemplate: Dict<unknown> | string,
-  template?: string
-) => SerializedTemplateWithLazyBlock;
+// This is provided by `@glimmer/babel-preset`
+export let precompileTemplate: (
+  template: string,
+  options?: {
+    strictMode?: boolean;
+    scope?: Record<string, unknown>;
+  }
+) => TemplateFactory;
 
 if (DEBUG) {
-  createTemplate = (): SerializedTemplateWithLazyBlock => {
+  precompileTemplate = (): TemplateFactory => {
     throw new Error(
-      'createTemplate() is meant to be preprocessed with a babel plugin, @glimmer/babel-plugin-strict-template-precompile. If you are seeing this error message, it means that you do not have this babel plugin installed, or it is not enabled correctly'
+      'precompileTemplate() is meant to be preprocessed with babel, using @glimmer/babel-preset. If you are seeing this error message, it means that you do not have this babel preset installed, or it is not enabled correctly'
     );
   };
-}
-
-export function setComponentTemplate(
-  template: SerializedTemplateWithLazyBlock,
-  ComponentClass: object
-): object {
-  return vmSetComponentTemplate(templateFactory(template), ComponentClass);
 }

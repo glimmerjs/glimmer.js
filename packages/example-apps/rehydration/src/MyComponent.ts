@@ -1,6 +1,6 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { createTemplate, setComponentTemplate } from '@glimmer/core';
+import { precompileTemplate, setComponentTemplate } from '@glimmer/core';
 import { on, action } from '@glimmer/modifier';
 
 class MyComponent extends Component {
@@ -12,11 +12,11 @@ class MyComponent extends Component {
 }
 
 setComponentTemplate(
-  createTemplate(
-    { on },
+  precompileTemplate(
     `<p>You have clicked the button {{this.count}} times.</p>
      <button {{on "click" this.increment}}>Click</button>
-    `
+    `,
+    { strictMode: true, scope: { on } }
   ),
   MyComponent
 );

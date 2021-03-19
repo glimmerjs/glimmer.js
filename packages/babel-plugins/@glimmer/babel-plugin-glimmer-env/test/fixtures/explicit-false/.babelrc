@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    ["@glimmer/babel-plugin-glimmer-env", { "DEBUG": false }]
-  ]
-}

@@ -3,7 +3,7 @@ import Component from '@glimmer/component';
 import { fn } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
 
-import { setComponentTemplate, createTemplate, templateOnlyComponent } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate, templateOnlyComponent } from '@glimmer/core';
 
 QUnit.module('[@glimmer/core] interactive - {{fn}}', () => {
   test('can curry arguments via fn', async function (assert) {
@@ -29,9 +29,12 @@ QUnit.module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      createTemplate(
-        { on, fn },
-        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>'
+      precompileTemplate(
+        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>',
+        {
+          strictMode: true,
+          scope: { on, fn },
+        }
       ),
       HelloWorld
     );
@@ -82,23 +85,26 @@ QUnit.module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     const Grandchild = setComponentTemplate(
-      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>'),
+      precompileTemplate('<button {{on "click" (fn @userDidClick 5 6)}}></button>', {
+        strictMode: true,
+        scope: { on, fn },
+      }),
       templateOnlyComponent()
     );
 
     const Child = setComponentTemplate(
-      createTemplate(
-        { Grandchild, fn },
-        '<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>'
-      ),
+      precompileTemplate('<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>', {
+        strictMode: true,
+        scope: { Grandchild, fn },
+      }),
       templateOnlyComponent()
     );
 
     setComponentTemplate(
-      createTemplate(
-        { Child, fn },
-        '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>'
-      ),
+      precompileTemplate('<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>', {
+        strictMode: true,
+        scope: { Child, fn },
+      }),
       ParentComponent
     );
 
@@ -116,7 +122,10 @@ QUnit.module('[@glimmer/core] interactive - {{fn}}', () => {
     class Parent extends Component {}
 
     setComponentTemplate(
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>'),
+      precompileTemplate('<button {{on "click" (fn this.doesntExist)}}></button>', {
+        strictMode: true,
+        scope: { on, fn },
+      }),
       Parent
     );
 
