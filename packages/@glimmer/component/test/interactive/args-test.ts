@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 import { test, render, settled } from '@glimmer/core/test/utils';
 
 QUnit.module('[@glimmer/component] Component Arguments', () => {
@@ -27,14 +27,14 @@ QUnit.module('[@glimmer/component] Component Arguments', () => {
     }
 
     setComponentTemplate(
-      createTemplate(
+      precompileTemplate(
         { ChildComponent },
         '<ChildComponent @firstName={{this.firstName}} @status={{this.status}} />'
       ),
       ParentComponent
     );
 
-    setComponentTemplate(createTemplate('{{this.name}} {{@status}}'), ChildComponent);
+    setComponentTemplate(precompileTemplate('{{this.name}} {{@status}}'), ChildComponent);
 
     assert.equal(await render(ParentComponent), 'Tom Dale is dope');
 

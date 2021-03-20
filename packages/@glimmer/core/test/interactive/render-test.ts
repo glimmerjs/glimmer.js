@@ -1,4 +1,4 @@
-import { createTemplate } from '@glimmer/core';
+import { precompileTemplate } from '@glimmer/core';
 
 import { test, render } from '../utils';
 
@@ -11,8 +11,8 @@ QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
     const firstContainerElement = document.createElement('div');
     const secondContainerElement = document.createElement('div');
 
-    await render(createTemplate(`<h1>Hello Glimmer!</h1>`), firstContainerElement);
-    await render(createTemplate(`<h1>Hello Robbie!</h1>`), secondContainerElement);
+    await render(precompileTemplate(`<h1>Hello Glimmer!</h1>`), firstContainerElement);
+    await render(precompileTemplate(`<h1>Hello Robbie!</h1>`), secondContainerElement);
 
     assert.equal(firstContainerElement.innerHTML, '<h1>Hello Glimmer!</h1>');
     assert.equal(secondContainerElement.innerHTML, '<h1>Hello Robbie!</h1>');
@@ -30,7 +30,7 @@ QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
     containerElement.appendChild(previousSibling);
     containerElement.appendChild(document.createTextNode('bar'));
 
-    await render(createTemplate(`<h1>Hello Glimmer!</h1>`), containerElement);
+    await render(precompileTemplate(`<h1>Hello Glimmer!</h1>`), containerElement);
 
     assert.equal(containerElement.innerHTML, '<p>foo</p>bar<h1>Hello Glimmer!</h1>');
   });
@@ -40,7 +40,7 @@ QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
     containerElement.innerHTML =
       '<!--%+b:0%--><!--%+b:1%--><h1>Hello World</h1><!--%-b:1%--><!--%-b:0%-->';
 
-    await render(createTemplate(`<h1>Hello World</h1>`), {
+    await render(precompileTemplate(`<h1>Hello World</h1>`), {
       element: containerElement,
       rehydrate: true,
     });
@@ -53,7 +53,7 @@ QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
     containerElement.innerHTML =
       '<!--%+b:0%--><!--%+b:1%--><div id="test"><!--%+b:2%--><h1>Hello <!--%+b:3%-->World<!--%-b:3%--></h1><!--%-b:2%--></div><!--%-b:1%--><!--%-b:0%-->';
 
-    await render(createTemplate(`<h1>Hello {{@name}}</h1>`), {
+    await render(precompileTemplate(`<h1>Hello {{@name}}</h1>`), {
       element: containerElement.querySelector('#test')!,
       rehydrate: true,
       args: {

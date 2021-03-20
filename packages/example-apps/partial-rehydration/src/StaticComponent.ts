@@ -1,8 +1,8 @@
-import { createTemplate, setComponentTemplate, templateOnlyComponent } from '@glimmer/core';
+import { precompileTemplate, setComponentTemplate, templateOnlyComponent } from '@glimmer/core';
 import RehydratableCounter from './RehydratableCounter';
 
 const StaticComponent = setComponentTemplate(
-  createTemplate(
+  precompileTemplate(
     { RehydratableCounter },
     `<div class="static-component">
       <h1>Hello I am a static component. I don't change after page load.</h1>

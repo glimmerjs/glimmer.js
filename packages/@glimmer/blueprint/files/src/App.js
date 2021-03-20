@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
 import logo from './logo.svg';
 import './App.css';
@@ -9,7 +9,7 @@ export default class App extends Component {
 }
 
 setComponentTemplate(
-  createTemplate(`
+  precompileTemplate(`
     <div id="intro">
       <img src={{this.logo}}/>
 
