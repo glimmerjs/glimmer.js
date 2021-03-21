@@ -1,3 +1,12 @@
+## v2.0.0-beta.13 (2021-03-21)
+
+#### :boom: Breaking Change
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/ssr`, `babel-plugins`, `example-apps`
+  * [#334](https://github.com/glimmerjs/glimmer.js/pull/334) Sync template compilation details with Ember, add @glimmer/babel-preset ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v2.0.0-beta.12 (2020-12-21)
 
 #### :boom: Breaking Change
