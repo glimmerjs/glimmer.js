@@ -1,13 +1,6 @@
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-const commonBabelPlugins = [
-  ['@glimmer/babel-plugin-glimmer-env', { DEBUG: true }],
-  '@glimmer/babel-plugin-strict-template-precompile',
-  ['@babel/plugin-proposal-decorators', { legacy: true }],
-  '@babel/plugin-proposal-class-properties',
-];
-
 const commonConfig = {
   mode: 'development',
   externals: {
@@ -57,8 +50,7 @@ const browserConfig = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: commonBabelPlugins,
-            presets: ['@babel/preset-typescript', '@babel/preset-env'],
+            presets: ['@glimmer/babel-preset', '@babel/preset-typescript', '@babel/preset-env'],
           },
         },
       },
@@ -89,8 +81,8 @@ const nodeServerConfig = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: commonBabelPlugins,
             presets: [
+              '@glimmer/babel-preset',
               '@babel/preset-typescript',
               [
                 '@babel/preset-env',

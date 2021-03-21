@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 
 import { test, render } from '../utils';
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
 function freeze<T>(array: T[]): ReadonlyArray<Readonly<T>> {
   return Object.freeze(array.slice().map<T>(Object.freeze));
@@ -23,8 +23,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.strings key="@unknown" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.strings key="@unknown" as |item|}}<li>{{item}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -38,8 +41,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.numbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.numbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -53,8 +59,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.frozenNumbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.frozenNumbers key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -68,8 +77,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.strings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.strings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -83,8 +95,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.frozenStrings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.frozenStrings key="@index" as |item|}}<li>{{item}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -98,8 +113,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.objects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.objects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );
@@ -113,8 +131,11 @@ QUnit.module('[@glimmer/core] each helper', () => {
     const Component = class extends HelloWorld {};
 
     setComponentTemplate(
-      createTemplate(
-        `<ul>{{#each this.frozenObjects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`
+      precompileTemplate(
+        `<ul>{{#each this.frozenObjects key="@index" as |item|}}<li>{{item.name}}</li>{{/each}}</ul>`,
+        {
+          strictMode: true,
+        }
       ),
       Component
     );

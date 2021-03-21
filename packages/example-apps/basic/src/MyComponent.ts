@@ -1,7 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import {
-  createTemplate,
+  precompileTemplate,
   setComponentTemplate,
   getOwner,
   templateOnlyComponent,
@@ -27,7 +27,9 @@ const isCJK = helper(function (_args, _hash, services) {
 });
 
 const TemplateOnlyComponent = setComponentTemplate(
-  createTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`),
+  precompileTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`, {
+    strictMode: true,
+  }),
   templateOnlyComponent()
 );
 
@@ -46,8 +48,7 @@ class MyComponent extends Component {
 }
 
 setComponentTemplate(
-  createTemplate(
-    { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on },
+  precompileTemplate(
     `
       <h1>Hello {{this.message}}</h1> <br/>
       {{myHelper "foo" greeting="Hello"}}
@@ -61,7 +62,8 @@ setComponentTemplate(
       <button {{on "click" this.increment}}>Increment</button>
       <TemplateOnlyComponent @name="For Glimmer"/>
 
-    `
+    `,
+    { strictMode: true, scope: { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on } }
   ),
   MyComponent
 );

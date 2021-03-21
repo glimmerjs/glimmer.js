@@ -1,6 +1,6 @@
 import {
   setComponentTemplate,
-  createTemplate,
+  precompileTemplate,
   templateOnlyComponent,
   setModifierManager,
   modifierCapabilities,
@@ -45,7 +45,10 @@ QUnit.module('@glimmer/ssr modifiers', () => {
 
     const Component = templateOnlyComponent();
     setComponentTemplate(
-      createTemplate({ modifier: Modifier }, '<h1 {{modifier}}>hello world</h1>'),
+      precompileTemplate('<h1 {{Modifier}}>hello world</h1>', {
+        strictMode: true,
+        scope: { Modifier },
+      }),
       Component
     );
 

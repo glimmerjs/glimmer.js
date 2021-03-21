@@ -2,7 +2,7 @@ import { test, render, settled, tracked } from '../utils';
 import { click } from '../utils/dom';
 import { on, action } from '@glimmer/modifier';
 import Component from '@glimmer/component';
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
 QUnit.module('Modifier Tests', () => {
   test('Supports the on modifier', async (assert) => {
@@ -16,9 +16,12 @@ QUnit.module('Modifier Tests', () => {
     }
 
     setComponentTemplate(
-      createTemplate(
-        { on },
-        `<button {{on "click" this.incrementCounter}}>Count: {{@count}}</button>`
+      precompileTemplate(
+        `<button {{on "click" this.incrementCounter}}>Count: {{@count}}</button>`,
+        {
+          strictMode: true,
+          scope: { on },
+        }
       ),
       MyComponent
     );

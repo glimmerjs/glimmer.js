@@ -19,7 +19,7 @@
     "problems": "tsc -p tsconfig.json --noEmit",
     "start": "webpack-dev-server",
     "test": "npm-run-all lint test:browsers test:babel-plugins test:types",
-    "test:babel-plugins": "mocha -r esm --timeout 5000 test/babel-plugins.js",
+    "test:babel-plugins": "yarn workspace @glimmer/babel-preset test",
     "test:browsers": "testem ci",
     "test:ember": "yarn workspace @glimmer/component ember try:one",
     "test:types": "dtslint test/types",
