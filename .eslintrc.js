@@ -28,7 +28,7 @@ module.exports = {
         '**/scripts/**/*.js',
         '**/blueprints/**/*.js',
         'webpack.config.js',
-        'packages/babel-plugins/**/*.js',
+        'packages/@glimmer/babel-preset/**/*.js',
         'packages/@glimmer/blueprint/index.js',
         '**/babel-plugins.js'
       ],
