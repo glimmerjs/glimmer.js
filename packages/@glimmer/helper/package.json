@@ -14,7 +14,7 @@
   "dependencies": {
     "@glimmer/component": "2.0.0-beta.13",
     "@glimmer/core": "2.0.0-beta.13",
-    "@glimmer/runtime": "0.77.3"
+    "@glimmer/runtime": "0.77.4"
   },
   "volta": {
     "node": "12.16.1",

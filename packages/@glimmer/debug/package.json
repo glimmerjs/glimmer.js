@@ -9,7 +9,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@glimmer/global-context": "0.77.3"
+    "@glimmer/global-context": "0.77.4"
   },
   "volta": {
     "node": "12.16.1",
