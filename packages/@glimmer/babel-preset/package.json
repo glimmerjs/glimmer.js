@@ -15,7 +15,7 @@
     "@glimmer/compiler": "0.77.5",
     "@glimmer/vm-babel-plugins": "0.77.5",
     "babel-plugin-debug-macros": "^0.3.4",
-    "babel-plugin-htmlbars-inline-precompile": "^5.0.0"
+    "babel-plugin-htmlbars-inline-precompile": "^5.2.0"
   },
   "devDependencies": {
     "babel-plugin-tester": "^6.4.0",
