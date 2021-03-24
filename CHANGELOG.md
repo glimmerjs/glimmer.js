@@ -1,3 +1,19 @@
+## v2.0.0-beta.14 (2021-03-24)
+
+#### :bug: Bug Fix
+* `@glimmer/babel-preset`
+  * [#339](https://github.com/glimmerjs/glimmer.js/pull/339) Update babel-plugin-htmlbars-inline-precompile ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/babel-preset`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#338](https://github.com/glimmerjs/glimmer.js/pull/338) Update Glimmer VM to 0.77.5 ([@pzuraq](https://github.com/pzuraq))
+  * [#336](https://github.com/glimmerjs/glimmer.js/pull/336) Update Glimmer VM to 0.77.4 ([@pzuraq](https://github.com/pzuraq))
+
+#### :house: Internal
+* `@glimmer/babel-preset`
+  * [#335](https://github.com/glimmerjs/glimmer.js/pull/335) Merge babel-plugins and @glimmer directories ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v2.0.0-beta.13 (2021-03-21)
 
 #### :boom: Breaking Change
