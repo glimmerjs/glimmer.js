@@ -6,14 +6,24 @@ function defaultTo(value, defaultVal) {
 
 module.exports = function (api, options) {
   let isDebug = defaultTo(options.isDebug, api.environment ? !api.environment('production') : true);
+  let __loadPlugins = options.__loadPlugins === undefined ? false : options.__loadPlugins;
   let __customInlineTemplateModules = defaultTo(options.__customInlineTemplateModules, {});
+
+  let precompile, templateCompilerPath;
+
+  if (options.precompile) {
+    precompile = options.precompile;
+  } else {
+    templateCompilerPath = options.templateCompilerPath || require.resolve('@glimmer/compiler');
+  }
 
   return {
     plugins: [
-      ...generateVmPlugins({ isDebug }),
-
+      ...generateVmPlugins({ __loadPlugins, isDebug }),
       [
-        require.resolve('babel-plugin-debug-macros'),
+        __loadPlugins
+          ? require('babel-plugin-debug-macros')
+          : require.resolve('babel-plugin-debug-macros'),
         {
           debugTools: {
             source: '@glimmer/debug',
@@ -27,9 +37,12 @@ module.exports = function (api, options) {
       ],
 
       [
-        require.resolve('babel-plugin-htmlbars-inline-precompile'),
+        __loadPlugins
+          ? require('babel-plugin-htmlbars-inline-precompile')
+          : require.resolve('babel-plugin-htmlbars-inline-precompile'),
         {
-          templateCompilerPath: require.resolve('@glimmer/compiler'),
+          templateCompilerPath,
+          precompile,
           isProduction: !isDebug,
           ensureModuleApiPolyfill: false,
           moduleOverrides: {
@@ -55,8 +68,16 @@ module.exports = function (api, options) {
         'glimmer-inline-precompile',
       ],
 
-      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
-      require.resolve('@babel/plugin-proposal-class-properties'),
+      [
+        __loadPlugins
+          ? require('@babel/plugin-proposal-decorators')
+          : require.resolve('@babel/plugin-proposal-decorators'),
+        { legacy: true },
+      ],
+
+      __loadPlugins
+        ? require('@babel/plugin-proposal-class-properties')
+        : require.resolve('@babel/plugin-proposal-class-properties'),
     ],
   };
 };
