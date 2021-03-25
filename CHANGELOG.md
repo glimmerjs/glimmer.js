@@ -1,3 +1,12 @@
+## v2.0.0-beta.15 (2021-03-25)
+
+#### :bug: Bug Fix
+* `@glimmer/babel-preset`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#340](https://github.com/glimmerjs/glimmer.js/pull/340) Ensure @glimmer/babel-preset is usable in browsers ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
 ## v2.0.0-beta.14 (2021-03-24)
 
 #### :bug: Bug Fix
