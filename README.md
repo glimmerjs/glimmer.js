@@ -5,9 +5,8 @@ packages, so this meta-repo exists to help you find what you're looking for.
 
 ## Resources
 
-- [Guides](https://glimmerjs.com/guides)
-- [API Docs](https://glimmerjs.com/api/)
-- [Glimmer Playground](https://glimmer-playground.netlify.com)
+- [Guides](https://github.com/glimmerjs/glimmer-experimental/blob/master/README.md)
+- [Glimmer Playground](https://glimmerjs.github.io/glimmer-experimental/)
 
 ## Packages
 
