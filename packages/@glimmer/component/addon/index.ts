@@ -5,7 +5,7 @@ import ApplicationInstance from '@ember/application/instance';
 declare module '@ember/component' {
   export function setComponentManager<T extends object>(
     factory: (owner: ApplicationInstance) => GlimmerComponentManager,
-    T
+    componentClass: T
   ): T;
 }
 
