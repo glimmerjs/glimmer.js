@@ -11,6 +11,13 @@ module.exports = function (api, options) {
 
   let precompile, templateCompilerPath;
 
+  const looseProps =
+    typeof options.loose === 'object' &&
+    options.loose !== null &&
+    typeof options.loose.properties === 'boolean'
+      ? options.loose.properties
+      : false;
+
   if (options.precompile) {
     precompile = options.precompile;
   } else {
@@ -75,9 +82,19 @@ module.exports = function (api, options) {
         { legacy: true },
       ],
 
-      __loadPlugins
-        ? require('@babel/plugin-proposal-class-properties')
-        : require.resolve('@babel/plugin-proposal-class-properties'),
+      [
+        __loadPlugins
+          ? require('@babel/plugin-proposal-class-properties')
+          : require.resolve('@babel/plugin-proposal-class-properties'),
+        { loose: looseProps },
+      ],
+
+      [
+        __loadPlugins
+          ? require('@babel/plugin-proposal-private-methods')
+          : require.resolve('@babel/plugin-proposal-private-methods'),
+        { loose: looseProps },
+      ],
     ],
   };
 };
