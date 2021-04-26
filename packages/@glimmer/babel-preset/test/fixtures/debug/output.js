@@ -1,4 +1,4 @@
-var _class, _descriptor, _temp;
+var _class, _descriptor, _dog, _cat;
 
 import { createTemplateFactory as _createTemplateFactory } from "@glimmer/core";
 
@@ -23,12 +23,19 @@ if (true
 (true && !(false) && deprecate('this is deprecated', false, {
   id: 'foo'
 }));
-let Test = (_class = (_temp = class Test {
+let Test = (_class = (_dog = new WeakMap(), _cat = new WeakSet(), class Test {
   constructor() {
+    _cat.add(this);
+
     _initializerDefineProperty(this, "bar", _descriptor, this);
+
+    _dog.set(this, {
+      writable: true,
+      value: "dog"
+    });
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "bar", [tracked], {
+}), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "bar", [tracked], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -36,6 +43,10 @@ let Test = (_class = (_temp = class Test {
     return 123;
   }
 })), _class);
+
+function _cat2() {
+  return "cat";
+}
 
 _createTemplateFactory(
 /*
