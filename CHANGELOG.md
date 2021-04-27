@@ -1,3 +1,13 @@
+## v2.0.0-beta.16 (2021-04-27)
+
+#### :rocket: Enhancement
+* `@glimmer/babel-preset`
+  * [#343](https://github.com/glimmerjs/glimmer.js/pull/343) Add support for components using private methods ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 2
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Simon Ihmig ([@simonihmig](https://github.com/simonihmig))
+
 ## v2.0.0-beta.15 (2021-03-25)
 
 #### :bug: Bug Fix
