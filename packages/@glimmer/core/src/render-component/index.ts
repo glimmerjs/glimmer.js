@@ -18,7 +18,7 @@ import {
 import { artifacts } from '@glimmer/program';
 import { programCompilationContext } from '@glimmer/opcode-compiler';
 
-import { ClientEnvDelegate } from '../environment/delegates';
+import { ClientEnvDelegate, setGlobalContext } from '../environment/delegates';
 import { CompileTimeResolver, RuntimeResolver } from './resolvers';
 
 import { SimpleElement, SimpleDocument } from '@simple-dom/interface';
@@ -100,6 +100,8 @@ export function scheduleRevalidate(): void {
     renderNotifiers = [];
   }, 0);
 }
+
+setGlobalContext(scheduleRevalidate);
 
 function revalidate(): void {
   for (const result of results) {

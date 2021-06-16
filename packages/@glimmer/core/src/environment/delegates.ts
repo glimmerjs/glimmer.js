@@ -1,4 +1,4 @@
-import setGlobalContext from '@glimmer/global-context';
+import setGlobalContextVM from '@glimmer/global-context';
 import { EnvironmentDelegate } from '@glimmer/runtime';
 import { Option, Destructor, Destroyable } from '@glimmer/interfaces';
 import { IteratorDelegate } from '@glimmer/reference';
@@ -6,78 +6,79 @@ import { IteratorDelegate } from '@glimmer/reference';
 import { isNativeIterable, NativeIterator } from './iterator';
 import { DEBUG } from '@glimmer/env';
 import toBool from './to-bool';
-import { scheduleRevalidate } from '../render-component';
 
 let scheduledDestroyables: Destroyable[] = [];
 let scheduledDestructors: Destructor<object>[] = [];
 let scheduledFinishDestruction: (() => void)[] = [];
 
-setGlobalContext({
-  getProp(obj: Record<string, unknown>, key: string) {
-    return obj[key];
-  },
+export function setGlobalContext(scheduleRevalidate: () => void): void {
+  setGlobalContextVM({
+    getProp(obj: Record<string, unknown>, key: string) {
+      return obj[key];
+    },
 
-  setProp(obj: Record<string, unknown>, key: string, newValue: unknown) {
-    obj[key] = newValue;
-  },
+    setProp(obj: Record<string, unknown>, key: string, newValue: unknown) {
+      obj[key] = newValue;
+    },
 
-  getPath(obj: Record<string, unknown>, key: string) {
-    if (DEBUG && key.includes('.')) {
-      throw new Error(
-        'You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.'
-      );
-    }
+    getPath(obj: Record<string, unknown>, key: string) {
+      if (DEBUG && key.includes('.')) {
+        throw new Error(
+          'You attempted to get a path with a `.` in it, but Glimmer.js does not support paths with dots.'
+        );
+      }
 
-    return obj[key];
-  },
+      return obj[key];
+    },
 
-  setPath(obj: Record<string, unknown>, key: string, newValue: unknown) {
-    if (DEBUG && key.includes('.')) {
-      throw new Error(
-        'You attempted to set a path with a `.` in it, but Glimmer.js does not support paths with dots.'
-      );
-    }
+    setPath(obj: Record<string, unknown>, key: string, newValue: unknown) {
+      if (DEBUG && key.includes('.')) {
+        throw new Error(
+          'You attempted to set a path with a `.` in it, but Glimmer.js does not support paths with dots.'
+        );
+      }
 
-    obj[key] = newValue;
-  },
+      obj[key] = newValue;
+    },
 
-  scheduleRevalidate,
+    scheduleRevalidate,
 
-  toBool,
+    toBool,
 
-  toIterator(value: unknown): Option<IteratorDelegate> {
-    if (isNativeIterable(value)) {
-      return NativeIterator.from(value);
-    }
+    toIterator(value: unknown): Option<IteratorDelegate> {
+      if (isNativeIterable(value)) {
+        return NativeIterator.from(value);
+      }
 
-    return null;
-  },
+      return null;
+    },
 
-  scheduleDestroy(destroyable, destructor) {
-    scheduledDestroyables.push(destroyable);
-    scheduledDestructors.push(destructor);
-  },
+    scheduleDestroy(destroyable, destructor) {
+      scheduledDestroyables.push(destroyable);
+      scheduledDestructors.push(destructor);
+    },
 
-  scheduleDestroyed(fn) {
-    scheduledFinishDestruction.push(fn);
-  },
+    scheduleDestroyed(fn) {
+      scheduledFinishDestruction.push(fn);
+    },
 
-  warnIfStyleNotTrusted() {
-    // Do nothing
-  },
+    warnIfStyleNotTrusted() {
+      // Do nothing
+    },
 
-  assert(test: unknown, msg: string) {
-    if (!test) {
-      throw new Error(msg);
-    }
-  },
+    assert(test: unknown, msg: string) {
+      if (!test) {
+        throw new Error(msg);
+      }
+    },
 
-  deprecate(msg: string, test: unknown) {
-    if (!test) {
-      console.warn(msg);
-    }
-  },
-});
+    deprecate(msg: string, test: unknown) {
+      if (!test) {
+        console.warn(msg);
+      }
+    },
+  });
+}
 
 /**
  * The environment delegate base class shared by both the client and SSR
