@@ -1,3 +1,12 @@
+## v2.0.0-beta.17 (2021-06-16)
+
+#### :bug: Bug Fix
+* `@glimmer/core`
+  * [#353](https://github.com/glimmerjs/glimmer.js/pull/353) Refactor setGlobalContext into a function to remove cyclic depedency ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 1
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+
 ## v2.0.0-beta.16 (2021-04-27)
 
 #### :rocket: Enhancement
