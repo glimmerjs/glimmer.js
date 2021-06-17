@@ -16,6 +16,18 @@ if (DEBUG) {
   ARGS_SET = new WeakMap();
 }
 
+// We use `Record<string, any>` here to support rigorous typing in TS, clean
+// (effectively invisible) usage in JS, and clean interop in mixed code bases.
+// It needs to be a dictionary-like object with string keys, but `{}` will not
+// work because in a context where the args are not set, but information about
+// the component is passed to a TS aware context, it will throw (e.g. for users
+// with `// @check-js` pragmas, or in a language server built on top of TS LS).
+// At the same time, the type must be compatible with narrowing to more specific
+// arguments, which rules out `Record<string, unknown>`, forcing us to disable
+// `no-explicit-any` here.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MinimalArgs = Record<string, any>;
+
 /**
  * The `Component` class defines an encapsulated UI element that is rendered to
  * the DOM. A component is made up of a template and, optionally, this component
@@ -139,7 +151,7 @@ if (DEBUG) {
  * `args` property. For example, if `{{@firstName}}` is `Tom` in the template,
  * inside the component `this.args.firstName` would also be `Tom`.
  */
-export default class GlimmerComponent<Args extends {} = {}> {
+export default class GlimmerComponent<Args extends MinimalArgs = MinimalArgs> {
   /**
    * Constructs a new component and assigns itself the passed properties. You
    * should not construct new components yourself. Instead, Glimmer will
