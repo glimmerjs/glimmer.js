@@ -1,13 +1,8 @@
-export {
-  default as renderComponent,
-  RenderComponentOptions,
-  didRender,
-  getTemplateIterator,
-  ComponentDefinition,
-} from './src/render-component';
+import renderComponent, { didRender, getTemplateIterator } from './src/render-component';
 
-export { BaseEnvDelegate } from './src/environment/delegates';
+import { BaseEnvDelegate } from './src/environment/delegates';
 
+export type { ComponentDefinition } from './src/render-component';
 export type {
   ModifierManager,
   ModifierCapabilities,
@@ -16,10 +11,10 @@ export type {
   HelperManager,
 } from '@glimmer/interfaces';
 
-export { templateFactory as createTemplateFactory } from '@glimmer/opcode-compiler';
-export { templateOnlyComponent } from '@glimmer/runtime';
+import { templateFactory as createTemplateFactory } from '@glimmer/opcode-compiler';
+import { templateOnlyComponent } from '@glimmer/runtime';
 
-export {
+import {
   setComponentManager,
   setModifierManager,
   setHelperManager,
@@ -29,6 +24,42 @@ export {
   setComponentTemplate,
 } from '@glimmer/manager';
 
-export { getOwner, setOwner } from '@glimmer/owner';
+import { getOwner, setOwner } from '@glimmer/owner';
+import { precompileTemplate } from './src/template';
 
-export { precompileTemplate } from './src/template';
+export {
+  renderComponent,
+  didRender,
+  getTemplateIterator,
+  BaseEnvDelegate,
+  createTemplateFactory,
+  templateOnlyComponent,
+  setComponentManager,
+  setModifierManager,
+  setHelperManager,
+  componentCapabilities,
+  modifierCapabilities,
+  helperCapabilities,
+  setComponentTemplate,
+  getOwner,
+  setOwner,
+  precompileTemplate,
+};
+export default {
+  renderComponent,
+  didRender,
+  getTemplateIterator,
+  BaseEnvDelegate,
+  createTemplateFactory,
+  templateOnlyComponent,
+  setComponentManager,
+  setModifierManager,
+  setHelperManager,
+  componentCapabilities,
+  modifierCapabilities,
+  helperCapabilities,
+  setComponentTemplate,
+  getOwner,
+  setOwner,
+  precompileTemplate,
+};
