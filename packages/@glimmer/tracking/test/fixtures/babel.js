@@ -1,4 +1,4 @@
-import { tracked } from '@glimmer/tracking';
+import {cached, tracked} from '@glimmer/tracking';
 
 export class Tom {
   @tracked firstName = 'Tom';
@@ -16,7 +16,7 @@ class FrozenToran {
 
 Object.freeze(FrozenToran);
 
-export { FrozenToran };
+export {FrozenToran};
 
 export class PersonWithCount {
   @tracked _firstName = 'Tom';
@@ -100,6 +100,14 @@ export function createClassWithTrackedGetter() {
   return new PersonWithTrackedGetter();
 }
 
+export function createClassWithCachedProperty() {
+  class PersonWithCachedProperty {
+    @cached firstName = 'Tom';
+  }
+
+  return new PersonWithCachedProperty();
+}
+
 export function createClassWithTrackedSetter() {
   class PersonWithTrackedSetter {
     @tracked firstName = 'Tom';
@@ -115,6 +123,22 @@ export function createClassWithTrackedSetter() {
   return new PersonWithTrackedSetter();
 }
 
+export function createClassWithCachedSetter() {
+  class PersonWithCachedSetter {
+    @tracked firstName = 'Tom';
+    @tracked lastName;
+
+    @cached set fullName(fullName) {
+      const [firstName, lastName] = fullName.split(' ');
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+  }
+
+  return new PersonWithCachedSetter();
+}
+
+
 export function createClassWithTrackedDependentKeys() {
   class DependentKeysAreCool {
     @tracked('firstName', 'lastName') fullName() {
@@ -127,9 +151,33 @@ export function createClassWithTrackedDependentKeys() {
   return new DependentKeysAreCool();
 }
 
+export function createClassWithCachedDependentKeys() {
+  class DependentKeysAreCool {
+    @cached('firstName', 'lastName') fullName() {
+      return `${this.firstName} ${this.lastName}`;
+    }
+
+    @tracked firstName = 'Tom';
+    @tracked lastName = 'Dale';
+  }
+  return new DependentKeysAreCool();
+}
+
 export function createClassWithTrackedAsDecoratorFactory() {
   class DependentKeysAreCool {
     @tracked() fullName() {
+      return `${this.firstName} ${this.lastName}`;
+    }
+
+    @tracked firstName = 'Tom';
+    @tracked lastName = 'Dale';
+  }
+  return new DependentKeysAreCool();
+}
+
+export function createClassWithCachedAsDecoratorFactory() {
+  class DependentKeysAreCool {
+    @cached() fullName() {
       return `${this.firstName} ${this.lastName}`;
     }
 

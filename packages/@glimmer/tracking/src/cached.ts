@@ -73,13 +73,18 @@ export const cached: PropertyDecorator = (...args: any[]) => {
   ) {
     throwCachedInvalidArgsError(args);
   }
-  if (DEBUG && 'get' in descriptor && typeof descriptor.get !== 'function')
+  if (DEBUG && (!('get' in descriptor) || typeof descriptor.get !== 'function')) {
     throwCachedGetterOnlyError(key);
+  }
 
   const caches = new WeakMap();
   const getter = descriptor.get;
+
   descriptor.get = function (): unknown {
-    if (!caches.has(this)) caches.set(this, createCache(getter.bind(this)));
+    if (!caches.has(this)) {
+      caches.set(this, createCache(getter.bind(this)));
+    }
+
     return getValue(caches.get(this));
   };
 };
@@ -94,7 +99,7 @@ function throwCachedGetterOnlyError(key: string): never {
   throw new Error(`The @cached decorator must be applied to getters. '${key}' is not a getter.`);
 }
 
-function throwCachedInvalidArgsError(args: unknown[]): never {
+function throwCachedInvalidArgsError(args: unknown[] = []): never {
   throw new Error(
     `You attempted to use @cached on with ${
       args.length > 1 ? 'arguments' : 'an argument'
