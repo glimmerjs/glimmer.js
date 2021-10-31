@@ -75,4 +75,22 @@ QUnit.module(`[@glimmer/core] interactive rendering tests`, () => {
       '<!--%+b:0%--><!--%+b:1%--><div id="test"><h1>Hello World</h1></div><!--%-b:1%--><!--%-b:0%-->'
     );
   });
+
+  test('renders template html tag correctly', async (assert) => {
+    assert.expect(4);
+
+    const containerElement = document.createElement('div');
+
+    await render(
+      precompileTemplate(`<template><div>1</div><div>2</div></template>`, { strictMode: true }),
+      containerElement
+    );
+
+    const templateElement = containerElement.children[0];
+
+    assert.equal(containerElement.innerHTML, '<template><div>1</div><div>2</div></template>');
+    assert.equal(templateElement.tagName, 'TEMPLATE');
+    assert.equal(templateElement.content.childElementCount, 2);
+    assert.equal(templateElement.childElementCount, 0);
+  });
 });
