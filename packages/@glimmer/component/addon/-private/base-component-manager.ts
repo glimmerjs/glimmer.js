@@ -8,7 +8,8 @@ export interface Constructor<T> {
 }
 
 export default abstract class BaseComponentManager<GlimmerComponent extends BaseComponent>
-  implements ComponentManager<GlimmerComponent> {
+  implements ComponentManager<GlimmerComponent>
+{
   abstract capabilities: ComponentCapabilities;
 
   private owner: unknown;

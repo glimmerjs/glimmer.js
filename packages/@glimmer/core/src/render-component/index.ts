@@ -62,7 +62,7 @@ async function renderComponent(
     optionsOrElement instanceof HTMLElement ? { element: optionsOrElement } : optionsOrElement;
 
   const { element, args, owner } = options;
-  const document = (self.document as unknown) as SimpleDocument;
+  const document = self.document as unknown as SimpleDocument;
 
   const { env, iterator } = getTemplateIterator(
     ComponentClass,
