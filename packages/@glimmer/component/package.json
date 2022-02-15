@@ -97,7 +97,7 @@
     "main": "ember-addon-main.js"
   },
   "volta": {
-    "node": "12.16.1",
+    "node": "12.22.10",
     "yarn": "1.22.4"
   }
 }
