@@ -7,17 +7,18 @@ import { gte } from 'ember-compatibility-helpers';
 import BaseComponentManager from './base-component-manager';
 
 import GlimmerComponent, { setDestroyed, setDestroying } from './component';
-import { ComponentCapabilities, CapturedArgs } from '@glimmer/core';
+import { ComponentCapabilities } from '@glimmer/core';
+import { Arguments } from '@glimmer/interfaces';
 
 const CAPABILITIES = gte('3.13.0-beta.1')
   ? capabilities('3.13', {
       destructor: true,
-      asyncLifecycleCallbacks: false,
+      asyncLifeCycleCallbacks: false,
       updateHook: false,
     })
   : capabilities('3.4', {
       destructor: true,
-      asyncLifecycleCallbacks: false,
+      asyncLifeCycleCallbacks: false,
     });
 
 function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta): void {
@@ -56,7 +57,7 @@ class EmberGlimmerComponentManager extends BaseComponentManager<GlimmerComponent
 }
 
 interface EmberGlimmerComponentManager {
-  updateComponent?: (component: GlimmerComponent, args: CapturedArgs) => void;
+  updateComponent?: (component: GlimmerComponent, args: Arguments) => void;
 }
 
 // In Ember 3.12 and earlier, the updateComponent hook was mandatory.
@@ -68,7 +69,7 @@ interface EmberGlimmerComponentManager {
 if (!gte('3.13.0-beta.1')) {
   EmberGlimmerComponentManager.prototype.updateComponent = function updateComponent(
     component: GlimmerComponent,
-    args: CapturedArgs
+    args: Arguments
   ): void {
     let argSnapshot = args.named;
 

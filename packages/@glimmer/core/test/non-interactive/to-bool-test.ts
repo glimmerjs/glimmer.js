@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
 
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
 
-import { module, test, render } from '../utils';
+import { test, render } from '../utils';
 
-module(`[@glimmer/core] non-interactive rendering tests`, () => {
+QUnit.module(`[@glimmer/core] non-interactive rendering tests`, () => {
   test(`normal if treats empty arrays as falsy`, async function (assert) {
     class Main extends Component {
       pred = [];
@@ -13,7 +13,9 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      createTemplate('Hello {{if this.pred this.salutation this.alternative}}!'),
+      precompileTemplate('Hello {{if this.pred this.salutation this.alternative}}!', {
+        strictMode: true,
+      }),
       Main
     );
 
@@ -26,7 +28,9 @@ module(`[@glimmer/core] non-interactive rendering tests`, () => {
     }
 
     setComponentTemplate(
-      createTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!'),
+      precompileTemplate('Hello {{#if this.pred}}Glimmer{{else}}Glimmer.js{{/if}}!', {
+        strictMode: true,
+      }),
       Main
     );
 

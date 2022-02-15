@@ -1,11 +1,11 @@
-import { module, test, render, settled, tracked } from '../utils';
+import { test, render, settled, tracked } from '../utils';
 import Component from '@glimmer/component';
 import { fn } from '@glimmer/helper';
 import { on, action } from '@glimmer/modifier';
 
-import { setComponentTemplate, createTemplate, templateOnlyComponent } from '@glimmer/core';
+import { setComponentTemplate, precompileTemplate, templateOnlyComponent } from '@glimmer/core';
 
-module('[@glimmer/core] interactive - {{fn}}', () => {
+QUnit.module('[@glimmer/core] interactive - {{fn}}', () => {
   test('can curry arguments via fn', async function (assert) {
     assert.expect(9);
 
@@ -14,7 +14,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
 
     const args = tracked({ name: 'world' });
     class HelloWorld extends Component {
-      constructor(owner: unknown, args: {}) {
+      constructor(owner: object, args: {}) {
         super(owner, args);
         helloWorldComponent = this;
       }
@@ -29,9 +29,12 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     setComponentTemplate(
-      createTemplate(
-        { on, fn },
-        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>'
+      precompileTemplate(
+        '<button {{on "click" (fn this.userDidClick "hello" @name)}}>Hello World</button>',
+        {
+          strictMode: true,
+          scope: { on, fn },
+        }
       ),
       HelloWorld
     );
@@ -69,7 +72,7 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     class ParentComponent extends Component {
       name = 'world';
 
-      constructor(owner: unknown, args: {}) {
+      constructor(owner: object, args: {}) {
         super(owner, args);
         parentComponent = this;
       }
@@ -82,23 +85,26 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     }
 
     const Grandchild = setComponentTemplate(
-      createTemplate({ on, fn }, '<button {{on "click" (fn @userDidClick 5 6)}}></button>'),
+      precompileTemplate('<button {{on "click" (fn @userDidClick 5 6)}}></button>', {
+        strictMode: true,
+        scope: { on, fn },
+      }),
       templateOnlyComponent()
     );
 
     const Child = setComponentTemplate(
-      createTemplate(
-        { Grandchild, fn },
-        '<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>'
-      ),
+      precompileTemplate('<div><Grandchild @userDidClick={{fn @userDidClick 3 4}} /></div>', {
+        strictMode: true,
+        scope: { Grandchild, fn },
+      }),
       templateOnlyComponent()
     );
 
     setComponentTemplate(
-      createTemplate(
-        { Child, fn },
-        '<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>'
-      ),
+      precompileTemplate('<div><Child @userDidClick={{fn this.userDidClick 1 2}} /></div>', {
+        strictMode: true,
+        scope: { Child, fn },
+      }),
       ParentComponent
     );
 
@@ -116,29 +122,13 @@ module('[@glimmer/core] interactive - {{fn}}', () => {
     class Parent extends Component {}
 
     setComponentTemplate(
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.doesntExist)}}></button>'),
+      precompileTemplate('<button {{on "click" (fn this.doesntExist)}}></button>', {
+        strictMode: true,
+        scope: { on, fn },
+      }),
       Parent
     );
 
-    assert.rejects(render(Parent), /fn must receive a function as its first parameter/);
-  });
-
-  test('fn helper invoked without a parameter raises an error', function (assert) {
-    class Parent extends Component {
-      @action
-      exists(): void {
-        assert.ok(false, 'this shouldnt run');
-      }
-    }
-
-    setComponentTemplate(
-      createTemplate({ on, fn }, '<button {{on "click" (fn this.exists)}}></button>'),
-      Parent
-    );
-
-    assert.rejects(
-      render(Parent),
-      /fn must receive at least one argument to pass to the function, otherwise there is no need to use fn./
-    );
+    assert.rejects(render(Parent), /You must pass a function as the `fn` helpers first argument/);
   });
 });

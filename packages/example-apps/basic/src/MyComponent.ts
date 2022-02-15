@@ -1,6 +1,11 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { createTemplate, setComponentTemplate, getOwner } from '@glimmer/core';
+import {
+  precompileTemplate,
+  setComponentTemplate,
+  getOwner,
+  templateOnlyComponent,
+} from '@glimmer/core';
 import { helper } from './utils/helper-with-services';
 import OtherComponent from './OtherComponent';
 import { on, action } from '@glimmer/modifier';
@@ -23,7 +28,10 @@ const isCJK = helper(function (_args, _hash, services) {
 });
 
 const TemplateOnlyComponent = setComponentTemplate(
-  createTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`)
+  precompileTemplate(`<h1>I am rendered by a template only component: {{@name}}</h1>`, {
+    strictMode: true,
+  }),
+  templateOnlyComponent()
 );
 
 class MyComponent extends Component {
@@ -41,8 +49,7 @@ class MyComponent extends Component {
 }
 
 setComponentTemplate(
-  createTemplate(
-    { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on, MyTable },
+  precompileTemplate(
     `
       <h1>Hello {{this.message}}</h1> <br/>
       {{myHelper "foo" greeting="Hello"}}
@@ -52,12 +59,12 @@ setComponentTemplate(
       {{else}}
         <p>Component is not in a CJK locale</p>
       {{/if}}
-
       <OtherComponent @count={{this.count}} /> <br/>
       <button {{on "click" this.increment}}>Increment</button>
       <TemplateOnlyComponent @name="For Glimmer"/>
       <MyTable />
-    `
+    `,
+    { strictMode: true, scope: { OtherComponent, TemplateOnlyComponent, myHelper, isCJK, on, MyTable } }
   ),
   MyComponent
 );

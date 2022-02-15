@@ -3,37 +3,32 @@ export {
   RenderComponentOptions,
   didRender,
   getTemplateIterator,
+  ComponentDefinition,
 } from './src/render-component';
 
 export { BaseEnvDelegate } from './src/environment/delegates';
 
-export { setComponentManager, setHelperManager, setModifierManager } from './src/managers';
-
-export { TemplateArgs } from './src/interfaces';
-
-export {
+export type {
   ModifierManager,
-  ModifierDefinition,
-  capabilities as modifierCapabilities,
-  Capabilities as ModifierCapabilities,
-} from './src/managers/modifier';
-
-export {
-  HelperManager,
-  HelperDefinition,
-  capabilities as helperCapabilities,
-  Capabilities as HelperCapabilities,
-} from './src/managers/helper';
-
-export {
+  ModifierCapabilities,
   ComponentManager,
-  ComponentDefinition,
-  capabilities as componentCapabilities,
-  Capabilities as ComponentCapabilities,
-} from './src/managers/component/custom';
+  ComponentCapabilities,
+  HelperManager,
+} from '@glimmer/interfaces';
 
-export { templateOnlyComponent } from './src/managers/component/template-only';
+export { templateFactory as createTemplateFactory } from '@glimmer/opcode-compiler';
+export { templateOnlyComponent } from '@glimmer/runtime';
 
-export { createTemplate, setComponentTemplate } from './src/template';
+export {
+  setComponentManager,
+  setModifierManager,
+  setHelperManager,
+  componentCapabilities,
+  modifierCapabilities,
+  helperCapabilities,
+  setComponentTemplate,
+} from '@glimmer/manager';
 
-export { getOwner, setOwner } from './src/owner';
+export { getOwner, setOwner } from '@glimmer/owner';
+
+export { precompileTemplate } from './src/template';

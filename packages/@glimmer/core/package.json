@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/core",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.17",
   "description": "Core rendering functionality",
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
@@ -13,17 +13,20 @@
   },
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/interfaces": "^0.51.0",
-    "@glimmer/opcode-compiler": "^0.51.0",
-    "@glimmer/runtime": "^0.51.0",
-    "@glimmer/validator": "^0.51.0",
+    "@glimmer/global-context": "0.77.6",
+    "@glimmer/interfaces": "0.77.6",
+    "@glimmer/manager": "0.77.6",
+    "@glimmer/opcode-compiler": "0.77.6",
+    "@glimmer/owner": "0.77.6",
+    "@glimmer/program": "0.77.6",
+    "@glimmer/runtime": "0.77.6",
+    "@glimmer/validator": "0.77.6",
     "@simple-dom/interface": "^1.4.0"
   },
   "devDependencies": {
-    "@glimmer/bundle-compiler": "^0.51.0",
-    "@glimmer/compiler": "^0.51.0",
-    "@glimmer/component": "2.0.0-beta.7",
-    "@glimmer/tracking": "2.0.0-beta.7"
+    "@glimmer/compiler": "0.77.6",
+    "@glimmer/component": "2.0.0-beta.17",
+    "@glimmer/tracking": "2.0.0-beta.17"
   },
   "volta": {
     "node": "12.16.1",

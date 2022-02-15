@@ -1,0 +1,31 @@
+{
+  "name": "@glimmer/babel-preset",
+  "version": "2.0.0-beta.17",
+  "description": "Glimmer.js Babel Preset",
+  "repository": "https://github.com/glimmerjs/glimmer.js",
+  "author": "Tom Dale <tom@tomdale.net>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "mocha -r esm --timeout 10000"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-private-methods": "^7.13.0",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@glimmer/compiler": "0.77.6",
+    "@glimmer/vm-babel-plugins": "0.77.6",
+    "babel-plugin-debug-macros": "^0.3.4",
+    "babel-plugin-htmlbars-inline-precompile": "^5.2.0"
+  },
+  "devDependencies": {
+    "babel-plugin-tester": "^6.4.0",
+    "chai": "^4.2.0",
+    "esm": "^3.2.25",
+    "mocha": "^6.2.0"
+  },
+  "volta": {
+    "node": "12.16.1",
+    "yarn": "1.22.4"
+  }
+}

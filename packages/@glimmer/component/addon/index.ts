@@ -1,5 +1,14 @@
 import { DEBUG } from '@glimmer/env';
 import ApplicationInstance from '@ember/application/instance';
+
+// Hax because Ember does not have types for `setComponentManager`
+declare module '@ember/component' {
+  export function setComponentManager<T extends object>(
+    factory: (owner: ApplicationInstance) => GlimmerComponentManager,
+    componentClass: T
+  ): T;
+}
+
 import { setComponentManager } from '@ember/component';
 
 import GlimmerComponentManager from './-private/ember-component-manager';

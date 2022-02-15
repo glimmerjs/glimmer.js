@@ -1,3 +1,132 @@
+## v2.0.0-beta.17 (2021-06-16)
+
+#### :bug: Bug Fix
+* `@glimmer/core`
+  * [#353](https://github.com/glimmerjs/glimmer.js/pull/353) Refactor setGlobalContext into a function to remove cyclic depedency ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 1
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+
+## v2.0.0-beta.16 (2021-04-27)
+
+#### :rocket: Enhancement
+* `@glimmer/babel-preset`
+  * [#343](https://github.com/glimmerjs/glimmer.js/pull/343) Add support for components using private methods ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 2
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Simon Ihmig ([@simonihmig](https://github.com/simonihmig))
+
+## v2.0.0-beta.15 (2021-03-25)
+
+#### :bug: Bug Fix
+* `@glimmer/babel-preset`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#340](https://github.com/glimmerjs/glimmer.js/pull/340) Ensure @glimmer/babel-preset is usable in browsers ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+## v2.0.0-beta.14 (2021-03-24)
+
+#### :bug: Bug Fix
+* `@glimmer/babel-preset`
+  * [#339](https://github.com/glimmerjs/glimmer.js/pull/339) Update babel-plugin-htmlbars-inline-precompile ([@pzuraq](https://github.com/pzuraq))
+* `@glimmer/babel-preset`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`
+  * [#338](https://github.com/glimmerjs/glimmer.js/pull/338) Update Glimmer VM to 0.77.5 ([@pzuraq](https://github.com/pzuraq))
+  * [#336](https://github.com/glimmerjs/glimmer.js/pull/336) Update Glimmer VM to 0.77.4 ([@pzuraq](https://github.com/pzuraq))
+
+#### :house: Internal
+* `@glimmer/babel-preset`
+  * [#335](https://github.com/glimmerjs/glimmer.js/pull/335) Merge babel-plugins and @glimmer directories ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+## v2.0.0-beta.13 (2021-03-21)
+
+#### :boom: Breaking Change
+* `@glimmer/blueprint`, `@glimmer/component`, `@glimmer/core`, `@glimmer/debug`, `@glimmer/ssr`, `babel-plugins`, `example-apps`
+  * [#334](https://github.com/glimmerjs/glimmer.js/pull/334) Sync template compilation details with Ember, add @glimmer/babel-preset ([@pzuraq](https://github.com/pzuraq))
+
+#### Committers: 1
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+## v2.0.0-beta.12 (2020-12-21)
+
+#### :boom: Breaking Change
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#324](https://github.com/glimmerjs/glimmer.js/pull/324) Updating glimmer-vm to 0.77.3 ([@chiragpat](https://github.com/chiragpat))
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#317](https://github.com/glimmerjs/glimmer.js/pull/317) [FEAT] Upgrade to Glimmer VM v0.65.0 ([@pzuraq](https://github.com/pzuraq))
+* `example-apps`
+  * [#318](https://github.com/glimmerjs/glimmer.js/pull/318) Intersection observer ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 3
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+
+## v2.0.0-beta.11 (2020-10-26)
+
+#### :rocket: Enhancement
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#315](https://github.com/glimmerjs/glimmer.js/pull/315) Add support for partial rehydration and example apps for rehydration ([@chiragpat](https://github.com/chiragpat))
+* `@glimmer/core`
+  * [#313](https://github.com/glimmerjs/glimmer.js/pull/313) Add new rehydrate option to renderComponent clientside api ([@chiragpat](https://github.com/chiragpat))
+* `@glimmer/core`, `@glimmer/ssr`
+  * [#312](https://github.com/glimmerjs/glimmer.js/pull/312) Add new option to output rehydratable markup from @glimmer/ssr ([@chiragpat](https://github.com/chiragpat))
+
+#### Committers: 1
+- Chirag Patel ([@chiragpat](https://github.com/chiragpat))
+
+
+## v2.0.0-beta.10 (2020-09-18)
+
+#### :bug: Bug Fix
+* `@glimmer/tracking`
+  * [#306](https://github.com/glimmerjs/glimmer.js/pull/306) Make @glimmer/tracking an ember-cli addon for Ember apps. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#308](https://github.com/glimmerjs/glimmer.js/pull/308) Update `yarn.lock` for glimmer-vm upgrade. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
+## v2.0.0-beta.9 (2020-09-16)
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#305](https://github.com/glimmerjs/glimmer.js/pull/305) chore: Update glimmer-vm packages ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 1
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+
+
+## v2.0.0-beta.8 (2020-09-02)
+
+#### :rocket: Enhancement
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`
+  * [#299](https://github.com/glimmerjs/glimmer.js/pull/299) [FEAT] Updates the VM to 0.56.1 ([@pzuraq](https://github.com/pzuraq))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#297](https://github.com/glimmerjs/glimmer.js/pull/297) Add version range to ember-cli-typescript deps ([@ondrejsevcik](https://github.com/ondrejsevcik))
+
+#### :house: Internal
+* `@glimmer/component`, `@glimmer/core`, `@glimmer/helper`, `@glimmer/modifier`, `@glimmer/ssr`, `@glimmer/tracking`, `babel-plugins`, `example-apps`
+  * [#301](https://github.com/glimmerjs/glimmer.js/pull/301) [FEAT] Upgrade the VM to v0.61.1 ([@pzuraq](https://github.com/pzuraq))
+* Other
+  * [#287](https://github.com/glimmerjs/glimmer.js/pull/287) Ensure the top level package.json is updated upon release. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 3
+- Chris Garrett ([@pzuraq](https://github.com/pzuraq))
+- Ondrej Sevcik ([@ondrejsevcik](https://github.com/ondrejsevcik))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0-beta.7 (2020-04-20)
 
 #### :boom: Breaking Change

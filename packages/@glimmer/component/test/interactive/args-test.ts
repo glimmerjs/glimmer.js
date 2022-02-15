@@ -1,10 +1,10 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 
-import { setComponentTemplate, createTemplate } from '@glimmer/core';
-import { module, test, render, settled } from '@glimmer/core/test/utils';
+import { setComponentTemplate, precompileTemplate } from '@glimmer/core';
+import { test, render, settled } from '@glimmer/core/test/utils';
 
-module('[@glimmer/component] Component Arguments', () => {
+QUnit.module('[@glimmer/component] Component Arguments', () => {
   test('Getters that depend on `args` re-render correctly', async function (assert) {
     assert.expect(2);
 
@@ -14,7 +14,7 @@ module('[@glimmer/component] Component Arguments', () => {
       @tracked firstName = 'Tom';
       @tracked status = 'is dope';
 
-      constructor(owner: unknown, args: {}) {
+      constructor(owner: object, args: {}) {
         super(owner, args);
         parent = this;
       }
@@ -27,14 +27,17 @@ module('[@glimmer/component] Component Arguments', () => {
     }
 
     setComponentTemplate(
-      createTemplate(
-        { ChildComponent },
-        '<ChildComponent @firstName={{this.firstName}} @status={{this.status}} />'
+      precompileTemplate(
+        '<ChildComponent @firstName={{this.firstName}} @status={{this.status}} />',
+        { strictMode: true, scope: { ChildComponent } }
       ),
       ParentComponent
     );
 
-    setComponentTemplate(createTemplate('{{this.name}} {{@status}}'), ChildComponent);
+    setComponentTemplate(
+      precompileTemplate('{{this.name}} {{@status}}', { strictMode: true }),
+      ChildComponent
+    );
 
     assert.equal(await render(ParentComponent), 'Tom Dale is dope');
 

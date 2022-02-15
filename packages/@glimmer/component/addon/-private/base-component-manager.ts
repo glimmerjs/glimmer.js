@@ -1,9 +1,10 @@
 import { DEBUG } from '@glimmer/env';
-import { ComponentManager, ComponentCapabilities, TemplateArgs } from '@glimmer/core';
+import { ComponentManager, ComponentCapabilities } from '@glimmer/core';
+import { Arguments } from '@glimmer/interfaces';
 import BaseComponent, { ARGS_SET } from './component';
 
 export interface Constructor<T> {
-  new (owner: unknown, args: {}): T;
+  new (owner: unknown, args: Record<string, unknown>): T;
 }
 
 export default abstract class BaseComponentManager<GlimmerComponent extends BaseComponent>
@@ -18,7 +19,7 @@ export default abstract class BaseComponentManager<GlimmerComponent extends Base
 
   createComponent(
     ComponentClass: Constructor<GlimmerComponent>,
-    args: TemplateArgs
+    args: Arguments
   ): GlimmerComponent {
     if (DEBUG) {
       ARGS_SET.set(args.named, true);

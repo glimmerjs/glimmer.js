@@ -1,28 +1,39 @@
 {
   "name": "@glimmer/tracking",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.17",
   "description": "Glimmer property tracking library",
+  "keywords": [
+    "ember-addon"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glimmerjs/glimmer.js",
+    "directory": "packages/@glimmer/tracking"
+  },
+  "license": "MIT",
   "contributors": [
     "Dan Gebhardt <dan@cerebris.com>",
     "Tom Dale <tom@tomdale.net>"
   ],
-  "repository": "https://github.com/glimmerjs/glimmer.js",
-  "license": "MIT",
-  "files": [
-    "dist"
-  ],
   "main": "dist/commonjs/index.js",
   "module": "dist/modules/index.js",
+  "files": [
+    "dist",
+    "ember-addon-main.js"
+  ],
   "dependencies": {
     "@glimmer/env": "^0.1.7",
-    "@glimmer/validator": "^0.51.0"
+    "@glimmer/validator": "0.77.6"
   },
   "devDependencies": {
     "@glimmer/application-test-helpers": "^1.0.0",
-    "@glimmer/compiler": "^0.51.0",
-    "@glimmer/interfaces": "^0.51.0",
+    "@glimmer/compiler": "0.77.6",
+    "@glimmer/interfaces": "0.77.6",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/wire-format": "^0.51.0"
+    "@glimmer/wire-format": "0.77.6"
+  },
+  "ember-addon": {
+    "main": "ember-addon-main.js"
   },
   "volta": {
     "node": "12.16.1",

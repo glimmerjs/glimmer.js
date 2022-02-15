@@ -4,7 +4,7 @@ import _GlimmerComponent from '../addon/-private/component';
 import { DEBUG } from '@glimmer/env';
 
 export default class GlimmerComponent<Args extends {} = {}> extends _GlimmerComponent<Args> {
-  constructor(owner: unknown, args: Args) {
+  constructor(owner: object, args: Args) {
     super(owner, args);
 
     if (DEBUG && !(owner !== null && typeof owner === 'object')) {

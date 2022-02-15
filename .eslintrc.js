@@ -10,6 +10,7 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   plugins: ['@typescript-eslint', 'prettier'],
+
   overrides: [
     // node files
     {
@@ -27,8 +28,9 @@ module.exports = {
         '**/scripts/**/*.js',
         '**/blueprints/**/*.js',
         'webpack.config.js',
-        'packages/babel-plugins/**/*.js',
+        'packages/@glimmer/babel-preset/**/*.js',
         'packages/@glimmer/blueprint/index.js',
+        '**/babel-plugins.js'
       ],
       env: {
         es6: true,
@@ -75,6 +77,16 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'error',
         '@typescript-eslint/explicit-function-return-type': 'error',
         '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+
+        '@typescript-eslint/ban-types': ['error', {
+          types: {
+            // we currently use `object` as "valid WeakMap key" in a lot of APIs
+            object: false,
+
+            // this is a great one to ban, will do in a followup PR
+            '{}': false,
+          }
+        }],
 
         // disabling this one because of DEBUG APIs, if we ever find a better
         // way to suport those we should re-enable it
