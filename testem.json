@@ -18,6 +18,7 @@
   "browser_args": {
     "mode": "ci",
     "Chrome": [
+      "--no-sandbox",
       "--headless",
       "--remote-debugging-port=9222"
     ]
