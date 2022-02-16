@@ -39,7 +39,8 @@
     ]
   },
   "resolutions": {
-    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git"
+    "amd-name-resolver": "https://github.com/ember-cli/amd-name-resolver.git",
+    "ember-cli-lodash-subset": "2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.4",
