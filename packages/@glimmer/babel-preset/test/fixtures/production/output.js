@@ -62,6 +62,5 @@ _createTemplateFactory(
   "id": null,
   "block": "[[[1,\"Hello, world!\"]],[],false,[]]",
   "moduleName": "(unknown template module)",
-  "scope": null,
   "isStrictMode": true
 });
