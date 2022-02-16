@@ -53,6 +53,7 @@
     "@types/ember": "~4.0.0",
     "@types/ember-qunit": "~5.0.0",
     "@types/ember-testing-helpers": "^0.0.4",
+    "@types/ember__destroyable": "^4.0.0",
     "@types/ember__test-helpers": "~2.6.1",
     "@types/qunit": "^2.5.3",
     "@types/rsvp": "^4.0.2",

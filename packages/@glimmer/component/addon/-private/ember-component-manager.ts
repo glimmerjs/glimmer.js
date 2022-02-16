@@ -1,6 +1,6 @@
 import { DEBUG } from '@glimmer/env';
-import Ember from 'ember';
 import { set } from '@ember/object';
+import { destroy } from '@ember/destroyable';
 import { capabilities } from '@ember/component';
 import { schedule } from '@ember/runloop';
 import { gte } from 'ember-compatibility-helpers';
@@ -21,14 +21,12 @@ const CAPABILITIES = gte('3.13.0-beta.1')
       asyncLifeCycleCallbacks: false,
     });
 
-function scheduledDestroyComponent(component: GlimmerComponent, meta: EmberMeta): void {
+function scheduledDestroyComponent(component: GlimmerComponent): void {
   if (component.isDestroyed) {
     return;
   }
 
-  Ember.destroy(component);
-
-  meta.setSourceDestroyed();
+  destroy(component);
   setDestroyed(component);
 }
 
@@ -46,13 +44,10 @@ class EmberGlimmerComponentManager extends BaseComponentManager<GlimmerComponent
       return;
     }
 
-    const meta = Ember.meta(component);
-
-    meta.setSourceDestroying();
     setDestroying(component);
 
     schedule('actions', component, component.willDestroy);
-    schedule('destroy', this, scheduledDestroyComponent, component, meta);
+    schedule('destroy', this, scheduledDestroyComponent, component);
   }
 }
 
