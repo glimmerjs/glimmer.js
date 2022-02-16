@@ -15,7 +15,7 @@ class CustomModifier {
 }
 
 class CustomModifierManager implements ModifierManager<CustomModifier> {
-  capabilities = modifierCapabilities('3.13');
+  capabilities = modifierCapabilities('3.22');
 
   constructor(private owner: unknown) {}
 
