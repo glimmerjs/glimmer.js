@@ -3,9 +3,9 @@
 
 
 "@ampproject/remapping@^2.1.0":
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.1.1.tgz#7922fb0817bf3166d8d9e258c57477e3fd1c3610"
-  integrity sha512-Aolwjd7HSC2PyY0fDj/wA/EimQT4HfEnFYNp5s9CQlrdhyvWTtvZ5YzrUPu6R6/1jKiUlxu8bUhkdSnKHNAHMA==
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.1.2.tgz#4edca94973ded9630d20101cd8559cedb8d8bd34"
+  integrity sha512-hoyByceqwKirw7w3Z7gnIIZC3Wx3J484Y3L/cMpXFbr7d9ZQj2mODrirNzcJa+SM3UlpWXYvKV4RlRpFXlWgXg==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.0"
 
@@ -21,30 +21,9 @@
   resolved "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.17.0.tgz#86850b8597ea6962089770952075dcaabb8dba34"
   integrity sha512-392byTlpGWXMv4FbyWw3sAZ/FrW/DrwqLGXpy0mbyNe9Taqv1mg9yON5/o0cnr8XYCkFTZbC1eV+c+LAROgrng==
 
-"@babel/core@^7.1.6", "@babel/core@^7.12.0", "@babel/core@^7.12.9", "@babel/core@^7.16.7", "@babel/core@^7.3.4":
-  version "7.17.3"
-  resolved "https://registry.npmjs.org/@babel/core/-/core-7.17.3.tgz#6a6f7e9b5cc0182aef531b93cb5dde94071dc20d"
-  integrity sha512-TolSoY0D/G6/e5bufjUK7wqQeHdcK4NbdxHg0hrhx/zN6boloG52oNpxbZuil/GqmAIz2qEnJ0s8ay24j2YwVg==
-  dependencies:
-    "@ampproject/remapping" "^2.1.0"
-    "@babel/code-frame" "^7.16.7"
-    "@babel/generator" "^7.17.3"
-    "@babel/helper-compilation-targets" "^7.16.7"
-    "@babel/helper-module-transforms" "^7.16.7"
-    "@babel/helpers" "^7.17.2"
-    "@babel/parser" "^7.17.3"
-    "@babel/template" "^7.16.7"
-    "@babel/traverse" "^7.17.3"
-    "@babel/types" "^7.17.0"
-    convert-source-map "^1.7.0"
-    debug "^4.1.0"
-    gensync "^1.0.0-beta.2"
-    json5 "^2.1.2"
-    semver "^6.3.0"
-
-"@babel/core@^7.17.4":
+"@babel/core@^7.1.6", "@babel/core@^7.12.0", "@babel/core@^7.12.9", "@babel/core@^7.16.7", "@babel/core@^7.17.4", "@babel/core@^7.3.4":
   version "7.17.4"
-  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.17.4.tgz#a22f1ae8999122873b3d18865e98c7a3936b8c8b"
+  resolved "https://registry.npmjs.org/@babel/core/-/core-7.17.4.tgz#a22f1ae8999122873b3d18865e98c7a3936b8c8b"
   integrity sha512-R9x5r4t4+hBqZTmioSnkrW+I6NmbojwjGT8p4G2Gw1thWbXIHGDnmGdLdFw0/7ljucdIrNRp7Npgb4CyBYzzJg==
   dependencies:
     "@ampproject/remapping" "^2.1.0"
@@ -1010,25 +989,25 @@
     minimist "^1.2.0"
 
 "@definitelytyped/header-parser@latest":
-  version "0.0.105"
-  resolved "https://registry.npmjs.org/@definitelytyped/header-parser/-/header-parser-0.0.105.tgz#88d41f849980bd330fbe749990f844a144f96caf"
-  integrity sha512-DB1WPzIyFl5HvxCdEEHvAuMHO0sSDKnr3+oA/GQ4ELA+eapCBfo/5FjRqSqjmG5/sWTZkfT76j0jXu9rIDYf9A==
+  version "0.0.106"
+  resolved "https://registry.npmjs.org/@definitelytyped/header-parser/-/header-parser-0.0.106.tgz#8dd42e6370b56d3d97d59ad659b31707221c7cda"
+  integrity sha512-qjPrS4THVZStVU0C0tcc53VpY/2qTvBBTJEFHNIC09dMqqzROVptebITcqjLraQYMOkXMyrWnu7Yu8VK/VfXRg==
   dependencies:
-    "@definitelytyped/typescript-versions" "^0.0.105"
+    "@definitelytyped/typescript-versions" "^0.0.106"
     "@types/parsimmon" "^1.10.1"
     parsimmon "^1.13.0"
 
-"@definitelytyped/typescript-versions@^0.0.105", "@definitelytyped/typescript-versions@latest":
-  version "0.0.105"
-  resolved "https://registry.npmjs.org/@definitelytyped/typescript-versions/-/typescript-versions-0.0.105.tgz#0f5e27020f9d85fac4d461832a291b49ab91b2db"
-  integrity sha512-iTlOElq/ktvSI1d+N/5Bnp4WxWQJMItptTbTACGGVNdCvCGNfu2LHPTddRkCQSJzAKk9JLq1+WSR2hbGmCnWMA==
+"@definitelytyped/typescript-versions@^0.0.106", "@definitelytyped/typescript-versions@latest":
+  version "0.0.106"
+  resolved "https://registry.npmjs.org/@definitelytyped/typescript-versions/-/typescript-versions-0.0.106.tgz#7c4825af110cc02f3ba538d9eada13852830a548"
+  integrity sha512-qZi46iUN8FYKH+tB+Jo6HB1x8Jd7+12+j8QtiITT67SS64UXz0g70Y6Engl7a5WQVuMBQ1pTLXEXim9uK54uOQ==
 
 "@definitelytyped/utils@latest":
-  version "0.0.105"
-  resolved "https://registry.npmjs.org/@definitelytyped/utils/-/utils-0.0.105.tgz#b45a706814785e440fde787805bf7764194bc7ad"
-  integrity sha512-f4hYauY/s9DZHQOEa3Qd1Tldi4AZ5cfPOXiRW4Oha0H0YI63bm4TBVKWLHMdz6rm9/lfTKyGhuhZeeqs4TfKgA==
+  version "0.0.106"
+  resolved "https://registry.npmjs.org/@definitelytyped/utils/-/utils-0.0.106.tgz#cd3a9077c12cb0025400fc1344ca1cf631bfb6bf"
+  integrity sha512-5FsYmbvCfr47nkIZI85mApVvgKZavet5Embo8wRDIONX+rFsqi8lfKTpBFfazO43lZuTOiYdWivGXtGW+Umsbg==
   dependencies:
-    "@definitelytyped/typescript-versions" "^0.0.105"
+    "@definitelytyped/typescript-versions" "^0.0.106"
     "@qiwi/npm-registry-client" "^8.9.1"
     "@types/node" "^14.14.35"
     charm "^1.0.2"
@@ -1133,7 +1112,7 @@
 
 "@glimmer/compiler@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/compiler/-/compiler-0.84.0.tgz#58b7027d83707e9805a7b7832a9aa59e57d855c6"
+  resolved "https://registry.npmjs.org/@glimmer/compiler/-/compiler-0.84.0.tgz#58b7027d83707e9805a7b7832a9aa59e57d855c6"
   integrity sha512-DVO8KLgw8dQQF/r1tR3XDBgVsVdCE8e5CyeiCLYTQR5X48Js0LE0bQiY0EtsopyXeswcURf+OVNsNIyHuXAwKQ==
   dependencies:
     "@glimmer/interfaces" "0.84.0"
@@ -1154,7 +1133,7 @@
 
 "@glimmer/destroyable@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/destroyable/-/destroyable-0.84.0.tgz#63b3ed2becc8305858b7c0f73e2d7522e8e1ba78"
+  resolved "https://registry.npmjs.org/@glimmer/destroyable/-/destroyable-0.84.0.tgz#63b3ed2becc8305858b7c0f73e2d7522e8e1ba78"
   integrity sha512-fbvuXoUrHdZcOhzvFxvio1GG8BGNH2D2fYTnMMI5qbvy+q3DdeRUgzKInBQ9xHoayd6o2bmyqrv/clGyA4X1dQ==
   dependencies:
     "@glimmer/env" "0.1.7"
@@ -1174,7 +1153,7 @@
 
 "@glimmer/encoder@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/encoder/-/encoder-0.84.0.tgz#64f0eed6f3ef54149547a29bdf0613cb819be9c2"
+  resolved "https://registry.npmjs.org/@glimmer/encoder/-/encoder-0.84.0.tgz#64f0eed6f3ef54149547a29bdf0613cb819be9c2"
   integrity sha512-DA6I1D7j/Qk9+Ay6d7/4uKB1kydrRutuIHCVmS2MMyzryznfqMXNFKhzl6i1xMxWc8EYRsK/WJnkAcvm01f6Yw==
   dependencies:
     "@glimmer/env" "0.1.7"
@@ -1196,14 +1175,14 @@
 
 "@glimmer/global-context@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/global-context/-/global-context-0.84.0.tgz#48c58e3f28572bef5972d61dd69ed78b7b23558a"
+  resolved "https://registry.npmjs.org/@glimmer/global-context/-/global-context-0.84.0.tgz#48c58e3f28572bef5972d61dd69ed78b7b23558a"
   integrity sha512-xfq8CwHYifqP6ZfpYwIrBAZt1y6waObQHguWs1GfwLj9njoFaq29/9Ri42srq67ge/qGm3cIlXCvrEhk4AovmA==
   dependencies:
     "@glimmer/env" "^0.1.7"
 
 "@glimmer/interfaces@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/interfaces/-/interfaces-0.84.0.tgz#fa5cb7189910c853d473db19133d2180d813c0b7"
+  resolved "https://registry.npmjs.org/@glimmer/interfaces/-/interfaces-0.84.0.tgz#fa5cb7189910c853d473db19133d2180d813c0b7"
   integrity sha512-+2clm2821gP+LiA4w1GOQtjgLDoqFOYVw3uwTvmzKGislR5lzC9s0la3W7NCqYwApv2aeZry4CJ6um6/Q46mYw==
   dependencies:
     "@simple-dom/interface" "^1.4.0"
@@ -1215,7 +1194,7 @@
 
 "@glimmer/low-level@0.78.2":
   version "0.78.2"
-  resolved "https://registry.yarnpkg.com/@glimmer/low-level/-/low-level-0.78.2.tgz#bca5f666760ce98345e87c5b3e37096e772cb2de"
+  resolved "https://registry.npmjs.org/@glimmer/low-level/-/low-level-0.78.2.tgz#bca5f666760ce98345e87c5b3e37096e772cb2de"
   integrity sha512-0S6TWOOd0fzLLysw1pWZN0TgasaHmYs1Sjz9Til1mTByIXU1S+1rhdyr2veSQPO/aRjPuEQyKXZQHvx23Zax6w==
 
 "@glimmer/low-level@^0.44.0":
@@ -1225,7 +1204,7 @@
 
 "@glimmer/manager@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/manager/-/manager-0.84.0.tgz#4489b8e8ab44bb3e7db375acddacc0254ec54b19"
+  resolved "https://registry.npmjs.org/@glimmer/manager/-/manager-0.84.0.tgz#4489b8e8ab44bb3e7db375acddacc0254ec54b19"
   integrity sha512-bZOSE7+tj/jofMiT6E1SVLJItK4tcjAlFEBVay2ieGul9CJU4/V9HwE/bknPlfit6i6++Bj0XE5DYL5eN8OIBA==
   dependencies:
     "@glimmer/destroyable" "0.84.0"
@@ -1237,7 +1216,7 @@
 
 "@glimmer/node@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/node/-/node-0.84.0.tgz#de622a6f0764d823f47989fac18936dd3d377913"
+  resolved "https://registry.npmjs.org/@glimmer/node/-/node-0.84.0.tgz#de622a6f0764d823f47989fac18936dd3d377913"
   integrity sha512-SAEPKpGcAVet4NphD757dCJd4z6PMpTmNTcpzLfiTPbPf9Uxyi5iIjUK9WcvQcc5WCwKMQagzghqrE2vPpNbMg==
   dependencies:
     "@glimmer/interfaces" "0.84.0"
@@ -1248,7 +1227,7 @@
 
 "@glimmer/opcode-compiler@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/opcode-compiler/-/opcode-compiler-0.84.0.tgz#4484caad08381ed8d653e82e3dfae08e36ca7894"
+  resolved "https://registry.npmjs.org/@glimmer/opcode-compiler/-/opcode-compiler-0.84.0.tgz#4484caad08381ed8d653e82e3dfae08e36ca7894"
   integrity sha512-8V3+mOpfbc6X9L2iVLpbgUDf4ZTua+kx3b4g4G7S3iN5/6AFW8JWKRNmEpQwanoUUjCdr4Xjhf/lIgEIpmVVww==
   dependencies:
     "@glimmer/encoder" "0.84.0"
@@ -1261,14 +1240,14 @@
 
 "@glimmer/owner@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/owner/-/owner-0.84.0.tgz#71c6ebbd369c8c4a3cdf91bc53e445d2e92572fa"
+  resolved "https://registry.npmjs.org/@glimmer/owner/-/owner-0.84.0.tgz#71c6ebbd369c8c4a3cdf91bc53e445d2e92572fa"
   integrity sha512-JH00K54PSQ14rsTLKj3bZ2fVS0n6OeHdd6rWWogWWA/RCvPPmHi9bRz9KeyVhXiebgy5p/0Fvc0xFcrmMdJwnw==
   dependencies:
     "@glimmer/util" "0.84.0"
 
 "@glimmer/program@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/program/-/program-0.84.0.tgz#0191ad46dc29a1e78bada5c7a2d3538db767c971"
+  resolved "https://registry.npmjs.org/@glimmer/program/-/program-0.84.0.tgz#0191ad46dc29a1e78bada5c7a2d3538db767c971"
   integrity sha512-PHhUhs1UMe4thXYx167cwIUlIaQ8hLEBRQDxnS+rsIs7NtyuigsMFrm5zMqgyCrysOcsZtmnn550Vjl1aysy2Q==
   dependencies:
     "@glimmer/encoder" "0.84.0"
@@ -1289,7 +1268,7 @@
 
 "@glimmer/reference@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/reference/-/reference-0.84.0.tgz#ac5239b311a8c55624c4df729cb55a881ba4a14c"
+  resolved "https://registry.npmjs.org/@glimmer/reference/-/reference-0.84.0.tgz#ac5239b311a8c55624c4df729cb55a881ba4a14c"
   integrity sha512-2alJE+iZQC9daqVAho9sTapP6nnCMsKhOWkm5owqDIPlieUrLXn6r4SGo4YUfT6oTfhYmRPL8QjVnhk+FhAVHQ==
   dependencies:
     "@glimmer/env" "^0.1.7"
@@ -1315,14 +1294,14 @@
 
 "@glimmer/resolver@^0.4.3":
   version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@glimmer/resolver/-/resolver-0.4.3.tgz#b1baae5c3291b4621002ccf8d7870466097e841d"
+  resolved "https://registry.npmjs.org/@glimmer/resolver/-/resolver-0.4.3.tgz#b1baae5c3291b4621002ccf8d7870466097e841d"
   integrity sha512-UhX6vlZbWRMq6pCquSC3wfWLM9kO0PhQPD1dZ3XnyZkmsvEE94Cq+EncA9JalUuevKoJrfUFRvrZ0xaz+yar3g==
   dependencies:
     "@glimmer/di" "^0.2.0"
 
 "@glimmer/runtime@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/runtime/-/runtime-0.84.0.tgz#00f23ccdfacdfd3fe968f2083f2d1098a6058a76"
+  resolved "https://registry.npmjs.org/@glimmer/runtime/-/runtime-0.84.0.tgz#00f23ccdfacdfd3fe968f2083f2d1098a6058a76"
   integrity sha512-QtVU+jeh6o16xFmICQeYiDHcWuDoqRGvzSh73kl9wFO7nTAubgtbmBFGwjnDA7CkcSK+NSXPa7q0RJRqa9QGKw==
   dependencies:
     "@glimmer/destroyable" "0.84.0"
@@ -1355,7 +1334,7 @@
 
 "@glimmer/syntax@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/syntax/-/syntax-0.84.0.tgz#bf5104fc2be7c853f1e3897dda16a655f6fd7d5f"
+  resolved "https://registry.npmjs.org/@glimmer/syntax/-/syntax-0.84.0.tgz#bf5104fc2be7c853f1e3897dda16a655f6fd7d5f"
   integrity sha512-TAo1vaO5SPWtstU3XOAeiG5izhlw2v2ASns7f5dwe0hzGPRHPGuatmsVCtw/CS6FH86weboLrOGz0KQwjMaKfQ==
   dependencies:
     "@glimmer/interfaces" "0.84.0"
@@ -1375,7 +1354,7 @@
 
 "@glimmer/util@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/util/-/util-0.84.0.tgz#a9d3a9471678e5c80470646a70ea54c2cf1f8e2c"
+  resolved "https://registry.npmjs.org/@glimmer/util/-/util-0.84.0.tgz#a9d3a9471678e5c80470646a70ea54c2cf1f8e2c"
   integrity sha512-H5OjZXaroV821TLVHXox4t2GICwUA8HdijyAf+wouSfINmm+y4GbbEwoZM9ns8YSZGX7/gG0Z4Znwti0oFbHPw==
   dependencies:
     "@glimmer/env" "0.1.7"
@@ -1389,7 +1368,7 @@
 
 "@glimmer/validator@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/validator/-/validator-0.84.0.tgz#d2bd9bcdb2685f91abc521e0f18517f7f789f02f"
+  resolved "https://registry.npmjs.org/@glimmer/validator/-/validator-0.84.0.tgz#d2bd9bcdb2685f91abc521e0f18517f7f789f02f"
   integrity sha512-8kNz2FIxX8HWS1RvqHCIGcUK2w+t0/TJgZdhCP7ZNTLpS2QpDMoA4TnTRPk/wMxrgBOtrhFXODk3jk8ko+bTVw==
   dependencies:
     "@glimmer/env" "^0.1.7"
@@ -1402,14 +1381,14 @@
 
 "@glimmer/vm-babel-plugins@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/vm-babel-plugins/-/vm-babel-plugins-0.84.0.tgz#c3598efe9184277980ba116364c128b4b8012dc7"
+  resolved "https://registry.npmjs.org/@glimmer/vm-babel-plugins/-/vm-babel-plugins-0.84.0.tgz#c3598efe9184277980ba116364c128b4b8012dc7"
   integrity sha512-aze+hbXy67XHotHLLsf1e/uZ/Yfjl8qeIY2jh4EvrD5O0NaQxwDCohAdSxcIe2RT7X0fdhw/rttrqa9rHkzXxA==
   dependencies:
     babel-plugin-debug-macros "^0.3.4"
 
 "@glimmer/vm@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/vm/-/vm-0.84.0.tgz#f57df05f46b95ca5612b82de7477c0ff6e79e8e7"
+  resolved "https://registry.npmjs.org/@glimmer/vm/-/vm-0.84.0.tgz#f57df05f46b95ca5612b82de7477c0ff6e79e8e7"
   integrity sha512-nnMwsnPn+mFoWPDiKtxxqL+WOcA+Be6hJMYdoP7yzzu6y1Heb18LAou96OtySD7++cCuW/HWq2obGuaVe6ke8g==
   dependencies:
     "@glimmer/interfaces" "0.84.0"
@@ -1425,7 +1404,7 @@
 
 "@glimmer/wire-format@0.84.0":
   version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@glimmer/wire-format/-/wire-format-0.84.0.tgz#d70bd970ff877752c1d5e46eabec4a5c6583a319"
+  resolved "https://registry.npmjs.org/@glimmer/wire-format/-/wire-format-0.84.0.tgz#d70bd970ff877752c1d5e46eabec4a5c6583a319"
   integrity sha512-vvagH+UteM1A5g0lLPBWmbNTbDfs9wzQUgNFzygX4WxuEwXfGyxDvfFPoRifyrdV1Eft/h/yKtZ/b6WyCLdDLA==
   dependencies:
     "@glimmer/interfaces" "0.84.0"
@@ -1720,7 +1699,7 @@
 
 "@types/ember-qunit@~5.0.0":
   version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/ember-qunit/-/ember-qunit-5.0.0.tgz#e39749d129dc7643df13d8df94225867c57d006e"
+  resolved "https://registry.npmjs.org/@types/ember-qunit/-/ember-qunit-5.0.0.tgz#e39749d129dc7643df13d8df94225867c57d006e"
   integrity sha512-p7ZZUbohO5E57JsUC6fxD8gveV9LcSnPIx2J86WF7FNLno/2oKvWnI+j5AtobSoy86hfZZaYjiIuW0dNe1eblQ==
   dependencies:
     "@types/ember-resolver" "*"
@@ -1737,7 +1716,7 @@
 
 "@types/ember-testing-helpers@^0.0.4":
   version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@types/ember-testing-helpers/-/ember-testing-helpers-0.0.4.tgz#d305b418d477c6f84fcd4dcb851a3efadbc4a2bd"
+  resolved "https://registry.npmjs.org/@types/ember-testing-helpers/-/ember-testing-helpers-0.0.4.tgz#d305b418d477c6f84fcd4dcb851a3efadbc4a2bd"
   integrity sha512-6EEY+kk4+HsKMzLkzZp0UU7TzUG1EB2mPyORrQXcudjJ0M7k67Z9cCBDn7kupDcu4NVgtG7HNRZTZgBljOjxoA==
   dependencies:
     "@types/jquery" "*"
@@ -1884,7 +1863,7 @@
 
 "@types/ember__test-helpers@*", "@types/ember__test-helpers@~2.6.1":
   version "2.6.1"
-  resolved "https://registry.yarnpkg.com/@types/ember__test-helpers/-/ember__test-helpers-2.6.1.tgz#2835bc60fd7daa93292d669fa9b61706836fe2e7"
+  resolved "https://registry.npmjs.org/@types/ember__test-helpers/-/ember__test-helpers-2.6.1.tgz#2835bc60fd7daa93292d669fa9b61706836fe2e7"
   integrity sha512-d2RShuBSaBzp04nt8ad+mNE1F6rbIcIIud8WFUVQqGSUGHuZQUq1051Jza12ksCUnXduyE/J9UDjyZvNKOHeBQ==
   dependencies:
     "@types/ember-resolver" "*"
@@ -5202,9 +5181,9 @@ copy-descriptor@^0.1.0:
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
 core-js-compat@^3.20.2, core-js-compat@^3.21.0:
-  version "3.21.0"
-  resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.21.0.tgz#bcc86aa5a589cee358e7a7fa0a4979d5a76c3885"
-  integrity sha512-OSXseNPSK2OPJa6GdtkMz/XxeXx8/CJvfhQWTqd6neuUraujcL4jVsjkLQz1OWnax8xVQJnRPe0V2jqNWORA+A==
+  version "3.21.1"
+  resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.21.1.tgz#cac369f67c8d134ff8f9bd1623e3bc2c42068c82"
+  integrity sha512-gbgX5AUvMb8gwxC7FLVWYT7Kkgu/y7+h/h1X43yJkNqhlK2fuYyQimqvKGNZFAY6CKii/GFKJ2cp/1/42TN36g==
   dependencies:
     browserslist "^4.19.1"
     semver "7.0.0"
@@ -6079,7 +6058,7 @@ ember-cli-typescript@^2.0.2:
 
 ember-cli-typescript@^5.0.0:
   version "5.0.0"
-  resolved "https://registry.yarnpkg.com/ember-cli-typescript/-/ember-cli-typescript-5.0.0.tgz#52f53843082d0a0128f318809dadabf83a76bbff"
+  resolved "https://registry.npmjs.org/ember-cli-typescript/-/ember-cli-typescript-5.0.0.tgz#52f53843082d0a0128f318809dadabf83a76bbff"
   integrity sha512-UDKZlG7bInRo7eDsF3jvPz1Dxh1YvRhMw9wyj5rj2K3brw0xEh1IMTqPgWRbPESqjcWuwa8s0FCNuYWDc4PTfg==
   dependencies:
     ansi-to-html "^0.6.15"
