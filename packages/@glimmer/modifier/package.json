@@ -12,7 +12,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@glimmer/runtime": "0.77.6"
+    "@glimmer/runtime": "0.84.0"
   },
   "volta": {
     "node": "12.16.1",
