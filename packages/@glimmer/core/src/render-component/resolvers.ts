@@ -3,7 +3,6 @@ import {
   CompileTimeResolver as VMCompileTimeResolver,
   Option,
   InternalComponentManager,
-  PartialDefinition,
   ResolvedComponentDefinition,
 } from '@glimmer/interfaces';
 
@@ -19,9 +18,6 @@ export class RuntimeResolver implements VMRuntimeResolver {
   ): Option<
     ResolvedComponentDefinition<object, unknown, InternalComponentManager<unknown, object>>
   > {
-    return null;
-  }
-  lookupPartial(_name: string, _owner: object): Option<PartialDefinition> {
     return null;
   }
 }
@@ -46,10 +42,6 @@ export class CompileTimeResolver implements VMCompileTimeResolver {
   ): Option<
     ResolvedComponentDefinition<object, unknown, InternalComponentManager<unknown, object>>
   > {
-    return null;
-  }
-
-  lookupPartial(_name: string, _owner: object): Option<PartialDefinition> {
     return null;
   }
 
