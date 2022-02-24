@@ -56,8 +56,6 @@ jobs:
           - release
           - beta
           - canary
-          - lts-3.12
-          - lts-3.16
           - lts-3.24
           - lts-3.28
 
