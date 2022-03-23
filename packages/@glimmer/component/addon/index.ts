@@ -12,11 +12,11 @@ declare module '@ember/component' {
 import { setComponentManager } from '@ember/component';
 
 import GlimmerComponentManager from './-private/ember-component-manager';
-import _GlimmerComponent from './-private/component';
+import _GlimmerComponent, { Args } from './-private/component';
 import { setOwner } from '@ember/application';
 
-export default class GlimmerComponent extends _GlimmerComponent {
-  constructor(owner, args) {
+export default class GlimmerComponent<S> extends _GlimmerComponent<S> {
+  constructor(owner: object, args: Args<S>) {
     super(owner, args);
 
     if (DEBUG && !(owner !== null && typeof owner === 'object')) {

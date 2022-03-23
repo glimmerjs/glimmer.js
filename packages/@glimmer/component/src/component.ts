@@ -1,10 +1,10 @@
 import { setComponentManager, setOwner } from '@glimmer/core';
 import GlimmerComponentManager from './component-manager';
-import _GlimmerComponent from '../addon/-private/component';
+import _GlimmerComponent, { Args } from '../addon/-private/component';
 import { DEBUG } from '@glimmer/env';
 
-export default class GlimmerComponent<Args extends {} = {}> extends _GlimmerComponent<Args> {
-  constructor(owner: object, args: Args) {
+export default class GlimmerComponent<S> extends _GlimmerComponent<S> {
+  constructor(owner: object, args: Args<S>) {
     super(owner, args);
 
     if (DEBUG && !(owner !== null && typeof owner === 'object')) {

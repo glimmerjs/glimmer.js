@@ -1,39 +1,96 @@
+import { expectTypeOf } from 'expect-type';
 import * as gc from '@glimmer/component';
-import { hasExactKeys } from './utils';
 
 const Component = gc.default;
 
-hasExactKeys<{
-  default: unknown;
-}>()(gc);
-
-// $ExpectType typeof GlimmerComponent
-gc.default;
+expectTypeOf(gc).toHaveProperty('default');
+expectTypeOf(gc.default).toEqualTypeOf<typeof Component>();
 
 type Args = {
   foo: number;
 };
 
-const component = new Component<Args>({}, { foo: 123 });
+const componentWithLegacyArgs = new Component<Args>({}, { foo: 123 });
+expectTypeOf(componentWithLegacyArgs).toHaveProperty('args');
+expectTypeOf(componentWithLegacyArgs).toHaveProperty('isDestroying');
+expectTypeOf(componentWithLegacyArgs).toHaveProperty('isDestroyed');
+expectTypeOf(componentWithLegacyArgs).toHaveProperty('willDestroy');
+expectTypeOf(componentWithLegacyArgs.args).toEqualTypeOf<Readonly<Args>>();
+expectTypeOf(componentWithLegacyArgs.isDestroying).toEqualTypeOf<boolean>();
+expectTypeOf(componentWithLegacyArgs.isDestroyed).toEqualTypeOf<boolean>();
+expectTypeOf(componentWithLegacyArgs.willDestroy).toEqualTypeOf<() => void>();
 
-hasExactKeys<{
-  args: unknown;
-  isDestroying: unknown;
-  isDestroyed: unknown;
-  willDestroy: unknown;
-}>()(component);
+interface ArgsOnly {
+  Args: Args;
+}
 
-// $ExpectType Readonly<Args>
-component.args;
+const componentWithArgsOnly = new Component<ArgsOnly>({}, { foo: 123 });
+expectTypeOf(componentWithArgsOnly.args).toEqualTypeOf<Readonly<Args>>();
 
-// $ExpectType boolean
-component.isDestroying;
+interface ElementOnly {
+  Element: HTMLParagraphElement;
+}
 
-// $ExpectType boolean
-component.isDestroyed;
+const componentWithElOnly = new Component<ElementOnly>({}, {});
 
-// $ExpectType () => void
-component.willDestroy;
+// We cannot check on toEqualTypeOf here b/c EmptyObject is intentionally not
+// public.
+expectTypeOf(componentWithElOnly.args).toMatchTypeOf<Readonly<{}>>();
 
-// $ExpectError
-component.args.bar = 123;
+interface Blocks {
+  default: [name: string];
+  inverse: [];
+}
+
+interface BlockOnlySig {
+  Blocks: Blocks;
+}
+
+const componentWithBlockOnly = new Component<BlockOnlySig>({}, {});
+
+// We cannot check on toEqualTypeOf here b/c EmptyObject is intentionally not
+// public.
+expectTypeOf(componentWithBlockOnly.args).toMatchTypeOf<Readonly<{}>>();
+
+interface ArgsAndBlocks {
+  Args: Args;
+  Blocks: Blocks;
+}
+
+const componentwithArgsAndBlocks = new Component<ArgsAndBlocks>({}, { foo: 123 });
+expectTypeOf(componentwithArgsAndBlocks.args).toEqualTypeOf<Readonly<Args>>();
+
+interface ArgsAndEl {
+  Args: Args;
+  Element: HTMLParagraphElement;
+}
+
+const componentwithArgsAndEl = new Component<ArgsAndEl>({}, { foo: 123 });
+expectTypeOf(componentwithArgsAndEl.args).toEqualTypeOf<Readonly<Args>>();
+
+interface FullShortSig {
+  Args: Args;
+  Element: HTMLParagraphElement;
+  Blocks: Blocks;
+}
+
+const componentWithFullShortSig = new Component<FullShortSig>({}, { foo: 123 });
+expectTypeOf(componentWithFullShortSig.args).toEqualTypeOf<Readonly<Args>>();
+
+interface FullLongSig {
+  Args: {
+    Named: Args;
+    Positional: [];
+  };
+  Element: HTMLParagraphElement;
+  Blocks: {
+    default: {
+      Params: {
+        Positional: [name: string];
+      };
+    };
+  };
+}
+
+const componentWithFullSig = new Component<FullLongSig>({}, { foo: 123 });
+expectTypeOf(componentWithFullSig.args).toEqualTypeOf<Readonly<Args>>();
