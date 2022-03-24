@@ -28,14 +28,25 @@ if (DEBUG) {
 }
 
 // --- Type utilities for component signatures --- //
-
-// This provides us a way to have a "fallback" which represents an empty object,
-// without the downsides of how TS treats `{}`. Specifically: this will
-// correctly leverage "excess property checking" so that, given a component
-// which has no named args, if someone invokes it with any named args, they will
-// get a type error.
+// Type-only "symbol" to use with `EmptyObject` below, so that it is *not*
+// equivalent to an empty interface.
 declare const Empty: unique symbol;
-type EmptyObject = { [Empty]?: true };
+
+/**
+ * This provides us a way to have a "fallback" which represents an empty object,
+ * without the downsides of how TS treats `{}`. Specifically: this will
+ * correctly leverage "excess property checking" so that, given a component
+ * which has no named args, if someone invokes it with any named args, they will
+ * get a type error.
+ *
+ * @internal This is exported so declaration emit works (if it were not emitted,
+ *   declarations which fall back to it would not wor). It is *not* intended for
+ *   public usage, and the specific mechanics it uses may change at any time.
+ *   The location of this export *is* part of the public API, because moving it
+ *   will cause existing declarations, but is not legal for end users to import
+ *   themselves, so ***DO NOT RELY ON IT***.
+ */
+export type EmptyObject = { [Empty]?: true };
 
 type GetOrElse<Obj, K, Fallback> = K extends keyof Obj ? Obj[K] : Fallback;
 
@@ -49,8 +60,18 @@ type ArgsFor<S> = 'Args' extends keyof S
     : { Named: S['Args']; Positional: [] }
   : { Named: EmptyObject; Positional: [] };
 
-/** Given any allowed shorthand form of a signature, desugars it to its full expanded type */
-type ExpandSignature<T> = {
+/**
+ * Given any allowed shorthand form of a signature, desugars it to its full
+ * expanded type.
+ *
+ * @internal This is only exported so we can avoid duplicating it in
+ *   [Glint](https://github.com/typed-ember/glint) or other such tooling. It is
+ *   *not* intended for public usage, and the specific mechanics it uses may
+ *   change at any time. Although the signature produced by is part of Glimmer's
+ *   public API the existence and mechanics of this specific symbol are *not*,
+ *   so ***DO NOT RELY ON IT***.
+ */
+export type ExpandSignature<T> = {
   Element: GetOrElse<T, 'Element', null>;
   Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
     ? ArgsFor<T> // Then use `Signature` args
