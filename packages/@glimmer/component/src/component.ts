@@ -8,7 +8,7 @@ export interface Bounds {
   lastNode: Node;
 }
 
-export default class Component<S> extends BaseComponent<S> {
+export default class Component<S = unknown> extends BaseComponent<S> {
   args: Readonly<Args<S>>;
 
   /**
