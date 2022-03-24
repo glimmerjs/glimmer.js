@@ -1,6 +1,12 @@
 import { expectTypeOf } from 'expect-type';
 import * as gc from '@glimmer/component';
 
+// Imported from non-public-API so we can check that we are publishing what we
+// expect to be -- and this keeps us honest about the fact that if we *change*
+// this import location, we've broken any existing declarations published using
+// the current type signatures.
+import { EmptyObject } from '@glimmer/component/addon/-private/component';
+
 const Component = gc.default;
 
 expectTypeOf(gc).toHaveProperty('default');
@@ -33,9 +39,7 @@ interface ElementOnly {
 
 const componentWithElOnly = new Component<ElementOnly>({}, {});
 
-// We cannot check on toEqualTypeOf here b/c EmptyObject is intentionally not
-// public.
-expectTypeOf(componentWithElOnly.args).toMatchTypeOf<Readonly<{}>>();
+expectTypeOf(componentWithElOnly.args).toEqualTypeOf<Readonly<EmptyObject>>();
 
 interface Blocks {
   default: [name: string];
@@ -48,9 +52,7 @@ interface BlockOnlySig {
 
 const componentWithBlockOnly = new Component<BlockOnlySig>({}, {});
 
-// We cannot check on toEqualTypeOf here b/c EmptyObject is intentionally not
-// public.
-expectTypeOf(componentWithBlockOnly.args).toMatchTypeOf<Readonly<{}>>();
+expectTypeOf(componentWithBlockOnly.args).toEqualTypeOf<Readonly<EmptyObject>>();
 
 interface ArgsAndBlocks {
   Args: Args;
