@@ -3,7 +3,7 @@ import GlimmerComponentManager from './component-manager';
 import _GlimmerComponent, { Args } from '../addon/-private/component';
 import { DEBUG } from '@glimmer/env';
 
-export default class GlimmerComponent<S> extends _GlimmerComponent<S> {
+export default class GlimmerComponent<S = unknown> extends _GlimmerComponent<S> {
   constructor(owner: object, args: Args<S>) {
     super(owner, args);
 
