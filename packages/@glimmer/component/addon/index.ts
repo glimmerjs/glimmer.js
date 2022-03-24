@@ -39,7 +39,7 @@ if (DEBUG) {
     );
   }
 
-  GlimmerComponent = class GlimmerDebugComponent<S> extends GlimmerComponent<S> {
+  GlimmerComponent = class GlimmerDebugComponent<S = unknown> extends GlimmerComponent<S> {
     constructor(owner: unknown, args: Args<S>) {
       super(owner, args);
 
