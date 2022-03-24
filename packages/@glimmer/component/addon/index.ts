@@ -15,7 +15,7 @@ import GlimmerComponentManager from './-private/ember-component-manager';
 import _GlimmerComponent, { Args } from './-private/component';
 import { setOwner } from '@ember/application';
 
-export default class GlimmerComponent<S> extends _GlimmerComponent<S> {
+export default class GlimmerComponent<S = unknown> extends _GlimmerComponent<S> {
   constructor(owner: object, args: Args<S>) {
     super(owner, args);
 
