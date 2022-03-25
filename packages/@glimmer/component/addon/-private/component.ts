@@ -40,10 +40,10 @@ declare const Empty: unique symbol;
  * get a type error.
  *
  * @internal This is exported so declaration emit works (if it were not emitted,
- *   declarations which fall back to it would not wor). It is *not* intended for
+ *   declarations which fall back to it would not work). It is *not* intended for
  *   public usage, and the specific mechanics it uses may change at any time.
  *   The location of this export *is* part of the public API, because moving it
- *   will cause existing declarations, but is not legal for end users to import
+ *   will break existing declarations, but is not legal for end users to import
  *   themselves, so ***DO NOT RELY ON IT***.
  */
 export type EmptyObject = { [Empty]?: true };
