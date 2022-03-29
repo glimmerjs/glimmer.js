@@ -6,7 +6,7 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Component Arguments');
 
-test('Getters that depend on `args` re-render correctly', async function(assert) {
+test('Getters that depend on `args` re-render correctly', async function (assert) {
   assert.expect(2);
 
   let parent: ParentComponent;
@@ -22,11 +22,7 @@ test('Getters that depend on `args` re-render correctly', async function(assert)
     }
   }
 
-  class ChildComponent extends Component {
-    args: {
-      firstName: string
-    };
-
+  class ChildComponent extends Component<{ Args: { firstName: string } }> {
     get name() {
       return `${this.args.firstName} Dale`;
     }
@@ -46,7 +42,7 @@ test('Getters that depend on `args` re-render correctly', async function(assert)
     .template('ChildComponent', '<div>{{name}} {{@status}}</div>')
     .boot();
 
-  setPropertyDidChange(function() {
+  setPropertyDidChange(function () {
     app.scheduleRerender();
   });
 

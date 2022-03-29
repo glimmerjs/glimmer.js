@@ -42,7 +42,7 @@ const componentWithElOnly = new Component<ElementOnly>({}, {});
 expectTypeOf(componentWithElOnly.args).toEqualTypeOf<Readonly<EmptyObject>>();
 
 interface Blocks {
-  default: [name: string];
+  default: [string];
   inverse: [];
 }
 

@@ -40,11 +40,13 @@ declare const Empty: unique symbol;
  */
 export type EmptyObject = { [Empty]?: true };
 
-type GetOrElse<Obj, K, Fallback> = K extends keyof Obj ? Obj[K] : Fallback;
+type GetOrElse<Obj, K extends PropertyKey, Fallback> = Obj extends { [Key in K]: infer U }
+  ? U
+  : Fallback;
 
 /** Given a signature `S`, get back the `Args` type. */
-type ArgsFor<S> = 'Args' extends keyof S
-  ? S['Args'] extends { Named?: object; Positional?: unknown[] } // Are they longhand already?
+type ArgsFor<S> = S extends { Args: infer Args }
+  ? Args extends { Named?: object; Positional?: unknown[] } // Are they longhand already?
     ? {
         Named: GetOrElse<S['Args'], 'Named', EmptyObject>;
         Positional: GetOrElse<S['Args'], 'Positional', []>;
@@ -68,11 +70,11 @@ export type ExpandSignature<T> = {
   Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
     ? ArgsFor<T> // Then use `Signature` args
     : { Named: T; Positional: [] }; // Otherwise fall back to classic `Args`.
-  Blocks: 'Blocks' extends keyof T
+  Blocks: T extends { Blocks: infer Blocks }
     ? {
-        [Block in keyof T['Blocks']]: T['Blocks'][Block] extends unknown[]
-          ? { Positional: T['Blocks'][Block] }
-          : T['Blocks'][Block];
+        [Block in keyof Blocks]: Blocks[Block] extends unknown[]
+          ? { Positional: Blocks[Block] }
+          : Blocks[Block];
       }
     : EmptyObject;
 };

@@ -31,7 +31,7 @@ export class PersonWithCount {
   }
 }
 
-export  class PersonWithSalutation {
+export class PersonWithSalutation {
   get salutation() {
     return `Hello, ${this.fullName}!`;
   }
@@ -117,6 +117,7 @@ export function createClassWithTrackedSetter(): any {
 
 export function createClassWithTrackedDependentKeys(): any {
   class DependentKeysAreCool {
+    //@ts-ignore
     @tracked('firstName', 'lastName') fullName() {
       return `${this.firstName} ${this.lastName}`;
     }
