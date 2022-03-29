@@ -29,9 +29,9 @@ jobs:
       matrix:
         ember-version:
           - default
-          - release
-          - beta
-          - canary
+            #- release
+            #- beta
+            #- canary
           - lts-3.4
           - lts-3.8
           - lts-3.12
