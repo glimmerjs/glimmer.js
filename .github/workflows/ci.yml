@@ -37,6 +37,8 @@ jobs:
           - lts-3.12
           - lts-3.16
           - lts-3.20
+          - lts-3.24
+          - lts-3.28
 
     steps:
       - uses: actions/checkout@v2
