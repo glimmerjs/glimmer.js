@@ -10,7 +10,7 @@
     "test": "ember test && ember test --env production",
     "test:node": "bin/run-node-tests.js",
     "test:ember": "yarn workspace @glimmer/component ember try:one",
-    "test:types": "tsc --noEmit --project test/types && dtslint test/types",
+    "test:types": "tsc --noEmit --project test/types",
     "test:watch": "testem",
     "tslint": "tslint --project tsconfig.json",
     "problems": "tsc -p tsconfig.json --noEmit"
@@ -62,7 +62,6 @@
     "typescript": "~3.5.3"
   },
   "dependencies": {
-    "dtslint": "^1.0.3",
     "tslib": "^1.8.0"
   },
   "resolutions": {

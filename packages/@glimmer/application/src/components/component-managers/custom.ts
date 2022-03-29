@@ -41,11 +41,7 @@ export const CAPABILITIES: ComponentCapabilities = {
   dynamicScope: true,
 };
 
-export interface Capabilities {
-  asyncLifecycleCallbacks: boolean;
-  destructor: boolean;
-  updateHook: boolean;
-}
+export { Capabilities };
 
 export interface Args {
   named: Dict<unknown>;
