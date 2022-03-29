@@ -6195,10 +6195,10 @@ expand-tilde@^2.0.0, expand-tilde@^2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
-expect-type@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/expect-type/-/expect-type-0.13.0.tgz#916646a7a73f3ee77039a634ee9035efe1876eb2"
-  integrity sha512-CclevazQfrqo8EvbLPmP7osnb1SZXkw47XPPvUUpeMz4HuGzDltE7CaIt3RLyT9UQrwVK/LDn+KVcC0hcgjgDg==
+expect-type@0.11:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/expect-type/-/expect-type-0.11.0.tgz#bce1a3e283f0334eedb39699b57dd27be7009cc1"
+  integrity sha512-hkObxepDKhTYloH/UZoxYTT2uUzdhvDEwAi0oqdk29XEkHF8p+5ZRpX/BZES2PtGN9YgyEqutIjXfnL9iMflMw==
 
 express@^4.10.7, express@^4.16.3:
   version "4.16.4"

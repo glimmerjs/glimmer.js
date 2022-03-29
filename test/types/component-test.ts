@@ -88,7 +88,7 @@ interface FullLongSig {
   Blocks: {
     default: {
       Params: {
-        Positional: [name: string];
+        Positional: [string];
       };
     };
   };
