@@ -121,7 +121,9 @@ function descriptorForField<T extends object, K extends keyof T>(
 ): PropertyDescriptor {
   if (DEBUG && desc && (desc.value || desc.get || desc.set)) {
     throw new Error(
-      `You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
+      `You attempted to use @tracked on ${String(
+        key
+      )}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
     );
   }
 
