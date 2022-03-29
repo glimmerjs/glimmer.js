@@ -10,7 +10,7 @@
     "test": "ember test && ember test --env production",
     "test:node": "bin/run-node-tests.js",
     "test:ember": "yarn workspace @glimmer/component ember try:one",
-    "test:types": "tsc --noEmit --project test/types",
+    "test:types": "tsc --version && tsc --noEmit --project test/types",
     "test:watch": "testem",
     "tslint": "tslint --project tsconfig.json",
     "problems": "tsc -p tsconfig.json --noEmit"
