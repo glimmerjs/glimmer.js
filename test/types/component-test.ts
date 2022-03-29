@@ -5,7 +5,13 @@ import * as gc from '@glimmer/component';
 // expect to be -- and this keeps us honest about the fact that if we *change*
 // this import location, we've broken any existing declarations published using
 // the current type signatures.
-import { EmptyObject } from '@glimmer/component/addon/-private/component';
+//
+// NOTE: this *will not* type-check until you have done a build, because it is
+// the result of emitting types to the production build location. However, this
+// matches the actual import location to which this type would be emitted. Since
+// this is an internal-only type whose presence consumers should not rely on and
+// which they should not use in any way, this is "safe" from a public API POV.
+import { EmptyObject } from '@glimmer/component/dist/types/addon/-private/component';
 
 const Component = gc.default;
 
