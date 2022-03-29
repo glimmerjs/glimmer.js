@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  lint:
+    name: "Linting"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '8'
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn tslint
+      - run: yarn build
+      - run: yarn dtslint --installAll
+      - run: yarn test:types
+
+  ember-version-tests:
+    name: "Ember Tests: ${{ matrix.ember-version }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ember-version:
+          - default
+          - release
+          - beta
+          - canary
+          - lts-3.4
+          - lts-3.8
+          - lts-3.12
+          - lts-3.16
+          - lts-3.20
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn test:ember ember-${{ matrix.ember-version }} --skip-cleanup
+
