@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "2.0.0-beta.17",
+  "version": "2.0.0-beta.18",
   "description": "Glimmer component library",
   "keywords": [
     "ember-addon"
@@ -26,7 +26,7 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
-    "@glimmer/core": "2.0.0-beta.17",
+    "@glimmer/core": "2.0.0-beta.18",
     "@glimmer/env": "^0.1.7",
     "@glimmer/util": "0.84.0",
     "broccoli-file-creator": "^2.1.1",
@@ -48,7 +48,7 @@
     "@glimmer/compiler": "0.84.0",
     "@glimmer/interfaces": "0.84.0",
     "@glimmer/resolver": "^0.4.3",
-    "@glimmer/tracking": "2.0.0-beta.17",
+    "@glimmer/tracking": "2.0.0-beta.18",
     "@glimmer/wire-format": "0.84.0",
     "@types/ember": "~4.0.0",
     "@types/ember-qunit": "~5.0.0",

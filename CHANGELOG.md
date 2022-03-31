@@ -1,3 +1,23 @@
+## v2.0.0-beta.18 (2022-03-31)
+
+#### :boom: Breaking Change
+* `@glimmer/component`
+  * [#361](https://github.com/glimmerjs/glimmer.js/pull/361) Drop support for Node 10 ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :rocket: Enhancement
+* `@glimmer/component`, `@glimmer/tracking`
+  * [#385](https://github.com/glimmerjs/glimmer.js/pull/385) Component signature ([@chriskrycho](https://github.com/chriskrycho))
+
+#### :memo: Documentation
+* `@glimmer/ssr`
+  * [#351](https://github.com/glimmerjs/glimmer.js/pull/351) Add API Usage docs to @glimmer/ssr ([@izelnakri](https://github.com/izelnakri))
+
+#### Committers: 4
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+- Gonçalo Morais ([@gnclmorais](https://github.com/gnclmorais))
+- Izel Nakri ([@izelnakri](https://github.com/izelnakri))
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## v2.0.0-beta.17 (2021-06-16)
 
 #### :bug: Bug Fix
