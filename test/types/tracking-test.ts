@@ -1,13 +1,5 @@
-import * as tracking from '@glimmer/tracking';
-import { hasExactKeys } from './utils';
+import { setPropertyDidChange, tracked } from '@glimmer/tracking';
+import { expectTypeOf } from 'expect-type';
 
-hasExactKeys<{
-  setPropertyDidChange: unknown,
-  tracked: unknown,
-}>()(tracking);
-
-// $ExpectType (cb: () => void) => void
-tracking.setPropertyDidChange;
-
-// $ExpectType PropertyDecorator
-tracking.tracked;
+expectTypeOf(setPropertyDidChange).toEqualTypeOf<(cb: () => void) => void>();
+expectTypeOf(tracked).toEqualTypeOf<PropertyDecorator>();

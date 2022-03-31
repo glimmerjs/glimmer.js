@@ -2,11 +2,88 @@ import { DEBUG } from '@glimmer/env';
 import { setOwner } from './owner';
 import { isDestroying, isDestroyed } from './destroyables';
 
-export let ARGS_SET: WeakMap<any, boolean>;
+// This provides a type-safe `WeakMap`: the getter and setter link the key to a
+// specific value. This is how `WeakMap`s actually behave, but the TS type
+// system does not (yet!) have a good way to capture that for types like
+// `WeakMap` where the type is generic over another generic type (here, `Args`).
+interface ArgsSetMap extends WeakMap<Args<unknown>, boolean> {
+  get<S>(key: Args<S>): boolean | undefined;
+  set<S>(key: Args<S>, value: boolean): this;
+}
+
+// SAFETY: this only holds because we *only* acces this when `DEBUG` is `true`.
+// There is not a great way to connect that data in TS at present.
+export let ARGS_SET: ArgsSetMap;
 
 if (DEBUG) {
-  ARGS_SET = new WeakMap();
+  ARGS_SET = new WeakMap() as ArgsSetMap;
 }
+
+// --- Type utilities for component signatures --- //
+// Type-only "symbol" to use with `EmptyObject` below, so that it is *not*
+// equivalent to an empty interface.
+declare const Empty: unique symbol;
+
+/**
+ * This provides us a way to have a "fallback" which represents an empty object,
+ * without the downsides of how TS treats `{}`. Specifically: this will
+ * correctly leverage "excess property checking" so that, given a component
+ * which has no named args, if someone invokes it with any named args, they will
+ * get a type error.
+ *
+ * @internal This is exported so declaration emit works (if it were not emitted,
+ *   declarations which fall back to it would not work). It is *not* intended for
+ *   public usage, and the specific mechanics it uses may change at any time.
+ *   The location of this export *is* part of the public API, because moving it
+ *   will break existing declarations, but is not legal for end users to import
+ *   themselves, so ***DO NOT RELY ON IT***.
+ */
+export type EmptyObject = { [Empty]?: true };
+
+type GetOrElse<Obj, K extends PropertyKey, Fallback> = Obj extends { [Key in K]: infer U }
+  ? U
+  : Fallback;
+
+/** Given a signature `S`, get back the `Args` type. */
+type ArgsFor<S> = S extends { Args: infer Args }
+  ? Args extends { Named?: object; Positional?: unknown[] } // Are they longhand already?
+    ? {
+        Named: GetOrElse<S['Args'], 'Named', EmptyObject>;
+        Positional: GetOrElse<S['Args'], 'Positional', []>;
+      }
+    : { Named: S['Args']; Positional: [] }
+  : { Named: EmptyObject; Positional: [] };
+
+/**
+ * Given any allowed shorthand form of a signature, desugars it to its full
+ * expanded type.
+ *
+ * @internal This is only exported so we can avoid duplicating it in
+ *   [Glint](https://github.com/typed-ember/glint) or other such tooling. It is
+ *   *not* intended for public usage, and the specific mechanics it uses may
+ *   change at any time. Although the signature produced by is part of Glimmer's
+ *   public API the existence and mechanics of this specific symbol are *not*,
+ *   so ***DO NOT RELY ON IT***.
+ */
+export type ExpandSignature<T> = {
+  Element: GetOrElse<T, 'Element', null>;
+  Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
+    ? ArgsFor<T> // Then use `Signature` args
+    : { Named: T; Positional: [] }; // Otherwise fall back to classic `Args`.
+  Blocks: T extends { Blocks: infer Blocks }
+    ? {
+        [Block in keyof Blocks]: Blocks[Block] extends unknown[]
+          ? { Positional: Blocks[Block] }
+          : Blocks[Block];
+      }
+    : EmptyObject;
+};
+
+/**
+ * @internal we use this type for convenience internally; inference means users
+ *   should not normally need to name it
+ */
+export type Args<S> = ExpandSignature<S>['Args']['Named'];
 
 /**
  * The `Component` class defines an encapsulated UI element that is rendered to
@@ -131,7 +208,7 @@ if (DEBUG) {
  * `args` property. For example, if `{{@firstName}}` is `Tom` in the template,
  * inside the component `this.args.firstName` would also be `Tom`.
  */
-export default class BaseComponent<T = object> {
+export default class BaseComponent<S = unknown> {
   /**
    * Constructs a new component and assigns itself the passed properties. You
    * should not construct new components yourself. Instead, Glimmer will
@@ -140,12 +217,10 @@ export default class BaseComponent<T = object> {
    * @param owner
    * @param args
    */
-  constructor(owner: unknown, args: T) {
+  constructor(owner: unknown, args: Args<S>) {
     if (DEBUG && !(owner !== null && typeof owner === 'object' && ARGS_SET.has(args))) {
       throw new Error(
-        `You must pass both the owner and args to super() in your component: ${
-          this.constructor.name
-        }. You can pass them directly, or use ...arguments to pass all arguments through.`
+        `You must pass both the owner and args to super() in your component: ${this.constructor.name}. You can pass them directly, or use ...arguments to pass all arguments through.`
       );
     }
 
@@ -177,18 +252,18 @@ export default class BaseComponent<T = object> {
    * <p>Welcome, {{@firstName}} {{@lastName}}!</p>
    * ```
    */
-  args: Readonly<T>;
+  args: Readonly<Args<S>>;
 
-  get isDestroying() {
+  get isDestroying(): boolean {
     return isDestroying(this);
   }
 
-  get isDestroyed() {
+  get isDestroyed(): boolean {
     return isDestroyed(this);
   }
 
   /**
    * Called before the component has been removed from the DOM.
    */
-  willDestroy() {}
+  willDestroy(): void {}
 }

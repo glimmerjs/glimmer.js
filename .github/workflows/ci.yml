@@ -18,7 +18,6 @@ jobs:
       - run: yarn install --frozen-lockfile --non-interactive
       - run: yarn tslint
       - run: yarn build
-      - run: yarn dtslint --installAll
       - run: yarn test:types
 
   ember-version-tests:

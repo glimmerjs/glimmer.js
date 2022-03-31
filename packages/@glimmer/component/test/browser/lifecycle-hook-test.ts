@@ -6,17 +6,13 @@ const { module, test } = QUnit;
 
 module('[@glimmer/component] Lifecycle Hooks');
 
-test('Lifecycle hook ordering', async function(assert) {
+test('Lifecycle hook ordering', async function (assert) {
   assert.expect(2);
 
   let invocations: [string, string][] = [];
   let component1: Component1;
 
-  abstract class HookLoggerComponent extends Component {
-    args: {
-      name: string
-    };
-
+  abstract class HookLoggerComponent extends Component<{ Args: { name: string } }> {
     constructor(owner, args) {
       super(owner, args);
       invocations.push([this.args.name, 'constructor']);
@@ -105,7 +101,7 @@ test('Lifecycle hook ordering', async function(assert) {
   ]);
 });
 
-test('element is set before didInsertElement', async function(assert) {
+test('element is set before didInsertElement', async function (assert) {
   assert.expect(1);
 
   class Element extends Component {
@@ -117,29 +113,41 @@ test('element is set before didInsertElement', async function(assert) {
   await buildApp()
     .component('Element', Element)
     .template('Main', '<Element />')
-    .template('Element', trim(`
+    .template(
+      'Element',
+      trim(`
       <h1>Chad Hietala - Greatest thinker of our generation</h1>
-     `)).boot();
+     `)
+    )
+    .boot();
 });
 
-test('fragment bounds are set before didInsertElement', async function(assert) {
+test('fragment bounds are set before didInsertElement', async function (assert) {
   assert.expect(2);
 
   class Fragment extends Component {
     didInsertElement() {
       assert.equal(this.bounds.firstNode.nodeName, '#text', 'firstNode should be a text node');
-      assert.equal(this.bounds.lastNode.textContent, 'Greatest thinker of our generation', 'last node should be a span');
+      assert.equal(
+        this.bounds.lastNode.textContent,
+        'Greatest thinker of our generation',
+        'last node should be a span'
+      );
     }
   }
 
   await buildApp()
     .component('Fragment', Fragment)
     .template('Main', '<Fragment />')
-    .template('Fragment', trim(`
+    .template(
+      'Fragment',
+      trim(`
       Hello world!
       <h1>Chad Hietala</h1>
       <span>Greatest thinker of our generation</span>
-     `)).boot();
+     `)
+    )
+    .boot();
 });
 
 function trim(str: string) {

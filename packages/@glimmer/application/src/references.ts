@@ -163,6 +163,9 @@ export class RootPropertyReference<T> extends PropertyReference<T> {
     consume(tag);
     update(this.tag, tag);
 
+    // This is a type error in recent versions of TS, but/and it should be
+    // resolved on the v2 branch, rather than against v1.x.
+    // @ts-ignore
     return value;
   }
 }
@@ -180,6 +183,8 @@ export class NestedPropertyReference<T> extends PropertyReference<T> {
     this.tag = combine([parentReferenceTag, propertyTag]);
   }
 
+  // This is patently nonsense, but/and it is resolved on the v2 branch.
+  // @ts-ignore
   compute() {
     let { parentReference, propertyTag, propertyKey } = this;
 

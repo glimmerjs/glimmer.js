@@ -85,7 +85,7 @@ function throwTrackedWithArgumentsError(args: any[]) {
     `You attempted to use @tracked with ${
       args.length > 1 ? 'arguments' : 'an argument'
     } ( @tracked(${args
-      .map(d => `'${d}'`)
+      .map((d) => `'${d}'`)
       .join(
         ', '
       )}) ), which is no longer necessary nor supported. Dependencies are now automatically tracked, so you can just use ${'`@tracked`'}.`
@@ -111,7 +111,7 @@ function throwTrackedWithEmptyArgumentsError() {
  * that corresponds to the tracked properties consumed inside of
  * itself, including child tracked computed properties.
  */
-type DecoratorPropertyDescriptor = PropertyDescriptor & { initializer?: any } | undefined;
+type DecoratorPropertyDescriptor = (PropertyDescriptor & { initializer?: any }) | undefined;
 
 function descriptorForField<T extends object, K extends keyof T>(
   _target: T,
@@ -119,7 +119,11 @@ function descriptorForField<T extends object, K extends keyof T>(
   desc?: DecoratorPropertyDescriptor
 ): DecoratorPropertyDescriptor {
   if (DEBUG && desc && (desc.value || desc.get || desc.set)) {
-    throw new Error(`You attempted to use @tracked on ${key}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`);
+    throw new Error(
+      `You attempted to use @tracked on ${String(
+        key
+      )}, but that element is not a class field. @tracked is only usable on class fields. Native getters and setters will autotrack add any tracked fields they encounter, so there is no need mark getters and setters with @tracked.`
+    );
   }
 
   let { getter, setter } = trackedData<T, K>(key, desc && desc.initializer);
@@ -139,7 +143,7 @@ function descriptorForField<T extends object, K extends keyof T>(
   };
 }
 
-let propertyDidChange = function() {};
+let propertyDidChange = function () {};
 
 export function setPropertyDidChange(cb: () => void) {
   propertyDidChange = cb;

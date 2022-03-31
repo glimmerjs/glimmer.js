@@ -1,6 +1,6 @@
 import { assert } from '@glimmer/util';
 import { setComponentManager } from '@glimmer/application';
-import BaseComponent from '../addon/-private/component';
+import BaseComponent, { Args } from '../addon/-private/component';
 import GlimmerComponentManager from './component-manager';
 
 export interface Bounds {
@@ -8,8 +8,8 @@ export interface Bounds {
   lastNode: Node;
 }
 
-export default class Component<Args extends {} = {}> extends BaseComponent<Args> {
-  args: Args;
+export default class Component<S = unknown> extends BaseComponent<S> {
+  args: Readonly<Args<S>>;
 
   /**
    * Development-mode only name of the component, useful for debugging.
