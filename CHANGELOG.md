@@ -1,3 +1,12 @@
+## v2.0.0-beta.19 (2022-04-01)
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#391](https://github.com/glimmerjs/glimmer.js/pull/391) Fix Signature handling for unions and generics ([@chriskrycho](https://github.com/chriskrycho))
+
+#### Committers: 1
+- Chris Krycho ([@chriskrycho](https://github.com/chriskrycho))
+
 ## v2.0.0-beta.18 (2022-03-31)
 
 #### :boom: Breaking Change
