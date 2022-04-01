@@ -60,18 +60,7 @@ type ArgsFor<S> = 'Args' extends keyof S
     : { Named: S['Args']; Positional: [] }
   : { Named: EmptyObject; Positional: [] };
 
-/**
- * Given any allowed shorthand form of a signature, desugars it to its full
- * expanded type.
- *
- * @internal This is only exported so we can avoid duplicating it in
- *   [Glint](https://github.com/typed-ember/glint) or other such tooling. It is
- *   *not* intended for public usage, and the specific mechanics it uses may
- *   change at any time. Although the signature produced by is part of Glimmer's
- *   public API the existence and mechanics of this specific symbol are *not*,
- *   so ***DO NOT RELY ON IT***.
- */
-export type ExpandSignature<T> = {
+type _ExpandSignature<T> = {
   Element: GetOrElse<T, 'Element', null>;
   Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
     ? ArgsFor<T> // Then use `Signature` args
@@ -84,6 +73,24 @@ export type ExpandSignature<T> = {
       }
     : EmptyObject;
 };
+/**
+ * Given any allowed shorthand form of a signature, desugars it to its full
+ * expanded type.
+ *
+ * @internal This is only exported so we can avoid duplicating it in
+ *   [Glint](https://github.com/typed-ember/glint) or other such tooling. It is
+ *   *not* intended for public usage, and the specific mechanics it uses may
+ *   change at any time. Although the signature produced by is part of Glimmer's
+ *   public API the existence and mechanics of this specific symbol are *not*,
+ *   so ***DO NOT RELY ON IT***.
+ */
+// The conditional type here is because TS applies conditional types
+// distributively. This means that for union types, checks like `keyof T` get
+// all the keys from all elements of the union, instead of ending up as `never`
+// and then always falling into the `Signature` path instead of falling back to
+// the legacy args handling path.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ExpandSignature<T> = T extends any ? _ExpandSignature<T> : never;
 
 /**
  * @internal we use this type for convenience internally; inference means users
