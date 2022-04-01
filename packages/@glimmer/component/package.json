@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/component",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Glimmer component library",
   "keywords": [
     "ember-addon"
@@ -44,11 +44,11 @@
   },
   "devDependencies": {
     "@ember/optional-features": "^0.6.1",
-    "@glimmer/application-test-helpers": "^1.1.0",
+    "@glimmer/application-test-helpers": "^1.1.1",
     "@glimmer/compiler": "^0.44.0",
     "@glimmer/interfaces": "^0.44.0",
     "@glimmer/resolver": "^0.3.0",
-    "@glimmer/tracking": "^1.1.0",
+    "@glimmer/tracking": "^1.1.1",
     "@glimmer/wire-format": "^0.44.0",
     "@types/ember": "~3.0.29",
     "@types/ember-qunit": "~3.4.3",
