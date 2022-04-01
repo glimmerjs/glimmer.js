@@ -54,6 +54,20 @@ type ArgsFor<S> = S extends { Args: infer Args }
     : { Named: S['Args']; Positional: [] }
   : { Named: EmptyObject; Positional: [] };
 
+type _ExpandSignature<T> = {
+  Element: GetOrElse<T, 'Element', null>;
+  Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
+    ? ArgsFor<T> // Then use `Signature` args
+    : { Named: T; Positional: [] }; // Otherwise fall back to classic `Args`.
+  Blocks: T extends { Blocks: infer Blocks }
+    ? {
+        [Block in keyof Blocks]: Blocks[Block] extends unknown[]
+          ? { Positional: Blocks[Block] }
+          : Blocks[Block]
+      }
+    : EmptyObject;
+};
+
 /**
  * Given any allowed shorthand form of a signature, desugars it to its full
  * expanded type.
@@ -65,19 +79,12 @@ type ArgsFor<S> = S extends { Args: infer Args }
  *   public API the existence and mechanics of this specific symbol are *not*,
  *   so ***DO NOT RELY ON IT***.
  */
-export type ExpandSignature<T> = {
-  Element: GetOrElse<T, 'Element', null>;
-  Args: keyof T extends 'Args' | 'Element' | 'Blocks' // Is this a `Signature`?
-    ? ArgsFor<T> // Then use `Signature` args
-    : { Named: T; Positional: [] }; // Otherwise fall back to classic `Args`.
-  Blocks: T extends { Blocks: infer Blocks }
-    ? {
-        [Block in keyof Blocks]: Blocks[Block] extends unknown[]
-          ? { Positional: Blocks[Block] }
-          : Blocks[Block];
-      }
-    : EmptyObject;
-};
+// The conditional type here is because TS applies conditional types
+// distributively. This means that for union types, checks like `keyof T` get
+// all the keys from all elements of the union, instead of ending up as `never`
+// and then always falling into the `Signature` path instead of falling back to
+// the legacy args handling path.
+export type ExpandSignature<T> = T extends any ? _ExpandSignature<T> : never;
 
 /**
  * @internal we use this type for convenience internally; inference means users
@@ -220,7 +227,9 @@ export default class BaseComponent<S = unknown> {
   constructor(owner: unknown, args: Args<S>) {
     if (DEBUG && !(owner !== null && typeof owner === 'object' && ARGS_SET.has(args))) {
       throw new Error(
-        `You must pass both the owner and args to super() in your component: ${this.constructor.name}. You can pass them directly, or use ...arguments to pass all arguments through.`
+        `You must pass both the owner and args to super() in your component: ${
+          this.constructor.name
+        }. You can pass them directly, or use ...arguments to pass all arguments through.`
       );
     }
 
