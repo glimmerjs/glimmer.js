@@ -62,8 +62,8 @@ type _ExpandSignature<T> = {
   Blocks: T extends { Blocks: infer Blocks }
     ? {
         [Block in keyof Blocks]: Blocks[Block] extends unknown[]
-          ? { Positional: Blocks[Block] }
-          : Blocks[Block]
+          ? { Params: { Positional: Blocks[Block] } }
+          : Blocks[Block];
       }
     : EmptyObject;
 };
