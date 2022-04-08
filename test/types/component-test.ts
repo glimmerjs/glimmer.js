@@ -9,7 +9,7 @@ import Component from '@glimmer/component';
 // expect to be -- and this keeps us honest about the fact that if we *change*
 // this import location, we've broken any existing declarations published using
 // the current type signatures.
-import { EmptyObject, ExpandSignature } from '@glimmer/component/addon/-private/component';
+import type { EmptyObject, ExpandSignature } from '@glimmer/component/-private/component';
 
 declare let basicComponent: Component;
 expectTypeOf(basicComponent).toHaveProperty('args');
