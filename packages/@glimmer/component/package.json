@@ -85,6 +85,13 @@
     "qunit-dom": "^0.7.1",
     "typescript": "~3.5.3"
   },
+  "typesVersions": {
+    "*": {
+      "-private/*": [
+        "dist/types/addon/-private/*"
+      ]
+    }
+  },
   "engines": {
     "node": "6.* || 8.* || >= 10.*"
   },

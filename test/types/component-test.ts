@@ -12,10 +12,7 @@ import Component from '@glimmer/component';
 // matches the actual import location to which this type would be emitted. Since
 // this is an internal-only type whose presence consumers should not rely on and
 // which they should not use in any way, this is "safe" from a public API POV.
-import {
-  EmptyObject,
-  ExpandSignature,
-} from '@glimmer/component/dist/types/addon/-private/component';
+import { EmptyObject, ExpandSignature } from '@glimmer/component/-private/component';
 
 declare let basicComponent: Component;
 expectTypeOf(basicComponent).toHaveProperty('args');

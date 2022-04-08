@@ -31,6 +31,10 @@
     "noEmit": true,
 
     "paths": {
+      "@glimmer/component/-private/*": [
+        // This must match the `typesVersions` entry in `@glimmer/component`'s package.json
+        "../../dist/@glimmer/component/dist/types/addon/-private/*"
+      ],
       "@glimmer/*": ["../../dist/@glimmer/*"]
     }
   }
