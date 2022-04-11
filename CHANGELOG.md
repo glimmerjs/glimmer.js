@@ -1,3 +1,12 @@
+## v2.0.0-beta.20 (2022-04-11)
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#392](https://github.com/glimmerjs/glimmer.js/pull/392) Fix Signature integration for external consumers
+
+#### Committers: 1
+- Dan Freeman ([@dfreeman](https://github.com/dfreeman))
+
 ## v2.0.0-beta.19 (2022-04-01)
 
 #### :bug: Bug Fix
