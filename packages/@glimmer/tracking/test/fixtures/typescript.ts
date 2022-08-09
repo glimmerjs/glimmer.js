@@ -1,4 +1,4 @@
-import { tracked } from '@glimmer/tracking';
+import { cached, tracked } from '@glimmer/tracking';
 
 export class Tom {
   @tracked firstName = 'Tom';
@@ -100,6 +100,14 @@ export function createClassWithTrackedGetter(): any {
   return new PersonWithTrackedGetter();
 }
 
+export function createClassWithCachedProperty(): any {
+  class PersonWithCachedProperty {
+    @cached firstName = 'Tom';
+  }
+
+  return new PersonWithCachedProperty();
+}
+
 export function createClassWithTrackedSetter(): any {
   class PersonWithTrackedSetter {
     @tracked firstName = 'Tom';
@@ -116,6 +124,22 @@ export function createClassWithTrackedSetter(): any {
   return new PersonWithTrackedSetter();
 }
 
+export function createClassWithCachedSetter(): any {
+  class PersonWithCachedSetter {
+    @tracked firstName = 'Tom';
+    @tracked lastName: any;
+
+    // @ts-ignore
+    @cached set fullName(fullName) {
+      const [firstName, lastName] = fullName.split(' ');
+      this.firstName = firstName;
+      this.lastName = lastName;
+    }
+  }
+
+  return new PersonWithCachedSetter();
+}
+
 export function createClassWithTrackedDependentKeys(): any {
   class DependentKeysAreCool {
     // @ts-ignore
@@ -129,10 +153,36 @@ export function createClassWithTrackedDependentKeys(): any {
   return new DependentKeysAreCool();
 }
 
+export function createClassWithCachedDependentKeys(): any {
+  class DependentKeysAreCool {
+    // @ts-ignore
+    @cached('firstName', 'lastName') fullName() {
+      return `${this.firstName} ${this.lastName}`;
+    }
+
+    @tracked firstName = 'Tom';
+    @tracked lastName = 'Dale';
+  }
+  return new DependentKeysAreCool();
+}
+
 export function createClassWithTrackedAsDecoratorFactory(): any {
   class DependentKeysAreCool {
     // @ts-ignore
     @tracked() fullName() {
+      return `${this.firstName} ${this.lastName}`;
+    }
+
+    @tracked firstName = 'Tom';
+    @tracked lastName = 'Dale';
+  }
+  return new DependentKeysAreCool();
+}
+
+export function createClassWithCachedAsDecoratorFactory(): any {
+  class DependentKeysAreCool {
+    // @ts-ignore
+    @cached() fullName() {
       return `${this.firstName} ${this.lastName}`;
     }
 
