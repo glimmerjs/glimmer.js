@@ -1,3 +1,17 @@
+## v2.0.0-beta.21 (2022-09-06)
+
+#### :rocket: Enhancement
+* `@glimmer/tracking`
+  * [#358](https://github.com/glimmerjs/glimmer.js/pull/358) Adds @cached decorator ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :bug: Bug Fix
+* `@glimmer/component`
+  * [#398](https://github.com/glimmerjs/glimmer.js/pull/398) Fix ExpandSignature & ArgsFor ([@chadhietala](https://github.com/chadhietala))
+
+#### Committers: 2
+- Chad Hietala ([@chadhietala](https://github.com/chadhietala))
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## v2.0.0-beta.20 (2022-04-11)
 
 #### :bug: Bug Fix

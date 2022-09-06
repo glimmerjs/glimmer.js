@@ -1,6 +1,6 @@
 {
   "name": "@glimmer/tracking",
-  "version": "2.0.0-beta.20",
+  "version": "2.0.0-beta.21",
   "description": "Glimmer property tracking library",
   "keywords": [
     "ember-addon"
