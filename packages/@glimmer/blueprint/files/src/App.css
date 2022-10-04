@@ -15,7 +15,7 @@ body {
   width: 34em;
 }
 
-#intro h1, #intro h3 {
+#intro h1, #intro p {
   font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-style: italic;
 
