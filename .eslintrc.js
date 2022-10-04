@@ -16,7 +16,7 @@ module.exports = {
     {
       files: [
         '.eslintrc.js',
-        '.babelrc.js',
+        'babel.config.js',
         'standalone.js',
         '**/testem.js',
         '**/config/ember-try.js',
