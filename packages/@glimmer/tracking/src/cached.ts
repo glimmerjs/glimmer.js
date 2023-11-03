@@ -1,5 +1,6 @@
 import { DEBUG } from '@glimmer/env';
 import { createCache, getValue } from '@glimmer/validator';
+import { CACHED } from './debug';
 
 /**
  * @decorator
@@ -87,6 +88,7 @@ export const cached: PropertyDecorator = (...args: any[]) => {
 
     return getValue(caches.get(this));
   };
+  (descriptor.get as any)[CACHED] = true;
 };
 
 function throwCachedExtraneousParens(): never {
