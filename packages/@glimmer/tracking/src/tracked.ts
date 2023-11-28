@@ -1,5 +1,6 @@
 import { DEBUG } from '@glimmer/env';
 import { trackedData } from '@glimmer/validator';
+import { TRACKED } from './debug';
 
 /**
  * @decorator
@@ -129,18 +130,21 @@ function descriptorForField<T extends object, K extends keyof T>(
 
   const { getter, setter } = trackedData<T, K>(key, desc && desc.initializer);
 
+  function get(this: T): any {
+    return getter(this)
+  }
+
+  function set(this: T, newValue: any): void {
+    setter(this, newValue);
+  }
+
+  (get as any)[TRACKED] = true;
+
   return {
     enumerable: true,
     configurable: true,
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get(this: T): any {
-      return getter(this);
-    },
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    set(this: T, newValue: any): void {
-      setter(this, newValue);
-    },
+    get,
+    set,
   };
 }
+

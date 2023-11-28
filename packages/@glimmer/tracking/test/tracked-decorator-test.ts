@@ -1,4 +1,6 @@
 /* tslint:disable:no-unused-expression */
+import { isTracked } from '../src/debug';
+
 const { test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
@@ -21,6 +23,12 @@ import { assertValidAfterUnrelatedBump } from './helpers/tags';
     assert.strictEqual(obj.firstName, 'Tom');
     obj.firstName = 'Edsger';
     assert.strictEqual(obj.firstName, 'Edsger');
+  });
+
+  test('tracked properties can be detected for inspector', (assert) => {
+    const obj = new F.Toran();
+    assert.strictEqual(isTracked(obj, 'firstName'), true);
+    assert.strictEqual(isTracked(obj, 'lastName'), false);
   });
 
   test('can request a tag for a property', (assert) => {

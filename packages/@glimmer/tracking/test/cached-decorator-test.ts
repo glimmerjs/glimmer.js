@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { isCached, isTracked } from '../src/debug';
+
 const { test } = QUnit;
 
 import { DEBUG } from '@glimmer/env';
@@ -25,6 +27,13 @@ test('it works', function (assert) {
   }
 
   const person = new Person();
+
+
+  test('cached properties can be detected for inspector', (assert) => {
+    assert.strictEqual(isCached(person, 'fullName'), true);
+    assert.strictEqual(isCached(person, 'lastName'), false);
+  });
+
   assert.verifySteps([], 'getter is not called after class initialization');
 
   assert.strictEqual(person.fullName, 'Jen Weber');
