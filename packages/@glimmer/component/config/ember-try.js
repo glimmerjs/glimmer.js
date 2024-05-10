@@ -10,7 +10,7 @@ module.exports = function() {
         ...extra,
         devDependencies: {
           'ember-source': `~${version}.0`,
-          ...(extra?.devDependencies || {}),
+          ...(extra && extra.devDependencies || {}),
         }
 
       },
