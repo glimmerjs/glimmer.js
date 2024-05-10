@@ -28,9 +28,9 @@ jobs:
       matrix:
         ember-version:
           - default
-            #- release
-            #- beta
-            #- canary
+          - release
+          - beta
+          - canary
           - lts-3.4
           - lts-3.8
           - lts-3.12
@@ -38,6 +38,11 @@ jobs:
           - lts-3.20
           - lts-3.24
           - lts-3.28
+          - lts-4.4
+          - lts-4.8
+          - lts-4.12
+          - lts-5.4
+          - lts-5.8
 
     steps:
       - uses: actions/checkout@v2
