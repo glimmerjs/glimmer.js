@@ -3,6 +3,20 @@
 const getChannelURL = require('ember-source-channel-url');
 
 module.exports = function() {
+  function lts(version, extra = {}) {
+    return {
+      name: `ember-lts-${version}`,
+      npm: {
+        ...extra,
+        devDependencies: {
+          'ember-source': `~${version}.0`,
+          ...(extra && extra.devDependencies || {}),
+        }
+
+      },
+    }
+  }
+
   return Promise.all([
     getChannelURL('release'),
     getChannelURL('beta'),
@@ -67,6 +81,11 @@ module.exports = function() {
             },
           },
         },
+        lts('4.4'),
+        lts('4.8'),
+        lts('4.12'),
+        lts('5.4'),
+        lts('5.8'),
         {
           name: 'ember-release',
           npm: {
