@@ -1,3 +1,7 @@
+# Archival Note
+
+This repo contains support for the "standalone Glimmer / GlimmerX / GlimmerJS" project that spun out from EmberJS. The parts of it that were mainstreamed back into Ember have moved into https://github.com/emberjs/ember.js/ and the rest is archived.
+
 # Glimmer.js
 
 Welcome to Glimmer.js! Glimmer.js is actually a made up of lots of small
